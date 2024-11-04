@@ -4,7 +4,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Patients;
 
-public class Patient : FullAuditedAggregateRoot<Guid>
+public sealed class Patient : FullAuditedAggregateRoot<Guid>
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
@@ -16,11 +16,9 @@ public class Patient : FullAuditedAggregateRoot<Guid>
     public EnumGender Gender { get; set; }
     public EnumBloodType BloodType { get; set; }
     public EnumMaritalStatus MaritalStatus { get; set; }
-    public DateTime RegisterDate { get; set; }
-
     public Guid CountryId { get; set; }
 
-    protected Patient()
+    private Patient()
     {
         FirstName = string.Empty;
         LastName = string.Empty;
@@ -62,6 +60,5 @@ public class Patient : FullAuditedAggregateRoot<Guid>
         BloodType = bloodType;
         MaritalStatus = maritalStatus;
         HomePhoneNumber = homePhoneNumber;
-        RegisterDate = DateTime.Now;
     }
 }
