@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Pusula.Training.HealthCare.Addresses;
+using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Departments;
+using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -87,6 +90,8 @@ public class HealthCareDbContext :
         /* Configure your own tables/entities inside here */
         if (builder.IsHostDatabase())
         {
+            #region Patient
+
             builder.Entity<Patient>(b =>
             {
                 b.ToTable(HealthCareConsts.DbTablePrefix + "Patients", HealthCareConsts.DbSchema);
@@ -108,22 +113,77 @@ public class HealthCareDbContext :
                 b.Property(x => x.Gender).HasColumnName(nameof(Patient.Gender)).IsRequired();
                 b.Property(x => x.BloodType).HasColumnName(nameof(Patient.BloodType)).IsRequired();
                 b.Property(x => x.MaritalStatus).HasColumnName(nameof(Patient.MaritalStatus)).IsRequired();
-                b.Property(x => x.RegisterDate).HasColumnName(nameof(Patient.RegisterDate))
-                    .HasDefaultValueSql("NOW()");
 
                 b.HasOne<Country>().WithMany().IsRequired().HasForeignKey(e => e.CountryId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
+
+            #endregion
+
+            #region Country
+
             builder.Entity<Country>(b =>
             {
                 b.ToTable(HealthCareConsts.DbTablePrefix + "Countries", HealthCareConsts.DbSchema);
                 b.ConfigureByConvention();
                 b.Property(x => x.Name).HasColumnName(nameof(Country.Name)).IsRequired()
                     .HasMaxLength(CountryConsts.NameMaxLength);
-                b.Property(x => x.Code).HasColumnName(nameof(Country.Code)).IsRequired()
-                    .HasMaxLength(CountryConsts.CodeMaxLength);
+                b.Property(x => x.Abbreviation).HasColumnName(nameof(Country.Abbreviation)).IsRequired()
+                    .HasMaxLength(CountryConsts.AbbreviationMaxLength);
             });
 
+            #endregion
+
+            #region City
+
+            builder.Entity<City>(b =>
+            {
+                b.ToTable(HealthCareConsts.DbTablePrefix + "Cities", HealthCareConsts.DbSchema);
+                b.ConfigureByConvention();
+                b.HasIndex(e => e.CountryId);
+
+                b.Property(e => e.Name).HasColumnName(nameof(City.Name)).IsRequired()
+                    .HasMaxLength(CityConsts.NameMaxLength);
+
+                b.HasOne<Country>().WithMany().IsRequired().HasForeignKey(e => e.CountryId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            #endregion
+
+            #region District
+
+            builder.Entity<District>(b =>
+            {
+                b.ToTable(HealthCareConsts.DbTablePrefix + "Districts", HealthCareConsts.DbSchema);
+                b.ConfigureByConvention();
+                b.HasIndex(e => e.CityId);
+
+                b.Property(e => e.Name).HasColumnName(nameof(District.Name)).IsRequired()
+                    .HasMaxLength(DistrictConsts.NameMaxLength);
+
+                b.HasOne<City>().WithMany().IsRequired().HasForeignKey(e => e.CityId).OnDelete(DeleteBehavior.NoAction);
+            });
+
+            #endregion
+
+            #region Address
+
+            builder.Entity<Address>(b =>
+            {
+                b.ToTable(HealthCareConsts.DbTablePrefix + "Addresses", HealthCareConsts.DbSchema);
+                b.ConfigureByConvention();
+                b.HasIndex(e => e.PatientId);
+
+                b.Property(e => e.AddressLine).HasColumnName(nameof(Address.AddressLine)).IsRequired();
+
+                b.HasOne<District>().WithMany().IsRequired().HasForeignKey(e => e.DistrictId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                b.HasOne<Patient>().WithOne().IsRequired().HasForeignKey<Address>(e => e.PatientId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            #endregion
 
             builder.Entity<Department>(b =>
             {

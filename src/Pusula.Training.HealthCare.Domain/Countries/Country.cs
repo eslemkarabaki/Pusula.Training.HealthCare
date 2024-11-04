@@ -4,23 +4,25 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Countries;
 
-public class Country : FullAuditedAggregateRoot<Guid>
+public sealed class Country : FullAuditedAggregateRoot<Guid>
 {
     public string Name { get; set; }
-    public string Code { get; set; }
+    public string Abbreviation { get; set; }
 
-    protected Country()
+    private Country()
     {
         Name = string.Empty;
-        Code = string.Empty;
+        Abbreviation = string.Empty;
     }
 
-    public Country(string name, string code)
+    public Country(Guid id, string name, string abbreviation)
     {
+        Check.NotDefaultOrNull<Guid>(id, nameof(id));
         Check.NotNullOrWhiteSpace(name, nameof(name), CountryConsts.NameMaxLength);
-        Check.NotNullOrWhiteSpace(code, nameof(code), CountryConsts.CodeMaxLength);
+        Check.NotNullOrWhiteSpace(abbreviation, nameof(abbreviation), CountryConsts.AbbreviationMaxLength);
 
+        Id = id;
         Name = name;
-        Code = code;
+        Abbreviation = abbreviation;
     }
 }
