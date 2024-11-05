@@ -65,7 +65,11 @@
                 <Column ColumnSize="ColumnSize.Is3">
                     <Field>
                         <FieldLabel>@L["Name"]</FieldLabel>
-                        <TextEdit Text="@Filter.Name" TextChanged="@OnNameChangedAsync" />                       
+                        <TextEdit Text="@Filter.Name" TextChanged="@OnNameChangedAsync" />
+                        <FieldLabel>@L["Description"]</FieldLabel>
+                        <TextEdit Text="@Filter.Description" TextChanged="@OnNameChangedAsync" />
+                        <FieldLabel>@L["Duration"]</FieldLabel>
+                        <TextEdit Text="@Filter.Duration.ToString()" TextChanged="@OnNameChangedAsync" />
                     </Field>
                 </Column>
             </Row>
@@ -183,7 +187,16 @@
               <DataGridColumn TItem="DepartmentDto"
                       Field="Name"
                       Caption="@L["Name"]">
+
               </DataGridColumn>
+                <DataGridColumn TItem="DepartmentDto"
+                                Field="Description"
+                                Caption="@L["Description"]"> 
+                </DataGridColumn>
+                <DataGridColumn TItem="DepartmentDto"
+                                Field="Duration"
+                                Caption="@L["Duration"]">
+                </DataGridColumn>
 
             </DataGridColumns>
             
@@ -192,10 +205,10 @@
     </CardBody>
 </Card>
 
-@* ************************* CREATE MODAL ************************* *@
+@********************* CREATE MODAL ************************* *@
 <Modal @ref="CreateDepartmentModal" Closing="@CreateDepartmentModal.CancelClosingModalWhenFocusLost">
     <ModalContent Centered="true">
-@*//<suite-custom-code-block-5>*@
+@*//<suite-custom-code-block-5>*@ 
 @*//</suite-custom-code-block-5>*@
         <Form id="CreateDepartmentForm">
             <ModalHeader>
@@ -220,8 +233,27 @@
                         </Field>
                     </Validation>
 
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Description"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewDepartment.Description" MaxLength="DepartmentConsts.DescriptionMaxLength" >
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
 
-                    
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Duration"] *</FieldLabel>
+                            <NumericEdit @bind-Value="@NewDepartment.Duration" Min="0" Max="1000" Step="1">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericEdit>
+                        </Field>
+                    </Validation>
                     
                 </Validations>
             </ModalBody>
@@ -231,11 +263,11 @@
                     @L["Cancel"]
                 </Button>
                 <SubmitButton Form="CreateDepartmentForm" Clicked="CreateDepartmentAsync"/>
-@*//<suite-custom-code-block-6>*@
+@*//<suite-custom-code-block-6>*@ 
 @*//</suite-custom-code-block-6>*@
             </ModalFooter>
         </Form>
-@*//<suite-custom-code-block-7>*@
+@*//<suite-custom-code-block-7>*@ 
 @*//</suite-custom-code-block-7>*@
     </ModalContent>
 </Modal>
@@ -243,8 +275,6 @@
 @* ************************* EDIT MODAL ************************* *@
 <Modal @ref="EditDepartmentModal" Closing="@EditDepartmentModal.CancelClosingModalWhenFocusLost">
     <ModalContent Centered="true">
-@*//<suite-custom-code-block-8>*@
-@*//</suite-custom-code-block-8>*@
         <Form id="EditDepartmentForm">
             <ModalHeader>
                 <ModalTitle>@L["Update"]</ModalTitle>
@@ -252,15 +282,14 @@
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="@EditingDepartmentValidations"
-                            Mode="ValidationMode.Auto"
-                            Model="@EditingDepartment"
-                            ValidateOnLoad="false">
-                    
-                    
+                             Mode="ValidationMode.Auto"
+                             Model="@EditingDepartment"
+                             ValidateOnLoad="false">
+
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
                             <FieldLabel>@L["Name"] *</FieldLabel>
-                            <TextEdit @bind-Text="@EditingDepartment.Name" MaxLength="DepartmentConsts.NameMaxLength" >
+                            <TextEdit @bind-Text="@EditingDepartment.Name" MaxLength="DepartmentConsts.NameMaxLength">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
@@ -268,9 +297,28 @@
                         </Field>
                     </Validation>
 
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Description"] *</FieldLabel>
+                            <TextEdit @bind-Text="@EditingDepartment.Description" MaxLength="DepartmentConsts.DescriptionMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
 
-                    
-                    
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Duration"] *</FieldLabel>
+                            <NumericEdit @bind-Value="@EditingDepartment.Duration" Min="0" Max="1000" Step="1">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericEdit>
+                        </Field>
+                    </Validation>
+
                 </Validations>
             </ModalBody>
             <ModalFooter>
@@ -279,12 +327,8 @@
                     @L["Cancel"]
                 </Button>
                 <SubmitButton Form="EditDepartmentForm" Clicked="UpdateDepartmentAsync" />
-@*//<suite-custom-code-block-9>*@
-@*//</suite-custom-code-block-9>*@
             </ModalFooter>
         </Form>
-@*//<suite-custom-code-block-10>*@
-@*//</suite-custom-code-block-10>*@
     </ModalContent>
 </Modal>
 
