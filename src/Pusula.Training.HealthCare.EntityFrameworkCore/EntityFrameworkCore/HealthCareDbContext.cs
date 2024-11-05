@@ -196,6 +196,8 @@ public class HealthCareDbContext :
             //    b.Property(x => x.Name).HasColumnName(nameof(Department.Name)).IsRequired().HasMaxLength(DepartmentConsts.NameMaxLength);
             //});
 
+            #endregion
+
             builder.Entity<Protocol>(b =>
             {
                 b.ToTable(HealthCareConsts.DbTablePrefix + "Protocols", HealthCareConsts.DbSchema);
