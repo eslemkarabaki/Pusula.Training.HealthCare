@@ -23,7 +23,7 @@ namespace Pusula.Training.HealthCare.Appointments
         CancellationToken cancellationToken = default
     );
 
-        Task<List<AppointmentWithNavigationProperties>> GetWithNavigationPropertiesAsync(
+        Task<List<AppointmentWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
             string? filterText, DateTime? appointmentDate = null,
             EnumStatus? status = null, string? notes = null,
             Guid? hospitalId = null, Guid? departmentId = null,

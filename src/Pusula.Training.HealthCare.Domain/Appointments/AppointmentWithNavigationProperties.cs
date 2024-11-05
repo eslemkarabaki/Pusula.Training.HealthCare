@@ -9,6 +9,7 @@ namespace Pusula.Training.HealthCare.Appointments
 {
     public class AppointmentWithNavigationProperties
     {
+        public Appointment Appointment { get; set; }    
         public Hospital Hospital { get; set; }
         public Department Department { get; set; }
         public Doctor Doctor { get; set; }
