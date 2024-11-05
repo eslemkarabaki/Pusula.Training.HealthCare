@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pusula.Training.HealthCare.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Pusula.Training.HealthCare.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    partial class HealthCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241103162607_AddHospitalAndNotificationAndUpdateDepartment")]
+    partial class AddHospitalAndNotificationAndUpdateDepartment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,20 +97,21 @@ namespace Pusula.Training.HealthCare.Migrations
 
             modelBuilder.Entity("Pusula.Training.HealthCare.HospitalDepartments.HospitalDepartment", b =>
                 {
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("HospitalId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("DepartmentId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.HasKey("HospitalId", "DepartmentId");
+                    b.HasKey("DepartmentId", "HospitalId");
 
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("HospitalId", "DepartmentId");
+                    b.HasIndex("HospitalId");
 
                     b.ToTable("AppHospitalDepartments", (string)null);
                 });
@@ -2182,13 +2186,13 @@ namespace Pusula.Training.HealthCare.Migrations
                     b.HasOne("Pusula.Training.HealthCare.Departments.Department", null)
                         .WithMany("HospitalDepartments")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Pusula.Training.HealthCare.Hospitals.Hospital", null)
                         .WithMany("HospitalDepartments")
                         .HasForeignKey("HospitalId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

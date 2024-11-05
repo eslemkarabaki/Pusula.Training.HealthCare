@@ -59,6 +59,13 @@ public class ProtocolController : HealthCareController, IProtocolsAppService
         return _protocolsAppService.GetDepartmentLookupAsync(input);
     }
 
+    [HttpGet]
+    [Route("hospital-lookup")]
+    public virtual Task<PagedResultDto<LookupDto<Guid>>> GetHospitalLookupAsync(LookupRequestDto input)
+    {
+        return _protocolsAppService.GetHospitalLookupAsync(input);
+    }
+
     [HttpPost]
     public virtual Task<ProtocolDto> CreateAsync(ProtocolCreateDto input)
     {

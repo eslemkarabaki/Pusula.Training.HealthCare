@@ -15,6 +15,9 @@ using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Departments;
+using Pusula.Training.HealthCare.Hospitals;
+using Pusula.Training.HealthCare.Notifications;
+using Pusula.Training.HealthCare.HospitalDepartments;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -51,6 +54,8 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Patient, EfCorePatientRepository>();
             options.AddRepository<Protocol, EfCoreProtocolRepository>();
             options.AddRepository<Department, EfCoreDepartmentRepository>();
+            options.AddRepository<Hospital, EfCoreHospitalRepository>();
+            options.AddRepository<Notification, EfCoreNotificationRepository>();
         });
 
         Configure<AbpDbContextOptions>(options =>
