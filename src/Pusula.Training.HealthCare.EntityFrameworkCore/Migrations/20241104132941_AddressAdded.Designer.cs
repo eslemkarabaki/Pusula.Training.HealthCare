@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pusula.Training.HealthCare.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Pusula.Training.HealthCare.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    partial class HealthCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241104132941_AddressAdded")]
+    partial class AddressAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,16 +253,6 @@ namespace Pusula.Training.HealthCare.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("Description");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("integer")
-                        .HasColumnName("Duration");
-
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
                         .HasColumnType("text")
@@ -288,128 +281,6 @@ namespace Pusula.Training.HealthCare.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppDepartments", (string)null);
-                });
-
-            modelBuilder.Entity("Pusula.Training.HealthCare.HospitalDepartments.HospitalDepartment", b =>
-                {
-                    b.Property<Guid>("HospitalId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("DepartmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("HospitalId", "DepartmentId");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("HospitalId", "DepartmentId");
-
-                    b.ToTable("AppHospitalDepartments", (string)null);
-                });
-
-            modelBuilder.Entity("Pusula.Training.HealthCare.Hospitals.Hospital", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("Address");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppHospitals", (string)null);
-                });
-
-            modelBuilder.Entity("Pusula.Training.HealthCare.Notifications.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<DateTime>("NotificationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("NotificationMessage")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("NotificationStatus")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("NotificationType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppNotifications", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.Districts.District", b =>
@@ -576,6 +447,12 @@ namespace Pusula.Training.HealthCare.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)")
                         .HasColumnName("MobilePhoneNumber");
+
+                    b.Property<DateTime>("RegisterDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("RegisterDate")
+                        .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id");
 
@@ -2454,21 +2331,6 @@ namespace Pusula.Training.HealthCare.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
-            modelBuilder.Entity("Pusula.Training.HealthCare.HospitalDepartments.HospitalDepartment", b =>
-                {
-                    b.HasOne("Pusula.Training.HealthCare.Departments.Department", null)
-                        .WithMany("HospitalDepartments")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Pusula.Training.HealthCare.Hospitals.Hospital", null)
-                        .WithMany("HospitalDepartments")
-                        .HasForeignKey("HospitalId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Pusula.Training.HealthCare.Addresses.Address", b =>
                 {
                     b.HasOne("Pusula.Training.HealthCare.Districts.District", null)
@@ -2666,16 +2528,6 @@ namespace Pusula.Training.HealthCare.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Pusula.Training.HealthCare.Departments.Department", b =>
-                {
-                    b.Navigation("HospitalDepartments");
-                });
-
-            modelBuilder.Entity("Pusula.Training.HealthCare.Hospitals.Hospital", b =>
-                {
-                    b.Navigation("HospitalDepartments");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
