@@ -11,5 +11,8 @@ public class PatientExcelDto
     public string EmailAddress { get; set; } = null!;
     public string MobilePhoneNumber { get; set; } = null!;
     public string? HomePhoneNumber { get; set; }
-    public int Gender { get; set; }
+    public EnumGender Gender { get; set; }
+    public EnumBloodType BloodType { get; set; }
+    public EnumMaritalStatus MaritalStatus { get; set; }
+    public string Country { get; set; } = null!;
 }

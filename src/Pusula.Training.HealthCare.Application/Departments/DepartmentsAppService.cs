@@ -23,8 +23,8 @@ namespace Pusula.Training.HealthCare.Departments
     {
         public virtual async Task<PagedResultDto<DepartmentDto>> GetListAsync(GetDepartmentsInput input)
         {
-            var totalCount = await departmentRepository.GetCountAsync(input.FilterText, input.Name);
-            var items = await departmentRepository.GetListAsync(input.FilterText, input.Name, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await departmentRepository.GetCountAsync(input.FilterText, input.Name, input.Description, input.Duration);
+            var items = await departmentRepository.GetListAsync(input.FilterText, input.Name,input.Description, input.Duration, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<DepartmentDto>
             {
@@ -35,7 +35,7 @@ namespace Pusula.Training.HealthCare.Departments
 
         public virtual async Task<DepartmentDto> GetAsync(Guid id)
         {
-            return ObjectMapper.Map<Department, DepartmentDto>(await departmentRepository.GetAsync(id));
+            return ObjectMapper.Map<DepartmentWithHospital, DepartmentDto>(await departmentRepository.GetAsync(id));
         }
 
         [Authorize(HealthCarePermissions.Departments.Delete)]
@@ -49,7 +49,10 @@ namespace Pusula.Training.HealthCare.Departments
         {
 
             var department = await departmentManager.CreateAsync(
-            input.Name
+            input.Name,
+            input.Description,
+            input.Duration,
+            input.HospitalNames 
             );
 
             return ObjectMapper.Map<Department, DepartmentDto>(department);
@@ -58,13 +61,17 @@ namespace Pusula.Training.HealthCare.Departments
         [Authorize(HealthCarePermissions.Departments.Edit)]
         public virtual async Task<DepartmentDto> UpdateAsync(Guid id, DepartmentUpdateDto input)
         {
-
-            var department = await departmentManager.UpdateAsync(
+            var department = await departmentRepository.GetAsync(id);
+            await departmentManager.UpdateAsync(
             id,
-            input.Name, input.ConcurrencyStamp
+            input.Name,
+            input.Description,
+            input.Duration,
+            input.HospitalNames,
+            input.ConcurrencyStamp
             );
 
-            return ObjectMapper.Map<Department, DepartmentDto>(department);
+            return ObjectMapper.Map<DepartmentWithHospital, DepartmentDto>(department);
         }
 
         [AllowAnonymous]
@@ -76,7 +83,7 @@ namespace Pusula.Training.HealthCare.Departments
                 throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             }
 
-            var items = await departmentRepository.GetListAsync(input.FilterText, input.Name);
+            var items = await departmentRepository.GetListAsync(input.FilterText, input.Name, input.Description, input.Duration);
 
             var memoryStream = new MemoryStream();
             await memoryStream.SaveAsAsync(ObjectMapper.Map<List<Department>, List<DepartmentExcelDto>>(items));
@@ -94,7 +101,7 @@ namespace Pusula.Training.HealthCare.Departments
         [Authorize(HealthCarePermissions.Departments.Delete)]
         public virtual async Task DeleteAllAsync(GetDepartmentsInput input)
         {
-            await departmentRepository.DeleteAllAsync(input.FilterText, input.Name);
+            await departmentRepository.DeleteAllAsync(input.FilterText, input.Name, input.Description, input.Duration);
         }
         public virtual async Task<DownloadTokenResultDto> GetDownloadTokenAsync()
         {
