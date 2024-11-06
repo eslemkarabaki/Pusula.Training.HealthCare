@@ -1,10 +1,11 @@
 using System;
+using Pusula.Training.HealthCare.Addresses;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.Patients;
 
-public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
+public class PatientDto : AuditedEntityDto<Guid>, IHasConcurrencyStamp
 {
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
@@ -22,6 +23,9 @@ public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
     public EnumMaritalStatus MaritalStatus { get; set; }
 
     public Guid CountryId { get; set; }
+    public string Country { get; set; } = null!;
+
+    public AddressDto Address { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;
 

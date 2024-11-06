@@ -25,12 +25,12 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Patient, PatientDto>();
         CreateMap<Patient, PatientExcelDto>();
         CreateMap<PatientDto, PatientUpdateDto>();
-        CreateMap<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>();
+        CreateMap<PatientWithAddressAndCountry, PatientDto>();
         CreateMap<Patient, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
 
         CreateMap<Address, AddressDto>();
-        CreateMap<AddressWithNavigationProperties, AddressWithNavigationPropertiesDto>();
+        CreateMap<AddressWithRelations, AddressDto>();
 
         CreateMap<Country, CountryDto>();
 
@@ -46,7 +46,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Department, DepartmentDto>();
         CreateMap<Department, DepartmentExcelDto>();
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
-        CreateMap<Department, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<Department, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
@@ -57,11 +58,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
-         
-         
+
 
         //Burası önemli
- 
-
     }
 }

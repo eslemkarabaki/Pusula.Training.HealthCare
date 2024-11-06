@@ -27,14 +27,8 @@ public class PatientsAppService(
 
     public virtual async Task<PatientDto> GetAsync(Guid id)
     {
-        var patient = await patientRepository.GetAsync(id);
-        return ObjectMapper.Map<Patient, PatientDto>(patient);
-    }
-
-    public virtual async Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
-    {
-        return ObjectMapper.Map<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>(
-            await patientRepository.GetWithNavigationPropertiesAsync(id));
+        var patient = await patientRepository.GetWithAddressAndCountryAsync(id);
+        return ObjectMapper.Map<PatientWithAddressAndCountry, PatientDto>(patient);
     }
 
     #endregion
@@ -59,23 +53,18 @@ public class PatientsAppService(
         };
     }
 
-    public virtual async Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
-        GetPatientsInput input)
+    public virtual async Task<PagedResultDto<PatientDto>> GetListWithAddressAndCountryAsync(GetPatientsInput input)
     {
         var totalCount = await patientRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName,
             input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId);
-        var items = await patientRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.FirstName,
-            input.LastName,
-            input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber,
-            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId, input.Sorting,
-            input.MaxResultCount, input.SkipCount);
+        var items = await patientRepository.GetListWithAddressAndCountryAsync(input.Sorting, input.MaxResultCount,
+            input.SkipCount);
 
-        return new PagedResultDto<PatientWithNavigationPropertiesDto>
+        return new PagedResultDto<PatientDto>
         {
             TotalCount = totalCount,
-            Items =
-                ObjectMapper.Map<List<PatientWithNavigationProperties>, List<PatientWithNavigationPropertiesDto>>(items)
+            Items = ObjectMapper.Map<List<PatientWithAddressAndCountry>, List<PatientDto>>(items)
         };
     }
 
