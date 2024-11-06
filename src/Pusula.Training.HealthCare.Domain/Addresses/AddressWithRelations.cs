@@ -11,5 +11,5 @@ public class AddressWithRelations : IHasCreationTime
     public virtual string City { get; set; } = null!;
     public virtual string District { get; set; } = null!;
     public virtual string AddressLine { get; set; } = null!;
-    public virtual DateTime CreationTime { get; }
+    public virtual DateTime CreationTime { get; set; }
 }

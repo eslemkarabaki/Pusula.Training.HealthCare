@@ -115,6 +115,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 LastName = patient.LastName,
                 MaritalStatus = patient.MaritalStatus,
                 MobilePhoneNumber = patient.MobilePhoneNumber,
+                CreationTime = patient.CreationTime,
                 Country = patient_country.Name,
                 CountryId = patient_country.Id,
                 Address = address != null
@@ -125,7 +126,8 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                         Country = address_country.Name,
                         City = city.Name,
                         District = district.Name,
-                        AddressLine = address.AddressLine
+                        AddressLine = address.AddressLine,
+                        CreationTime = address.CreationTime
                     }
                     : null
             };

@@ -23,5 +23,5 @@ public class PatientWithAddressAndCountry : IHasCreationTime
 
     public AddressWithRelations Address { get; set; }
 
-    public DateTime CreationTime { get; }
+    public DateTime CreationTime { get; set; }
 }
