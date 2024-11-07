@@ -7,6 +7,10 @@ using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Shared;
 using System;
+using Pusula.Training.HealthCare.Addresses;
+using Pusula.Training.HealthCare.Cities;
+using Pusula.Training.HealthCare.Countries;
+using Pusula.Training.HealthCare.Districts;
 
 namespace Pusula.Training.HealthCare;
 
@@ -21,7 +25,18 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Patient, PatientDto>();
         CreateMap<Patient, PatientExcelDto>();
         CreateMap<PatientDto, PatientUpdateDto>();
-        CreateMap<Patient, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
+        CreateMap<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>();
+        CreateMap<Patient, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
+
+        CreateMap<Address, AddressDto>();
+        CreateMap<AddressWithNavigationProperties, AddressWithNavigationPropertiesDto>();
+
+        CreateMap<Country, CountryDto>();
+
+        CreateMap<City, CityDto>();
+
+        CreateMap<District, DistrictDto>();
 
         CreateMap<Protocol, ProtocolDto>();
         CreateMap<Protocol, ProtocolExcelDto>();
@@ -31,6 +46,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Department, DepartmentDto>();
         CreateMap<Department, DepartmentExcelDto>();
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
+        CreateMap<Department, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
         CreateMap<Department, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<Hospital, HospitalDto>();

@@ -19,7 +19,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 public partial class Patients
 {
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
-    protected PageToolbar Toolbar { get; } = new PageToolbar();
+    protected PageToolbar Toolbar { get; } = new();
     protected bool ShowAdvancedFilters { get; set; }
     private IReadOnlyList<PatientDto> PatientList { get; set; }
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
@@ -55,21 +55,17 @@ public partial class Patients
             Sorting = CurrentSorting
         };
         PatientList = [];
-
-
     }
 
     protected override async Task OnInitializedAsync()
     {
         await SetPermissionsAsync();
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-
             await SetBreadcrumbItemsAsync();
             await SetToolbarItemsAsync();
             await InvokeAsync(StateHasChanged);
@@ -84,9 +80,10 @@ public partial class Patients
 
     protected virtual ValueTask SetToolbarItemsAsync()
     {
-        Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
+        // Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
 
-        Toolbar.AddButton(L["NewPatient"], OpenCreatePatientModalAsync, IconName.Add, requiredPolicyName: HealthCarePermissions.Patients.Create);
+        Toolbar.AddButton(L["NewPatient"], OpenCreatePatientModalAsync, IconName.Add,
+            requiredPolicyName: HealthCarePermissions.Patients.Create);
 
         return ValueTask.CompletedTask;
     }
@@ -96,11 +93,9 @@ public partial class Patients
         CanCreatePatient = await AuthorizationService
             .IsGrantedAsync(HealthCarePermissions.Patients.Create);
         CanEditPatient = await AuthorizationService
-                        .IsGrantedAsync(HealthCarePermissions.Patients.Edit);
+            .IsGrantedAsync(HealthCarePermissions.Patients.Edit);
         CanDeletePatient = await AuthorizationService
-                        .IsGrantedAsync(HealthCarePermissions.Patients.Delete);
-
-
+            .IsGrantedAsync(HealthCarePermissions.Patients.Delete);
     }
 
     private async Task GetPatientsAsync()
@@ -123,18 +118,18 @@ public partial class Patients
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task DownloadAsExcelAsync()
-    {
-        var token = (await PatientsAppService.GetDownloadTokenAsync()).Token;
-        var remoteService = await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("HealthCare") ?? await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
-        var culture = CultureInfo.CurrentUICulture.Name ?? CultureInfo.CurrentCulture.Name;
-        if (!culture.IsNullOrEmpty())
-        {
-            culture = "&culture=" + culture;
-        }
-        await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
-        NavigationManager.NavigateTo($"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/patients/as-excel-file?DownloadToken={token}&FilterText={HttpUtility.UrlEncode(Filter.FilterText)}{culture}&FirstName={HttpUtility.UrlEncode(Filter.FirstName)}&LastName={HttpUtility.UrlEncode(Filter.LastName)}&BirthDateMin={Filter.BirthDateMin?.ToString("O")}&BirthDateMax={Filter.BirthDateMax?.ToString("O")}&IdentityNumber={HttpUtility.UrlEncode(Filter.IdentityNumber)}&EmailAddress={HttpUtility.UrlEncode(Filter.EmailAddress)}&MobilePhoneNumber={HttpUtility.UrlEncode(Filter.MobilePhoneNumber)}&HomePhoneNumber={HttpUtility.UrlEncode(Filter.HomePhoneNumber)}&GenderMin={Filter.GenderMin}&GenderMax={Filter.GenderMax}", forceLoad: true);
-    }
+    // private async Task DownloadAsExcelAsync()
+    // {
+    //     var token = (await PatientsAppService.GetDownloadTokenAsync()).Token;
+    //     var remoteService = await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("HealthCare") ?? await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
+    //     var culture = CultureInfo.CurrentUICulture.Name ?? CultureInfo.CurrentCulture.Name;
+    //     if (!culture.IsNullOrEmpty())
+    //     {
+    //         culture = "&culture=" + culture;
+    //     }
+    //     await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
+    //     NavigationManager.NavigateTo($"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/patients/as-excel-file?DownloadToken={token}&FilterText={HttpUtility.UrlEncode(Filter.FilterText)}{culture}&FirstName={HttpUtility.UrlEncode(Filter.FirstName)}&LastName={HttpUtility.UrlEncode(Filter.LastName)}&BirthDateMin={Filter.BirthDateMin?.ToString("O")}&BirthDateMax={Filter.BirthDateMax?.ToString("O")}&IdentityNumber={HttpUtility.UrlEncode(Filter.IdentityNumber)}&EmailAddress={HttpUtility.UrlEncode(Filter.EmailAddress)}&MobilePhoneNumber={HttpUtility.UrlEncode(Filter.MobilePhoneNumber)}&HomePhoneNumber={HttpUtility.UrlEncode(Filter.HomePhoneNumber)}&GenderMin={Filter.GenderMin}&GenderMax={Filter.GenderMax}", forceLoad: true);
+    // }
 
     private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<PatientDto> e)
     {
@@ -151,9 +146,7 @@ public partial class Patients
     {
         NewPatient = new PatientCreateDto
         {
-            BirthDate = DateTime.Now,
-
-
+            BirthDate = DateTime.Now
         };
 
         SelectedCreateTab = "patient-create-tab";
@@ -167,9 +160,7 @@ public partial class Patients
     {
         NewPatient = new PatientCreateDto
         {
-            BirthDate = DateTime.Now,
-
-
+            BirthDate = DateTime.Now
         };
         await CreatePatientModal.Hide();
     }
@@ -242,51 +233,59 @@ public partial class Patients
         Filter.FirstName = firstName;
         await SearchAsync();
     }
+
     protected virtual async Task OnLastNameChangedAsync(string? lastName)
     {
         Filter.LastName = lastName;
         await SearchAsync();
     }
+
     protected virtual async Task OnBirthDateMinChangedAsync(DateTime? birthDateMin)
     {
         Filter.BirthDateMin = birthDateMin.HasValue ? birthDateMin.Value.Date : birthDateMin;
         await SearchAsync();
     }
+
     protected virtual async Task OnBirthDateMaxChangedAsync(DateTime? birthDateMax)
     {
         Filter.BirthDateMax = birthDateMax.HasValue ? birthDateMax.Value.Date.AddDays(1).AddSeconds(-1) : birthDateMax;
         await SearchAsync();
     }
+
     protected virtual async Task OnIdentityNumberChangedAsync(string? identityNumber)
     {
         Filter.IdentityNumber = identityNumber;
         await SearchAsync();
     }
+
     protected virtual async Task OnEmailAddressChangedAsync(string? emailAddress)
     {
         Filter.EmailAddress = emailAddress;
         await SearchAsync();
     }
+
     protected virtual async Task OnMobilePhoneNumberChangedAsync(string? mobilePhoneNumber)
     {
         Filter.MobilePhoneNumber = mobilePhoneNumber;
         await SearchAsync();
     }
+
     protected virtual async Task OnHomePhoneNumberChangedAsync(string? homePhoneNumber)
     {
         Filter.HomePhoneNumber = homePhoneNumber;
         await SearchAsync();
     }
-    protected virtual async Task OnGenderMinChangedAsync(int? genderMin)
-    {
-        Filter.GenderMin = genderMin;
-        await SearchAsync();
-    }
-    protected virtual async Task OnGenderMaxChangedAsync(int? genderMax)
-    {
-        Filter.GenderMax = genderMax;
-        await SearchAsync();
-    }
+
+    // protected virtual async Task OnGenderMinChangedAsync(int? genderMin)
+    // {
+    //     Filter.GenderMin = genderMin;
+    //     await SearchAsync();
+    // }
+    // protected virtual async Task OnGenderMaxChangedAsync(int? genderMax)
+    // {
+    //     Filter.GenderMax = genderMax;
+    //     await SearchAsync();
+    // }
     private Task SelectAllItems()
     {
         AllPatientsSelected = true;
@@ -314,7 +313,9 @@ public partial class Patients
 
     private async Task DeleteSelectedPatientsAsync()
     {
-        var message = AllPatientsSelected ? L["DeleteAllRecords"].Value : L["DeleteSelectedRecords", SelectedPatients.Count].Value;
+        var message = AllPatientsSelected
+            ? L["DeleteAllRecords"].Value
+            : L["DeleteSelectedRecords", SelectedPatients.Count].Value;
 
         if (!await UiMessageService.Confirm(message))
         {

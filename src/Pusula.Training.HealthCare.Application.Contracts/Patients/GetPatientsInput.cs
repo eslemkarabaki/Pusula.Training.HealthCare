@@ -15,10 +15,9 @@ public class GetPatientsInput : PagedAndSortedResultRequestDto
     public string? EmailAddress { get; set; }
     public string? MobilePhoneNumber { get; set; }
     public string? HomePhoneNumber { get; set; }
-    public int? GenderMin { get; set; }
-    public int? GenderMax { get; set; }
+    public EnumGender? Gender { get; set; }
+    public EnumBloodType? BloodType { get; set; }
+    public EnumMaritalStatus? MaritalStatus { get; set; }
 
-    public GetPatientsInput()
-    {
-    }
+    public Guid? CountryId { get; set; }
 }
