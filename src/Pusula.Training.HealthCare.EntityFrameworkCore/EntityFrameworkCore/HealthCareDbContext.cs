@@ -188,6 +188,7 @@ public class HealthCareDbContext :
                 b.HasOne<Patient>().WithOne().IsRequired().HasForeignKey<Address>(e => e.PatientId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
+            #endregion
 
             //builder.Entity<Department>(b =>
             //{
