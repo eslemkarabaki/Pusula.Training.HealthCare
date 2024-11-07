@@ -77,7 +77,7 @@ public class PatientsAppService(
     {
         var patient = await patientManager.CreateAsync(input.CountryId, input.FirstName, input.LastName,
             input.BirthDate, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber, input.Gender,
-            input.BloodType, input.MaritalStatus, input.HomePhoneNumber);
+            input.BloodType, input.MaritalStatus, input.DistrictId,input.Address,input.HomePhoneNumber);
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
 
@@ -92,7 +92,7 @@ public class PatientsAppService(
             id,
             input.CountryId, input.FirstName, input.LastName,
             input.BirthDate, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber, input.Gender,
-            input.BloodType, input.MaritalStatus, input.HomePhoneNumber, input.ConcurrencyStamp
+            input.BloodType, input.MaritalStatus,input.DistrictId,input.Address,input.HomePhoneNumber ,input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }

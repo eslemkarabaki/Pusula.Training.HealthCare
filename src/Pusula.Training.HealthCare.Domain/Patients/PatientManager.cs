@@ -1,19 +1,29 @@
 using JetBrains.Annotations;
 using System;
 using System.Threading.Tasks;
+using Pusula.Training.HealthCare.Addresses;
 using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Services;
 
 namespace Pusula.Training.HealthCare.Patients;
 
-public class PatientManager(IPatientRepository patientRepository) : DomainService
+public class PatientManager(IPatientRepository patientRepository, AddressManager addressManager) : DomainService
 {
-    public virtual async Task<Patient> CreateAsync(Guid countryId, string firstName, string lastName,
+    public virtual async Task<Patient> CreateAsync(
+        Guid countryId,
+        string firstName,
+        string lastName,
         DateTime birthDate,
         string identityNumber,
-        string emailAddress, string mobilePhoneNumber, EnumGender gender, EnumBloodType bloodType,
-        EnumMaritalStatus maritalStatus, string? homePhoneNumber = null)
+        string emailAddress,
+        string mobilePhoneNumber,
+        EnumGender gender,
+        EnumBloodType bloodType,
+        EnumMaritalStatus maritalStatus,
+        Guid districtId,
+        string address,
+        string? homePhoneNumber = null)
     {
         Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
         Check.NotNullOrWhiteSpace(firstName, nameof(firstName), PatientConsts.FirstNameMaxLength);
@@ -31,17 +41,25 @@ public class PatientManager(IPatientRepository patientRepository) : DomainServic
             GuidGenerator.Create(), countryId, firstName, lastName, birthDate, identityNumber, emailAddress,
             mobilePhoneNumber, gender, bloodType, maritalStatus, homePhoneNumber
         );
-
+        await addressManager.CreateAsync(patient.Id, districtId, address);
         return await patientRepository.InsertAsync(patient);
     }
 
     public virtual async Task<Patient> UpdateAsync(
         Guid id,
-        Guid countryId, string firstName, string lastName,
+        Guid countryId,
+        string firstName,
+        string lastName,
         DateTime birthDate,
         string identityNumber,
-        string emailAddress, string mobilePhoneNumber, EnumGender gender, EnumBloodType bloodType,
-        EnumMaritalStatus maritalStatus, string? homePhoneNumber = null,
+        string emailAddress,
+        string mobilePhoneNumber,
+        EnumGender gender,
+        EnumBloodType bloodType,
+        EnumMaritalStatus maritalStatus,
+        Guid districtId,
+        string address,
+        string? homePhoneNumber = null,
         [CanBeNull] string? concurrencyStamp = null
     )
     {
@@ -73,6 +91,8 @@ public class PatientManager(IPatientRepository patientRepository) : DomainServic
         patient.HomePhoneNumber = homePhoneNumber;
 
         patient.SetConcurrencyStampIfNotNull(concurrencyStamp);
+
+        await addressManager.UpdateAsync(patient.Id, districtId, address);
         return await patientRepository.UpdateAsync(patient);
     }
 }

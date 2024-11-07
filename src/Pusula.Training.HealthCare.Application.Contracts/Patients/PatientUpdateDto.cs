@@ -40,6 +40,11 @@ public class PatientUpdateDto : IHasConcurrencyStamp
 
     [Required] public EnumMaritalStatus MaritalStatus { get; set; }
 
+    [Required]
+    [StringLength(int.MaxValue)]
+    public string Address { get; set; } = null!;
+
+    public Guid DistrictId { get; set; }
     public Guid CountryId { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;
