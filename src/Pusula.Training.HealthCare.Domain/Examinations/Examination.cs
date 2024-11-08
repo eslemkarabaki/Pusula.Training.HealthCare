@@ -33,10 +33,9 @@ namespace Pusula.Training.HealthCare.Examinations
            
         }
 
-        public Examination(Guid id, Guid patientId, Guid doctorId, string? identityNumber, string? notes, DateTime visitDate, string? chronicDiseases, string? allergies, string? medications, string? diagnosis, string? prescription, string? imagingResults)
+        public Examination(Guid patientId, Guid doctorId, string? identityNumber, string? notes, DateTime visitDate, string? chronicDiseases, string? allergies, string? medications, string? diagnosis, string? prescription, string? imagingResults)
         {
 
-            Check.NotDefaultOrNull<Guid>(id, nameof(id));
             Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
             Check.NotDefaultOrNull<Guid>(doctorId, nameof(doctorId));
             Check.NotNull(identityNumber, nameof(identityNumber));
@@ -57,7 +56,6 @@ namespace Pusula.Training.HealthCare.Examinations
             Check.Length(imagingResults, nameof(imagingResults), ExaminationConsts.ImagingResultsNumberMaxLength, 0);
 
 
-            Id = id;
             PatientId = patientId;
             DoctorId = doctorId;
             Notes = notes;

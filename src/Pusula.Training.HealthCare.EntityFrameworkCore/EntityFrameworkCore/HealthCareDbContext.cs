@@ -10,7 +10,6 @@ using Pusula.Training.HealthCare.HospitalDepartments;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
-using Pusula.Training.HealthCare.PatientsVisitHistory;
 using Pusula.Training.HealthCare.Protocols;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -44,7 +43,6 @@ public class HealthCareDbContext :
     public DbSet<Hospital> Hospitals { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
-    public DbSet<Examination> Examination { get; set; } = null!;
     public DbSet<Examination> Examination { get; set; } = null!;
 
 

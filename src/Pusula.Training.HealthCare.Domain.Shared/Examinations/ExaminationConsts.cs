@@ -16,7 +16,7 @@
         public const int MedicationsNumberMaxLength = 128;
         public const int DiagnosisNumberMaxLength = 128;
         public const int PrescriptionNumberMaxLength = 128;
-        public const int ImagingResultsNumberMaxLength = 1;
+        public const int ImagingResultsNumberMaxLength = 2;
 
     }
 }
