@@ -102,5 +102,25 @@ namespace Pusula.Training.HealthCare.Doctors
         {
             throw new NotImplementedException();
         }
+
+        public Task<long> GetCountAsync(string? filterText, string? firstName, string? lastName, int? departmentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Doctor>> GetListAsync(string? filterText, string? firstName, string? lastName, int? departmentId, string? sorting, int maxResultCount, int skipCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Doctor>> GetListAsync(string? filterText, string? firstName, string? lastName, Guid? titleId, Guid? departmentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteAllAsync(string? filterText, string? firstName, string? lastName, string? workingHours, int? titleId, int? departmentId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

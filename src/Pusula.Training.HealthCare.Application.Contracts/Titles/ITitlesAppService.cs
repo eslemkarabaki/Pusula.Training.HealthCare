@@ -11,12 +11,17 @@ namespace Pusula.Training.HealthCare.Titles
     {
         Task<PagedResultDto<TitleDto>> GetListAsync(GetTitlesInput input);
         Task<TitleDto> GetAsync(Guid id);
-        void DeleteAsync(Guid id);
+        Task DeleteAsync(Guid id);  // task!!
         Task<TitleDto> CreateAsync(TitleCreateDto input);
-        Task<TitleDto> UpdateAsync(TitleUpdateDto input);
+        Task<TitleDto> UpdateAsync(Guid id, TitleUpdateDto input);
         Task<IRemoteStreamContent> GetListAsExcelFileAsync(TitleExcelDownloadDto input);
         Task DeleteByIdsAsync(List<Guid> titleIds);
         Task DeleteAllAsync(GetTitlesInput input);
         Task<Shared.DownloadTokenResultDto> GetDownloadTokenAsync();
+        public interface ITitlesAppService : IApplicationService
+        {
+            Task DeleteAsync(Guid id); // Dönüş tipi Task olmalı
+        }
     }
+
 }
