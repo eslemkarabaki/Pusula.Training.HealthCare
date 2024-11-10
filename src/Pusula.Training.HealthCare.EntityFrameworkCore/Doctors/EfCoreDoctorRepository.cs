@@ -30,9 +30,13 @@ namespace Pusula.Training.HealthCare.Doctors
         {
             var query = await GetQueryableAsync();
 
+            // Apply filters to the query
             query = ApplyFilter(query, filterText, firstName, lastName, workingHours, titleId, departmentId, hospitalId);
 
+            // Select doctor IDs to delete
             var ids = query.Select(x => x.Id);
+
+            // Delete the selected doctors
             await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
         }
 
@@ -50,7 +54,11 @@ namespace Pusula.Training.HealthCare.Doctors
             CancellationToken cancellationToken = default)
         {
             var query = ApplyFilter((await GetQueryableAsync()), filterText, firstName, lastName, workingHours, titleId, departmentId, hospitalId);
+
+            // Apply sorting if provided
             query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? DoctorConsts.GetDefaultSorting(false) : sorting);
+
+            // Paginate the result set
             return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
         }
 
@@ -68,6 +76,7 @@ namespace Pusula.Training.HealthCare.Doctors
             return await query.LongCountAsync(GetCancellationToken(cancellationToken));
         }
 
+        // Helper method to apply filters on the query
         private IQueryable<Doctor> ApplyFilter(
             IQueryable<Doctor> query,
             string? filterText = null,
@@ -88,6 +97,60 @@ namespace Pusula.Training.HealthCare.Doctors
                 .WhereIf(hospitalId.HasValue, e => e.HospitalId == hospitalId.Value);
         }
 
+        // Implementing remaining not implemented methods
+        public async Task<long> GetCountAsync(string? filterText, string? firstName, string? lastName, int? departmentId)
+        {
+            var query = await GetDbSetAsync();
+            query = ApplyFilter(query, filterText, firstName, lastName, null, null, departmentId, null);
+            return await query.LongCountAsync();
+        }
+
+        private DbSet<Doctor> ApplyFilter(DbSet<Doctor> query, string? filterText, string? firstName, string? lastName, object value1, object value2, int? departmentId, object value3)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<Doctor>> GetListAsync(
+            string? filterText,
+            string? firstName,
+            string? lastName,
+            int? departmentId,
+            string? sorting,
+            int maxResultCount,
+            int skipCount)
+        {
+            var query = ApplyFilter(await GetDbSetAsync(), filterText, firstName, lastName, null, null, departmentId, null);
+            query = (DbSet<Doctor>)query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? DoctorConsts.GetDefaultSorting(false) : sorting);
+            return await query.PageBy(skipCount, maxResultCount).ToListAsync();
+        }
+
+        public async Task<List<Doctor>> GetListAsync(
+            string? filterText,
+            string? firstName,
+            string? lastName,
+            Guid? titleId,
+            Guid? departmentId)
+        {
+            var query = await GetDbSetAsync();
+            query = (DbSet<Doctor>)ApplyFilter(query, filterText, firstName, lastName, null, titleId, departmentId, null);
+            return await query.ToListAsync();
+        }
+
+        public async Task DeleteAllAsync(
+            string? filterText,
+            string? firstName,
+            string? lastName,
+            string? workingHours,
+            int? titleId,
+            int? departmentId)
+        {
+            var query = await GetDbSetAsync();
+            query = ApplyFilter(query, filterText, firstName, lastName, workingHours, titleId, departmentId, null);
+
+            var ids = query.Select(x => x.Id);
+            await DeleteManyAsync(ids);
+        }
+
         public Task DeleteAllAsync(string? filterText, string? firstName, string? lastName, string? workingHours, int? titleId, int? departmentId, int? hospitalId)
         {
             throw new NotImplementedException();
@@ -99,26 +162,6 @@ namespace Pusula.Training.HealthCare.Doctors
         }
 
         public Task<List<Doctor>> GetListAsync(string? filterText, string? firstName, string? lastName, string? workingHours, int? titleId, int? departmentId, int? hospitalId, string? sorting, int maxResultCount, int skipCount)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<long> GetCountAsync(string? filterText, string? firstName, string? lastName, int? departmentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Doctor>> GetListAsync(string? filterText, string? firstName, string? lastName, int? departmentId, string? sorting, int maxResultCount, int skipCount)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Doctor>> GetListAsync(string? filterText, string? firstName, string? lastName, Guid? titleId, Guid? departmentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteAllAsync(string? filterText, string? firstName, string? lastName, string? workingHours, int? titleId, int? departmentId)
         {
             throw new NotImplementedException();
         }
