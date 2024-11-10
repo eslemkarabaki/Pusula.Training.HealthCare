@@ -71,11 +71,11 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
-
-
+         
+         
 
         //Burası önemli
-
+ 
 
     }
 }
