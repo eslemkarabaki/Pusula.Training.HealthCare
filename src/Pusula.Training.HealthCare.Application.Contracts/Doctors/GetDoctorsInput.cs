@@ -11,9 +11,9 @@ namespace Pusula.Training.HealthCare.Doctors
 
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public int? TitleId { get; set; }
-        public int? DepartmentId { get; set; }
-        public int? HospitalId { get; set; }
+        public Guid? TitleId { get; set; }
+        public Guid? DepartmentId { get; set; }
+        public Guid? HospitalId { get; set; }
 
         public GetDoctorsInput()
         {

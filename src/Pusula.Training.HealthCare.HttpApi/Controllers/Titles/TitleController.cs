@@ -16,76 +16,76 @@ namespace Pusula.Training.HealthCare.Controllers.Titles
     [Area("app")]
     [ControllerName("Title")]
     [Route("api/app/titles")]
-    public class TitleController : HealthCareController, ITitlesAppService
+    public class TitleController : HealthCareController, ITitleAppService
     {
-        protected ITitlesAppService _titlesAppService;
+        protected ITitleAppService TitleAppService;
 
-        public TitleController(ITitlesAppService titlesAppService)
+        public TitleController(ITitleAppService titleAppService)
         {
-            _titlesAppService = titlesAppService;
+            TitleAppService = titleAppService;
         }
 
         [HttpGet]
         [Route("list")]
         public virtual Task<PagedResultDto<TitleDto>> GetListAsync(GetTitlesInput input)
         {
-            return _titlesAppService.GetListAsync(input);
+            return TitleAppService.GetListAsync(input);
         }
 
         [HttpGet]
         [Route("get/{id}")]
         public virtual Task<TitleDto> GetAsync(Guid id)
         {
-            return _titlesAppService.GetAsync(id);
+            return TitleAppService.GetAsync(id);
         }
 
         [HttpPost]
         [Route("create")]
         public virtual Task<TitleDto> CreateAsync(TitleCreateDto input)
         {
-            return _titlesAppService.CreateAsync(input);
+            return TitleAppService.CreateAsync(input);
         }
 
         [HttpPut]
         [Route("update/{id}")]
         public virtual Task<TitleDto> UpdateAsync(Guid id, TitleUpdateDto input)
         {
-            return _titlesAppService.UpdateAsync(id, input);
+            return TitleAppService.UpdateAsync(id, input);
         }
 
         [HttpDelete]
         [Route("delete/{id}")]
         public virtual Task DeleteAsync(Guid id)
         {
-            return _titlesAppService.DeleteAsync(id);
+            return TitleAppService.DeleteAsync(id);
         }
 
         [HttpGet]
         [Route("export/excel")]
         public virtual Task<IRemoteStreamContent> GetListAsExcelFileAsync(TitleExcelDownloadDto input)
         {
-            return _titlesAppService.GetListAsExcelFileAsync(input);
+            return TitleAppService.GetListAsExcelFileAsync(input);
         }
 
         [HttpGet]
         [Route("download/token")]
         public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync()
         {
-            return _titlesAppService.GetDownloadTokenAsync();
+            return TitleAppService.GetDownloadTokenAsync();
         }
 
         [HttpDelete]
         [Route("delete/multiple")]
         public virtual Task DeleteByIdsAsync(List<Guid> titleIds)
         {
-            return _titlesAppService.DeleteByIdsAsync(titleIds);
+            return TitleAppService.DeleteByIdsAsync(titleIds);
         }
 
         [HttpDelete]
         [Route("delete/all")]
         public virtual Task DeleteAllAsync(GetTitlesInput input)
         {
-            return _titlesAppService.DeleteAllAsync(input);
+            return TitleAppService.DeleteAllAsync(input);
         }
     }
 }

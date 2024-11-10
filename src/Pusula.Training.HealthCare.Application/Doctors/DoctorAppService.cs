@@ -13,25 +13,23 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Authorization;
 using Volo.Abp.Caching;
 using Volo.Abp.Content;
-using Volo.Abp.ObjectMapping;
-using Pusula.Training.HealthCare.DoctorWithDepartments;
 
 namespace Pusula.Training.HealthCare.Doctors
 {
     [RemoteService(IsEnabled = false)]
     [Authorize(HealthCarePermissions.Doctors.Default)]
-    public class DoctorsAppService : HealthCareAppService, IDoctorsAppService
+    public class DoctorAppService : HealthCareAppService, IDoctorAppService
     {
         private readonly IDoctorRepository _doctorRepository;
         private readonly DoctorManager _doctorManager;
         private readonly IDistributedCache<DoctorDownloadTokenCacheItem, string> _downloadTokenCache;
-        private readonly ILogger<DoctorsAppService> _logger;
+        private readonly ILogger<DoctorAppService> _logger;
 
-        public DoctorsAppService(
+        public DoctorAppService(
             IDoctorRepository doctorRepository,
             DoctorManager doctorManager,
             IDistributedCache<DoctorDownloadTokenCacheItem, string> downloadTokenCache,
-            ILogger<DoctorsAppService> logger) // Logger dependency injection
+            ILogger<DoctorAppService> logger) // Logger dependency injection
         {
             _doctorRepository = doctorRepository ?? throw new ArgumentNullException(nameof(doctorRepository));
             _doctorManager = doctorManager ?? throw new ArgumentNullException(nameof(doctorManager));
@@ -41,8 +39,8 @@ namespace Pusula.Training.HealthCare.Doctors
 
         public virtual async Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input)
         {
-            var totalCount = await _doctorRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName, input.DepartmentId);
-            var items = await _doctorRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName, input.DepartmentId, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await _doctorRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId);
+            var items = await _doctorRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<DoctorDto>
             {
@@ -62,11 +60,13 @@ namespace Pusula.Training.HealthCare.Doctors
         {
             await _doctorRepository.DeleteAsync(id);
         }
+        
         public async Task<DoctorDto> GetDoctorAsync(Guid id)
         {
             var doctor = await _doctorRepository.GetAsync(id);
             return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
         }
+        
         [Authorize(HealthCarePermissions.Doctors.Create)]
         public virtual async Task<DoctorDto> CreateAsync(DoctorCreateDto input)
         {
@@ -74,8 +74,8 @@ namespace Pusula.Training.HealthCare.Doctors
                 input.FirstName,
                 input.LastName,
                 input.WorkingHours,
-                input.DepartmentId,
                 input.TitleId,
+                input.DepartmentId,
                 input.HospitalId
             );
 
@@ -85,10 +85,8 @@ namespace Pusula.Training.HealthCare.Doctors
         [Authorize(HealthCarePermissions.Doctors.Edit)]
         public virtual async Task<DoctorDto> UpdateAsync(Guid id, DoctorUpdateDto input)
         {
-            await _doctorManager.UpdateAsync(id, input.FirstName, input.LastName, input.WorkingHours, input.DepartmentId, input.TitleId, input.HospitalId, input.ConcurrencyStamp);
-
-            var updatedDoctor = await _doctorRepository.GetAsync(id);
-            return ObjectMapper.Map<Doctor, DoctorDto>(updatedDoctor);
+           var doctor= await _doctorManager.UpdateAsync(id, input.FirstName, input.LastName, input.WorkingHours, input.DepartmentId, input.TitleId, input.HospitalId, input.ConcurrencyStamp);
+            return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
         }
 
         public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(DoctorExcelDownloadDto input)
@@ -99,7 +97,7 @@ namespace Pusula.Training.HealthCare.Doctors
                 throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             }
 
-            var items = await _doctorRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName, input.TitleId, input.DepartmentId);
+            var items = await _doctorRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId);
 
             var memoryStream = new MemoryStream();
             await memoryStream.SaveAsAsync(ObjectMapper.Map<List<Doctor>, List<DoctorExcelDto>>(items));
