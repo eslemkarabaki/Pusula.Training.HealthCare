@@ -18,11 +18,13 @@ using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.Appointments;
-using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.HospitalDepartments;
+using Pusula.Training.HealthCare.Districts;
+using Pusula.Training.HealthCare.Doctors;
+using Pusula.Training.HealthCare.DoctorWithDepartments;
+using Pusula.Training.HealthCare.Titles;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -62,10 +64,15 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Appointment, EfCoreAppointmentRepository>();
             options.AddRepository<Hospital, EfCoreHospitalRepository>();
             options.AddRepository<Notification, EfCoreNotificationRepository>();
+            options.AddRepository<Hospital, EfCoreHospitalRepository>();
+            options.AddRepository<Notification, EfCoreNotificationRepository>();
             options.AddRepository<Country, EfCoreCountryRepository>();
             options.AddRepository<City, EfCoreCityRepository>();
             options.AddRepository<District, EfCoreDistrictRepository>();
             options.AddRepository<Address, EfCoreAddressRepository>();
+            options.AddRepository<Doctor, EfCoreDoctorRepository>();
+            options.AddRepository<Title, EfCoreTitleRepository>();
+
         });
 
         Configure<AbpDbContextOptions>(options =>

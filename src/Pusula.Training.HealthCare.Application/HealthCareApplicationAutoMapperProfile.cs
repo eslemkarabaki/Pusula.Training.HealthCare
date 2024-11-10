@@ -11,7 +11,9 @@ using System;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
+using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Districts;
+using Pusula.Training.HealthCare.Titles;
 
 namespace Pusula.Training.HealthCare;
 
@@ -47,6 +49,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Department, DepartmentDto>();
         CreateMap<Department, DepartmentExcelDto>();
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
+        CreateMap<Department, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
         CreateMap<Department, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<Appointment, AppointmentDto>();
@@ -59,14 +63,24 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<HospitalWithDepartment, HospitalDto>();
         CreateMap<Hospital, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
+        CreateMap<Doctor, DoctorDto>();
+        CreateMap<Doctor, DoctorExcelDto>();
+        CreateMap<DoctorDto, DoctorUpdateDto>();
+        CreateMap<Doctor, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
+       
+        CreateMap<Title, TitleDto>();
+        CreateMap<Title, TitleExcelDto>();
+        CreateMap<TitleDto, TitleUpdateDto>();
+        CreateMap<Title, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
-         
-         
+
+
 
         //Burası önemli
- 
+
 
     }
 }

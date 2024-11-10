@@ -1,11 +1,14 @@
 ﻿using JetBrains.Annotations;
 using System;
+using System.ComponentModel.DataAnnotations;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities;
 namespace Pusula.Training.HealthCare.HospitalDepartments
 {
     public class HospitalDepartment : Entity 
     {
+        [Key]
+        public int Id { get; set; }
         [NotNull]
         public Guid HospitalId { get; set; }
         [NotNull]
