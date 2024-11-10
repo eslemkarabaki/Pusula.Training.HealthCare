@@ -112,7 +112,9 @@ public class HealthCareDataSeederContributor(
     {
         IEnumerable<Address> addresses =
         [
-            new(guidGenerator.Create(), patients.ElementAt(0), districts.ElementAt(0), "Asya Sokak")
+            new(guidGenerator.Create(), patients.ElementAt(0), districts.ElementAt(0), "Asya Sokak"),
+            new(guidGenerator.Create(), patients.ElementAt(1), districts.ElementAt(4), "lorem"),
+            new(guidGenerator.Create(), patients.ElementAt(2), districts.ElementAt(5), "ipsum")
         ];
 
         await addressRepository.InsertManyAsync(addresses, true);
