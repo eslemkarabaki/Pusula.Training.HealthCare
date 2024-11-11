@@ -401,19 +401,19 @@ public partial class Patients
         await SearchAsync();
     }
 
-    protected virtual async Task OnGenderChangedAsync(EnumGender? gender)
+    protected virtual async Task OnGenderChangedAsync(EnumGender gender)
     {
         Filter.Gender = gender;
         await SearchAsync();
     }
 
-    protected virtual async Task OnBloodTypeChangedAsync(EnumBloodType? bloodType)
+    protected virtual async Task OnBloodTypeChangedAsync(EnumBloodType bloodType)
     {
         Filter.BloodType = bloodType;
         await SearchAsync();
     }
 
-    protected virtual async Task OnMaritalStatusChangedAsync(EnumMaritalStatus? maritalStatus)
+    protected virtual async Task OnMaritalStatusChangedAsync(EnumMaritalStatus maritalStatus)
     {
         Filter.MaritalStatus = maritalStatus;
         await SearchAsync();

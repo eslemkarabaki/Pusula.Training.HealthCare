@@ -35,9 +35,9 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        EnumGender? gender = null,
-        EnumBloodType? bloodType = null,
-        EnumMaritalStatus? maritalStatus = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
         Guid? countryId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
@@ -45,9 +45,9 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         CancellationToken cancellationToken = default)
     {
         return await ApplyFilter(await GetQueryableAsync(), filterText, firstName, lastName, birthDateMin, birthDateMax,
-                                 identityNumber,
-                                 emailAddress, mobilePhoneNumber, homePhoneNumber, gender, bloodType, maritalStatus,
-                                 countryId)
+                         identityNumber,
+                         emailAddress, mobilePhoneNumber, homePhoneNumber, gender, bloodType, maritalStatus,
+                         countryId)
                      .OrderBy(string.IsNullOrWhiteSpace(sorting) ? PatientConsts.GetDefaultSorting(false) : sorting)
                      .PageBy(skipCount, maxResultCount)
                      .ToListAsync(cancellationToken);
@@ -73,9 +73,9 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        EnumGender? gender = null,
-        EnumBloodType? bloodType = null,
-        EnumMaritalStatus? maritalStatus = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
         Guid? countryId = null,
         CancellationToken cancellationToken = default)
     {
@@ -152,16 +152,16 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        EnumGender? gender = null,
-        EnumBloodType? bloodType = null,
-        EnumMaritalStatus? maritalStatus = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
         Guid? countryId = null,
         CancellationToken cancellationToken = default)
     {
         var ids = ApplyFilter(await GetQueryableAsync(), filterText, firstName, lastName, birthDateMin, birthDateMax,
-                              identityNumber,
-                              emailAddress, mobilePhoneNumber, homePhoneNumber, gender, bloodType, maritalStatus,
-                              countryId)
+                identityNumber,
+                emailAddress, mobilePhoneNumber, homePhoneNumber, gender, bloodType, maritalStatus,
+                countryId)
             .Select(e => e.Id);
         await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
     }
@@ -181,16 +181,16 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        EnumGender? gender = null,
-        EnumBloodType? bloodType = null,
-        EnumMaritalStatus? maritalStatus = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
         Guid? countryId = null)
     {
         return query
                .WhereIf(!string.IsNullOrWhiteSpace(filterText),
-                        e => e.FirstName!.Contains(filterText!) || e.LastName!.Contains(filterText!) ||
-                            e.IdentityNumber!.Contains(filterText!) || e.EmailAddress!.Contains(filterText!) ||
-                            e.MobilePhoneNumber!.Contains(filterText!) || e.HomePhoneNumber!.Contains(filterText!))
+                   e => e.FirstName!.Contains(filterText!) || e.LastName!.Contains(filterText!) ||
+                       e.IdentityNumber!.Contains(filterText!) || e.EmailAddress!.Contains(filterText!) ||
+                       e.MobilePhoneNumber!.Contains(filterText!) || e.HomePhoneNumber!.Contains(filterText!))
                .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.FirstName.Contains(firstName!))
                .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.LastName.Contains(lastName!))
                .WhereIf(birthDateMin.HasValue, e => e.BirthDate >= birthDateMin!.Value)
@@ -198,12 +198,12 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                .WhereIf(!string.IsNullOrWhiteSpace(identityNumber), e => e.IdentityNumber.Contains(identityNumber!))
                .WhereIf(!string.IsNullOrWhiteSpace(emailAddress), e => e.EmailAddress.Contains(emailAddress!))
                .WhereIf(!string.IsNullOrWhiteSpace(mobilePhoneNumber),
-                        e => e.MobilePhoneNumber.Contains(mobilePhoneNumber!))
+                   e => e.MobilePhoneNumber.Contains(mobilePhoneNumber!))
                .WhereIf(!string.IsNullOrWhiteSpace(homePhoneNumber),
-                        e => e.HomePhoneNumber != null && e.HomePhoneNumber.Contains(homePhoneNumber!))
-               .WhereIf(gender.HasValue, e => e.Gender == gender!.Value)
-               .WhereIf(bloodType.HasValue, e => e.BloodType == bloodType!.Value)
-               .WhereIf(maritalStatus.HasValue, e => e.MaritalStatus == maritalStatus!.Value)
+                   e => e.HomePhoneNumber != null && e.HomePhoneNumber.Contains(homePhoneNumber!))
+               .WhereIf(gender != EnumGender.None, e => e.Gender == gender)
+               .WhereIf(bloodType != EnumBloodType.None, e => e.BloodType == bloodType)
+               .WhereIf(maritalStatus != EnumMaritalStatus.None, e => e.MaritalStatus == maritalStatus)
                .WhereIf(countryId.HasValue, e => e.CountryId == countryId!.Value);
     }
 

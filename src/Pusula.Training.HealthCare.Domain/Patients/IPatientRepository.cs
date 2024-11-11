@@ -23,9 +23,9 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        EnumGender? gender = null,
-        EnumBloodType? bloodType = null,
-        EnumMaritalStatus? maritalStatus = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
         Guid? countryId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
@@ -50,9 +50,9 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        EnumGender? gender = null,
-        EnumBloodType? bloodType = null,
-        EnumMaritalStatus? maritalStatus = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
         Guid? countryId = null,
         CancellationToken cancellationToken = default);
 
@@ -66,9 +66,9 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        EnumGender? gender = null,
-        EnumBloodType? bloodType = null,
-        EnumMaritalStatus? maritalStatus = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
         Guid? countryId = null,
         CancellationToken cancellationToken = default);
 }

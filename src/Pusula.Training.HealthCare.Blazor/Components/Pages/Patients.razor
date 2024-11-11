@@ -3,22 +3,11 @@
 @attribute [Authorize(HealthCarePermissions.Patients.Default)]
 @using Pusula.Training.HealthCare.Patients
 @using Pusula.Training.HealthCare.Localization
-@using Pusula.Training.HealthCare.Shared
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.Extensions.Localization
-@using Microsoft.AspNetCore.Components.Web
-@using Blazorise
-@using Blazorise.Components
-@using Blazorise.DataGrid
-@using Volo.Abp.BlazoriseUI
-@using Volo.Abp.BlazoriseUI.Components
-@using Volo.Abp.ObjectMapping
 @using Volo.Abp.AspNetCore.Components.Messages
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
 
 @using Pusula.Training.HealthCare.Permissions
 @using Volo.Abp.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Components
 @using Pusula.Training.HealthCare.Cities
 @using Pusula.Training.HealthCare.Countries
 @using Pusula.Training.HealthCare.Districts
@@ -124,25 +113,37 @@
                 <Column ColumnSize="ColumnSize.Is3">
                     <Field>
                         <FieldLabel>@L["Gender"]</FieldLabel>
-                        <NumericEdit TValue="EnumGender?"
-                                     Value="@Filter.Gender"
-                                     ValueChanged="@OnGenderChangedAsync"/>
+                        <Select TValue="EnumGender" SelectedValue="@Filter.Gender" SelectedValueChanged="@OnGenderChangedAsync">
+                            <SelectItem Value="EnumGender.None">@L["EnumGender:None"]</SelectItem>
+                            <SelectItem Value="EnumGender.Male">@L["EnumGender:Male"]</SelectItem>
+                            <SelectItem Value="EnumGender.Female">@L["EnumGender:Female"]</SelectItem>
+                        </Select>
                     </Field>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is3">
                     <Field>
                         <FieldLabel>@L["BloodType"]</FieldLabel>
-                        <NumericEdit TValue="EnumBloodType?"
-                                     Value="@Filter.BloodType"
-                                     ValueChanged="@OnBloodTypeChangedAsync"/>
+                        <Select TValue="EnumBloodType" SelectedValue="@Filter.BloodType" SelectedValueChanged="@OnBloodTypeChangedAsync">
+                            <SelectItem Value="EnumBloodType.None">@L["BloodType:None"]</SelectItem>
+                            <SelectItem Value="EnumBloodType.ANegative">@L["BloodType:ANegative"]</SelectItem>
+                            <SelectItem Value="EnumBloodType.APositive">@L["BloodType:APositive"]</SelectItem>
+                            <SelectItem Value="EnumBloodType.BNegative">@L["BloodType:BNegative"]</SelectItem>
+                            <SelectItem Value="EnumBloodType.BPositive">@L["BloodType:BPositive"]</SelectItem>
+                            <SelectItem Value="EnumBloodType.AbNegative">@L["BloodType:AbNegative"]</SelectItem>
+                            <SelectItem Value="EnumBloodType.AbPositive">@L["BloodType:AbPositive"]</SelectItem>
+                            <SelectItem Value="EnumBloodType.ZeroNegative">@L["BloodType:ZeroNegative"]</SelectItem>
+                            <SelectItem Value="EnumBloodType.ZeroPositive">@L["BloodType:ZeroPositive"]</SelectItem>
+                        </Select>
                     </Field>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is3">
                     <Field>
                         <FieldLabel>@L["MaritalStatus"]</FieldLabel>
-                        <NumericEdit TValue="EnumMaritalStatus?"
-                                     Value="@Filter.MaritalStatus"
-                                     ValueChanged="@OnMaritalStatusChangedAsync"/>
+                        <Select TValue="EnumMaritalStatus" SelectedValue="@Filter.MaritalStatus" SelectedValueChanged="@OnMaritalStatusChangedAsync">
+                            <SelectItem Value="EnumMaritalStatus.None">@L["MaritalStatus:None"]</SelectItem>
+                            <SelectItem Value="EnumMaritalStatus.Single">@L["MaritalStatus:Single"]</SelectItem>
+                            <SelectItem Value="EnumMaritalStatus.Married">@L["MaritalStatus:Married"]</SelectItem>
+                        </Select>
                     </Field>
                 </Column>
             </Row>

@@ -23,7 +23,7 @@ public class PatientsAppService(
     IDistributedCache<PatientDownloadTokenCacheItem, string> downloadTokenCache,
     IDistributedEventBus distributedEventBus) : HealthCareAppService, IPatientsAppService
 {
-    #region Get
+#region Get
 
     public virtual async Task<PatientDto> GetAsync(Guid id)
     {
@@ -31,9 +31,9 @@ public class PatientsAppService(
         return ObjectMapper.Map<PatientWithAddressAndCountry, PatientDto>(patient);
     }
 
-    #endregion
+#endregion
 
-    #region GetList
+#region GetList
 
     public virtual async Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input)
     {
@@ -68,22 +68,22 @@ public class PatientsAppService(
         };
     }
 
-    #endregion
+#endregion
 
-    #region Create
+#region Create
 
     [Authorize(HealthCarePermissions.Patients.Create)]
     public virtual async Task<PatientDto> CreateAsync(PatientCreateDto input)
     {
         var patient = await patientManager.CreateAsync(input.CountryId, input.FirstName, input.LastName,
             input.BirthDate, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber, input.Gender,
-            input.BloodType, input.MaritalStatus, input.DistrictId,input.Address,input.HomePhoneNumber);
+            input.BloodType, input.MaritalStatus, input.DistrictId, input.Address, input.HomePhoneNumber);
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
 
-    #endregion
+#endregion
 
-    #region Update
+#region Update
 
     [Authorize(HealthCarePermissions.Patients.Edit)]
     public virtual async Task<PatientDto> UpdateAsync(Guid id, PatientUpdateDto input)
@@ -92,14 +92,15 @@ public class PatientsAppService(
             id,
             input.CountryId, input.FirstName, input.LastName,
             input.BirthDate, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber, input.Gender,
-            input.BloodType, input.MaritalStatus,input.DistrictId,input.Address,input.HomePhoneNumber ,input.ConcurrencyStamp
+            input.BloodType, input.MaritalStatus, input.DistrictId, input.Address, input.HomePhoneNumber,
+            input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
 
-    #endregion
+#endregion
 
-    #region Delete
+#region Delete
 
     [Authorize(HealthCarePermissions.Patients.Delete)]
     public virtual async Task DeleteAsync(Guid id)
@@ -121,9 +122,9 @@ public class PatientsAppService(
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId);
     }
 
-    #endregion
+#endregion
 
-    #region Excel
+#region Excel
 
     [AllowAnonymous]
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(PatientExcelDownloadDto input)
@@ -165,5 +166,5 @@ public class PatientsAppService(
         };
     }
 
-    #endregion
+#endregion
 }
