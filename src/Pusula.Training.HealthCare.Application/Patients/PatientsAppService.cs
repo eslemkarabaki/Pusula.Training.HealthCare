@@ -58,7 +58,11 @@ public class PatientsAppService(
         var totalCount = await patientRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName,
             input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId);
-        var items = await patientRepository.GetListWithAddressAndCountryAsync(input.Sorting, input.MaxResultCount,
+        var items = await patientRepository.GetListWithAddressAndCountryAsync(input.FilterText, input.FirstName,
+            input.LastName,
+            input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber,
+            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId, input.Sorting,
+            input.MaxResultCount,
             input.SkipCount);
 
         return new PagedResultDto<PatientDto>

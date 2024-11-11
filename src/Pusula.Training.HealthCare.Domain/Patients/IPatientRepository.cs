@@ -34,6 +34,19 @@ public interface IPatientRepository : IRepository<Patient, Guid>
     );
 
     Task<List<PatientWithAddressAndCountry>> GetListWithAddressAndCountryAsync(
+        string? filterText = null,
+        string? firstName = null,
+        string? lastName = null,
+        DateTime? birthDateMin = null,
+        DateTime? birthDateMax = null,
+        string? identityNumber = null,
+        string? emailAddress = null,
+        string? mobilePhoneNumber = null,
+        string? homePhoneNumber = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
+        Guid? countryId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
