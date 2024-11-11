@@ -35,7 +35,7 @@ namespace Pusula.Training.HealthCare.Departments
 
         public virtual async Task<DepartmentDto> GetAsync(Guid id)
         {
-            return ObjectMapper.Map<DepartmentWithHospital, DepartmentDto>(await departmentRepository.GetAsync(id));
+            return ObjectMapper.Map<Department, DepartmentDto>(await departmentRepository.GetAsync(id));
         }
 
         [Authorize(HealthCarePermissions.Departments.Delete)]
@@ -51,8 +51,7 @@ namespace Pusula.Training.HealthCare.Departments
             var department = await departmentManager.CreateAsync(
             input.Name,
             input.Description,
-            input.Duration,
-            input.HospitalNames 
+            input.Duration  
             );
 
             return ObjectMapper.Map<Department, DepartmentDto>(department);
@@ -66,12 +65,11 @@ namespace Pusula.Training.HealthCare.Departments
             id,
             input.Name,
             input.Description,
-            input.Duration,
-            input.HospitalNames,
+            input.Duration, 
             input.ConcurrencyStamp
             );
 
-            return ObjectMapper.Map<DepartmentWithHospital, DepartmentDto>(department);
+            return ObjectMapper.Map<Department, DepartmentDto>(department);
         }
 
         [AllowAnonymous]

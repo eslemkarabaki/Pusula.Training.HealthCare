@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
 using Pusula.Training.HealthCare.Hospitals;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Pusula.Training.HealthCare.Departments;
@@ -13,8 +13,7 @@ public class DepartmentManager(IDepartmentRepository departmentRepository, IHosp
     public virtual async Task<Department> CreateAsync(
     string name,
     string description,
-    int duration,
-    [CanBeNull] string[] departmentNames
+    int duration 
     )
     {
         Check.NotNullOrWhiteSpace(name, nameof(name));
@@ -30,8 +29,6 @@ public class DepartmentManager(IDepartmentRepository departmentRepository, IHosp
          duration
          );
 
-        await SetHospitalsAsync(department, departmentNames);
-
         return await departmentRepository.InsertAsync(department);
     }
 
@@ -39,8 +36,7 @@ public class DepartmentManager(IDepartmentRepository departmentRepository, IHosp
         Guid id,
         string name,
         [CanBeNull] string? description = null,
-        [CanBeNull] int? duration = null,
-        [CanBeNull] string[]? departmentNames = null,
+        [CanBeNull] int? duration = null, 
         [CanBeNull] string? concurrencyStamp = null)
     {
         Check.NotNullOrWhiteSpace(name, nameof(name));
@@ -55,37 +51,8 @@ public class DepartmentManager(IDepartmentRepository departmentRepository, IHosp
 
         department.Duration = duration ?? department.Duration;
         Check.Range(department.Duration, nameof(duration), 1, DepartmentConsts.DurationMaxValue);
-
-        await SetHospitalsAsync(department, departmentNames);
-
+         
         return await departmentRepository.UpdateAsync(department);
-    }
-
-    private async Task SetHospitalsAsync(Department department, [CanBeNull] string[] hospitalNames)
-    {
-        if (hospitalNames == null || !hospitalNames.Any())
-        {
-            department.RemoveAllHospitals();
-            return;
-        }
-
-        var query = (await hospitalRepository.GetQueryableAsync())
-            .Where(h =>hospitalNames.Contains(h.Name))
-            .Select(d => d.Id)
-            .Distinct(); ;
-
-        var hospitalsIds = await AsyncExecuter.ToListAsync(query);
-
-        if (!hospitalsIds.Any())
-            return;
-
-        department.RemoveAllHospitalsExceptGivenIds(hospitalsIds);
-
-        foreach (var hospitalId in hospitalsIds)
-        {
-            department.AddHospital(hospitalId);
-        }
-
-
-    }
+    } 
+     
 }
