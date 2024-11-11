@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.HospitalDepartments;
 using Pusula.Training.HealthCare.Hospitals;
@@ -59,6 +60,11 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
         CreateMap<Department, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<Department, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<Appointment, AppointmentDto>();
+        CreateMap<AppointmentDto, AppointmentUpdateDto>();
+        CreateMap<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>();
 
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
@@ -82,5 +88,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 
 
         //Burası önemli
+
+
     }
 }

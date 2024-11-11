@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
@@ -10,6 +11,7 @@ using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
+using System.Numerics;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -212,6 +214,23 @@ public class HealthCareDbContext :
                  .HasMaxLength(ProtocolConsts.TypeMaxLength);
                 b.Property(x => x.StartTime).HasColumnName(nameof(Protocol.StartTime));
                 b.Property(x => x.EndTime).HasColumnName(nameof(Protocol.EndTime));
+                b.HasOne<Patient>().WithMany().IsRequired().HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne<Department>().WithMany().IsRequired().HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<Appointment>(b =>
+            {
+                b.ToTable(HealthCareConsts.DbTablePrefix + "Appointments", HealthCareConsts.DbSchema);
+                b.ConfigureByConvention();
+                b.Property(x => x.AppointmentDate).HasColumnName(nameof(Appointment.AppointmentDate)).IsRequired();
+                b.Property(x => x.Status).HasColumnName(nameof(Appointment.Status));
+                b.Property(x => x.Notes).HasColumnName(nameof(Appointment.Notes));
+                
+                b.HasOne<Hospital>().WithMany().IsRequired().HasForeignKey(x => x.HospitalId).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne<Department>().WithMany().IsRequired().HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne<Doctor>().WithMany().IsRequired().HasForeignKey(x => x.DoctorId).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne<Patient>().WithMany().IsRequired().HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.NoAction);
+                
                 b.HasOne<Patient>().WithMany().IsRequired().HasForeignKey(x => x.PatientId)
                  .OnDelete(DeleteBehavior.NoAction);
                 b.HasOne<Department>().WithMany().IsRequired().HasForeignKey(x => x.DepartmentId)

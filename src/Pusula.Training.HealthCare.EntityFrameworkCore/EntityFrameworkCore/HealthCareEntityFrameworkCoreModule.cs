@@ -61,6 +61,9 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Patient, EfCorePatientRepository>();
             options.AddRepository<Protocol, EfCoreProtocolRepository>();
             options.AddRepository<Department, EfCoreDepartmentRepository>();
+            options.AddRepository<Appointment, EfCoreAppointmentRepository>();
+            options.AddRepository<Hospital, EfCoreHospitalRepository>();
+            options.AddRepository<Notification, EfCoreNotificationRepository>();
             options.AddRepository<Hospital, EfCoreHospitalRepository>();
             options.AddRepository<Notification, EfCoreNotificationRepository>();
             options.AddRepository<Country, EfCoreCountryRepository>();

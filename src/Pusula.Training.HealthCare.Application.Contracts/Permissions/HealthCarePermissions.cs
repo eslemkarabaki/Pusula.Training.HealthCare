@@ -61,6 +61,15 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class Appointments
+    {
+        public const string Default = GroupName + ".Appointments";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }    
+    
     public static class Hospitals
     {
         public const string Default = GroupName + ".Hospitals";
