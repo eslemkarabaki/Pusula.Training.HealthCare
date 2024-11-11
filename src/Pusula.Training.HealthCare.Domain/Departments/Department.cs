@@ -44,35 +44,4 @@ public class Department : FullAuditedAggregateRoot<Guid>
         HospitalDepartments = new List<HospitalDepartment>();
     }
 
-    public void AddHospital(Guid hospitalId)
-    {
-        Check.NotNull(hospitalId, nameof(hospitalId));
-
-        if (IsInHospital(hospitalId))
-            return;
-
-        HospitalDepartments.Add(new HospitalDepartment(hospitalId, Id, true));
-    }
-
-    public void RemoveHospital(Guid hospitalId)
-    {
-        Check.NotNull(hospitalId, nameof(hospitalId));
-
-        if (!IsInHospital(hospitalId))
-            return;
-
-        HospitalDepartments.RemoveAll(hd => hd.HospitalId == hospitalId);
-    }
-
-    public void RemoveAllHospitals() => HospitalDepartments.RemoveAll(hd => hd.DepartmentId == Id);
-
-    public void RemoveAllHospitalsExceptGivenIds(List<Guid> hospitalIds)
-    {
-        Check.NotNull(hospitalIds, nameof(hospitalIds));
-
-        HospitalDepartments.RemoveAll(hd => !hospitalIds.Contains(hd.HospitalId));
-    }
-
-    private bool IsInHospital(Guid hospitalId) => HospitalDepartments.Any(hd => hd.HospitalId == hospitalId);
-
 }
