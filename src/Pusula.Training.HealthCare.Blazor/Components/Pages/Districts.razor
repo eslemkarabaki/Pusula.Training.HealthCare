@@ -1,0 +1,283 @@
+@page "/districts"
+
+@attribute [Authorize(HealthCarePermissions.Districts.Default)]
+@using Pusula.Training.HealthCare.Cities
+@using Pusula.Training.HealthCare.Districts
+@using Pusula.Training.HealthCare.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+
+@using Pusula.Training.HealthCare.Permissions
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Http.Client
+@inherits HealthCareComponentBase
+@inject ICityAppService CityAppService
+@inject IDistrictAppService DistrictAppService
+
+@inject IUiMessageService UiMessageService
+@inject AbpBlazorMessageLocalizerHelper<HealthCareResource> LH
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+
+@* ************************* PAGE HEADER ************************* *@
+<PageHeader Title="@L["Districts"]" BreadcrumbItems="BreadcrumbItems" Toolbar="Toolbar"/>
+
+@* ************************* SEARCH ************************* *@
+<Card>
+    <CardBody>
+        <Form id="DistrictSearchForm" class="mb-3">
+            <Addons>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit @bind-Text="@Filter.FilterText"
+                              Autofocus="true"
+                              Placeholder="@L["Search"]">
+                    </TextEdit>
+                </Addon>
+                <Addon AddonType="AddonType.End">
+                    <SubmitButton Form="DistrictSearchForm" Clicked="GetDistrictsAsync">
+                        <Icon Name="IconName.Search" Class="me-1"></Icon>@L["Search"]
+                    </SubmitButton>
+                </Addon>
+            </Addons>
+        </Form>
+
+        <Row Class="mt-3 mb-3">
+            <div class="col-md-12">
+                <a href="javascript:;" class="text-decoration-none" @onclick="() => ShowAdvancedFilters = !ShowAdvancedFilters">@L["SeeAdvancedFilters"]</a>
+            </div>
+        </Row>
+
+        <div style="display: @(!ShowAdvancedFilters ? "none" : "block")">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Field>
+                        <FieldLabel>@L["Name"]</FieldLabel>
+                        <TextEdit Text="@Filter.Name" TextChanged="@OnNameChangedAsync"/>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Field>
+                        <FieldLabel>@L["City"]</FieldLabel>
+                        <Select TValue="Guid?" SelectedValue="@Filter.CityId" SelectedValueChanged="@OnCityIdChangedAsync">
+                            <SelectItem></SelectItem>
+                            @foreach (var city in CityList)
+                            {
+                                <SelectItem Value="@city.Id">@city.Name</SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                </Column>
+            </Row>
+        </div>
+    </CardBody>
+</Card>
+
+@* ************************* DATA GRID ************************* *@
+<Card>
+    <CardBody>
+        @if (SelectedDistricts.Any())
+        {
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <p class="lead mb-0">
+                    @if (AllDistrictsSelected)
+                    {
+                        @L["AllItemsAreSelected", TotalCount]
+                    }
+                    else
+                    {
+                        if (SelectedDistricts.Count > 1)
+                        {
+                            @L["NumberOfItemsOnThisPageAreSelected", SelectedDistricts.Count]
+                        }
+                        else
+                        {
+                            @L["OneItemOnThisPageIsSelected"]
+                        }
+                    }
+                </p>
+
+                <div class="d-flex align-items-center gap-1">
+                    @if (AllDistrictsSelected)
+                    {
+                        <Button Clicked="ClearSelection" Size="Size.Small" Color="Color.Secondary" Outline>@L["ClearSelection"]</Button>
+                    }
+                    else
+                    {
+                        <Button Clicked="SelectAllItems" Size="Size.Small" Color="Color.Secondary" Outline>@L["SelectAllItems", TotalCount]</Button>
+                    }
+
+                    <Button Color="Color.Danger" Size="Size.Small" Clicked="DeleteSelectedDistrictsAsync">
+                        <Icon Name="@IconName.Delete"/> @L["Delete"]
+                    </Button>
+                </div>
+            </div>
+
+            <hr class="my-1 mx-0"/>
+        }
+        <DataGrid TItem="DistrictDto"
+                  Data="DistrictList"
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  SelectedRows="SelectedDistricts"
+                  RowSelectable="@((args) => CanDeleteDistrict)"
+                  SelectedRowsChanged="SelectedDistrictRowsChanged"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  Responsive="true"
+                  PageSize="PageSize"
+                  Groupable="@(!Filter.CityId.HasValue)"
+                  GroupBy="@(e => e.City)">
+            <LoadingTemplate>
+                <Row Class="w-100 align-items-center" Style="height: 150px;">
+                    <Column>
+                        <RadarSpinner/>
+                    </Column>
+                </Row>
+            </LoadingTemplate>
+            <EmptyTemplate>
+                <Row Class="w-100 align-items-center" Style="height: 150px;">
+                    <Column>
+                        <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">@L["NoDataAvailable"]</Heading>
+                    </Column>
+                </Row>
+            </EmptyTemplate>
+            <DataGridColumns>
+
+                @if (CanDeleteDistrict && DistrictList.Any())
+                {
+                    <DataGridMultiSelectColumn TItem="DistrictDto" DisplayOrder="-1" Width="30px"></DataGridMultiSelectColumn>
+                }
+
+                <DataGridEntityActionsColumn TItem="DistrictDto" @ref="@EntityActionsColumn">
+                    <DisplayTemplate>
+                        <EntityActions TItem="DistrictDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="DistrictDto"
+                                          Visible="@CanEditDistrict"
+                                          Clicked="async () => await OpenEditDistrictModalAsync(context)"
+                                          Text="@L["Edit"]">
+                            </EntityAction>
+                            <EntityAction TItem="DistrictDto"
+                                          Visible="@CanDeleteDistrict"
+                                          Clicked="async () => await DeleteDistrictAsync(context)"
+                                          ConfirmationMessage="@(() => L["DeleteConfirmationMessage"])"
+                                          Text="@L["Delete"]">
+                            </EntityAction>
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+
+                <DataGridColumn TItem="DistrictDto"
+                                Field="Name"
+                                Caption="@L["Name"]">
+                </DataGridColumn>
+
+            </DataGridColumns>
+
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@* ************************* CREATE MODAL ************************* *@
+<Modal @ref="CreateDistrictModal" Closing="@CreateDistrictModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Size="ModalSize.Large" Centered>
+        <Form id="CreateDistrictForm">
+            <ModalHeader>
+                <ModalTitle>@L["NewDistrict"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateDistrictModalAsync"/>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@NewDistrictValidations"
+                             Mode="ValidationMode.Auto"
+                             Model="@NewDistrict"
+                             ValidateOnLoad="false">
+                    <div class="row gy-1 gx-3">
+
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>@L["Name"] *</FieldLabel>
+                                <TextEdit @bind-Text="@NewDistrict.Name" MaxLength="DistrictConsts.NameMaxLength">
+                                    <Feedback>
+                                        <ValidationError/>
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+
+                        <Field ColumnSize="ColumnSize.Is6">
+                            <FieldLabel>@L["Country"] *</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@NewDistrict.CityId">
+                                <SelectItem></SelectItem>
+                                @foreach (var city in CityList)
+                                {
+                                    <SelectItem Value="@city.Id">@city.Name</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+
+                    </div>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateDistrictModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateDistrictForm" Clicked="CreateDistrictAsync"/>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@* ************************* EDIT MODAL ************************* *@
+<Modal @ref="EditDistrictModal" Closing="@EditDistrictModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered Size="ModalSize.Large">
+        <Form id="EditDistrictForm">
+            <ModalHeader>
+                <ModalTitle>@L["UpdateDistrict"]</ModalTitle>
+                <CloseButton Clicked="CloseEditDistrictModalAsync"/>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditingDistrictValidations"
+                             Mode="ValidationMode.Auto"
+                             Model="@EditingDistrict"
+                             ValidateOnLoad="false">
+
+                    <div class="row gy-1 gx-3">
+
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>@L["Name"] *</FieldLabel>
+                                <TextEdit @bind-Text="@EditingDistrict.Name" MaxLength="DistrictConsts.NameMaxLength">
+                                    <Feedback>
+                                        <ValidationError/>
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+
+                        <Field ColumnSize="ColumnSize.Is6">
+                            <FieldLabel>@L["City"] *</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@EditingDistrict.CityId">
+                                <SelectItem></SelectItem>
+                                @foreach (var city in CityList)
+                                {
+                                    <SelectItem Value="@city.Id">@city.Name</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+
+                    </div>
+
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditDistrictModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="EditDistrictForm" Clicked="UpdateDistrictAsync"/>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
