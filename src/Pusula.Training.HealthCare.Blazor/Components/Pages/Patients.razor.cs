@@ -5,8 +5,10 @@ using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Permissions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Districts;
@@ -73,10 +75,10 @@ public partial class Patients
 
     protected virtual ValueTask SetToolbarItemsAsync()
     {
-        // Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
+        Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
 
         Toolbar.AddButton(L["NewPatient"], OpenCreatePatientModalAsync, IconName.Add,
-                          requiredPolicyName: HealthCarePermissions.Patients.Create);
+            requiredPolicyName: HealthCarePermissions.Patients.Create);
 
         return ValueTask.CompletedTask;
     }
@@ -102,18 +104,18 @@ public partial class Patients
         await InvokeAsync(StateHasChanged);
     }
 
-    // private async Task DownloadAsExcelAsync()
-    // {
-    //     var token = (await PatientsAppService.GetDownloadTokenAsync()).Token;
-    //     var remoteService = await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("HealthCare") ?? await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
-    //     var culture = CultureInfo.CurrentUICulture.Name ?? CultureInfo.CurrentCulture.Name;
-    //     if (!culture.IsNullOrEmpty())
-    //     {
-    //         culture = "&culture=" + culture;
-    //     }
-    //     await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
-    //     NavigationManager.NavigateTo($"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/patients/as-excel-file?DownloadToken={token}&FilterText={HttpUtility.UrlEncode(Filter.FilterText)}{culture}&FirstName={HttpUtility.UrlEncode(Filter.FirstName)}&LastName={HttpUtility.UrlEncode(Filter.LastName)}&BirthDateMin={Filter.BirthDateMin?.ToString("O")}&BirthDateMax={Filter.BirthDateMax?.ToString("O")}&IdentityNumber={HttpUtility.UrlEncode(Filter.IdentityNumber)}&EmailAddress={HttpUtility.UrlEncode(Filter.EmailAddress)}&MobilePhoneNumber={HttpUtility.UrlEncode(Filter.MobilePhoneNumber)}&HomePhoneNumber={HttpUtility.UrlEncode(Filter.HomePhoneNumber)}&GenderMin={Filter.GenderMin}&GenderMax={Filter.GenderMax}", forceLoad: true);
-    // }
+    private async Task DownloadAsExcelAsync()
+    {
+        var token = (await PatientsAppService.GetDownloadTokenAsync()).Token;
+        var remoteService =
+            await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("HealthCare") ??
+            await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
+        var culture = CultureInfo.CurrentUICulture.Name ?? CultureInfo.CurrentCulture.Name;
+
+        NavigationManager.NavigateTo(
+            $"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/patients/as-excel-file?DownloadToken={token}{Filter.ToQueryParameterString(culture)}",
+            true);
+    }
 
 #region DataGrid
 

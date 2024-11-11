@@ -28,6 +28,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForMember(e => e.DistrictId, opt => opt.MapFrom(src => src.Address.DistrictId))
             .ForMember(e => e.Address, opt => opt.MapFrom(src => src.Address.AddressLine));
         CreateMap<PatientWithAddressAndCountry, PatientDto>();
+        CreateMap<PatientWithAddressAndCountry, PatientExcelDto>()
+            .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country));
         CreateMap<Patient, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
 
