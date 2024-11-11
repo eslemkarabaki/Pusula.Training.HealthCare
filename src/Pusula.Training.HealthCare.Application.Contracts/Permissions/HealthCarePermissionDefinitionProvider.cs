@@ -27,6 +27,11 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Edit, L("Permission:Edit"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Delete, L("Permission:Delete"));
 
+        var appointmentPermission = myGroup.AddPermission(HealthCarePermissions.Appointments.Default, L("Permission:Appointments"));
+        appointmentPermission.AddChild(HealthCarePermissions.Appointments.Create, L("Permission:Create"));
+        appointmentPermission.AddChild(HealthCarePermissions.Appointments.Edit, L("Permission:Edit"));
+        appointmentPermission.AddChild(HealthCarePermissions.Appointments.Delete, L("Permission:Delete"));
+
         var departmentPermission = myGroup.AddPermission(HealthCarePermissions.Departments.Default, L("Permission:Departments"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Create, L("Permission:Create"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Edit, L("Permission:Edit"));

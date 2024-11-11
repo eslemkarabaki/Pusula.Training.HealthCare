@@ -15,7 +15,7 @@ namespace Pusula.Training.HealthCare.Controllers.Appointments
 {
     [RemoteService]
     [Area("app")]
-    [ControllerName("Appointmenet")]
+    [ControllerName("Appointment")]
     [Route("api/app/appointments")]
     public class AppointmentController: HealthCareController, IAppointmentsAppService
     {
