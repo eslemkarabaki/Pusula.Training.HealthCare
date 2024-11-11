@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Services;
 
 namespace Pusula.Training.HealthCare.Appointments

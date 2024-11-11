@@ -9,6 +9,8 @@ namespace Pusula.Training.HealthCare.Appointments
     public class AppointmentExcelDownloadDto
     {
         public string DownloadToken { get; set; } = null!;
+        public string? FilterText { get; set; }
+
         public DateTime? AppointmentDate { get; set; }
         public EnumStatus? Status { get; set; }
         public string? Notes { get; set; }

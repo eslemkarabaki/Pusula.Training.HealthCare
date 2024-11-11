@@ -106,7 +106,7 @@ namespace Pusula.Training.HealthCare.EntityFrameworkCore
         public DbSet<IdentitySession> Sessions { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
-        public DbSet<Doctor> AppDoctors { get; set; }
+    public DbSet<Doctor> AppDoctors { get; set; }
 
         public HealthCareDbContext(DbContextOptions<HealthCareDbContext> options)
             : base(options)
@@ -343,9 +343,6 @@ namespace Pusula.Training.HealthCare.EntityFrameworkCore
                     .OnDelete(DeleteBehavior.NoAction);
 
                 b.HasIndex(dh => new { dh.HospitalId , dh.DepartmentId });
-                    // Foreign key relationships
-                    b.HasOne<Patient>().WithMany().HasForeignKey(x => x.PatientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
-                    b.HasOne<District>().WithMany().HasForeignKey(x => x.DistrictId).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 });
 
                 #region AppDoctor Configuration

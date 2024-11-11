@@ -74,7 +74,7 @@
     "Departments": "Departments",
     "NewDepartment": "New Department",
     "Menu:Departments": "Departments",
-    "Department": "Department",
+    "Department": "Department", 
     "Permission:Hospitals": "Hospitals",
     "Hospital": "Hospital",
     "Hospitals": "Hospitals",
@@ -85,7 +85,10 @@
     "NewDoctor": "New Doctor",
     "Menu:Doctors": "Doctors",
     "Doctor": "Doctor",
-    "Permission:Doctors": "Doctors"
-
+    "Permission:Doctors": "Doctors",
+    "Appointments": "Appointments",
+    "NewAppointment": "New Appointment",
+    "Menu:Appointments": "Appointments",
+    "Appointment": "Appointment"
   }
 }

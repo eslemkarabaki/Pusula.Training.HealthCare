@@ -25,6 +25,7 @@ using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.DoctorWithDepartments;
 using Pusula.Training.HealthCare.Titles;
+using Pusula.Training.HealthCare.Appointments;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 

@@ -13,28 +13,31 @@ using System.Numerics;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using System.Reflection;
+using Pusula.Training.HealthCare.Hospitals;
+using Pusula.Training.HealthCare.Doctors;
 
-namespace Pusula.Training.HealthCare.Appointments
+namespace Pusula.Training.HealthCare.Appointments;
+
+public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
+    : EfCoreRepository<HealthCareDbContext, Appointment, Guid>(dbContextProvider), IAppointmentRepository
+
 {
-    public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
-        : EfCoreRepository<HealthCareDbContext, Appointment, Guid>(dbContextProvider), IAppointmentRepository
-
+    public virtual async Task DeleteAllAsync(
+        string? filterText = null, DateTime? appointmentDate = null,
+        EnumStatus? status = null, string? notes = null,
+        Guid? hospitalId = null, Guid? departmentId = null,
+        Guid? doctorId = null, Guid? patientId = null,
+        CancellationToken cancellationToken = default)
     {
-        public virtual async Task DeleteAllAsync(
-            string? filterText = null, DateTime? appointmentDate = null,
-            EnumStatus? status = null, string? notes = null,
-            Guid? hospitalId = null, Guid? departmentId = null,
-            Guid? doctorId = null, Guid? patientId = null,
-            CancellationToken cancellationToken = default)
-        {
-            var query = await GetQueryForNavigationPropertiesAsync();
-            query=ApplyFilter(query, filterText, appointmentDate, status, notes, hospitalId, departmentId, doctorId, patientId);
+        var query = await GetQueryForNavigationPropertiesAsync();
+        query = ApplyFilter(query, filterText, appointmentDate, status, notes, hospitalId, departmentId, doctorId, patientId);
 
-            var ids=query.Select(x=>x.Appointment.Id);
-            await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
-        }
+        var ids = query.Select(x => x.Appointment.Id);
+        await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
+    }
 
-    public virtual async Task<AppointmentWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken= default)
+
+    public virtual async Task<AppointmentWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var dbContext = await GetDbContextAsync();
 
@@ -94,10 +97,10 @@ namespace Pusula.Training.HealthCare.Appointments
         Guid? doctorId = null, Guid? patientId = null)
     {
         return query
-            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Appointment.AppointmentDate!.Contains(filterText!) || e.Appointment.Status!.Contains(filterText!))
+               //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Appointment.AppointmentDate!.Contains(filterText!) || e.Appointment.Status!.Contains(filterText!))
                 .WhereIf(appointmentDate.HasValue, e => e.Appointment.AppointmentDate >= appointmentDate!.Value)
                 .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Appointment.Notes.Contains(notes!))
-                .WhereIf(status.HasValue, e => e.Status == status)
+                .WhereIf(status.HasValue, e => e.Appointment.Status == status!.Value) 
                 .WhereIf(hospitalId != null && hospitalId != Guid.Empty, e => e.Hospital != null && e.Hospital.Id == hospitalId)
                 .WhereIf(departmentId != null && departmentId != Guid.Empty, e => e.Department != null && e.Department.Id == departmentId)
                 .WhereIf(doctorId != null && doctorId != Guid.Empty, e => e.Doctor != null && e.Doctor.Id == doctorId)
@@ -130,15 +133,14 @@ namespace Pusula.Training.HealthCare.Appointments
     }
 
     protected virtual IQueryable<Appointment> ApplyFilter(
-        IQueryable<Appointment> query,
-        string? fiterText = null, DateTime? appointmentDate=null,
-        EnumStatus? status=null, string? notes = null)
-    {
-        return query
-            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Appointment.AppointmentDate!.Contains(filterText!) || e.Appointment.Status!.Contains(filterText!))
-                .WhereIf(appointmentDate.HasValue, e => e.Appointment.AppointmentDate >= appointmentDate!.Value)
-                .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Appointment.Notes.Contains(notes!))
-                .WhereIf(status.HasValue, e => e.Status == status);
-                
-    }
+    IQueryable<Appointment> query,
+    string? filterText = null, DateTime? appointmentDate = null,
+    EnumStatus? status = null, string? notes = null)
+{
+    return query
+        //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.AppointmentDate.ToString().Contains(filterText!) || e.Status.ToString().Contains(filterText!))
+        .WhereIf(status.HasValue, e => e.Status == status!.Value)
+        .WhereIf(appointmentDate.HasValue, e => e.AppointmentDate >= appointmentDate.Value)
+        .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Notes.Contains(notes!));
+}
 }
