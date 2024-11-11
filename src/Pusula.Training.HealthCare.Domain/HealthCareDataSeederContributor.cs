@@ -26,16 +26,14 @@ public class HealthCareDataSeederContributor(
 {
     public async Task SeedAsync(DataSeedContext context)
     {
-        if (await patientRepository.GetCountAsync() > 0)
+        if (await patientRepository.GetCountAsync() == 0)
         {
-            return;
+            var countries = await SeedCountriesAsync();
+            var cities = await SeedCitiesAsync(countries);
+            var districts = await SeedDistrictsAsync(cities);
+            var patients = await SeedPatientsAsync(countries);
+            await SeedAddressesAsync(patients, districts);
         }
-
-        var countries = await SeedCountriesAsync();
-        var cities = await SeedCitiesAsync(countries);
-        var districts = await SeedDistrictsAsync(cities);
-        var patients = await SeedPatientsAsync(countries);
-        await SeedAddressesAsync(patients, districts);
     }
 
 
@@ -112,7 +110,9 @@ public class HealthCareDataSeederContributor(
     {
         IEnumerable<Address> addresses =
         [
-            new(guidGenerator.Create(), patients.ElementAt(0), districts.ElementAt(0), "Asya Sokak")
+            new(guidGenerator.Create(), patients.ElementAt(0), districts.ElementAt(0), "Asya Sokak"),
+            new(guidGenerator.Create(), patients.ElementAt(1), districts.ElementAt(4), "lorem"),
+            new(guidGenerator.Create(), patients.ElementAt(2), districts.ElementAt(5), "ipsum")
         ];
 
         await addressRepository.InsertManyAsync(addresses, true);
@@ -121,7 +121,8 @@ public class HealthCareDataSeederContributor(
 
     // Generic Entities
     private async Task<List<Guid>> SeedEntitiesAsync<T>(IEnumerable<T> entities,
-        Func<IEnumerable<T>, Task> insertFunction) where T : AggregateRoot<Guid>
+                                                        Func<IEnumerable<T>, Task> insertFunction)
+        where T : AggregateRoot<Guid>
     {
         await insertFunction(entities);
         return entities.Select(e => e.Id).ToList();

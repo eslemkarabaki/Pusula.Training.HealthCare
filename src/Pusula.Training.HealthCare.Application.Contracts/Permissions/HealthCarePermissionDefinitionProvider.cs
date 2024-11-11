@@ -17,10 +17,10 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         //Define your own permissions here. Example:
         //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1"));
 
-        var patientPermission = myGroup.AddPermission(HealthCarePermissions.Patients.Default, L("Permission:Patients"));
-        patientPermission.AddChild(HealthCarePermissions.Patients.Create, L("Permission:Create"));
-        patientPermission.AddChild(HealthCarePermissions.Patients.Edit, L("Permission:Edit"));
-        patientPermission.AddChild(HealthCarePermissions.Patients.Delete, L("Permission:Delete"));
+        SetPatientPermissions(myGroup);
+        SetCountryPermissions(myGroup);
+        SetCityPermissions(myGroup);
+        SetDistrictPermissions(myGroup);
 
         var protocolPermission = myGroup.AddPermission(HealthCarePermissions.Protocols.Default, L("Permission:Protocols"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
@@ -52,5 +52,37 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
     private static LocalizableString L(string name)
     {
         return LocalizableString.Create<HealthCareResource>(name);
+    }
+
+    private void SetPatientPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.Patients.Default, L("Permission:Patients"));
+        permission.AddChild(HealthCarePermissions.Patients.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Patients.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Patients.Delete, L("Permission:Delete"));
+    }
+
+    private void SetCountryPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.Countries.Default, L("Permission:Countries"));
+        permission.AddChild(HealthCarePermissions.Countries.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Countries.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Countries.Delete, L("Permission:Delete"));
+    }
+
+    private void SetCityPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.Cities.Default, L("Permission:Cities"));
+        permission.AddChild(HealthCarePermissions.Cities.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Cities.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Cities.Delete, L("Permission:Delete"));
+    }
+
+    private void SetDistrictPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.Districts.Default, L("Permission:Districts"));
+        permission.AddChild(HealthCarePermissions.Districts.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Districts.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Districts.Delete, L("Permission:Delete"));
     }
 }

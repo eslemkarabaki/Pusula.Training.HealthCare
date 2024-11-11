@@ -24,23 +24,16 @@ public class PatientController(IPatientsAppService patientsAppService) : HealthC
         return patientsAppService.GetListAsync(input);
     }
 
-    [HttpGet("all/with-navigation-properties")]
-    public Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
-        GetPatientsInput input)
+    [HttpGet("all/with-address-and-country")]
+    public Task<PagedResultDto<PatientDto>> GetListWithAddressAndCountryAsync(GetPatientsInput input)
     {
-        return patientsAppService.GetListWithNavigationPropertiesAsync(input);
+        return patientsAppService.GetListWithAddressAndCountryAsync(input);
     }
-    
+
     [HttpGet("{id}")]
     public virtual Task<PatientDto> GetAsync(Guid id)
     {
         return patientsAppService.GetAsync(id);
-    }
-    
-    [HttpGet("with-navigation-properties/{id}")]
-    public Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
-    {
-        return patientsAppService.GetWithNavigationPropertiesAsync(id);
     }
 
     [HttpPost]

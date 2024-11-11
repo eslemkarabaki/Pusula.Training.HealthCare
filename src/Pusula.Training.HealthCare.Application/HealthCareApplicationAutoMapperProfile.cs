@@ -26,19 +26,28 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 
         CreateMap<Patient, PatientDto>();
         CreateMap<Patient, PatientExcelDto>();
-        CreateMap<PatientDto, PatientUpdateDto>();
-        CreateMap<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>();
+        CreateMap<PatientDto, PatientUpdateDto>()
+            .ForMember(e => e.DistrictId, opt => opt.MapFrom(src => src.Address.DistrictId))
+            .ForMember(e => e.Address, opt => opt.MapFrom(src => src.Address.AddressLine));
+        CreateMap<PatientWithAddressAndCountry, PatientDto>();
+        CreateMap<PatientWithAddressAndCountry, PatientExcelDto>()
+            .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country));
         CreateMap<Patient, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
 
         CreateMap<Address, AddressDto>();
-        CreateMap<AddressWithNavigationProperties, AddressWithNavigationPropertiesDto>();
+        CreateMap<AddressWithRelations, AddressDto>();
 
         CreateMap<Country, CountryDto>();
+        CreateMap<CountryDto, CountryUpdateDto>();
 
         CreateMap<City, CityDto>();
+        CreateMap<CityWithCountry, CityDto>();
+        CreateMap<CityDto, CityUpdateDto>();
 
         CreateMap<District, DistrictDto>();
+        CreateMap<DistrictWithCity, DistrictDto>();
+        CreateMap<DistrictDto, DistrictUpdateDto>();
 
         CreateMap<Protocol, ProtocolDto>();
         CreateMap<Protocol, ProtocolExcelDto>();
@@ -50,7 +59,6 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
         CreateMap<Department, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
-        CreateMap<Department, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
@@ -71,11 +79,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
-         
-         
+
 
         //Burası önemli
- 
-
     }
 }
