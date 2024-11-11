@@ -23,16 +23,7 @@ public interface IDepartmentRepository : IRepository<Department, Guid>
                 int maxResultCount = int.MaxValue,
                 int skipCount = 0,
                 CancellationToken cancellationToken = default
-            );
-
-    Task<List<DepartmentWithHospital>> GetListAsync(
-                string? sorting = null,
-                int maxResultCount = int.MaxValue,
-                int skipCount = 0,
-                CancellationToken cancellationToken = default
-            );
-
-    Task<DepartmentWithHospital> GetAsync(Guid id, CancellationToken cancellationToken = default);
+            ); 
 
     Task<long> GetCountAsync(
         string? filterText = null,

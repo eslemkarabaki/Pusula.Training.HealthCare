@@ -41,7 +41,7 @@ namespace Pusula.Training.HealthCare.Hospitals
         [Authorize(HealthCarePermissions.Hospitals.Delete)]
         public virtual async Task DeleteAsync(Guid id)
         {
-            await hospitalRepository.DeleteAsync(id);
+            await hospitalManager.DeleteAsyncHospitalWithDepartment(id);
         }
 
         [Authorize(HealthCarePermissions.Hospitals.Create)]

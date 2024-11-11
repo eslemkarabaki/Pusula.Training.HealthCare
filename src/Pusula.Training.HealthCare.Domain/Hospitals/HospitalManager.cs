@@ -1,9 +1,11 @@
 ﻿using JetBrains.Annotations;
 using Pusula.Training.HealthCare.Departments;
 using System;
-using System.Linq;
+using System.Linq; 
 using System.Threading.Tasks;
-using Volo.Abp; 
+using Volo.Abp;
+using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Pusula.Training.HealthCare.Hospitals
@@ -19,8 +21,7 @@ namespace Pusula.Training.HealthCare.Hospitals
             Check.Length(name, nameof(name), HospitalConsts.NameMaxLength);
             Check.NotNullOrWhiteSpace(address, nameof(address));
             Check.Length(address, nameof(address), HospitalConsts.AddressMaxLength);
-
-
+             
             var hospital = new Hospital(
              GuidGenerator.Create(),
             name,
@@ -42,9 +43,19 @@ namespace Pusula.Training.HealthCare.Hospitals
             Check.NotNullOrWhiteSpace(name, nameof(name));
             Check.Length(name, nameof(name), HospitalConsts.NameMaxLength);
 
-            var hospital = await hospitalRepository.FindAsync(id);
+            var hospital = (await hospitalRepository
+              .GetQueryableAsync())
+              .Where(h => h.Id == id)
+              .FirstOrDefault();
 
-            hospital!.Name = name;
+            if (hospital == null)
+            {
+                throw new EntityNotFoundException(typeof(Hospital), id);
+            }
+
+            await hospitalRepository.EnsureCollectionLoadedAsync(hospital, h => h.HospitalDepartments);
+
+            hospital.Name = name;
 
             Check.NotNullOrWhiteSpace(address, nameof(address));
             Check.Length(hospital.Address, nameof(address), HospitalConsts.AddressMaxLength);
@@ -54,8 +65,20 @@ namespace Pusula.Training.HealthCare.Hospitals
             await SetDepartmentsAsync(hospital, departmentNames);
 
             return await hospitalRepository.UpdateAsync(hospital);
-        }
+        } 
 
+        public async virtual Task DeleteAsyncHospitalWithDepartment(Guid id)
+        {
+            var hospital = (await hospitalRepository
+             .GetQueryableAsync())
+             .Where(h => h.Id == id)
+             .FirstOrDefault();
+
+            await DeleteDepartments(hospital);
+
+            await hospitalRepository.DeleteAsync(hospital);
+        }
+         
         private async Task SetDepartmentsAsync(Hospital hospital, [CanBeNull] string[] departmentNames)
         {
             if (departmentNames == null || !departmentNames.Any())
@@ -73,14 +96,19 @@ namespace Pusula.Training.HealthCare.Hospitals
 
             if (!departmentIds.Any())
                 return;
-
+              
             hospital.RemoveAllDepartmentsExceptGivenIds(departmentIds);
 
             foreach (var departmentId in departmentIds)
             {
                 hospital.AddDepartment(departmentId);
-            }
-
+            } 
         }
+
+        private async Task DeleteDepartments(Hospital hospital)
+        {
+            await hospitalRepository.EnsureCollectionLoadedAsync(hospital, h => h.HospitalDepartments);
+            hospital.HospitalDepartments.Clear();
+        } 
     }
 }
