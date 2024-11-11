@@ -33,7 +33,6 @@ namespace Pusula.Training.HealthCare.Appointments
             var ids=query.Select(x=>x.Appointment.Id);
             await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
         }
-    }
 
     public virtual async Task<AppointmentWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken= default)
     {
@@ -142,6 +141,4 @@ namespace Pusula.Training.HealthCare.Appointments
                 .WhereIf(status.HasValue, e => e.Status == status);
                 
     }
-
-
 }

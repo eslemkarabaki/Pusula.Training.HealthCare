@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using MiniExcelLibs;
 using Pusula.Training.HealthCare.Permissions;
-using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;

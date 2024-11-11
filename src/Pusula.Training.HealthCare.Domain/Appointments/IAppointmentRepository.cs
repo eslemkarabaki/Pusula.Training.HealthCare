@@ -46,4 +46,3 @@ namespace Pusula.Training.HealthCare.Appointments
             Guid? doctorId = null, Guid? patientId = null,
             CancellationToken cancellationToken = default);
     }
-}

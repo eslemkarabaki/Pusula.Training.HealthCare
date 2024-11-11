@@ -170,7 +170,6 @@ namespace Pusula.Training.HealthCare.EntityFrameworkCore
                     b.HasOne<Department>().WithMany().HasForeignKey(x => x.DepartmentId).IsRequired().OnDelete(DeleteBehavior.NoAction);
                     b.HasOne<Hospital>().WithMany().HasForeignKey(x => x.HospitalId).IsRequired().OnDelete(DeleteBehavior.NoAction);
                 });
-                #endregion
 
                 #region Title Configuration
                 builder.Entity<Title>(b =>
@@ -348,7 +347,6 @@ namespace Pusula.Training.HealthCare.EntityFrameworkCore
                     b.HasOne<Patient>().WithMany().HasForeignKey(x => x.PatientId).IsRequired().OnDelete(DeleteBehavior.Cascade);
                     b.HasOne<District>().WithMany().HasForeignKey(x => x.DistrictId).IsRequired().OnDelete(DeleteBehavior.Cascade);
                 });
-                #endregion
 
                 #region AppDoctor Configuration
                 builder.Entity<Doctor>(b =>
@@ -369,4 +367,3 @@ namespace Pusula.Training.HealthCare.EntityFrameworkCore
             }
         }
     }
-}
