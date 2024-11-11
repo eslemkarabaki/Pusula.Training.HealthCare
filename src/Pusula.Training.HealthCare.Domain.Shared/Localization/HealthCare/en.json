@@ -103,7 +103,7 @@
     "Patient:Country": "Race",
     "Address:Country": "Country",
     "Address:City": "City",
-    "Address:District": "District"
+    "Address:District": "District",
     "Doctors": "Doctors",
     "NewDoctor": "New Doctor",
     "Menu:Doctors": "Doctors",
