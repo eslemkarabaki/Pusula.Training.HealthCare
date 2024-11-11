@@ -1,11 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace Pusula.Training.HealthCare.Districts;
 
 public interface IDistrictAppService : IApplicationService
 {
-    Task<IEnumerable<DistrictDto>> GetListAsync(Guid cityId);
+    Task<DistrictDto> GetAsync(Guid id);
+
+    Task<List<DistrictDto>> GetListAsync();
+    Task<List<DistrictDto>> GetListAsync(Guid cityId);
+    Task<PagedResultDto<DistrictDto>> GetListAsync(GetDistrictsInput input);
+
+    Task<DistrictDto> CreateAsync(DistrictCreateDto input);
+
+    Task<DistrictDto> UpdateAsync(Guid id, DistrictUpdateDto input);
+
+    Task DeleteAsync(Guid id);
+    Task DeleteByIdsAsync(List<Guid> patientIds);
+    Task DeleteAllAsync(GetDistrictsInput input);
 }
