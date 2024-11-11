@@ -1,0 +1,283 @@
+@page "/cities"
+
+@attribute [Authorize(HealthCarePermissions.Cities.Default)]
+@using Pusula.Training.HealthCare.Cities
+@using Pusula.Training.HealthCare.Countries
+@using Pusula.Training.HealthCare.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+
+@using Pusula.Training.HealthCare.Permissions
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Http.Client
+@inherits HealthCareComponentBase
+@inject ICountryAppService CountryAppService
+@inject ICityAppService CityAppService
+
+@inject IUiMessageService UiMessageService
+@inject AbpBlazorMessageLocalizerHelper<HealthCareResource> LH
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+
+@* ************************* PAGE HEADER ************************* *@
+<PageHeader Title="@L["Cities"]" BreadcrumbItems="BreadcrumbItems" Toolbar="Toolbar"/>
+
+@* ************************* SEARCH ************************* *@
+<Card>
+    <CardBody>
+        <Form id="CitySearchForm" class="mb-3">
+            <Addons>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit @bind-Text="@Filter.FilterText"
+                              Autofocus="true"
+                              Placeholder="@L["Search"]">
+                    </TextEdit>
+                </Addon>
+                <Addon AddonType="AddonType.End">
+                    <SubmitButton Form="CitySearchForm" Clicked="GetCitiesAsync">
+                        <Icon Name="IconName.Search" Class="me-1"></Icon>@L["Search"]
+                    </SubmitButton>
+                </Addon>
+            </Addons>
+        </Form>
+
+        <Row Class="mt-3 mb-3">
+            <div class="col-md-12">
+                <a href="javascript:;" class="text-decoration-none" @onclick="() => ShowAdvancedFilters = !ShowAdvancedFilters">@L["SeeAdvancedFilters"]</a>
+            </div>
+        </Row>
+
+        <div style="display: @(!ShowAdvancedFilters ? "none" : "block")">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Field>
+                        <FieldLabel>@L["Name"]</FieldLabel>
+                        <TextEdit Text="@Filter.Name" TextChanged="@OnNameChangedAsync"/>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Field>
+                        <FieldLabel>@L["Country"]</FieldLabel>
+                        <Select TValue="Guid?" SelectedValue="@Filter.CountryId" SelectedValueChanged="@OnCountryIdChangedAsync">
+                            <SelectItem></SelectItem>
+                            @foreach (var country in CountryList)
+                            {
+                                <SelectItem Value="@country.Id">@country.Name</SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                </Column>
+            </Row>
+        </div>
+    </CardBody>
+</Card>
+
+@* ************************* DATA GRID ************************* *@
+<Card>
+    <CardBody>
+        @if (SelectedCities.Any())
+        {
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <p class="lead mb-0">
+                    @if (AllCitiesSelected)
+                    {
+                        @L["AllItemsAreSelected", TotalCount]
+                    }
+                    else
+                    {
+                        if (SelectedCities.Count > 1)
+                        {
+                            @L["NumberOfItemsOnThisPageAreSelected", SelectedCities.Count]
+                        }
+                        else
+                        {
+                            @L["OneItemOnThisPageIsSelected"]
+                        }
+                    }
+                </p>
+
+                <div class="d-flex align-items-center gap-1">
+                    @if (AllCitiesSelected)
+                    {
+                        <Button Clicked="ClearSelection" Size="Size.Small" Color="Color.Secondary" Outline>@L["ClearSelection"]</Button>
+                    }
+                    else
+                    {
+                        <Button Clicked="SelectAllItems" Size="Size.Small" Color="Color.Secondary" Outline>@L["SelectAllItems", TotalCount]</Button>
+                    }
+
+                    <Button Color="Color.Danger" Size="Size.Small" Clicked="DeleteSelectedCitiesAsync">
+                        <Icon Name="@IconName.Delete"/> @L["Delete"]
+                    </Button>
+                </div>
+            </div>
+
+            <hr class="my-1 mx-0"/>
+        }
+        <DataGrid TItem="CityDto"
+                  Data="CityList"
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  SelectedRows="SelectedCities"
+                  RowSelectable="@((args) => CanDeleteCity)"
+                  SelectedRowsChanged="SelectedCityRowsChanged"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  Responsive="true"
+                  PageSize="PageSize"
+                  Groupable="@(!Filter.CountryId.HasValue)"
+                  GroupBy="@(e => e.Country)">
+            <LoadingTemplate>
+                <Row Class="w-100 align-items-center" Style="height: 150px;">
+                    <Column>
+                        <RadarSpinner/>
+                    </Column>
+                </Row>
+            </LoadingTemplate>
+            <EmptyTemplate>
+                <Row Class="w-100 align-items-center" Style="height: 150px;">
+                    <Column>
+                        <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">@L["NoDataAvailable"]</Heading>
+                    </Column>
+                </Row>
+            </EmptyTemplate>
+            <DataGridColumns>
+
+                @if (CanDeleteCity && CityList.Any())
+                {
+                    <DataGridMultiSelectColumn TItem="CityDto" DisplayOrder="-1" Width="30px"></DataGridMultiSelectColumn>
+                }
+
+                <DataGridEntityActionsColumn TItem="CityDto" @ref="@EntityActionsColumn">
+                    <DisplayTemplate>
+                        <EntityActions TItem="CityDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="CityDto"
+                                          Visible="@CanEditCity"
+                                          Clicked="async () => await OpenEditCityModalAsync(context)"
+                                          Text="@L["Edit"]">
+                            </EntityAction>
+                            <EntityAction TItem="CityDto"
+                                          Visible="@CanDeleteCity"
+                                          Clicked="async () => await DeleteCityAsync(context)"
+                                          ConfirmationMessage="@(() => L["DeleteConfirmationMessage"])"
+                                          Text="@L["Delete"]">
+                            </EntityAction>
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+
+                <DataGridColumn TItem="CityDto"
+                                Field="Name"
+                                Caption="@L["Name"]">
+                </DataGridColumn>
+
+            </DataGridColumns>
+
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@* ************************* CREATE MODAL ************************* *@
+<Modal @ref="CreateCityModal" Closing="@CreateCityModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Size="ModalSize.Large" Centered>
+        <Form id="CreateCityForm">
+            <ModalHeader>
+                <ModalTitle>@L["NewCity"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateCityModalAsync"/>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@NewCityValidations"
+                             Mode="ValidationMode.Auto"
+                             Model="@NewCity"
+                             ValidateOnLoad="false">
+                    <div class="row gy-1 gx-3">
+
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>@L["Name"] *</FieldLabel>
+                                <TextEdit @bind-Text="@NewCity.Name" MaxLength="CityConsts.NameMaxLength">
+                                    <Feedback>
+                                        <ValidationError/>
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+
+                        <Field ColumnSize="ColumnSize.Is6">
+                            <FieldLabel>@L["Country"] *</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@NewCity.CountryId">
+                                <SelectItem></SelectItem>
+                                @foreach (var country in CountryList)
+                                {
+                                    <SelectItem Value="@country.Id">@country.Name</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+
+                    </div>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateCityModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateCityForm" Clicked="CreateCityAsync"/>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@* ************************* EDIT MODAL ************************* *@
+<Modal @ref="EditCityModal" Closing="@EditCityModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered Size="ModalSize.Large">
+        <Form id="EditCityForm">
+            <ModalHeader>
+                <ModalTitle>@L["UpdateCity"]</ModalTitle>
+                <CloseButton Clicked="CloseEditCityModalAsync"/>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditingCityValidations"
+                             Mode="ValidationMode.Auto"
+                             Model="@EditingCity"
+                             ValidateOnLoad="false">
+
+                    <div class="row gy-1 gx-3">
+
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>@L["Name"] *</FieldLabel>
+                                <TextEdit @bind-Text="@EditingCity.Name" MaxLength="CityConsts.NameMaxLength">
+                                    <Feedback>
+                                        <ValidationError/>
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+
+                        <Field ColumnSize="ColumnSize.Is6">
+                            <FieldLabel>@L["Country"] *</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@EditingCity.CountryId">
+                                <SelectItem></SelectItem>
+                                @foreach (var country in CountryList)
+                                {
+                                    <SelectItem Value="@country.Id">@country.Name</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+
+                    </div>
+
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditCityModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="EditCityForm" Clicked="UpdateCityAsync"/>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
