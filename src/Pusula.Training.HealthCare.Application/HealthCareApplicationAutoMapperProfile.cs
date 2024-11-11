@@ -37,10 +37,15 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AddressWithRelations, AddressDto>();
 
         CreateMap<Country, CountryDto>();
+        CreateMap<CountryDto, CountryUpdateDto>();
 
         CreateMap<City, CityDto>();
+        CreateMap<CityWithCountry, CityDto>();
+        CreateMap<CityDto, CityUpdateDto>();
 
         CreateMap<District, DistrictDto>();
+        CreateMap<DistrictWithCity, DistrictDto>();
+        CreateMap<DistrictDto, DistrictUpdateDto>();
 
         CreateMap<Protocol, ProtocolDto>();
         CreateMap<Protocol, ProtocolExcelDto>();
