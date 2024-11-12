@@ -8,7 +8,8 @@ namespace Pusula.Training.HealthCare.Departments;
 public class DepartmentDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
 {
     public string Name { get; set; } = null!;
-
+    public string Description { get; set; } = null!;
+    public int Duration { get; set; } 
     public string ConcurrencyStamp { get; set; } = null!;
 
 }

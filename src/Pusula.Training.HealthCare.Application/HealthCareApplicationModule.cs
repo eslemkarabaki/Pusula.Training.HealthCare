@@ -25,39 +25,34 @@ using Pusula.Training.HealthCare.Workers;
 namespace Pusula.Training.HealthCare;
 
 [DependsOn(
-    typeof(HealthCareDomainModule),
-    typeof(AbpAccountApplicationModule),
-    typeof(HealthCareApplicationContractsModule),
-    typeof(AbpIdentityApplicationModule),
-    typeof(AbpPermissionManagementApplicationModule),
-    typeof(AbpTenantManagementApplicationModule),
-    typeof(AbpFeatureManagementApplicationModule),
-    typeof(AbpSettingManagementApplicationModule),
-    typeof(AbpCachingStackExchangeRedisModule),
-    typeof(AbpBackgroundJobsRabbitMqModule),
-    typeof(AbpEventBusRabbitMqModule),
-    typeof(AbpBackgroundWorkersModule)
-    )]
+              typeof(HealthCareDomainModule),
+              typeof(AbpAccountApplicationModule),
+              typeof(HealthCareApplicationContractsModule),
+              typeof(AbpIdentityApplicationModule),
+              typeof(AbpPermissionManagementApplicationModule),
+              typeof(AbpTenantManagementApplicationModule),
+              typeof(AbpFeatureManagementApplicationModule),
+              typeof(AbpSettingManagementApplicationModule),
+              typeof(AbpCachingStackExchangeRedisModule),
+              typeof(AbpBackgroundJobsRabbitMqModule),
+              typeof(AbpEventBusRabbitMqModule),
+              typeof(AbpBackgroundWorkersModule)
+          )]
 public class HealthCareApplicationModule : AbpModule
 {
     public override async Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
     {
-        await context.AddBackgroundWorkerAsync<PeriodicPatientViewerWorker>();
+        // await context.AddBackgroundWorkerAsync<PeriodicPatientViewerWorker>();
+        await Task.CompletedTask;
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var configuration = context.Services.GetConfiguration();
 
-        Configure<AbpDistributedCacheOptions>(options =>
-        {
-            options.KeyPrefix = "PTH:";
-        });
+        Configure<AbpDistributedCacheOptions>(options => { options.KeyPrefix = "PTH:"; });
 
-        Configure<AbpAutoMapperOptions>(options =>
-        {
-            options.AddMaps<HealthCareApplicationModule>();
-        });
+        Configure<AbpAutoMapperOptions>(options => { options.AddMaps<HealthCareApplicationModule>(); });
 
         context.Services.Replace(ServiceDescriptor.Transient<IBackgroundJobManager, DefaultBackgroundJobManager>());
 
@@ -70,10 +65,12 @@ public class HealthCareApplicationModule : AbpModule
         var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]!);
 
         context.Services
-        .AddDataProtection()
-        .SetApplicationName("PTH")
-            .PersistKeysToStackExchangeRedis(redis, "PTH-Protection-Keys");
+               .AddDataProtection()
+               .SetApplicationName("PTH")
+               .PersistKeysToStackExchangeRedis(redis, "PTH-Protection-Keys");
 
-        context.Services.AddSingleton<IDistributedLockProvider>(_ => new RedisDistributedSynchronizationProvider(redis.GetDatabase()));
+        context.Services.AddSingleton<IDistributedLockProvider>(_ =>
+                                                                    new RedisDistributedSynchronizationProvider(redis
+                                                                        .GetDatabase()));
     }
 }

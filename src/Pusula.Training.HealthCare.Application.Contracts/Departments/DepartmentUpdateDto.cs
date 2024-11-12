@@ -9,5 +9,11 @@ public class DepartmentUpdateDto : IHasConcurrencyStamp
     [StringLength(DepartmentConsts.NameMaxLength)]
     public string Name { get; set; } = null!;
 
+    [StringLength(DepartmentConsts.DescriptionMaxLength)]
+    public string? Description { get; set; }
+
+    [Required]
+    [Range(1, DepartmentConsts.DurationMaxValue)]
+    public int Duration { get; set; }  
     public string ConcurrencyStamp { get; set; } = null!;
 }

@@ -8,7 +8,12 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientRepository : IRepository<Patient, Guid>
 {
-    Task DeleteAllAsync(
+    Task<PatientWithAddressAndCountry> GetWithAddressAndCountryAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<List<Patient>> GetListAsync(
         string? filterText = null,
         string? firstName = null,
         string? lastName = null,
@@ -18,27 +23,35 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        int? genderMin = null,
-        int? genderMax = null,
-        CancellationToken cancellationToken = default);
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
+        Guid? countryId = null,
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        CancellationToken cancellationToken = default
+    );
 
-    Task<List<Patient>> GetListAsync(
-                string? filterText = null,
-                string? firstName = null,
-                string? lastName = null,
-                DateTime? birthDateMin = null,
-                DateTime? birthDateMax = null,
-                string? identityNumber = null,
-                string? emailAddress = null,
-                string? mobilePhoneNumber = null,
-                string? homePhoneNumber = null,
-                int? genderMin = null,
-                int? genderMax = null,
-                string? sorting = null,
-                int maxResultCount = int.MaxValue,
-                int skipCount = 0,
-                CancellationToken cancellationToken = default
-            );
+    Task<List<PatientWithAddressAndCountry>> GetListWithAddressAndCountryAsync(
+        string? filterText = null,
+        string? firstName = null,
+        string? lastName = null,
+        DateTime? birthDateMin = null,
+        DateTime? birthDateMax = null,
+        string? identityNumber = null,
+        string? emailAddress = null,
+        string? mobilePhoneNumber = null,
+        string? homePhoneNumber = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
+        Guid? countryId = null,
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        CancellationToken cancellationToken = default
+    );
 
     Task<long> GetCountAsync(
         string? filterText = null,
@@ -50,7 +63,25 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
-        int? genderMin = null,
-        int? genderMax = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
+        Guid? countryId = null,
+        CancellationToken cancellationToken = default);
+
+    Task DeleteAllAsync(
+        string? filterText = null,
+        string? firstName = null,
+        string? lastName = null,
+        DateTime? birthDateMin = null,
+        DateTime? birthDateMax = null,
+        string? identityNumber = null,
+        string? emailAddress = null,
+        string? mobilePhoneNumber = null,
+        string? homePhoneNumber = null,
+        EnumGender gender = EnumGender.None,
+        EnumBloodType bloodType = EnumBloodType.None,
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
+        Guid? countryId = null,
         CancellationToken cancellationToken = default);
 }

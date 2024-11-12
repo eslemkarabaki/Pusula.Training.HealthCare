@@ -1,75 +1,64 @@
-using JetBrains.Annotations;
 using System;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace Pusula.Training.HealthCare.Patients
+namespace Pusula.Training.HealthCare.Patients;
+
+public sealed class Patient : FullAuditedAggregateRoot<Guid>
 {
-    public class Patient : FullAuditedAggregateRoot<Guid>
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public DateTime BirthDate { get; set; }
+    public string IdentityNumber { get; set; }
+    public string EmailAddress { get; set; }
+    public string MobilePhoneNumber { get; set; }
+    public string? HomePhoneNumber { get; set; }
+    public EnumGender Gender { get; set; }
+    public EnumBloodType BloodType { get; set; }
+    public EnumMaritalStatus MaritalStatus { get; set; }
+    public Guid CountryId { get; set; }
+
+    private Patient()
     {
-        [NotNull]
-        public virtual string FirstName { get; set; }
+        FirstName = string.Empty;
+        LastName = string.Empty;
+        IdentityNumber = string.Empty;
+        EmailAddress = string.Empty;
+        MobilePhoneNumber = string.Empty;
+        Gender = EnumGender.None;
+        BloodType = EnumBloodType.None;
+        MaritalStatus = EnumMaritalStatus.None;
+    }
 
-        [NotNull]
-        public virtual string LastName { get; set; }
+    public Patient(Guid id, Guid countryId, string firstName, string lastName, DateTime birthDate,
+        string identityNumber,
+        string emailAddress, string mobilePhoneNumber, EnumGender gender, EnumBloodType bloodType,
+        EnumMaritalStatus maritalStatus, string? homePhoneNumber = null)
+    {
+        Check.NotDefaultOrNull<Guid>(id, nameof(id));
+        Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
+        Check.NotNullOrWhiteSpace(firstName, nameof(firstName), PatientConsts.FirstNameMaxLength);
+        Check.NotNullOrWhiteSpace(lastName, nameof(lastName), PatientConsts.LastNameMaxLength);
+        Check.NotNullOrWhiteSpace(identityNumber, nameof(identityNumber), PatientConsts.IdentityNumberMaxLength);
+        Check.NotNullOrWhiteSpace(emailAddress, nameof(emailAddress), PatientConsts.EmailAddressMaxLength);
+        Check.NotNullOrWhiteSpace(mobilePhoneNumber, nameof(mobilePhoneNumber), PatientConsts.PhoneNumberMaxLength);
 
-        public virtual DateTime BirthDate { get; set; }
-
-        [NotNull]
-        public virtual string IdentityNumber { get; set; }
-
-        [NotNull]
-        public virtual string EmailAddress { get; set; }
-
-        [NotNull]
-        public virtual string MobilePhoneNumber { get; set; }
-
-        [CanBeNull]
-        public virtual string? HomePhoneNumber { get; set; }
-
-        public virtual int Gender { get; set; }
-
-        protected Patient()
+        if (!string.IsNullOrWhiteSpace(homePhoneNumber))
         {
-            FirstName = string.Empty;
-            LastName = string.Empty;
-            IdentityNumber = string.Empty;
-            EmailAddress = string.Empty;
-            MobilePhoneNumber = string.Empty;
+            Check.Length(homePhoneNumber, nameof(homePhoneNumber), PatientConsts.PhoneNumberMaxLength);
         }
 
-        public Patient(Guid id, string firstName, string lastName, DateTime birthDate, string identityNumber, string emailAddress, string mobilePhoneNumber, int gender, string? homePhoneNumber = null)
-        {
-
-            Id = id;
-            Check.NotNull(firstName, nameof(firstName));
-            Check.Length(firstName, nameof(firstName), PatientConsts.FirstNameMaxLength, 0);
-            Check.NotNull(lastName, nameof(lastName));
-            Check.Length(lastName, nameof(lastName), PatientConsts.LastNameMaxLength, 0);
-            Check.NotNull(identityNumber, nameof(identityNumber));
-            Check.Length(identityNumber, nameof(identityNumber), PatientConsts.IdentityNumberMaxLength, 0);
-            Check.NotNull(emailAddress, nameof(emailAddress));
-            Check.Length(emailAddress, nameof(emailAddress), PatientConsts.EmailAddressMaxLength, 0);
-            Check.NotNull(mobilePhoneNumber, nameof(mobilePhoneNumber));
-            Check.Length(mobilePhoneNumber, nameof(mobilePhoneNumber), PatientConsts.MobilePhoneNumberMaxLength, 0);
-            if (gender < PatientConsts.GenderMinLength)
-            {
-                throw new ArgumentOutOfRangeException(nameof(gender), gender, "The value of 'gender' cannot be lower than " + PatientConsts.GenderMinLength);
-            }
-
-            if (gender > PatientConsts.GenderMaxLength)
-            {
-                throw new ArgumentOutOfRangeException(nameof(gender), gender, "The value of 'gender' cannot be greater than " + PatientConsts.GenderMaxLength);
-            }
-
-            FirstName = firstName;
-            LastName = lastName;
-            BirthDate = birthDate;
-            IdentityNumber = identityNumber;
-            EmailAddress = emailAddress;
-            MobilePhoneNumber = mobilePhoneNumber;
-            Gender = gender;
-            HomePhoneNumber = homePhoneNumber;
-        }
+        Id = id;
+        CountryId = countryId;
+        FirstName = firstName;
+        LastName = lastName;
+        BirthDate = birthDate;
+        IdentityNumber = identityNumber;
+        EmailAddress = emailAddress;
+        MobilePhoneNumber = mobilePhoneNumber;
+        Gender = gender;
+        BloodType = bloodType;
+        MaritalStatus = maritalStatus;
+        HomePhoneNumber = homePhoneNumber;
     }
 }

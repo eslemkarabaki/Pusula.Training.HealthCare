@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Pusula.Training.HealthCare.Localization;
 using Pusula.Training.HealthCare.MultiTenancy;
 using Pusula.Training.HealthCare.Permissions;
@@ -30,13 +31,12 @@ public class HealthCareMenuContributor : IMenuContributor
                 HealthCareMenus.Home,
                 l["Menu:Home"],
                 "/",
-                icon: "fas fa-home",
-                order: 0
+                "fas fa-home",
+                0
             )
         );
 
         ConfigureTenantMenu(administration, MultiTenancyConsts.IsEnabled);
-
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
@@ -45,8 +45,8 @@ public class HealthCareMenuContributor : IMenuContributor
             new ApplicationMenuItem(
                 HealthCareMenus.Patients,
                 l["Menu:Patients"],
-                url: "/patients",
-                icon: "fa fa-file-alt",
+                "/patients",
+                "fas fa-hospital-user",
                 requiredPermissionName: HealthCarePermissions.Patients.Default)
         );
 
@@ -54,8 +54,8 @@ public class HealthCareMenuContributor : IMenuContributor
             new ApplicationMenuItem(
                 HealthCareMenus.Protocols,
                 l["Menu:Protocols"],
-                url: "/protocols",
-                icon: "fa fa-file-alt",
+                "/protocols",
+                "fa fa-file-alt",
                 requiredPermissionName: HealthCarePermissions.Protocols.Default)
         );
 
@@ -63,9 +63,52 @@ public class HealthCareMenuContributor : IMenuContributor
             new ApplicationMenuItem(
                 HealthCareMenus.Departments,
                 l["Menu:Departments"],
-                url: "/departments",
-                icon: "fa fa-file-alt",
+                "/departments",
+                "fa fa-file-alt",
                 requiredPermissionName: HealthCarePermissions.Departments.Default)
+
+        );
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Hospitals,
+                l["Menu:Hospitals"],
+                url: "/hospitals",
+                icon: "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Hospitals.Default)
+        );
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                    HealthCareMenus.Locations,
+                    l["Menu:Locations"],
+                    icon: "fas fa-compass"
+                )
+                .AddItem(new ApplicationMenuItem(
+                        HealthCareMenus.Countries,
+                        l["Menu:Countries"],
+                        "/countries",
+                        "fas fa-flag",
+                        requiredPermissionName: HealthCarePermissions.Countries.Default
+                    )
+                )
+                .AddItem(new ApplicationMenuItem(
+                        HealthCareMenus.Cities,
+                        l["Menu:Cities"],
+                        "/cities",
+                        "fas fa-city",
+                        requiredPermissionName: HealthCarePermissions.Cities.Default
+                    )
+                )
+                .AddItem(new ApplicationMenuItem(
+                        HealthCareMenus.Districts,
+                        l["Menu:Districts"],
+                        "/districts",
+                        "fa fa-file-alt",
+                        requiredPermissionName: HealthCarePermissions.Districts.Default
+                    )
+                )
+
         );
 
         return Task.CompletedTask;

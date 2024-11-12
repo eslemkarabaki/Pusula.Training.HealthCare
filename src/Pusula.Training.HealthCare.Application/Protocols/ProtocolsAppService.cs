@@ -24,7 +24,8 @@ namespace Pusula.Training.HealthCare.Protocols
         IProtocolRepository protocolRepository, 
         ProtocolManager protocolManager, 
         IDistributedCache<ProtocolDownloadTokenCacheItem, string> downloadTokenCache, 
-        IRepository<Patients.Patient, Guid> patientRepository, 
+        IRepository<Patients.Patient, Guid> patientRepository,
+        IRepository<Hospitals.Hospital, Guid> hospitalRepository,
         IRepository<Departments.Department, Guid> departmentRepository) : HealthCareAppService, IProtocolsAppService
     {
         public virtual async Task<PagedResultDto<ProtocolWithNavigationPropertiesDto>> GetListAsync(GetProtocolsInput input)
@@ -77,6 +78,21 @@ namespace Pusula.Training.HealthCare.Protocols
             {
                 TotalCount = totalCount,
                 Items = ObjectMapper.Map<List<Departments.Department>, List<LookupDto<Guid>>>(lookupData)
+            };
+        }
+
+        public async Task<PagedResultDto<LookupDto<Guid>>> GetHospitalLookupAsync(LookupRequestDto input)
+        {
+            var query = (await hospitalRepository.GetQueryableAsync())
+                .WhereIf(!string.IsNullOrWhiteSpace(input.Filter),
+                    x => x.Name != null && x.Name.Contains(input.Filter!));
+
+            var lookupData = await query.PageBy(input.SkipCount, input.MaxResultCount).ToDynamicListAsync<Hospitals.Hospital>();
+            var totalCount = query.Count();
+            return new PagedResultDto<LookupDto<Guid>>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<Hospitals.Hospital>, List<LookupDto<Guid>>>(lookupData)
             };
         }
 
@@ -181,5 +197,7 @@ namespace Pusula.Training.HealthCare.Protocols
                 Token = token
             };
         }
+
+ 
     }
 }

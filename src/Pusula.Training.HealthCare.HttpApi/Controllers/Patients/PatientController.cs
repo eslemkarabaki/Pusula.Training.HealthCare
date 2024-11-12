@@ -16,74 +16,71 @@ namespace Pusula.Training.HealthCare.Controllers.Patients;
 [Area("app")]
 [ControllerName("Patient")]
 [Route("api/app/patients")]
-
-public class PatientController : HealthCareController, IPatientsAppService
+public class PatientController(IPatientsAppService patientsAppService) : HealthCareController, IPatientsAppService
 {
-    protected IPatientsAppService _patientsAppService;
-
-    public PatientController(IPatientsAppService patientsAppService)
-    {
-        _patientsAppService = patientsAppService;
-    }
-
-    [HttpGet]
+    [HttpGet("all")]
     public virtual Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input)
     {
-        return _patientsAppService.GetListAsync(input);
+        return patientsAppService.GetListAsync(input);
     }
 
-    [HttpGet]
-    [Route("{id}")]
+    [HttpGet("all/with-address-and-country")]
+    public Task<PagedResultDto<PatientDto>> GetListWithAddressAndCountryAsync(GetPatientsInput input)
+    {
+        return patientsAppService.GetListWithAddressAndCountryAsync(input);
+    }
+
+    [HttpGet("{id}")]
     public virtual Task<PatientDto> GetAsync(Guid id)
     {
-        return _patientsAppService.GetAsync(id);
+        return patientsAppService.GetAsync(id);
     }
 
     [HttpPost]
     public virtual Task<PatientDto> CreateAsync(PatientCreateDto input)
     {
-        return _patientsAppService.CreateAsync(input);
+        return patientsAppService.CreateAsync(input);
     }
 
     [HttpPut]
     [Route("{id}")]
     public virtual Task<PatientDto> UpdateAsync(Guid id, PatientUpdateDto input)
     {
-        return _patientsAppService.UpdateAsync(id, input);
+        return patientsAppService.UpdateAsync(id, input);
     }
 
     [HttpDelete]
     [Route("{id}")]
     public virtual Task DeleteAsync(Guid id)
     {
-        return _patientsAppService.DeleteAsync(id);
+        return patientsAppService.DeleteAsync(id);
     }
 
     [HttpGet]
     [Route("as-excel-file")]
     public virtual Task<IRemoteStreamContent> GetListAsExcelFileAsync(PatientExcelDownloadDto input)
     {
-        return _patientsAppService.GetListAsExcelFileAsync(input);
+        return patientsAppService.GetListAsExcelFileAsync(input);
     }
 
     [HttpGet]
     [Route("download-token")]
     public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync()
     {
-        return _patientsAppService.GetDownloadTokenAsync();
+        return patientsAppService.GetDownloadTokenAsync();
     }
 
     [HttpDelete]
     [Route("")]
     public virtual Task DeleteByIdsAsync(List<Guid> patientIds)
     {
-        return _patientsAppService.DeleteByIdsAsync(patientIds);
+        return patientsAppService.DeleteByIdsAsync(patientIds);
     }
 
     [HttpDelete]
     [Route("all")]
     public virtual Task DeleteAllAsync(GetPatientsInput input)
     {
-        return _patientsAppService.DeleteAllAsync(input);
+        return patientsAppService.DeleteAllAsync(input);
     }
 }
