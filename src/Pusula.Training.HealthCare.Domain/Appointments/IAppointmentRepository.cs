@@ -1,5 +1,4 @@
-﻿using Pusula.Training.HealthCare.Protocols;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

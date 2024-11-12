@@ -1,5 +1,4 @@
-﻿using Pusula.Training.HealthCare.Protocols;
-using Pusula.Training.HealthCare.Shared;
+﻿using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,7 @@ namespace Pusula.Training.HealthCare.Appointments
     public interface IAppointmentsAppService:IApplicationService
     {
         Task<PagedResultDto<AppointmentWithNavigationPropertiesDto>> GetListAsync(GetAppointmentsInput input);
+        //Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input);
         Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id);
         Task<AppointmentDto> GetAsync(Guid id);
         Task<PagedResultDto<LookupDto<Guid>>> GetHospitalLookupAsync(LookupRequestDto input);

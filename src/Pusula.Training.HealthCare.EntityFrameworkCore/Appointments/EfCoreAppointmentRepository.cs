@@ -11,7 +11,6 @@ using System;
 using Pusula.Training.HealthCare.Departments;
 using System.Numerics;
 using Pusula.Training.HealthCare.Patients;
-using Pusula.Training.HealthCare.Protocols;
 using System.Reflection;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Doctors;

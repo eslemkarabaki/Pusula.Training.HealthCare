@@ -46,6 +46,18 @@ namespace Pusula.Training.HealthCare.Appointments
             };
         }
 
+        //public virtual async Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
+        //{
+        //    var totalCount = await appointmentRepository.GetCountAsync(input.FilterText, input.AppointmentDate, input.Status, input.Notes, input.HospitalId, input.DepartmentId, input.DoctorId, input.PatientId);
+        //    var items = await appointmentRepository.GetListAsync(input.FilterText, input.AppointmentDate, input.Status, input.Notes, input.HospitalId, input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount);
+
+        //    return new PagedResultDto<AppointmentDto>
+        //    {
+        //        TotalCount = totalCount,
+        //        Items = ObjectMapper.Map<List<Appointment>, List<AppointmentDto>>(items)
+        //    };
+        //}
+
         public virtual async Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
         {
             return ObjectMapper.Map<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>
@@ -111,23 +123,7 @@ namespace Pusula.Training.HealthCare.Appointments
 
         [Authorize(HealthCarePermissions.Appointments.Edit)]
         public virtual async Task<AppointmentDto> UpdateAsync(Guid id, AppointmentUpdateDto input)
-        {
-            if (input.HospitalId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Hospital"]]);
-            }
-            if (input.DepartmentId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Department"]]);
-            }
-            if (input.DoctorId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Doctor"]]);
-            }
-            if (input.PatientId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Patient"]]);
-            }
+        {         
 
             var appointment = await appointmentManager.UpdateAsync(
             id,
