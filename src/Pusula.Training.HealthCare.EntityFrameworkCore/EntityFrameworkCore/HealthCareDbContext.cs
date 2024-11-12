@@ -4,6 +4,8 @@ using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Departments;
+using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.Examinations;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.HospitalDepartments;
@@ -29,6 +31,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Npgsql.Replication.PgOutput.Messages;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -54,6 +57,7 @@ public class HealthCareDbContext :
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Appointment> Appointments { get; set; } = null!;
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
+    public DbSet<Examination> Examinations { get; set; } = null!;
 
 
 #region Entities from the modules

@@ -1,6 +1,7 @@
 ﻿using Localization.Resources.AbpUi;
 using Pusula.Training.HealthCare.Localization;
 using Volo.Abp.Account;
+using Volo.Abp.AspNetCore.ExceptionHandling;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.Localization;
@@ -30,12 +31,18 @@ public class HealthCareHttpApiModule : AbpModule
     private void ConfigureLocalization()
     {
         Configure<AbpLocalizationOptions>(options =>
-        {
+        {   
             options.Resources
                 .Get<HealthCareResource>()
                 .AddBaseTypes(
                     typeof(AbpUiResource)
                 );
+        });
+
+        Configure<AbpExceptionHandlingOptions>(options =>
+        {
+            options.SendExceptionsDetailsToClients = true; // Sends detailed exceptions
+            options.SendStackTraceToClients = true;        // Sends stack trace to clients
         });
     }
 }

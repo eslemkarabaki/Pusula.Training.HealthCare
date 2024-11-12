@@ -110,6 +110,14 @@ public class HealthCareMenuContributor : IMenuContributor
                 )
 
         );
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Examinations,
+                l["Menu:Examinations"],
+                url: "/examinations",
+                icon: "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Examinations.Default)
+        );
 
         return Task.CompletedTask;
     }
