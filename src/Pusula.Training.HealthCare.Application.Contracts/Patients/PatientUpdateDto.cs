@@ -43,8 +43,11 @@ public class PatientUpdateDto : IHasConcurrencyStamp
     [Required]
     [StringLength(int.MaxValue)]
     public string Address { get; set; } = null!;
-
+    
+    [Required]
     public Guid DistrictId { get; set; }
+    
+    [Required]
     public Guid CountryId { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;

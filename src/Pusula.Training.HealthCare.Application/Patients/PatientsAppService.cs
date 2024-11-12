@@ -139,16 +139,16 @@ public class PatientsAppService(
             throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
         }
 
-        var items = await patientRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName,
+        var items = await patientRepository.GetListWithAddressAndCountryAsync(input.FilterText, input.FirstName, input.LastName,
             input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId);
 
         var memoryStream = new MemoryStream();
-        await memoryStream.SaveAsAsync(ObjectMapper.Map<List<Patient>, List<PatientExcelDto>>(items));
+        await memoryStream.SaveAsAsync(ObjectMapper.Map<List<PatientWithAddressAndCountry>, List<PatientExcelDto>>(items));
         memoryStream.Seek(0, SeekOrigin.Begin);
 
         //todo excel name
-        return new RemoteStreamContent(memoryStream, "Patients.xlsx",
+        return new RemoteStreamContent(memoryStream, $"Patients_{DateTime.Now:dd.MM.yyyy hh:mm}.xlsx",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 

@@ -225,6 +225,8 @@ public partial class Patients
     private async Task CreateAddressCountryIdChangedAsync(Guid countryId)
     {
         CreateAddressCountryId = countryId;
+        CreateAddressCityId = Guid.Empty;
+        NewPatient.DistrictId = Guid.Empty;
         CityList = await CityAppService.GetListAsync(countryId);
         DistrictList = [];
     }
@@ -232,6 +234,7 @@ public partial class Patients
     private async Task CreateAddressCityIdChangedAsync(Guid cityId)
     {
         CreateAddressCityId = cityId;
+        NewPatient.DistrictId = Guid.Empty;
         DistrictList = await DistrictAppService.GetListAsync(cityId);
     }
 
@@ -305,6 +308,7 @@ public partial class Patients
     {
         EditingAddressCountryId = countryId;
         EditingAddressCityId = Guid.Empty;
+        EditingPatient.DistrictId = Guid.Empty;
         CityList = await CityAppService.GetListAsync(countryId);
         DistrictList = [];
     }
