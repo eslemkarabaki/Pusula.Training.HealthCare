@@ -14,5 +14,5 @@ public class PatientExcelDto
     public EnumGender Gender { get; set; }
     public EnumBloodType BloodType { get; set; }
     public EnumMaritalStatus MaritalStatus { get; set; }
-    public string Country { get; set; } = null!;
+    public string Race { get; set; } = null!;
 }

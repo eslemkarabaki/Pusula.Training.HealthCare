@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
+using Pusula.Training.HealthCare.Addresses;
 
 namespace Pusula.Training.HealthCare.Patients;
 
@@ -34,11 +35,26 @@ public class PatientCreateDto
     [StringLength(PatientConsts.PhoneNumberMaxLength)]
     public string? HomePhoneNumber { get; set; }
 
-    [Required] public EnumGender Gender { get; set; }
+    [Required]
+    [DeniedValues(EnumGender.None)]
+    public EnumGender Gender { get; set; }
 
-    [Required] public EnumBloodType BloodType { get; set; }
+    [Required]
+    [DeniedValues(EnumBloodType.None)]
+    public EnumBloodType BloodType { get; set; }
 
-    [Required] public EnumMaritalStatus MaritalStatus { get; set; }
+    [Required]
+    [DeniedValues(EnumMaritalStatus.None)]
+    public EnumMaritalStatus MaritalStatus { get; set; }
 
+
+    [Required]
+    [StringLength(int.MaxValue)]
+    public string Address { get; set; } = null!;
+
+    [Required]
+    public Guid DistrictId { get; set; }
+    
+    [Required]
     public Guid CountryId { get; set; }
 }

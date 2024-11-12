@@ -14,9 +14,9 @@ public class PatientExcelDownloadDto
     public string? EmailAddress { get; set; }
     public string? MobilePhoneNumber { get; set; }
     public string? HomePhoneNumber { get; set; }
-    public EnumGender? Gender { get; set; }
-    public EnumBloodType? BloodType { get; set; }
-    public EnumMaritalStatus? MaritalStatus { get; set; }
+    public EnumGender Gender { get; set; } = EnumGender.None;
+    public EnumBloodType BloodType { get; set; } = EnumBloodType.None;
+    public EnumMaritalStatus MaritalStatus { get; set; } = EnumMaritalStatus.None;
 
     public Guid? CountryId { get; set; }
 }

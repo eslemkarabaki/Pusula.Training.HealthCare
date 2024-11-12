@@ -14,6 +14,5 @@ public class DepartmentCreateDto
     [Required]
     [Range(1, DepartmentConsts.DurationMaxValue)]
     public int Duration { get; set; }
-
-    public string[]? HospitalNames { get; set; }
+     
 }

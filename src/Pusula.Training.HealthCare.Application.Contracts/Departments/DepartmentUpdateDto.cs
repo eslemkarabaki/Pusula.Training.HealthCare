@@ -14,7 +14,6 @@ public class DepartmentUpdateDto : IHasConcurrencyStamp
 
     [Required]
     [Range(1, DepartmentConsts.DurationMaxValue)]
-    public int Duration { get; set; }
-    public string[]? HospitalNames { get; set; }
+    public int Duration { get; set; }  
     public string ConcurrencyStamp { get; set; } = null!;
 }

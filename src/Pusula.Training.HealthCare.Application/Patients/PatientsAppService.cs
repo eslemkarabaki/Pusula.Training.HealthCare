@@ -23,23 +23,17 @@ public class PatientsAppService(
     IDistributedCache<PatientDownloadTokenCacheItem, string> downloadTokenCache,
     IDistributedEventBus distributedEventBus) : HealthCareAppService, IPatientsAppService
 {
-    #region Get
+#region Get
 
     public virtual async Task<PatientDto> GetAsync(Guid id)
     {
-        var patient = await patientRepository.GetAsync(id);
-        return ObjectMapper.Map<Patient, PatientDto>(patient);
+        var patient = await patientRepository.GetWithAddressAndCountryAsync(id);
+        return ObjectMapper.Map<PatientWithAddressAndCountry, PatientDto>(patient);
     }
 
-    public virtual async Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
-    {
-        return ObjectMapper.Map<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>(
-            await patientRepository.GetWithNavigationPropertiesAsync(id));
-    }
+#endregion
 
-    #endregion
-
-    #region GetList
+#region GetList
 
     public virtual async Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input)
     {
@@ -59,42 +53,41 @@ public class PatientsAppService(
         };
     }
 
-    public virtual async Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
-        GetPatientsInput input)
+    public virtual async Task<PagedResultDto<PatientDto>> GetListWithAddressAndCountryAsync(GetPatientsInput input)
     {
         var totalCount = await patientRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName,
             input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId);
-        var items = await patientRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.FirstName,
+        var items = await patientRepository.GetListWithAddressAndCountryAsync(input.FilterText, input.FirstName,
             input.LastName,
             input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId, input.Sorting,
-            input.MaxResultCount, input.SkipCount);
+            input.MaxResultCount,
+            input.SkipCount);
 
-        return new PagedResultDto<PatientWithNavigationPropertiesDto>
+        return new PagedResultDto<PatientDto>
         {
             TotalCount = totalCount,
-            Items =
-                ObjectMapper.Map<List<PatientWithNavigationProperties>, List<PatientWithNavigationPropertiesDto>>(items)
+            Items = ObjectMapper.Map<List<PatientWithAddressAndCountry>, List<PatientDto>>(items)
         };
     }
 
-    #endregion
+#endregion
 
-    #region Create
+#region Create
 
     [Authorize(HealthCarePermissions.Patients.Create)]
     public virtual async Task<PatientDto> CreateAsync(PatientCreateDto input)
     {
         var patient = await patientManager.CreateAsync(input.CountryId, input.FirstName, input.LastName,
             input.BirthDate, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber, input.Gender,
-            input.BloodType, input.MaritalStatus, input.HomePhoneNumber);
+            input.BloodType, input.MaritalStatus, input.DistrictId, input.Address, input.HomePhoneNumber);
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
 
-    #endregion
+#endregion
 
-    #region Update
+#region Update
 
     [Authorize(HealthCarePermissions.Patients.Edit)]
     public virtual async Task<PatientDto> UpdateAsync(Guid id, PatientUpdateDto input)
@@ -103,14 +96,15 @@ public class PatientsAppService(
             id,
             input.CountryId, input.FirstName, input.LastName,
             input.BirthDate, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber, input.Gender,
-            input.BloodType, input.MaritalStatus, input.HomePhoneNumber, input.ConcurrencyStamp
+            input.BloodType, input.MaritalStatus, input.DistrictId, input.Address, input.HomePhoneNumber,
+            input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
 
-    #endregion
+#endregion
 
-    #region Delete
+#region Delete
 
     [Authorize(HealthCarePermissions.Patients.Delete)]
     public virtual async Task DeleteAsync(Guid id)
@@ -132,9 +126,9 @@ public class PatientsAppService(
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId);
     }
 
-    #endregion
+#endregion
 
-    #region Excel
+#region Excel
 
     [AllowAnonymous]
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(PatientExcelDownloadDto input)
@@ -145,16 +139,16 @@ public class PatientsAppService(
             throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
         }
 
-        var items = await patientRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName,
+        var items = await patientRepository.GetListWithAddressAndCountryAsync(input.FilterText, input.FirstName, input.LastName,
             input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.CountryId);
 
         var memoryStream = new MemoryStream();
-        await memoryStream.SaveAsAsync(ObjectMapper.Map<List<Patient>, List<PatientExcelDto>>(items));
+        await memoryStream.SaveAsAsync(ObjectMapper.Map<List<PatientWithAddressAndCountry>, List<PatientExcelDto>>(items));
         memoryStream.Seek(0, SeekOrigin.Begin);
 
         //todo excel name
-        return new RemoteStreamContent(memoryStream, "Patients.xlsx",
+        return new RemoteStreamContent(memoryStream, $"Patients_{DateTime.Now:dd.MM.yyyy hh:mm}.xlsx",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 
@@ -176,5 +170,5 @@ public class PatientsAppService(
         };
     }
 
-    #endregion
+#endregion
 }

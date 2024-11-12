@@ -107,25 +107,5 @@ namespace Pusula.Training.HealthCare.Hospitals
                 });
 
         }  
-
-        //protected virtual async Task<IQueryable<HospitalWithDepartment>> ApplyFilterAsync()
-        //{
-        //    var dbContext = await GetDbContextAsync();
-        //    return (await GetDbSetAsync())
-        //        .Include(x => x.HospitalDepartments)
-        //        .Join(dbContext.Set<Department>(), hospital => default, department => department.Id, (hospital, department) => new { hospital, department })
-        //        .Select(x => new HospitalWithDepartment
-        //        {
-        //            Id = x.hospital.Id,
-        //            Name = x.hospital.Name,
-        //            Address = x.hospital.Address,
-        //            CreationTime = x.hospital.CreationTime,
-        //            DepartmentNames = (from hd in x.hospital.HospitalDepartments
-        //                               join d in dbContext.Set<Department>() on hd.DepartmentId equals d.Id
-        //                               select d.Name).ToArray() 
-        //        });
-
-        //}
-         
     }
 }

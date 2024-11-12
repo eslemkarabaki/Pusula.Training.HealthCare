@@ -22,6 +22,30 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
+    public static class Countries
+    {
+        public const string Default = GroupName + ".Countries";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Cities
+    {
+        public const string Default = GroupName + ".Cities";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Districts
+    {
+        public const string Default = GroupName + ".Districts";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
     public static class Protocols
     {
         public const string Default = GroupName + ".Protocols";
@@ -36,7 +60,16 @@ public static class HealthCarePermissions
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
-    }  
+    }
+
+    public static class Appointments
+    {
+        public const string Default = GroupName + ".Appointments";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }    
+    
     public static class Hospitals
     {
         public const string Default = GroupName + ".Hospitals";
@@ -45,6 +78,20 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
+    public static class Doctors
+    {
+        public const string Default = GroupName + ".Doctors";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+    public static class Titles
+    {
+        public const string Default = GroupName + ".Titles";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
 
-     
+
 }
