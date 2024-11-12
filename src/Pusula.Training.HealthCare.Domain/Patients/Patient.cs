@@ -13,7 +13,7 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>
     public string EmailAddress { get; set; }
     public string MobilePhoneNumber { get; set; }
     public string? HomePhoneNumber { get; set; }
-    public EnumGender Gender { get; set; }
+    public EnumGender Gender { get; set; }  
     public EnumBloodType BloodType { get; set; }
     public EnumMaritalStatus MaritalStatus { get; set; }
     public Guid CountryId { get; set; }

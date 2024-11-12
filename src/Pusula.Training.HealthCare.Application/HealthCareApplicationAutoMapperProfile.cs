@@ -11,6 +11,7 @@ using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Districts;
+using Pusula.Training.HealthCare.Examinations;
 
 namespace Pusula.Training.HealthCare;
 
@@ -44,21 +45,23 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Department, DepartmentExcelDto>();
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
         CreateMap<Department, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
-
+            
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
         CreateMap<HospitalDto, HospitalUpdateDto>();
         CreateMap<HospitalWithDepartment, HospitalDto>();
         CreateMap<Hospital, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<Examination, ExaminationDto>();
+        CreateMap<Examination, ExaminationExcelDto>();
 
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
-         
-         
+
+
 
         //Burası önemli
- 
+
 
     }
 }

@@ -43,7 +43,7 @@ public class ExaminationManager(IExaminationRepository examinationRepository) : 
            imagingResults: imagingResults
         );
 
-        return await examinationRepository.InsertAsync(examination);
+        return await examinationRepository.InsertAsync(examination,autoSave:true);
     }
 
     public virtual async Task<Examination> UpdateAsync(
@@ -85,7 +85,7 @@ public class ExaminationManager(IExaminationRepository examinationRepository) : 
         examination.Prescription = prescription;
         examination.ImagingResults = imagingResults;
 
-        examination.SetConcurrencyStampIfNotNull(concurrencyStamp);
-        return await examinationRepository.UpdateAsync(examination);
+        //examination.SetConcurrencyStampIfNotNull(concurrencyStamp);
+        return await examinationRepository.UpdateAsync(examination, autoSave:true);
     }
 }

@@ -2,6 +2,7 @@ using Pusula.Training.HealthCare.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
+using static Pusula.Training.HealthCare.Permissions.HealthCarePermissions;
 
 namespace Pusula.Training.HealthCare.Permissions;
 
@@ -36,6 +37,11 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Create, L("Permission:Create"));
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Edit, L("Permission:Edit"));
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Delete, L("Permission:Delete"));
+
+        var examinationPermission = myGroup.AddPermission(HealthCarePermissions.Examinations.Default, L("Permission:Examinations"));
+        examinationPermission.AddChild(HealthCarePermissions.Examinations.Create, L("Permission:Create"));
+        examinationPermission.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
+        examinationPermission.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
 
     }
 

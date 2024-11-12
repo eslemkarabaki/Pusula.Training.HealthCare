@@ -25,6 +25,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Npgsql.Replication.PgOutput.Messages;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -43,7 +44,7 @@ public class HealthCareDbContext :
     public DbSet<Hospital> Hospitals { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
-    public DbSet<Examination> Examination { get; set; } = null!;
+    public DbSet<Examination> Examinations { get; set; } = null!;
 
 
     #region Entities from the modules
@@ -262,7 +263,34 @@ public class HealthCareDbContext :
                 b.HasIndex(dh => new { dh.HospitalId , dh.DepartmentId });
 
             });
-        } 
+            builder.Entity<Examination>(b =>
+            {
+                b.ToTable(HealthCareConsts.DbTablePrefix + "Examination", HealthCareConsts.DbSchema);
+                b.Property(x => x.IdentityNumber).HasColumnName(nameof(Examination.IdentityNumber)).IsRequired()
+                    .HasMaxLength(ExaminationConsts.IdentityNumberMaxLength);
+                b.Property(x => x.VisitDate).HasColumnName(nameof(Examination.VisitDate));
+                b.Property(x => x.Notes).HasColumnName(nameof(Examination.Notes)).IsRequired()
+                    .HasMaxLength(ExaminationConsts.NotesNumberMaxLength);
+                b.Property(x => x.ChronicDiseases).HasColumnName(nameof(Examination.ChronicDiseases)).IsRequired()
+                    .HasMaxLength(ExaminationConsts.ChronicDiseasesNumberMaxLength);
+                b.Property(x => x.Allergies).HasColumnName(nameof(Examination.Allergies)).IsRequired()
+                    .HasMaxLength(ExaminationConsts.AllergiesNumberMaxLength);
+                b.Property(x => x.Medications).HasColumnName(nameof(Examination.Medications)).IsRequired(false)
+                    .HasMaxLength(ExaminationConsts.MedicationsNumberMaxLength);
+                b.Property(x => x.Diagnosis).HasColumnName(nameof(Examination.Diagnosis)).IsRequired(false)
+                    .HasMaxLength(ExaminationConsts.DiagnosisNumberMaxLength);
+                b.Property(x => x.Prescription).HasColumnName(nameof(Examination.Prescription)).IsRequired(false)
+                    .HasMaxLength(ExaminationConsts.PrescriptionNumberMaxLength);
+                b.Property(x => x.ImagingResults).HasColumnName(nameof(Examination.ImagingResults)).IsRequired(false)
+                    .HasMaxLength(ExaminationConsts.ImagingResultsNumberMaxLength);
+
+                b.HasOne<Patient>().WithMany().IsRequired().HasForeignKey(e => e.PatientId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                /*b.HasOne<Doctor>().WithMany().IsRequired().HasForeignKey(e => e.DoctorId)
+                    .OnDelete(DeleteBehavior.NoAction);* commit atıldığında yapılacak*/
+            });
+
+        }
 
         //builder.Entity<YourEntity>(b =>
         //{

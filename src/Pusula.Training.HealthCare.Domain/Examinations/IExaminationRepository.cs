@@ -8,23 +8,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
+namespace Pusula.Training.HealthCare.Examinations;
+
 public interface IExaminationRepository : IRepository<Examination, Guid>
 {
     Task DeleteAllAsync(
-        string? notes = null,
-        string? chronicDiseases = null,
-        string? allergies = null,
-        DateTime? VisitDate = null,
-        string? identityNumber = null,
-        string? medications = null,
-        string? diagnosis = null,
-        string? prescription = null,
-        string? imagingResults = null, 
-        Guid? patientId = null,
-        Guid? doctorId = null,
-        CancellationToken cancellationToken = default);
+    CancellationToken cancellationToken = default);
 
     Task<List<Examination>> GetListAsync(
+        string? filterText = null,
         string? notes = null,
         string? chronicDiseases = null,
         string? allergies = null,
@@ -42,6 +34,7 @@ public interface IExaminationRepository : IRepository<Examination, Guid>
         CancellationToken cancellationToken = default);
 
     Task<long> GetCountAsync(
+        string? filterText = null,
        string? notes = null,
         string? chronicDiseases = null,
         string? allergies = null,
