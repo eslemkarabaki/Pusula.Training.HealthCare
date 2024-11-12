@@ -1,0 +1,322 @@
+﻿@page "/hospitals"
+
+@attribute [Authorize(HealthCarePermissions.Hospitals.Default)]
+@using Pusula.Training.HealthCare.Hospitals
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Localization
+@using Pusula.Training.HealthCare.Shared
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components.Web
+@using Blazorise
+@using Blazorise.Components
+@using Blazorise.DataGrid
+@using Volo.Abp.BlazoriseUI
+@using Volo.Abp.BlazoriseUI.Components
+@using Volo.Abp.ObjectMapping
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+
+@using Pusula.Training.HealthCare.Permissions
+@using Volo.Abp.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components
+@using Volo.Abp.Http.Client
+@inherits HealthCareComponentBase
+@inject IHospitalsAppService HospitalsAppService
+
+@inject IUiMessageService UiMessageService
+@inject AbpBlazorMessageLocalizerHelper<HealthCareResource> LH
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+@* ************************* PAGE HEADER ************************* *@
+<PageHeader Title="@L["Hospitals"]" BreadcrumbItems="BreadcrumbItems" Toolbar="Toolbar">
+
+</PageHeader>
+
+@* ************************* SEARCH ************************* *@
+<Card>
+    <CardBody>
+        @*//<suite-custom-code-block-1>*@
+        @*//</suite-custom-code-block-1>*@
+        <Form id="HospitalSearchForm" class="mb-3">
+            <Addons>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit @bind-Text="@Filter.FilterText"
+                              Autofocus="true"
+                              Placeholder="@L["Search"]">
+                    </TextEdit>
+                </Addon>
+                <Addon AddonType="AddonType.End">
+                    <SubmitButton Form="HospitalSearchForm" Clicked="GetHospitalsAsync">
+                        <Icon Name="IconName.Search" Class="me-1"></Icon>@L["Search"]
+                    </SubmitButton>
+                </Addon>
+            </Addons>
+        </Form>
+
+        <Row Class="mt-3 mb-3">
+            <div class="col-md-12">
+                <a href="javascript:;" class="text-decoration-none" @onclick="() => ShowAdvancedFilters = !ShowAdvancedFilters">@L["SeeAdvancedFilters"]</a>
+            </div>
+        </Row>
+ 
+
+        <div style="display: @(!ShowAdvancedFilters ? "none" : "block")">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Field>
+                        <FieldLabel>@L["Name"]</FieldLabel>
+                        <TextEdit Text="@Filter.Name" TextChanged="@OnNameChangedAsync" />
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Address"]</FieldLabel>
+                        <TextEdit Text="@Filter.Address" TextChanged="@OnNameChangedAsync" />
+                    </Field>
+                </Column>
+            </Row>
+            @*//<suite-custom-code-block-2>*@
+            @*//</suite-custom-code-block-2>*@
+        </div>
+
+        @*//<suite-custom-code-block-3>*@
+        @*//</suite-custom-code-block-3>*@
+    </CardBody>
+</Card>
+
+<Card>
+    <CardBody>
+        @if (SelectedHospitals.Any())
+        {
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                @if (AllHospitalsSelected)
+                {
+                    <p class="lead mb-0">
+                        @L["AllItemsAreSelected", TotalCount]
+                    </p>
+                }
+                else
+                {
+                    <p class="lead mb-0">
+                        @if (SelectedHospitals.Count > 1)
+                        {
+                            @L["NumberOfItemsOnThisPageAreSelected", SelectedHospitals.Count]
+                        }
+                        else
+                        {
+                            @L["OneItemOnThisPageIsSelected"]
+                        }
+                    </p>
+                }
+
+                <div>
+                    @if ((SelectedHospitals.Count == PageSize || SelectedHospitals.Count == HospitalList.Count) && TotalCount > SelectedHospitals.Count)
+                    {
+                        if (!AllHospitalsSelected)
+                        {
+                            <Button Clicked="SelectAllItems" Class="mx-1 btn-outline-secondary">@L["SelectAllItems", TotalCount]</Button>
+                        }
+                        else
+                        {
+                            <Button Clicked="ClearSelection" Class="mx-1 btn-outline-secondary">@L["ClearSelection"]</Button>
+                        }
+                    }
+
+                    <Button Color="Color.Danger" Class="mx-1" Size="Size.Medium" Clicked="DeleteSelectedHospitalsAsync">
+                        <Icon Name="@IconName.Delete" /> @L["Delete"]
+                    </Button>
+                </div>
+            </div>
+
+            <hr class="my-1 mx-0" />
+        }
+
+        <DataGrid TItem="HospitalDto"
+                  Data="HospitalList"
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  SelectedRows="SelectedHospitals"
+                  RowSelectable="@((args) => CanDeleteHospital)"
+                  SelectedRowsChanged="SelectedHospitalRowsChanged"
+                  ReadData="OnDataGridAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  Responsive="true"
+                  PageSize="PageSize"
+                  Class="datagrid-detail">
+            <LoadingTemplate>
+                <Row Class=" w-100 align-items-center" Style="height: 150px;">
+                    <Column>
+                        <RadarSpinner />
+                    </Column>
+                </Row>
+            </LoadingTemplate>
+            <EmptyTemplate>
+                <Row Class="w-100 align-items-center" Style="height: 150px;">
+                    <Column>
+                        <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">@L["NoDataAvailable"]</Heading>
+                    </Column>
+                </Row>
+            </EmptyTemplate>
+            <DataGridColumns>
+                @if (CanDeleteHospital && HospitalList.Any())
+                {
+                    <DataGridMultiSelectColumn TItem="HospitalDto" DisplayOrder="-1" Width="30px"></DataGridMultiSelectColumn>
+                }
+
+                <DataGridEntityActionsColumn TItem="HospitalDto" @ref="@EntityActionsColumn">
+                    <DisplayTemplate>
+                        <EntityActions TItem="HospitalDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="HospitalDto"
+                                          Visible="@CanEditHospital"
+                                          Clicked="async () => await OpenEditHospitalModalAsync(context)"
+                                          Text="@L["Edit"]"></EntityAction>
+                            <EntityAction TItem="HospitalDto"
+                                          Visible="@CanDeleteHospital"
+                                          Clicked="() => DeleteHospitalAsync(context)"
+                                          ConfirmationMessage="@(()=> L["DeleteConfirmationMessage"])"
+                                          Text="@L["Delete"]"></EntityAction>
+                            @*//<suite-custom-code-block-4>*@
+                            @*//</suite-custom-code-block-4>*@
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+
+                <DataGridColumn TItem="HospitalDto"
+                                Field="Name"
+                                Caption="@L["Name"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="HospitalDto"
+                                Field="Address"
+                                Caption="@L["Address"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<Modal @ref="CreateHospitalModal" Closing="@CreateHospitalModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="CreateHospitalForm">
+            <ModalHeader>
+                <ModalTitle>@L["New Hospital"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateHospitalModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@NewHospitalValidations"
+                             Mode="ValidationMode.Auto"
+                             Model="@NewHospital"
+                             ValidateOnLoad="false">
+
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Name"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewHospital.Name" MaxLength="HospitalConsts.NameMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Address"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewHospital.Address" MaxLength="HospitalConsts.AddressMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                     
+                        <Field>
+                            <FieldLabel>@L["Departments"] *</FieldLabel>
+ 
+
+                            <DropdownList TItem="DepartmentDto" TValue="string"
+                                          Data="@DepartmentList"
+                                          TextField="@((item)=>item.Name)"
+                                          ValueField="@((item)=>item.Name)"
+                                          @bind-SelectedValues="@DepartmentNameList"
+                                          SelectionMode="DropdownListSelectionMode.Checkbox"
+                                          Color="Color.Primary"
+                                          MaxMenuHeight="200px">
+                                Departman Seçiniz
+                            </DropdownList>
+
+                        </Field> 
+
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateHospitalModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="CreateHospitalForm" Clicked="CreateHospitalAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="EditHospitalModal" Closing="@EditHospitalModal.CancelClosingModalWhenFocusLost">
+    <ModalContent Centered="true">
+        <Form id="EditHospitalForm">
+            <ModalHeader>
+                <ModalTitle>@L["Update"]</ModalTitle>
+                <CloseButton Clicked="CloseEditHospitalModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditingHospitalValidations"
+                             Mode="ValidationMode.Auto"
+                             Model="@EditingHospital"
+                             ValidateOnLoad="false">
+
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Name"] *</FieldLabel>
+                            <TextEdit @bind-Text="@EditingHospital.Name" MaxLength="HospitalConsts.NameMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Address"] *</FieldLabel>
+                            <TextEdit @bind-Text="@EditingHospital.Address" MaxLength="HospitalConsts.AddressMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation> 
+
+                        <Field>
+                            <FieldLabel>@L["Departments"] *</FieldLabel>
+                            <DropdownList TItem="DepartmentDto" TValue="string"
+                                          Data="@DepartmentList"
+                                          TextField="@((item)=>item.Name)"
+                                          ValueField="@((item)=>item.Name)"
+                                          @bind-SelectedValues="@DepartmentNameList"
+                                          SelectionMode="DropdownListSelectionMode.Checkbox"
+                                          Color="Color.Primary"
+                                          MaxMenuHeight="200px">
+                                Departman Seçiniz
+                            </DropdownList>
+                        </Field> 
+
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditHospitalModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <SubmitButton Form="EditHospitalForm" Clicked="UpdateHospitalAsync" />
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
