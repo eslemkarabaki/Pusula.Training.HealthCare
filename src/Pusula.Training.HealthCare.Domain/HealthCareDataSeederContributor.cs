@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pusula.Training.HealthCare.Addresses;
+using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Districts;
@@ -21,6 +22,7 @@ public class HealthCareDataSeederContributor(
     IDistrictRepository districtRepository,
     IAddressRepository addressRepository,
     IPatientRepository patientRepository,
+    IAppointmentRepository appointmentRepository,
     IGuidGenerator guidGenerator)
     : IDataSeedContributor, ITransientDependency
 {
@@ -103,6 +105,24 @@ public class HealthCareDataSeederContributor(
         ];
 
         return await SeedEntitiesAsync(patients, e => patientRepository.InsertManyAsync(e, true));
+    }
+
+    // Appointment
+    private async Task<IEnumerable<Guid>> SeedAppointmentsAsync(IEnumerable<Guid> hospitalId, IEnumerable<Guid> departmentId, IEnumerable<Guid> doctorId, IEnumerable<Guid> patientId)
+    {
+        IEnumerable<Appointment> appointments =
+        [
+            new(guidGenerator.Create(), hospitalId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12),
+            "Lorem ipsum odor amet, consectetuer adipiscing elit.", EnumStatus.Completed),
+            new(guidGenerator.Create(), hospitalId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12),
+            "Parturient ipsum quam facilisis facilisi consectetur curabitur enim.", EnumStatus.Scheduled),
+            new(guidGenerator.Create(), hospitalId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12),
+            "Suspendisse nascetur fusce molestie penatibus mi tempus fermentum dis.", EnumStatus.Rescheduled),
+
+
+        ];
+
+        return await SeedEntitiesAsync(appointments, e => appointmentRepository.InsertManyAsync(e, true));
     }
 
     // Address

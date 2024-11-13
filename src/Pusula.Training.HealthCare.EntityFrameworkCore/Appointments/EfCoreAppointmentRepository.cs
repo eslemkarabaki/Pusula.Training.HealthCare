@@ -21,6 +21,7 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     : EfCoreRepository<HealthCareDbContext, Appointment, Guid>(dbContextProvider), IAppointmentRepository
 
 {
+    #region DeleteAll
     public virtual async Task DeleteAllAsync(
         string? filterText = null, DateTime? appointmentDate = null,
         EnumStatus? status = null, string? notes = null,
@@ -34,8 +35,9 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         var ids = query.Select(x => x.Appointment.Id);
         await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
     }
+    #endregion
 
-
+    #region GetWithNavigationProperties
     public virtual async Task<AppointmentWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var dbContext = await GetDbContextAsync();
@@ -51,7 +53,9 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
 
             }).FirstOrDefault()!;
     }
+    #endregion
 
+    #region GetListWithNavigationProperties
     public virtual async Task<List<AppointmentWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         string? filterText, DateTime? appointmentDate = null,
             EnumStatus? status = null, string? notes = null,
@@ -65,7 +69,9 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? AppointmentConsts.GetDefaultSorting(true) : sorting);
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
+    #endregion
 
+    #region GetQueryForNavigationProperties
     protected virtual async Task<IQueryable<AppointmentWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()
     {
         return from appointment in (await GetDbSetAsync())
@@ -85,9 +91,10 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
                    Doctor = doctor,
                    Patient = patient,
                };
-
     }
+    #endregion
 
+    #region ApplyFiterWithNavigationProperties
     protected virtual IQueryable<AppointmentWithNavigationProperties> ApplyFilter(
         IQueryable<AppointmentWithNavigationProperties> query,
         string? filterText = null, DateTime? appointmentDate = null,
@@ -105,7 +112,9 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
                 .WhereIf(doctorId != null && doctorId != Guid.Empty, e => e.Doctor != null && e.Doctor.Id == doctorId)
                 .WhereIf(patientId != null && patientId != Guid.Empty, e => e.Patient != null && e.Patient.Id == patientId);
     }
+    #endregion
 
+    #region GetList
     public virtual async Task<List<Appointment>> GetListAsync(
         string? filterText, DateTime? appointmentDate = null,
             EnumStatus? status = null, string? notes = null,
@@ -114,11 +123,13 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
             string? sorting = null, int maxResultCount = int.MaxValue,
             int skipCount = 0, CancellationToken cancellationToken = default)
     {
-        var query = ApplyFilter((await GetQueryableAsync()), filterText, appointmentDate, status, notes);
+        var query = ApplyFilter(await GetQueryableAsync(), filterText, appointmentDate, status, notes);
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? AppointmentConsts.GetDefaultSorting(false) : sorting);
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
+    #endregion
 
+    #region GetCount
     public virtual async Task<long> GetCountAsync(
         string? filterText, DateTime? appointmentDate = null,
             EnumStatus? status = null, string? notes = null,
@@ -130,7 +141,9 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         query = ApplyFilter(query, filterText, appointmentDate, status, notes, hospitalId, departmentId, doctorId, patientId);
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
     }
+    #endregion
 
+    #region ApplyFilter
     protected virtual IQueryable<Appointment> ApplyFilter(
     IQueryable<Appointment> query,
     string? filterText = null, DateTime? appointmentDate = null,
@@ -142,4 +155,5 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         .WhereIf(appointmentDate.HasValue, e => e.AppointmentDate >= appointmentDate.Value)
         .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Notes.Contains(notes!));
 }
+    #endregion
 }

@@ -8,7 +8,7 @@ namespace Pusula.Training.HealthCare.Appointments
 {
     public static class AppointmentConsts
     {
-        private const string DefaultSorting = "{0}Type asc";
+        private const string DefaultSorting = "{0}AppointmentDate desc";
 
         public static string GetDefaultSorting(bool withEntityName)
         {

@@ -26,17 +26,11 @@ namespace Pusula.Training.HealthCare.Controllers.Appointments
             _appointmentsAppService = appointmentsAppService;
         }
 
-        [HttpGet]
-        public virtual Task<PagedResultDto<AppointmentWithNavigationPropertiesDto>> GetListAsync(GetAppointmentsInput input)
+        [HttpGet("all")]
+        public virtual Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
         {
             return _appointmentsAppService.GetListAsync(input);
-        }
-
-        //[HttpGet]
-        //public virtual Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
-        //{
-        //    return _appointmentsAppService.GetListAsync(input);
-        //}
+        }        
 
         [HttpGet]
         [Route("with-navigation-properties/{id}")]
