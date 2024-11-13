@@ -14,6 +14,7 @@ using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Titles;
+using Pusula.Training.HealthCare.Examinations;
 
 namespace Pusula.Training.HealthCare;
 
