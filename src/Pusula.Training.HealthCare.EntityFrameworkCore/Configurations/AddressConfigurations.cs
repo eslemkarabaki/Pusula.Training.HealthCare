@@ -15,7 +15,8 @@ public class AddressConfigurations : IEntityTypeConfiguration<Address>
         b.ConfigureByConvention();
         b.HasIndex(e => e.PatientId);
 
-        b.Property(e => e.AddressLine).HasColumnName(nameof(Address.AddressLine)).IsRequired();
+        b.Property(e => e.AddressLine).HasColumnName(nameof(Address.AddressLine)).IsRequired()
+         .HasMaxLength(AddressConsts.AddressMaxLength);
 
         b.HasOne<District>().WithMany().IsRequired().HasForeignKey(e => e.DistrictId)
          .OnDelete(DeleteBehavior.NoAction);
