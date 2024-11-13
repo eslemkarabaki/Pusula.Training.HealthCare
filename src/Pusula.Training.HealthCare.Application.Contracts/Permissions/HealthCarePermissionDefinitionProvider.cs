@@ -2,6 +2,7 @@ using Pusula.Training.HealthCare.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
+using static Pusula.Training.HealthCare.Permissions.HealthCarePermissions;
 
 namespace Pusula.Training.HealthCare.Permissions;
 
@@ -21,6 +22,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetCountryPermissions(myGroup);
         SetCityPermissions(myGroup);
         SetDistrictPermissions(myGroup);
+        SetExaminationsPermissions(myGroup);
 
         var protocolPermission = myGroup.AddPermission(HealthCarePermissions.Protocols.Default, L("Permission:Protocols"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
@@ -89,5 +91,12 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Districts.Create, L("Permission:Create"));
         permission.AddChild(HealthCarePermissions.Districts.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Districts.Delete, L("Permission:Delete"));
+    }
+    private void SetExaminationsPermissions(PermissionGroupDefinition group)
+    {
+        var examinations = group.AddPermission(HealthCarePermissions.Examinations.Default, L("Permission:Examinations"));
+        examinations.AddChild(HealthCarePermissions.Examinations.Create, L("Permission:Create"));
+        examinations.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
+        examinations.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
     }
 }
