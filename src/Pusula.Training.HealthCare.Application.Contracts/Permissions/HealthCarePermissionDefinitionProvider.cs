@@ -16,13 +16,12 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         myGroup.AddPermission(HealthCarePermissions.Dashboard.Tenant, L("Permission:Dashboard"), MultiTenancySides.Tenant);
 
         //Define your own permissions here. Example:
-        //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1"));
+        //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1")); 
 
         SetPatientPermissions(myGroup);
         SetCountryPermissions(myGroup);
         SetCityPermissions(myGroup);
         SetDistrictPermissions(myGroup);
-        SetExaminationsPermissions(myGroup);
 
         var protocolPermission = myGroup.AddPermission(HealthCarePermissions.Protocols.Default, L("Permission:Protocols"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
