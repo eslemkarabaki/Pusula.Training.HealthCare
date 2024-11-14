@@ -6,7 +6,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Content;
 
 namespace Pusula.Training.HealthCare.Departments;
-
+       
 public interface IDepartmentsAppService : IApplicationService
 {
     Task<PagedResultDto<DepartmentDto>> GetListAsync(GetDepartmentsInput input);
