@@ -28,4 +28,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AppointmentTypes\" />
+    <Folder Include="AppointmentReports\" />
+  </ItemGroup>
+
 </Project>

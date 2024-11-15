@@ -14,5 +14,8 @@ namespace Pusula.Training.HealthCare.Appointments
         {
             return string.Format(DefaultSorting, withEntityName ? "Appointment." : string.Empty);
         }
+
+        public const int NotesMinLength = 1;
+        public const int NotesMaxLength = 128;
     }
 }

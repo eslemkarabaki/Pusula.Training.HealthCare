@@ -108,15 +108,15 @@ public class HealthCareDataSeederContributor(
     }
 
     // Appointment
-    private async Task<IEnumerable<Guid>> SeedAppointmentsAsync(IEnumerable<Guid> hospitalId, IEnumerable<Guid> departmentId, IEnumerable<Guid> doctorId, IEnumerable<Guid> patientId)
+    private async Task<IEnumerable<Guid>> SeedAppointmentsAsync(IEnumerable<Guid> appointmentTypeId, IEnumerable<Guid> departmentId, IEnumerable<Guid> doctorId, IEnumerable<Guid> patientId)
     {
         IEnumerable<Appointment> appointments =
         [
-            new(guidGenerator.Create(), hospitalId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12),
+            new(guidGenerator.Create(), appointmentTypeId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12), new DateTime(2024, 11, 12),
             "Lorem ipsum odor amet, consectetuer adipiscing elit.", EnumStatus.Completed),
-            new(guidGenerator.Create(), hospitalId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12),
+            new(guidGenerator.Create(), appointmentTypeId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12), new DateTime(2024, 11, 12),
             "Parturient ipsum quam facilisis facilisi consectetur curabitur enim.", EnumStatus.Scheduled),
-            new(guidGenerator.Create(), hospitalId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12),
+            new(guidGenerator.Create(), appointmentTypeId.ElementAt(0), departmentId.ElementAt(0), doctorId.ElementAt(0), patientId.ElementAt(0), new DateTime(2024, 11, 12),  new DateTime(2024, 11, 12),
             "Suspendisse nascetur fusce molestie penatibus mi tempus fermentum dis.", EnumStatus.Rescheduled),
 
 

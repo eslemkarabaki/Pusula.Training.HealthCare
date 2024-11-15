@@ -11,7 +11,7 @@ namespace Pusula.Training.HealthCare.Appointments
     {
         public DateTime AppointmentDate { get; set; }
         public EnumStatus Status { get; set; }
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
         public Guid HospitalId { get; set; }
         public Guid DepartmentId { get; set; }
         public Guid DoctorId { get; set; }
