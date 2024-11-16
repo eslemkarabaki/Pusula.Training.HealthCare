@@ -9,10 +9,15 @@
 
 	<ItemGroup>
 		<PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Pusula.Training.HealthCare.Blazor\Pusula.Training.HealthCare.Blazor.csproj" />
+		<ProjectReference Include="..\Pusula.Training.HealthCare.HttpApi.Client\Pusula.Training.HealthCare.HttpApi.Client.csproj" />
 	</ItemGroup>
 
 
