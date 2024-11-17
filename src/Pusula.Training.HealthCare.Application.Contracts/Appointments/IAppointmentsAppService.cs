@@ -15,7 +15,7 @@ namespace Pusula.Training.HealthCare.Appointments
         Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input);
         Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id);
         Task<AppointmentDto> GetAsync(Guid id);
-        Task<PagedResultDto<LookupDto<Guid>>> GetHospitalLookupAsync(LookupRequestDto input);
+        Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input);
         Task<PagedResultDto<LookupDto<Guid>>> GetDepartmentLookupAsync(LookupRequestDto input);
         Task<PagedResultDto<LookupDto<Guid>>> GetDoctorLookupAsync(LookupRequestDto input);
         Task<PagedResultDto<LookupDto<Guid>>> GetPatientLookupAsync(LookupRequestDto input);
@@ -24,7 +24,6 @@ namespace Pusula.Training.HealthCare.Appointments
         Task<AppointmentDto> UpdateAsync(Guid id, AppointmentUpdateDto input);
         Task<IRemoteStreamContent> GetListAsExcelFileAsync(AppointmentExcelDownloadDto input);
         Task DeleteByIdsAsync(List<Guid> appointmentIds);
-
         Task DeleteAllAsync(GetAppointmentsInput input);
         Task<DownloadTokenResultDto> GetDownloadTokenAsync();
 

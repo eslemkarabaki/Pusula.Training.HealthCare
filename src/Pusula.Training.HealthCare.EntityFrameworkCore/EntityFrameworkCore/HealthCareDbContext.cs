@@ -29,6 +29,8 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.AppointmentTypes;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -53,6 +55,8 @@ public class HealthCareDbContext :
     public DbSet<District> Districts { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Appointment> Appointments { get; set; } = null!;
+    public DbSet<AppointmentReport> AppointmentReports { get; set; } = null!;
+    public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
 
 

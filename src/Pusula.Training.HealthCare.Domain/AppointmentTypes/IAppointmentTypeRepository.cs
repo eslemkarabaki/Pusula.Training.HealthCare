@@ -10,7 +10,7 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
 {
     public interface IAppointmentTypeRepository:IRepository <AppointmentType,Guid>
     {
-        Task DeleteAsync(
+        Task DeleteAllAsync(
             string? filterText=null, string? name=null,
             CancellationToken cancellationToken=default);
 

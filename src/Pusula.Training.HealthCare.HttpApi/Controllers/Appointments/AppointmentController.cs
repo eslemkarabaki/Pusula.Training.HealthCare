@@ -48,9 +48,9 @@ namespace Pusula.Training.HealthCare.Controllers.Appointments
 
         [HttpGet]
         [Route("hospital-lookup")]
-        public virtual Task<PagedResultDto<LookupDto<Guid>>> GetHospitalLookupAsync(LookupRequestDto input)
+        public virtual Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input)
         {
-            return _appointmentsAppService.GetHospitalLookupAsync(input);
+            return _appointmentsAppService.GetAppointmentTypeLookupAsync(input);
         }
 
         [HttpGet]

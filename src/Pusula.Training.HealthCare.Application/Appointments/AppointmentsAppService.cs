@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using MiniExcelLibs;
+using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
-using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
@@ -31,7 +31,7 @@ namespace Pusula.Training.HealthCare.Appointments
         AppointmentManager appointmentManager,
         IDistributedCache<AppointmentDownloadTokenCacheItem, string> downloadTokenCache,
         
-        IRepository<Hospital, Guid> hospitalRepository,
+        IRepository<AppointmentType, Guid> appointmentTypeRepository,
         IRepository<Department, Guid> departmentRepository,
         IRepository<Doctor, Guid> doctorRepository,
         IRepository<Patient, Guid> patientRepository) :HealthCareAppService, IAppointmentsAppService
@@ -39,8 +39,8 @@ namespace Pusula.Training.HealthCare.Appointments
         #region GetList
         public virtual async Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
         {
-            var totalCount = await appointmentRepository.GetCountAsync(input.FilterText, input.AppointmentDate, input.Status, input.Notes, input.HospitalId, input.DepartmentId, input.DoctorId, input.PatientId);
-            var items = await appointmentRepository.GetListAsync(input.FilterText, input.AppointmentDate, input.Status, input.Notes, input.HospitalId, input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await appointmentRepository.GetCountAsync(input.FilterText, input.AppointmentStartDate, input.AppointmentEndDate, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
+            var items = await appointmentRepository.GetListAsync(input.FilterText, input.AppointmentStartDate, input.AppointmentEndDate, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<AppointmentDto>
             {
@@ -65,19 +65,19 @@ namespace Pusula.Training.HealthCare.Appointments
         }
         #endregion
 
-        #region GetHospitalLookup
-        public virtual async Task<PagedResultDto<LookupDto<Guid>>> GetHospitalLookupAsync(LookupRequestDto input)
+        #region GetAppointmentTypeLookup
+        public virtual async Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input)
         {
-            var query = (await hospitalRepository.GetQueryableAsync())
+            var query = (await appointmentTypeRepository.GetQueryableAsync())
                 .WhereIf(!string.IsNullOrWhiteSpace(input.Filter),
                 x => x.Name != null && x.Name.Contains(input.Filter!));
 
-            var lookupData = await query.PageBy(input.SkipCount, input.MaxResultCount).ToDynamicListAsync<Hospital>();
+            var lookupData = await query.PageBy(input.SkipCount, input.MaxResultCount).ToDynamicListAsync<AppointmentType>();
             var totalCount = query.Count();
             return new PagedResultDto<LookupDto<Guid>>
             {
                 TotalCount = totalCount,
-                Items = ObjectMapper.Map<List<Hospital>, List<LookupDto<Guid>>>(lookupData)
+                Items = ObjectMapper.Map<List<AppointmentType>, List<LookupDto<Guid>>>(lookupData)
             };
         }
         #endregion
@@ -145,9 +145,9 @@ namespace Pusula.Training.HealthCare.Appointments
         [Authorize(HealthCarePermissions.Appointments.Create)]
         public virtual async Task<AppointmentDto> CreateAsync(AppointmentCreateDto input)
         {
-            if (input.HospitalId == default)
+            if (input.AppointmentTypeId == default)
             {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Hospital"]]);
+                throw new UserFriendlyException(L["The {0} field is required.", L["AppointmentType"]]);
             }
             if (input.DepartmentId == default)
             {
@@ -163,7 +163,7 @@ namespace Pusula.Training.HealthCare.Appointments
             }            
 
             var appointment = await appointmentManager.CreateAsync(
-            input.HospitalId, input.DepartmentId, input.DoctorId, input.PatientId, input.AppointmentDate, input.Status, input.Notes);
+            input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.AppointmentStartDate, input.AppointmentEndDate, input.Status, input.Notes);
 
             return ObjectMapper.Map<Appointment, AppointmentDto>(appointment);
         }
@@ -175,7 +175,7 @@ namespace Pusula.Training.HealthCare.Appointments
         {         
 
             var appointment = await appointmentManager.UpdateAsync(
-                id,input.HospitalId, input.DepartmentId, input.DoctorId, input.PatientId, input.AppointmentDate, input.Status, input.Notes);
+                id,input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.AppointmentStartDate, input.AppointmentEndDate, input.Status, input.Notes);
 
             return ObjectMapper.Map<Appointment, AppointmentDto>(appointment);
         }
@@ -191,14 +191,15 @@ namespace Pusula.Training.HealthCare.Appointments
                 throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             }
 
-            var appointments = await appointmentRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.AppointmentDate, input.Status, input.Notes, input.HospitalId, input.DepartmentId, input.DoctorId, input.PatientId);
+            var appointments = await appointmentRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.AppointmentStartDate, input.AppointmentEndDate, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
             var items = appointments.Select(item => new
             {
-                item.Appointment.AppointmentDate,
+                item.Appointment.AppointmentStartDate,
+                item.Appointment.AppointmentEndDate,
                 item.Appointment.Status,
                 item.Appointment.Notes,
 
-                Hospital=item.Hospital?.Name,
+                AppointmentType=item.AppointmentType?.Name,
                 Department = item.Department?.Name,
                 Doctor=item.Doctor?.FirstName,
                 Patient = item.Patient?.FirstName,                
@@ -213,9 +214,9 @@ namespace Pusula.Training.HealthCare.Appointments
 
         #region DeleteById
         [Authorize(HealthCarePermissions.Appointments.Delete)]
-        public virtual async Task DeleteByIdsAsync(List<Guid> appointmentlIds)
+        public virtual async Task DeleteByIdsAsync(List<Guid> appointmentIds)
         {
-            await appointmentRepository.DeleteManyAsync(appointmentlIds);
+            await appointmentRepository.DeleteManyAsync(appointmentIds);
         }
         #endregion
 
@@ -223,7 +224,7 @@ namespace Pusula.Training.HealthCare.Appointments
         [Authorize(HealthCarePermissions.Appointments.Delete)]
         public virtual async Task DeleteAllAsync(GetAppointmentsInput input)
         {
-            await appointmentRepository.DeleteAllAsync(input.FilterText, input.AppointmentDate, input.Status, input.Notes, input.HospitalId, input.DepartmentId, input.DoctorId, input.PatientId);
+            await appointmentRepository.DeleteAllAsync(input.FilterText, input.AppointmentStartDate, input.AppointmentEndDate, input.Notes, input.Status,  input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
         }
         #endregion
 

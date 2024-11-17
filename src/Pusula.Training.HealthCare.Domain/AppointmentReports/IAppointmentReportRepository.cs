@@ -10,15 +10,15 @@ namespace Pusula.Training.HealthCare.AppointmentReports
 {
     public interface IAppointmentReportRepository:IRepository<AppointmentReport,Guid>
     {
-        Task DeleteAsync(
+        Task DeleteAllAsync(
             string? filterText = null,
             DateTime? reportDate = null, string? priorityNotes=null,
             string? doctorNotes=null, Guid? appointmentId=null,
             CancellationToken cancellationToken=default);
 
-        Task<AppointmentReportWithNavigationProperties> GetWithNavigationProperties(
+        Task<AppointmentReportWithNavigationProperties> GetWithNavigationPropertiesAsync(
             Guid id,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken=default);
 
         Task<List<AppointmentReportWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
             string? filterText =null, DateTime? reportDate = null, 

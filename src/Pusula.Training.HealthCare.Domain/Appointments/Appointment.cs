@@ -22,9 +22,7 @@ namespace Pusula.Training.HealthCare.Appointments
         public virtual EnumStatus Status { get; set; }
 
         [CanBeNull]
-        public virtual string? Notes { get; set; }
-
-        
+        public virtual string? Notes { get; set; }        
 
         public virtual Guid AppointmentTypeId { get; set; }
         public virtual Guid DepartmentId { get; set; }
