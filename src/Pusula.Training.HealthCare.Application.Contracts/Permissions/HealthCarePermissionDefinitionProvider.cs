@@ -22,7 +22,9 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetCountryPermissions(myGroup);
         SetCityPermissions(myGroup);
         SetDistrictPermissions(myGroup);
-
+        SetPatientTypePermissions(myGroup);
+        SetExaminationsPermissions(myGroup);
+        
         var protocolPermission =
             myGroup.AddPermission(HealthCarePermissions.Protocols.Default, L("Permission:Protocols"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
@@ -69,6 +71,14 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Patients.Create, L("Permission:Create"));
         permission.AddChild(HealthCarePermissions.Patients.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Patients.Delete, L("Permission:Delete"));
+    }
+    
+    private void SetPatientTypePermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.PatientTypes.Default, L("Permission:PatientTypes"));
+        permission.AddChild(HealthCarePermissions.PatientTypes.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.PatientTypes.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.PatientTypes.Delete, L("Permission:Delete"));
     }
 
     private void SetCountryPermissions(PermissionGroupDefinition group)
