@@ -15,52 +15,46 @@ namespace Pusula.Training.HealthCare.Blazor;
 
 public class Program
 {
-    public async static Task<int> Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddEnvironmentVariables()
-            .Build();
+                            .SetBasePath(Directory.GetCurrentDirectory())
+                            .AddJsonFile("appsettings.json", false, true)
+                            .AddEnvironmentVariables()
+                            .Build();
 
         Log.Logger = new LoggerConfiguration()
 #if DEBUG
-            .MinimumLevel.Debug()
+                     .MinimumLevel.Debug()
 #else
             .MinimumLevel.Information()
 #endif
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
-            .Enrich.FromLogContext()
-            .WriteTo.Async(c => c.File("Logs/logs.txt"))
-            .WriteTo.Elasticsearch(
-                new ElasticsearchSinkOptions(new Uri(configuration["ElasticSearch:Url"]!))
-                {
-                    AutoRegisterTemplate = true,
-                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv8,
-                    IndexFormat = "Pusula-Training-HealthCare-log-{0:yyyy.MM}"
-                })
-            .WriteTo.Async(c => c.Console())
-            .CreateLogger();
+                     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+                     .Enrich.FromLogContext()
+                     .WriteTo.Async(c => c.File("Logs/logs.txt"))
+                     .WriteTo.Elasticsearch(
+                         new ElasticsearchSinkOptions(new Uri(configuration["ElasticSearch:Url"]!))
+                         {
+                             AutoRegisterTemplate = true,
+                             AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv8,
+                             IndexFormat = "Pusula-Training-HealthCare-log-{0:yyyy.MM}"
+                         })
+                     .WriteTo.Async(c => c.Console())
+                     .CreateLogger();
 
         try
         {
             Log.Information("Starting web host.");
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.AddAppSettingsSecretsJson()
-                .UseAutofac()
-                .UseSerilog();
+                   .UseAutofac()
+                   .UseSerilog();
 
             await builder.AddApplicationAsync<HealthCareBlazorModule>();
 
-            builder.Services.AddSyncfusionBlazor();
-
-            string? syncfusionLicenseKey = configuration["Syncfusion:LicenseKey"];
-
-            SyncfusionLicenseProvider.RegisterLicense(syncfusionLicenseKey);
-
-
             var app = builder.Build();
+            SyncfusionLicenseProvider.RegisterLicense(configuration["Syncfusion:LicenseKey"]);
             await app.InitializeApplicationAsync();
             await app.RunAsync();
             return 0;

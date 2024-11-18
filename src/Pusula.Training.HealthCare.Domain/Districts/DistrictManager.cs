@@ -14,9 +14,6 @@ public class DistrictManager(IDistrictRepository districtRepository) : DomainSer
         string name
     )
     {
-        Check.NotDefaultOrNull<Guid>(cityId, nameof(cityId));
-        Check.NotNullOrWhiteSpace(name, nameof(name), DistrictConsts.NameMaxLength);
-
         var district = new District(GuidGenerator.Create(), cityId, name);
         return await districtRepository.InsertAsync(district);
     }
@@ -25,19 +22,12 @@ public class DistrictManager(IDistrictRepository districtRepository) : DomainSer
         Guid id,
         Guid cityId,
         string name,
-        [CanBeNull] string? concurrencyStamp = null
+        string? concurrencyStamp = null
     )
     {
-        Check.NotDefaultOrNull<Guid>(cityId, nameof(cityId));
-        Check.NotNullOrWhiteSpace(name, nameof(name), DistrictConsts.NameMaxLength);
-
         var district = await districtRepository.GetAsync(id);
-
-        district.Name = name;
-        district.CityId = cityId;
-
+        district.Set(cityId, name);
         district.SetConcurrencyStampIfNotNull(concurrencyStamp);
-
         return await districtRepository.UpdateAsync(district);
     }
 }

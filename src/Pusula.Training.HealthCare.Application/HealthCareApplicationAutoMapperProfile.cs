@@ -15,6 +15,7 @@ using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.PatientTypes;
 
 namespace Pusula.Training.HealthCare;
 
@@ -22,20 +23,23 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 {
     public HealthCareApplicationAutoMapperProfile()
     {
-
         CreateMap<Patient, PatientDto>();
-        CreateMap<Patient, PatientExcelDto>();
-        CreateMap<PatientDto, PatientUpdateDto>()
-            .ForMember(e => e.DistrictId, opt => opt.MapFrom(src => src.Address.DistrictId))
-            .ForMember(e => e.Address, opt => opt.MapFrom(src => src.Address.AddressLine));
-        CreateMap<PatientWithAddressAndCountry, PatientDto>();
-        CreateMap<PatientWithAddressAndCountry, PatientExcelDto>()
-            .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country));
+        CreateMap<PatientView, PatientUpdateDto>();
+        CreateMap<PatientViewDto, PatientUpdateDto>();
+        CreateMap<PatientView, PatientViewDto>();
+        CreateMap<PatientView, PatientExcelDto>()
+            .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country))
+            .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType));
         CreateMap<Patient, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
 
-        CreateMap<Address, AddressDto>();
-        CreateMap<AddressWithRelations, AddressDto>();
+        CreateMap<PatientType, PatientTypeDto>();
+
+        CreateMap<Address, AddressDto>().ReverseMap();
+        CreateMap<AddressView, AddressDto>();
+        CreateMap<AddressCreateDto, Address>();
+        CreateMap<AddressUpdateDto, Address>();
+        CreateMap<AddressDto, AddressUpdateDto>();
 
         CreateMap<Country, CountryDto>();
         CreateMap<CountryDto, CountryUpdateDto>();
@@ -58,7 +62,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
         CreateMap<Department, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
-        CreateMap<Department, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<Department, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<Appointment, AppointmentDto>();
         CreateMap<AppointmentDto, AppointmentUpdateDto>();
@@ -75,8 +80,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Doctor, DoctorDto>();
         CreateMap<Doctor, DoctorExcelDto>();
         CreateMap<DoctorDto, DoctorUpdateDto>();
-        CreateMap<Doctor, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
-       
+        CreateMap<Doctor, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
+
         CreateMap<Title, TitleDto>();
         CreateMap<Title, TitleExcelDto>();
         CreateMap<TitleDto, TitleUpdateDto>();
@@ -88,7 +94,5 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 
 
         //Burası önemli
-
-
     }
 }

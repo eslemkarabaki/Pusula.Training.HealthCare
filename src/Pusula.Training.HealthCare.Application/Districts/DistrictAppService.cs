@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Permissions;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -10,12 +11,21 @@ namespace Pusula.Training.HealthCare.Districts;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(HealthCarePermissions.Districts.Default)]
-public class DistrictAppService(IDistrictRepository districtRepository, DistrictManager districtManager)
+public class DistrictAppService(
+    IDistrictRepository districtRepository,
+    ICityRepository cityRepository,
+    DistrictManager districtManager)
     : HealthCareAppService, IDistrictAppService
 {
     public async Task<DistrictDto> GetAsync(Guid id)
     {
         return ObjectMapper.Map<District, DistrictDto>(await districtRepository.GetAsync(id));
+    }
+
+    public async Task<CityDto> GetCityAsync(Guid districtId)
+    {
+        var district = await districtRepository.GetAsync(districtId);
+        return ObjectMapper.Map<City, CityDto>(await cityRepository.GetAsync(e => e.Id == district.CityId));
     }
 
     public async Task<List<DistrictDto>> GetListAsync()

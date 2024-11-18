@@ -1,64 +1,87 @@
 using System;
+using JetBrains.Annotations;
+using Pusula.Training.HealthCare.Countries;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Patients;
 
-public sealed class Patient : FullAuditedAggregateRoot<Guid>
+public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public DateTime BirthDate { get; set; }
-    public string IdentityNumber { get; set; }
-    public string EmailAddress { get; set; }
-    public string MobilePhoneNumber { get; set; }
-    public string? HomePhoneNumber { get; set; }
-    public EnumGender Gender { get; set; }  
-    public EnumBloodType BloodType { get; set; }
-    public EnumMaritalStatus MaritalStatus { get; set; }
-    public Guid CountryId { get; set; }
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    public DateTime BirthDate { get; private set; }
+    public string? IdentityNumber { get; private set; }
+    public string? PassportNumber { get; private set; }
+    public string EmailAddress { get; private set; }
+    public string MobilePhoneNumberCode { get; private set; }
+    public string MobilePhoneNumber { get; private set; }
+    public string? HomePhoneNumberCode { get; private set; }
+    public string? HomePhoneNumber { get; private set; }
+    public EnumGender Gender { get; private set; }
+    public EnumBloodType BloodType { get; private set; }
+    public EnumMaritalStatus MaritalStatus { get; private set; }
+    public Guid CountryId { get; private set; }
+    public Guid PatientTypeId { get; private set; }
 
     private Patient()
     {
         FirstName = string.Empty;
         LastName = string.Empty;
-        IdentityNumber = string.Empty;
         EmailAddress = string.Empty;
         MobilePhoneNumber = string.Empty;
-        Gender = EnumGender.None;
-        BloodType = EnumBloodType.None;
-        MaritalStatus = EnumMaritalStatus.None;
+        MobilePhoneNumberCode = string.Empty;
     }
 
-    public Patient(Guid id, Guid countryId, string firstName, string lastName, DateTime birthDate,
-        string identityNumber,
-        string emailAddress, string mobilePhoneNumber, EnumGender gender, EnumBloodType bloodType,
-        EnumMaritalStatus maritalStatus, string? homePhoneNumber = null)
+
+    internal Patient(Guid id, Guid countryId, Guid patientTypeId, string firstName, string lastName, DateTime birthDate,
+                     string? identityNumber, string? passportNumber,
+                     string emailAddress, string mobilePhoneNumberCode, string mobilePhoneNumber,
+                     string? homePhoneNumberCode, string? homePhoneNumber, EnumGender gender,
+                     EnumBloodType bloodType,
+                     EnumMaritalStatus maritalStatus) : base(id)
     {
-        Check.NotDefaultOrNull<Guid>(id, nameof(id));
-        Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
-        Check.NotNullOrWhiteSpace(firstName, nameof(firstName), PatientConsts.FirstNameMaxLength);
-        Check.NotNullOrWhiteSpace(lastName, nameof(lastName), PatientConsts.LastNameMaxLength);
-        Check.NotNullOrWhiteSpace(identityNumber, nameof(identityNumber), PatientConsts.IdentityNumberMaxLength);
-        Check.NotNullOrWhiteSpace(emailAddress, nameof(emailAddress), PatientConsts.EmailAddressMaxLength);
-        Check.NotNullOrWhiteSpace(mobilePhoneNumber, nameof(mobilePhoneNumber), PatientConsts.PhoneNumberMaxLength);
+        Set(countryId, patientTypeId, firstName, lastName, birthDate, identityNumber, passportNumber, emailAddress,
+            mobilePhoneNumberCode, mobilePhoneNumber, homePhoneNumberCode, homePhoneNumber, gender, bloodType,
+            maritalStatus);
+    }
 
-        if (!string.IsNullOrWhiteSpace(homePhoneNumber))
-        {
-            Check.Length(homePhoneNumber, nameof(homePhoneNumber), PatientConsts.PhoneNumberMaxLength);
-        }
-
-        Id = id;
-        CountryId = countryId;
-        FirstName = firstName;
-        LastName = lastName;
+    internal void Set(Guid countryId, Guid patientTypeId, string firstName, string lastName, DateTime birthDate,
+                      string? identityNumber, string? passportNumber,
+                      string emailAddress, string mobilePhoneNumberCode, string mobilePhoneNumber,
+                      string? homePhoneNumberCode, string? homePhoneNumber, EnumGender gender,
+                      EnumBloodType bloodType,
+                      EnumMaritalStatus maritalStatus)
+    {
+        CountryId = Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
+        PatientTypeId = Check.NotDefaultOrNull<Guid>(patientTypeId, nameof(patientTypeId));
+        FirstName = Check.NotNullOrWhiteSpace(firstName, nameof(firstName), PatientConsts.FirstNameMaxLength);
+        LastName = Check.NotNullOrWhiteSpace(lastName, nameof(lastName), PatientConsts.LastNameMaxLength);
         BirthDate = birthDate;
-        IdentityNumber = identityNumber;
-        EmailAddress = emailAddress;
-        MobilePhoneNumber = mobilePhoneNumber;
+
+        IdentityNumber =
+            Check.Length(identityNumber, nameof(identityNumber), PatientConsts.IdentityNumberMaxLength);
+
+        PassportNumber =
+            Check.Length(passportNumber, nameof(passportNumber), PatientConsts.PassportNumberMaxLength);
+
+        EmailAddress =
+            Check.NotNullOrWhiteSpace(emailAddress, nameof(emailAddress), PatientConsts.EmailAddressMaxLength);
+
+        MobilePhoneNumberCode = Check.NotNullOrWhiteSpace(mobilePhoneNumberCode, nameof(mobilePhoneNumberCode),
+            CountryConsts.PhoneCodeMaxLength);
+
+        MobilePhoneNumber = Check.NotNullOrWhiteSpace(mobilePhoneNumber, nameof(mobilePhoneNumber),
+            PatientConsts.PhoneNumberMaxLength);
+
+        HomePhoneNumberCode =
+            Check.Length(homePhoneNumberCode, nameof(homePhoneNumberCode), CountryConsts.PhoneCodeMaxLength);
+
+        HomePhoneNumber =
+            Check.Length(homePhoneNumber, nameof(homePhoneNumber), PatientConsts.PhoneNumberMaxLength);
+
         Gender = gender;
         BloodType = bloodType;
         MaritalStatus = maritalStatus;
-        HomePhoneNumber = homePhoneNumber;
     }
 }

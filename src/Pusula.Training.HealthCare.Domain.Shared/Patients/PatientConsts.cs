@@ -12,6 +12,7 @@ public static class PatientConsts
     public const int FirstNameMaxLength = 128;
     public const int LastNameMaxLength = 128;
     public const int IdentityNumberMaxLength = 11;
+    public const int PassportNumberMaxLength = 12;
     public const int EmailAddressMaxLength = 128;
     public const int PhoneNumberMaxLength = 32;
 }

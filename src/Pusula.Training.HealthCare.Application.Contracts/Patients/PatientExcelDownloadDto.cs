@@ -11,6 +11,7 @@ public class PatientExcelDownloadDto
     public DateTime? BirthDateMin { get; set; }
     public DateTime? BirthDateMax { get; set; }
     public string? IdentityNumber { get; set; }
+    public string? PassportNumber { get; set; }
     public string? EmailAddress { get; set; }
     public string? MobilePhoneNumber { get; set; }
     public string? HomePhoneNumber { get; set; }
@@ -19,4 +20,5 @@ public class PatientExcelDownloadDto
     public EnumMaritalStatus MaritalStatus { get; set; } = EnumMaritalStatus.None;
 
     public Guid? CountryId { get; set; }
+    public Guid? PatientTypeId { get; set; }
 }

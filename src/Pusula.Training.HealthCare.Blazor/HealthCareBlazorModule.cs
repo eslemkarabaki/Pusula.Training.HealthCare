@@ -16,6 +16,8 @@ using Pusula.Training.HealthCare.EntityFrameworkCore;
 using Pusula.Training.HealthCare.Localization;
 using Pusula.Training.HealthCare.MultiTenancy;
 using OpenIddict.Validation.AspNetCore;
+using Syncfusion.Blazor;
+using Syncfusion.Blazor.Popups;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Components.Web;
@@ -60,7 +62,7 @@ namespace Pusula.Training.HealthCare.Blazor;
     typeof(AbpIdentityBlazorServerModule),
     typeof(AbpTenantManagementBlazorServerModule),
     typeof(AbpSettingManagementBlazorServerModule)
-   )]
+)]
 public class HealthCareBlazorModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -99,14 +101,12 @@ public class HealthCareBlazorModule : AbpModule
 
             PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
             {
-                serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", "480b149c-2b55-442d-a10e-e2d09cb250bd");
+                serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx",
+                    "480b149c-2b55-442d-a10e-e2d09cb250bd");
             });
         }
 
-        PreConfigure<AbpAspNetCoreComponentsWebOptions>(options =>
-        {
-            options.IsBlazorWebApp = true;
-        });
+        PreConfigure<AbpAspNetCoreComponentsWebOptions>(options => { options.IsBlazorWebApp = true; });
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -116,8 +116,9 @@ public class HealthCareBlazorModule : AbpModule
 
         // Add services to the container.
         context.Services.AddRazorComponents()
-            .AddInteractiveServerComponents();
-
+               .AddInteractiveServerComponents();
+        context.Services.AddSyncfusionBlazor();
+        context.Services.AddScoped<SfDialogService>();
         ConfigureAuthentication(context);
         ConfigureUrls(configuration);
         ConfigureBundles();
@@ -132,7 +133,8 @@ public class HealthCareBlazorModule : AbpModule
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
     {
-        context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+        context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults
+            .AuthenticationScheme);
         context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
         {
             options.IsDynamicClaimsEnabled = true;
@@ -144,7 +146,8 @@ public class HealthCareBlazorModule : AbpModule
         Configure<AppUrlOptions>(options =>
         {
             options.Applications["MVC"].RootUrl = configuration["App:SelfUrl"];
-            options.RedirectAllowedUrls.AddRange(configuration["App:RedirectAllowedUrls"]?.Split(',') ?? Array.Empty<string>());
+            options.RedirectAllowedUrls.AddRange(configuration["App:RedirectAllowedUrls"]?.Split(',') ??
+                Array.Empty<string>());
         });
     }
 
@@ -155,10 +158,7 @@ public class HealthCareBlazorModule : AbpModule
             // MVC UI
             options.StyleBundles.Configure(
                 LeptonXLiteThemeBundles.Styles.Global,
-                bundle =>
-                {
-                    bundle.AddFiles("/global-styles.css");
-                }
+                bundle => { bundle.AddFiles("/global-styles.css"); }
             );
 
             //BLAZOR UI
@@ -180,10 +180,18 @@ public class HealthCareBlazorModule : AbpModule
         {
             Configure<AbpVirtualFileSystemOptions>(options =>
             {
-                options.FileSets.ReplaceEmbeddedByPhysical<HealthCareDomainSharedModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Pusula.Training.HealthCare.Domain.Shared"));
-                options.FileSets.ReplaceEmbeddedByPhysical<HealthCareDomainModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Pusula.Training.HealthCare.Domain"));
-                options.FileSets.ReplaceEmbeddedByPhysical<HealthCareApplicationContractsModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Pusula.Training.HealthCare.Application.Contracts"));
-                options.FileSets.ReplaceEmbeddedByPhysical<HealthCareApplicationModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Pusula.Training.HealthCare.Application"));
+                options.FileSets.ReplaceEmbeddedByPhysical<HealthCareDomainSharedModule>(
+                    Path.Combine(hostingEnvironment.ContentRootPath,
+                        $"..{Path.DirectorySeparatorChar}Pusula.Training.HealthCare.Domain.Shared"));
+                options.FileSets.ReplaceEmbeddedByPhysical<HealthCareDomainModule>(
+                    Path.Combine(hostingEnvironment.ContentRootPath,
+                        $"..{Path.DirectorySeparatorChar}Pusula.Training.HealthCare.Domain"));
+                options.FileSets.ReplaceEmbeddedByPhysical<HealthCareApplicationContractsModule>(
+                    Path.Combine(hostingEnvironment.ContentRootPath,
+                        $"..{Path.DirectorySeparatorChar}Pusula.Training.HealthCare.Application.Contracts"));
+                options.FileSets.ReplaceEmbeddedByPhysical<HealthCareApplicationModule>(
+                    Path.Combine(hostingEnvironment.ContentRootPath,
+                        $"..{Path.DirectorySeparatorChar}Pusula.Training.HealthCare.Application"));
                 options.FileSets.ReplaceEmbeddedByPhysical<HealthCareBlazorModule>(hostingEnvironment.ContentRootPath);
             });
         }
@@ -204,24 +212,18 @@ public class HealthCareBlazorModule : AbpModule
     private void ConfigureBlazorise(ServiceConfigurationContext context)
     {
         context.Services
-            .AddBootstrap5Providers()
-            .AddFontAwesomeIcons();
+               .AddBootstrap5Providers()
+               .AddFontAwesomeIcons();
     }
 
     private void ConfigureMenu(ServiceConfigurationContext context)
     {
-        Configure<AbpNavigationOptions>(options =>
-        {
-            options.MenuContributors.Add(new HealthCareMenuContributor());
-        });
+        Configure<AbpNavigationOptions>(options => { options.MenuContributors.Add(new HealthCareMenuContributor()); });
     }
 
     private void ConfigureRouter(ServiceConfigurationContext context)
     {
-        Configure<AbpRouterOptions>(options =>
-        {
-            options.AppAssembly = typeof(HealthCareBlazorModule).Assembly;
-        });
+        Configure<AbpRouterOptions>(options => { options.AppAssembly = typeof(HealthCareBlazorModule).Assembly; });
     }
 
     private void ConfigureAutoApiControllers()
@@ -234,10 +236,7 @@ public class HealthCareBlazorModule : AbpModule
 
     private void ConfigureAutoMapper()
     {
-        Configure<AbpAutoMapperOptions>(options =>
-        {
-            options.AddMaps<HealthCareBlazorModule>();
-        });
+        Configure<AbpAutoMapperOptions>(options => { options.AddMaps<HealthCareBlazorModule>(); });
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
@@ -268,22 +267,21 @@ public class HealthCareBlazorModule : AbpModule
         {
             app.UseMultiTenancy();
         }
+
         app.UseUnitOfWork();
         app.UseDynamicClaims();
         app.UseAntiforgery();
         app.UseAuthorization();
 
         app.UseSwagger();
-        app.UseAbpSwaggerUI(options =>
-        {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "HealthCare API");
-        });
+        app.UseAbpSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "HealthCare API"); });
 
         app.UseConfiguredEndpoints(builder =>
         {
             builder.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode()
-                .AddAdditionalAssemblies(builder.ServiceProvider.GetRequiredService<IOptions<AbpRouterOptions>>().Value.AdditionalAssemblies.ToArray());
+                   .AddInteractiveServerRenderMode()
+                   .AddAdditionalAssemblies(builder.ServiceProvider.GetRequiredService<IOptions<AbpRouterOptions>>()
+                                                   .Value.AdditionalAssemblies.ToArray());
         });
     }
 }

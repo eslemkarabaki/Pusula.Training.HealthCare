@@ -284,9 +284,9 @@ public partial class Countries
         await SearchAsync();
     }
 
-    protected virtual async Task OnAbbreviationChangedAsync(string? abbreviation)
+    protected virtual async Task OnIsoChangedAsync(string? iso)
     {
-        Filter.Abbreviation = abbreviation;
+        Filter.Iso = iso;
         await SearchAsync();
     }
 

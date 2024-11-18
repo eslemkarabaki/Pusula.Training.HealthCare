@@ -4,29 +4,31 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Addresses;
 
-public sealed class Address : FullAuditedAggregateRoot<Guid>
+public sealed class Address : AuditedEntity<Guid>, IAddress
 {
-    public Guid PatientId { get; set; }
-    public Guid DistrictId { get; set; }
-    public string AddressLine { get; set; }
+    public Guid PatientId { get; private set; }
+    public Guid DistrictId { get; private set; }
+    public string AddressTitle { get; private set; }
+    public string AddressLine { get; private set; }
 
 
     private Address()
     {
+        AddressTitle = string.Empty;
         AddressLine = string.Empty;
     }
 
 
-    public Address(Guid id, Guid patientId, Guid districtId, string addressLine)
+    internal Address(Guid id, Guid patientId, Guid districtId, string addressTitle, string addressLine) : base(id)
     {
-        Check.NotDefaultOrNull<Guid>(id, nameof(id));
-        Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
-        Check.NotDefaultOrNull<Guid>(districtId, nameof(districtId));
-        Check.NotNullOrWhiteSpace(addressLine, nameof(addressLine));
+        Set(patientId, districtId, addressTitle, addressLine);
+    }
 
-        Id = id;
-        PatientId = patientId;
-        DistrictId = districtId;
-        AddressLine = addressLine;
+    internal void Set(Guid patientId, Guid districtId, string addressTitle, string addressLine)
+    {
+        PatientId = Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
+        DistrictId = Check.NotDefaultOrNull<Guid>(districtId, nameof(districtId));
+        AddressTitle = Check.NotNullOrWhiteSpace(addressTitle, nameof(addressTitle), AddressConsts.TitleMaxLength);
+        AddressLine = Check.NotNullOrWhiteSpace(addressLine, nameof(addressLine), AddressConsts.AddressMaxLength);
     }
 }

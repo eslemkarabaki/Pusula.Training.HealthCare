@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Pusula.Training.HealthCare.Cities;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -9,6 +10,7 @@ namespace Pusula.Training.HealthCare.Districts;
 public interface IDistrictAppService : IApplicationService
 {
     Task<DistrictDto> GetAsync(Guid id);
+    Task<CityDto> GetCityAsync(Guid districtId);
 
     Task<List<DistrictDto>> GetListAsync();
     Task<List<DistrictDto>> GetListAsync(Guid cityId);

@@ -6,8 +6,8 @@ namespace Pusula.Training.HealthCare.Districts;
 
 public sealed class District : FullAuditedAggregateRoot<Guid>
 {
-    public Guid CityId { get; set; }
-    public string Name { get; set; }
+    public Guid CityId { get; private set; }
+    public string Name { get; private set; }
 
 
     private District()
@@ -15,14 +15,14 @@ public sealed class District : FullAuditedAggregateRoot<Guid>
         Name = string.Empty;
     }
 
-    public District(Guid id, Guid cityId, string name)
+    public District(Guid id, Guid cityId, string name) : base(id)
     {
-        Check.NotDefaultOrNull<Guid>(id, nameof(id));
-        Check.NotDefaultOrNull<Guid>(cityId, nameof(cityId));
-        Check.NotNullOrWhiteSpace(name, nameof(name), DistrictConsts.NameMaxLength);
+        Set(cityId, name);
+    }
 
-        Id = id;
-        CityId = cityId;
-        Name = name;
+    internal void Set(Guid cityId, string name)
+    {
+        CityId = Check.NotDefaultOrNull<Guid>(cityId, nameof(cityId));
+        Name = Check.NotNullOrWhiteSpace(name, nameof(name), DistrictConsts.NameMaxLength);
     }
 }

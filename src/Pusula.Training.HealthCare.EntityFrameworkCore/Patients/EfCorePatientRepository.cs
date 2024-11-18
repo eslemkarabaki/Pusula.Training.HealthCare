@@ -10,6 +10,7 @@ using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Districts;
+using Pusula.Training.HealthCare.PatientTypes;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -18,65 +19,64 @@ namespace Pusula.Training.HealthCare.Patients;
 public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
     : EfCoreRepository<HealthCareDbContext, Patient, Guid>(dbContextProvider), IPatientRepository
 {
-    public async Task<PatientWithAddressAndCountry> GetWithAddressAndCountryAsync(Guid id,
-        CancellationToken cancellationToken = default)
+    public async Task<PatientView> GetViewAsync(Guid id,
+                                                CancellationToken cancellationToken = default)
     {
-        return await (await GetQueryForAddressAndCountryAsync())
+        return await (await GetQueryForViewAsync())
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 
     public virtual async Task<List<Patient>> GetListAsync(
         string? filterText = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
         CancellationToken cancellationToken = default)
     {
-        return await ApplyFilter(await GetQueryableAsync(), filterText, firstName, lastName, birthDateMin, birthDateMax,
-                         identityNumber,
-                         emailAddress, mobilePhoneNumber, homePhoneNumber, gender, bloodType, maritalStatus,
-                         countryId)
+        return await ApplyFilter(await GetQueryableAsync(), filterText, countryId, firstName, lastName, birthDateMin,
+                         birthDateMax, identityNumber, passportNumber, emailAddress, mobilePhoneNumber, homePhoneNumber,
+                         gender, bloodType, maritalStatus)
                      .OrderBy(string.IsNullOrWhiteSpace(sorting) ? PatientConsts.GetDefaultSorting(false) : sorting)
                      .PageBy(skipCount, maxResultCount)
                      .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<PatientWithAddressAndCountry>> GetListWithAddressAndCountryAsync(
+    public async Task<List<PatientView>> GetViewListAsync(
         string? filterText = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
         CancellationToken cancellationToken = default)
     {
-        return await ApplyFilter(await GetQueryForAddressAndCountryAsync(), filterText, firstName, lastName,
-                         birthDateMin, birthDateMax,
-                         identityNumber,
-                         emailAddress, mobilePhoneNumber, homePhoneNumber, gender, bloodType, maritalStatus,
-                         countryId)
+        return await ApplyFilter(await GetQueryForViewAsync(), filterText, countryId, firstName, lastName,
+                         birthDateMin, birthDateMax, identityNumber, passportNumber, emailAddress, mobilePhoneNumber,
+                         homePhoneNumber, gender, bloodType, maritalStatus)
                      .OrderBy(string.IsNullOrWhiteSpace(sorting) ? PatientConsts.GetDefaultSorting(false) : sorting)
                      .PageBy(skipCount, maxResultCount)
                      .ToListAsync(cancellationToken);
@@ -84,103 +84,133 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
 
     public virtual async Task<long> GetCountAsync(
         string? filterText = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null,
         CancellationToken cancellationToken = default)
     {
-        return await ApplyFilter(await GetQueryableAsync(), filterText, firstName, lastName, birthDateMin, birthDateMax,
-                identityNumber, emailAddress, mobilePhoneNumber, homePhoneNumber, gender, bloodType,
-                maritalStatus,
-                countryId)
+        return await ApplyFilter(await GetQueryableAsync(), filterText, countryId, firstName, lastName, birthDateMin,
+                birthDateMax, identityNumber, passportNumber, emailAddress, mobilePhoneNumber, homePhoneNumber, gender,
+                bloodType, maritalStatus)
             .LongCountAsync(GetCancellationToken(cancellationToken));
     }
 
-    protected virtual async Task<IQueryable<PatientWithAddressAndCountry>> GetQueryForAddressAndCountryAsync()
+    public virtual async Task<bool> IdentityNumberExistsAsync(
+        Guid? id,
+        string identityNumber,
+        CancellationToken cancellationToken = default)
     {
-        return from patient in await GetDbSetAsync()
-               join patient_country in (await GetDbContextAsync()).Set<Country>() on patient.CountryId equals
-                   patient_country.Id into
-                   patient_countries
-               from patient_country in patient_countries.DefaultIfEmpty()
-               join address in (await GetDbContextAsync()).Set<Address>() on patient.Id equals address.PatientId into
-                   addresses
-               from address in addresses.DefaultIfEmpty()
-               join district in (await GetDbContextAsync()).Set<District>() on address.DistrictId equals district.Id
-                   into
-                   districts
-               from district in districts.DefaultIfEmpty()
-               join city in (await GetDbContextAsync()).Set<City>() on district.CityId equals city.Id into cities
-               from city in cities.DefaultIfEmpty()
-               join address_country in (await GetDbContextAsync()).Set<Country>() on city.CountryId equals
-                   address_country
-                       .Id into address_countries
-               from address_country in address_countries.DefaultIfEmpty()
-               select new PatientWithAddressAndCountry
-               {
-                   Id = patient.Id,
-                   EmailAddress = patient.EmailAddress,
-                   FirstName = patient.FirstName,
-                   IdentityNumber = patient.IdentityNumber,
-                   HomePhoneNumber = patient.HomePhoneNumber,
-                   BirthDate = patient.BirthDate,
-                   Gender = patient.Gender,
-                   BloodType = patient.BloodType,
-                   LastName = patient.LastName,
-                   MaritalStatus = patient.MaritalStatus,
-                   MobilePhoneNumber = patient.MobilePhoneNumber,
-                   CreationTime = patient.CreationTime,
-                   Country = patient_country.Name,
-                   CountryId = patient_country.Id,
-                   Address = address != null
-                       ? new AddressWithRelations()
-                       {
-                           Id = address.Id,
-                           PatientId = patient.Id,
-                           DistrictId = address.DistrictId,
-                           District = district.Name,
-                           CountryId = address_country.Id,
-                           Country = address_country.Name,
-                           CityId = city.Id,
-                           City = city.Name,
-                           AddressLine = address.AddressLine,
-                           CreationTime = address.CreationTime
-                       }
-                       : null
-               };
+        var query = (await GetQueryableAsync()).WhereIf(id.HasValue, e => e.Id != id);
+        return await query.AnyAsync(e => e.IdentityNumber == identityNumber, cancellationToken);
+    }
+
+    public virtual async Task<bool> PassportNumberExistsAsync(
+        Guid? id,
+        string passportNumber,
+        CancellationToken cancellationToken = default)
+    {
+        var query = (await GetQueryableAsync()).WhereIf(id.HasValue, e => e.Id != id);
+        return await query.AnyAsync(e => e.PassportNumber == passportNumber, cancellationToken);
+    }
+
+
+    protected virtual async Task<IQueryable<PatientView>> GetQueryForViewAsync()
+    {
+        var dbContext = await GetDbContextAsync();
+        var query = from patient in await GetDbSetAsync()
+                    join country in dbContext.Set<Country>()
+                        on patient.CountryId equals country.Id
+                        into countries
+                    from country in countries.DefaultIfEmpty()
+                    join patientType in dbContext.Set<PatientType>()
+                        on patient.PatientTypeId equals patientType.Id
+                        into patientTypes
+                    from patientType in patientTypes.DefaultIfEmpty()
+                    select new
+                    {
+                        patient,
+                        country,
+                        patientType
+                    };
+        return query.Select(e => new PatientView()
+        {
+            Id = e.patient.Id,
+            IdentityNumber = e.patient.IdentityNumber,
+            FirstName = e.patient.FirstName,
+            LastName = e.patient.LastName,
+            BirthDate = e.patient.BirthDate,
+            Gender = e.patient.Gender,
+            BloodType = e.patient.BloodType,
+            MaritalStatus = e.patient.MaritalStatus,
+            MobilePhoneNumberCode = e.patient.MobilePhoneNumberCode,
+            MobilePhoneNumber = e.patient.MobilePhoneNumber,
+            HomePhoneNumberCode = e.patient.HomePhoneNumberCode,
+            HomePhoneNumber = e.patient.HomePhoneNumber,
+            EmailAddress = e.patient.EmailAddress,
+            PassportNumber = e.patient.PassportNumber,
+            CountryId = e.country.Id,
+            Country = e.country.Name,
+            PatientType = e.patientType.Name,
+            PatientTypeId = e.patientType.Id,
+            Addresses = (from address in dbContext.Set<Address>()
+                         where address.PatientId == e.patient.Id
+                         join district in dbContext.Set<District>()
+                             on address.DistrictId equals district.Id into districts
+                         from district in districts.DefaultIfEmpty()
+                         join city in dbContext.Set<City>()
+                             on district.CityId equals city.Id into cities
+                         from city in cities.DefaultIfEmpty()
+                         join country in dbContext.Set<Country>()
+                             on city.CountryId equals country.Id into countries
+                         from country in countries.DefaultIfEmpty()
+                         select new AddressView()
+                         {
+                             Id = address.Id,
+                             PatientId = e.patient.Id,
+                             DistrictId = district.Id,
+                             District = district.Name,
+                             CityId = city.Id,
+                             City = city.Name,
+                             CountryId = country.Id,
+                             Country = country.Name,
+                             AddressTitle = address.AddressTitle,
+                             AddressLine = address.AddressLine
+                         }).ToList()
+        });
     }
 
 #region Delete
 
     public virtual async Task DeleteAllAsync(
         string? filterText = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null,
         CancellationToken cancellationToken = default)
     {
-        var ids = ApplyFilter(await GetQueryableAsync(), filterText, firstName, lastName, birthDateMin, birthDateMax,
-                identityNumber,
-                emailAddress, mobilePhoneNumber, homePhoneNumber, gender, bloodType, maritalStatus,
-                countryId)
+        var ids = ApplyFilter(await GetQueryableAsync(), filterText, countryId, firstName, lastName, birthDateMin,
+                birthDateMax, identityNumber, passportNumber, emailAddress, mobilePhoneNumber, homePhoneNumber, gender,
+                bloodType, maritalStatus)
             .Select(e => e.Id);
         await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
     }
@@ -192,18 +222,19 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     protected virtual IQueryable<Patient> ApplyFilter(
         IQueryable<Patient> query,
         string? filterText = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
-        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null)
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None)
     {
         return query
                .WhereIf(!string.IsNullOrWhiteSpace(filterText),
@@ -214,7 +245,8 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.LastName.Contains(lastName!))
                .WhereIf(birthDateMin.HasValue, e => e.BirthDate >= birthDateMin!.Value)
                .WhereIf(birthDateMax.HasValue, e => e.BirthDate <= birthDateMax!.Value)
-               .WhereIf(!string.IsNullOrWhiteSpace(identityNumber), e => e.IdentityNumber.Contains(identityNumber!))
+               .WhereIf(!string.IsNullOrWhiteSpace(identityNumber), e => e.IdentityNumber!.Contains(identityNumber!))
+               .WhereIf(!string.IsNullOrWhiteSpace(passportNumber), e => e.PassportNumber!.Contains(passportNumber!))
                .WhereIf(!string.IsNullOrWhiteSpace(emailAddress), e => e.EmailAddress.Contains(emailAddress!))
                .WhereIf(!string.IsNullOrWhiteSpace(mobilePhoneNumber),
                    e => e.MobilePhoneNumber.Contains(mobilePhoneNumber!))
@@ -226,21 +258,22 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                .WhereIf(countryId.HasValue, e => e.CountryId == countryId!.Value);
     }
 
-    protected virtual IQueryable<PatientWithAddressAndCountry> ApplyFilter(
-        IQueryable<PatientWithAddressAndCountry> query,
+    protected virtual IQueryable<PatientView> ApplyFilter(
+        IQueryable<PatientView> query,
         string? filterText = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
-        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null)
+        EnumMaritalStatus maritalStatus = EnumMaritalStatus.None)
     {
         return query
                .WhereIf(!string.IsNullOrWhiteSpace(filterText),
@@ -252,8 +285,8 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.LastName.Contains(lastName!))
                .WhereIf(birthDateMin.HasValue, e => e.BirthDate >= birthDateMin!.Value)
                .WhereIf(birthDateMax.HasValue, e => e.BirthDate <= birthDateMax!.Value)
-               .WhereIf(!string.IsNullOrWhiteSpace(identityNumber),
-                   e => e.IdentityNumber.Contains(identityNumber!))
+               .WhereIf(!string.IsNullOrWhiteSpace(identityNumber), e => e.IdentityNumber!.Contains(identityNumber!))
+               .WhereIf(!string.IsNullOrWhiteSpace(passportNumber), e => e.PassportNumber!.Contains(passportNumber!))
                .WhereIf(!string.IsNullOrWhiteSpace(emailAddress), e => e.EmailAddress.Contains(emailAddress!))
                .WhereIf(!string.IsNullOrWhiteSpace(mobilePhoneNumber),
                    e => e.MobilePhoneNumber.Contains(mobilePhoneNumber!))
