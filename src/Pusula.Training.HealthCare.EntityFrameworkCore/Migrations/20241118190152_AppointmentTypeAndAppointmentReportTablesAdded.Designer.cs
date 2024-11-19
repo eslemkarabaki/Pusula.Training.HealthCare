@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Pusula.Training.HealthCare.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    [Migration("20241118105457_AppointmentTypeAndAppointmentReportTablesAdded")]
+    [Migration("20241118190152_AppointmentTypeAndAppointmentReportTablesAdded")]
     partial class AppointmentTypeAndAppointmentReportTablesAdded
     {
         /// <inheritdoc />
@@ -2826,7 +2826,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
             modelBuilder.Entity("Pusula.Training.HealthCare.Appointments.Appointment", b =>
                 {
-                    b.HasOne("Pusula.Training.HealthCare.Hospitals.Hospital", null)
+                    b.HasOne("Pusula.Training.HealthCare.AppointmentTypes.AppointmentType", null)
                         .WithMany()
                         .HasForeignKey("AppointmentTypeId")
                         .OnDelete(DeleteBehavior.NoAction)

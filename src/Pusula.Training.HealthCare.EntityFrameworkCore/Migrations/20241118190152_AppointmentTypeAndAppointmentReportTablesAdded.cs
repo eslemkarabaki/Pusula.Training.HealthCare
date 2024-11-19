@@ -103,10 +103,10 @@ namespace Pusula.Training.HealthCare.Migrations
                 column: "AppointmentId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AppAppointments_AppHospitals_AppointmentTypeId",
+                name: "FK_AppAppointments_AppAppointmentTypes_AppointmentTypeId",
                 table: "AppAppointments",
                 column: "AppointmentTypeId",
-                principalTable: "AppHospitals",
+                principalTable: "AppAppointmentTypes",
                 principalColumn: "Id");
         }
 
@@ -114,7 +114,7 @@ namespace Pusula.Training.HealthCare.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_AppAppointments_AppHospitals_AppointmentTypeId",
+                name: "FK_AppAppointments_AppAppointmentTypes_AppointmentTypeId",
                 table: "AppAppointments");
 
             migrationBuilder.DropTable(

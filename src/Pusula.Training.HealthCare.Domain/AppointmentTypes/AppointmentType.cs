@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Pusula.Training.HealthCare.Departments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,10 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
 
         public AppointmentType(Guid id, string name)
         {
-            Check.NotNullOrWhiteSpace(name, nameof(name));
+            Check.NotNull(name, nameof(name), AppointmentTypeConsts.NameMaxLength);
 
-            Id = id;
-            Name = name;
+            Id=id; 
+            Name=name;
         }
     }
 }

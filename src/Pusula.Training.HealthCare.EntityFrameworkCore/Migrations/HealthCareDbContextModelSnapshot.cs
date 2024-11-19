@@ -2823,7 +2823,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
             modelBuilder.Entity("Pusula.Training.HealthCare.Appointments.Appointment", b =>
                 {
-                    b.HasOne("Pusula.Training.HealthCare.Hospitals.Hospital", null)
+                    b.HasOne("Pusula.Training.HealthCare.AppointmentTypes.AppointmentType", null)
                         .WithMany()
                         .HasForeignKey("AppointmentTypeId")
                         .OnDelete(DeleteBehavior.NoAction)

@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -14,12 +13,12 @@ namespace Pusula.Training.HealthCare.Appointments
 
     public class Appointment : FullAuditedAggregateRoot<Guid>
     {
-        [JetBrains.Annotations.NotNull]
-        public virtual DateTime AppointmentStartDate { get; set; }
-        [JetBrains.Annotations.NotNull]
-        public virtual DateTime AppointmentEndDate { get; set; }
-        [JetBrains.Annotations.NotNull]
-        public virtual EnumStatus Status { get; set; }
+        [NotNull]
+        public virtual DateTime AppointmentStartDate { get;  set; }
+        [NotNull]
+        public virtual DateTime AppointmentEndDate { get;  set; }
+        [NotNull]
+        public virtual EnumStatus Status { get;  set; }
 
         [CanBeNull]
         public virtual string? Notes { get; set; }        

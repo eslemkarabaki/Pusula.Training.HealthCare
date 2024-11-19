@@ -22,7 +22,7 @@ namespace Pusula.Training.HealthCare.Configurations
         {
             b.ToTable(HealthCareConsts.DbTablePrefix + "AppointmentTypes", HealthCareConsts.DbSchema);
             b.ConfigureByConvention();
-            b.Property(x => x.Name).HasColumnName(nameof(AppointmentType.Name)).HasMaxLength(AppointmentTypeConsts.NameMaxLength);
+            b.Property(x => x.Name).HasColumnName(nameof(AppointmentType.Name)).HasMaxLength(AppointmentTypeConsts.NameMaxLength).IsRequired();
             
         }
     }
