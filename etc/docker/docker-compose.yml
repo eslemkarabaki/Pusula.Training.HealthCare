@@ -14,7 +14,8 @@ services:
     ports:
       - "5432:5432"
     networks: 
-      - healthcare-network
+      - pth-network
+
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -29,7 +30,8 @@ services:
     volumes:
       - pthpgadmin4data:/var/lib/pgadmin
     networks: 
-      - healthcare-network
+      - pth-network
+
 
   elasticsearch:
     container_name: elasticsearch
@@ -47,14 +49,15 @@ services:
     volumes:
       - pthesdata:/usr/share/elasticsearch/data
     networks:
-      - healthcare-network
+      - pth-network
 
   kibana:
     container_name: kibana
     image: kibana:8.15.0
     restart: always
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_URL=http://host.docker.internal:9200
+      - ELASTICSEARCH_HOSTS=http://host.docker.internal:9200
       - XPACK_MONITORING_ENABLED=true
       - XPACK_MONITORING_COLLECTION_ENABLED=true
       # - ELASTIC_USERNAME=elastic
@@ -64,7 +67,7 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      - healthcare-network
+      - pth-network
 
   redis:
     container_name: redis
@@ -75,35 +78,19 @@ services:
     volumes:
       - pthredisdata:/data
     networks:
-      - healthcare-network
+      - pth-network
 
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:management
     restart: always
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=pusulateam3
     ports:
       - "15672:15672"
       - "5672:5672"
     volumes:
       - pthrabbitmqdata:/var/lib/rabbitmq
     networks:
-      - healthcare-network
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: always
-    ports:
-      - "9000:9000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    networks:
-      - healthcare-network
-
+      - pth-network
 
 volumes:
   pthpostgresdata:
@@ -111,8 +98,7 @@ volumes:
   pthredisdata:
   pthesdata:
   pthrabbitmqdata:
-  portainer_data:
-
 networks:
-  healthcare-network:
-    external: true
+  pth-network:
+    name: healthcare-network
+    driver: bridge

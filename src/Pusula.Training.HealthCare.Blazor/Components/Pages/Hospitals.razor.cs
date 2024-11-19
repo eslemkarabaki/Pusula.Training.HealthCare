@@ -155,7 +155,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages
         {
             NewHospital = new HospitalCreateDto();
             SelectedCreateTab = "hospital-create-tab";
-            NewHospitalValidations.ClearAll();
+            await NewHospitalValidations.ClearAll();
             await LoadDepartmentsAsync();
 
             DepartmentNameList = new List<string>();

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
+using Syncfusion.Blazor;
+using Syncfusion.Licensing;
 
 namespace Pusula.Training.HealthCare.Blazor;
 
@@ -17,7 +19,7 @@ public class Program
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables()
             .Build();
 
@@ -48,7 +50,16 @@ public class Program
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();
+
             await builder.AddApplicationAsync<HealthCareBlazorModule>();
+
+            builder.Services.AddSyncfusionBlazor();
+
+            string? syncfusionLicenseKey = configuration["Syncfusion:LicenseKey"];
+
+            SyncfusionLicenseProvider.RegisterLicense(syncfusionLicenseKey);
+
+
             var app = builder.Build();
             await app.InitializeApplicationAsync();
             await app.RunAsync();
