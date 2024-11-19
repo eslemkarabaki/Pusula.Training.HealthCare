@@ -50,20 +50,11 @@ namespace Pusula.Training.HealthCare.AppointmentReports
 
         public virtual async Task<AppointmentReportWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var dbContext = await GetDbContextAsync();
-
-            return await (await GetDbSetAsync())
-                .Where(appointmentReport => appointmentReport.Id == id)
+            return await (await GetQueryForNavigationPropertiesAsync())
                 .Include(appointmentReport => appointmentReport.Appointment) // Appointment ile ilişki
                 .ThenInclude(appointment => appointment.Patient) // Appointment üzerinden Patient'e erişim
                 .Include(appointmentReport => appointmentReport.Appointment.Doctor) // Appointment üzerinden Doctor'a erişim
-                .Select(appointmentReport => new AppointmentReportWithNavigationProperties
-                {
-                    AppointmentReport = appointmentReport,
-                    Appointment = appointmentReport.Appointment,
-                    Patient = appointmentReport.Appointment.Patient,
-                    Doctor = appointmentReport.Appointment.Doctor
-                })
+                .Where(appointmentReport => appointmentReport.Appointment.Appointment.Id == id)
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
@@ -92,7 +83,10 @@ namespace Pusula.Training.HealthCare.AppointmentReports
                    select new AppointmentReportWithNavigationProperties
                    {
                        AppointmentReport = appointmentReport,
-                       Appointment = appointment,                       
+                       Appointment = new()
+                       {
+                           Appointment = appointment
+                       },                       
                    };
         }
         #endregion
@@ -108,7 +102,7 @@ namespace Pusula.Training.HealthCare.AppointmentReports
                     .WhereIf(reportDate.HasValue, e => e.AppointmentReport.ReportDate >= reportDate!.Value)
                     .WhereIf(!string.IsNullOrWhiteSpace(priorityNotes), e => e.AppointmentReport.PriorityNotes!.Contains(priorityNotes!))
                     .WhereIf(!string.IsNullOrWhiteSpace(doctorNotes), e => e.AppointmentReport.DoctorNotes!.Contains(doctorNotes!))
-                    .WhereIf(appointmentId != null && appointmentId != Guid.Empty, e => e.Appointment != null && e.Appointment.Id == appointmentId);
+                    .WhereIf(appointmentId != null && appointmentId != Guid.Empty, e => e.Appointment != null && e.Appointment.Appointment.Id == appointmentId);
         }
         #endregion
 
