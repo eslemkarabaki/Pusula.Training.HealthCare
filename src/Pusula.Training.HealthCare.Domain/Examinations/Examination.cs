@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+    using JetBrains.Annotations;
 using System;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -14,10 +14,11 @@ namespace Pusula.Training.HealthCare.Examinations
         public string ChronicDiseases { get; set; }
         public string Allergies { get; set; }
         public string Medications { get; set; }
-        public string Diagnosis { get; set; }
+        public string Diagnosis { get; set; } 
         public string Prescription  { get; set; }
         public string ImagingResults { get; set; }
-        public Guid PatientId { get; set; }
+  
+        public Guid PatientId { get; set; }    
         public Guid DoctorId { get; set; }
 
         protected Examination()
@@ -30,17 +31,16 @@ namespace Pusula.Training.HealthCare.Examinations
             Diagnosis = string.Empty;
             Prescription = string.Empty;
             ImagingResults = string.Empty;
-           
         }
 
-        public Examination(Guid patientId, Guid doctorId, string? identityNumber, string? notes, DateTime visitDate, string? chronicDiseases, string? allergies, string? medications, string? diagnosis, string? prescription, string? imagingResults)
+        public Examination(Guid patientId, Guid doctorId, string? identityNumber, string? notes, DateTime visitDate, string? chronicDiseases, string? allergies, string? medications, string? diagnosis, string? prescription, string? description, string? imagingResults)
         {
 
             Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
             Check.NotDefaultOrNull<Guid>(doctorId, nameof(doctorId));
             Check.NotNull(identityNumber, nameof(identityNumber));
             Check.Length(identityNumber, nameof(identityNumber), ExaminationConsts.IdentityNumberMaxLength, 0);
-            Check.NotNull(notes, nameof(notes));
+            Check.NotNull(notes, nameof(notes));    
             Check.Length(notes, nameof(notes), ExaminationConsts.NotesNumberMaxLength, 0);
             Check.NotNull(chronicDiseases, nameof(chronicDiseases));
             Check.Length(chronicDiseases, nameof(chronicDiseases), ExaminationConsts.ChronicDiseasesNumberMaxLength, 0);
@@ -54,6 +54,7 @@ namespace Pusula.Training.HealthCare.Examinations
             Check.Length(prescription, nameof(prescription), ExaminationConsts.PrescriptionNumberMaxLength, 0);
             Check.NotNull(imagingResults, nameof(imagingResults));
             Check.Length(imagingResults, nameof(imagingResults), ExaminationConsts.ImagingResultsNumberMaxLength, 0);
+            
 
 
             PatientId = patientId;

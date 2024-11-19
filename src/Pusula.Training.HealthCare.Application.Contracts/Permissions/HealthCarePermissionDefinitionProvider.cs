@@ -22,7 +22,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetCountryPermissions(myGroup);
         SetCityPermissions(myGroup);
         SetDistrictPermissions(myGroup);
-        SetExaminationsPermissions(myGroup);
+        //SetExaminationsPermissions(myGroup);
 
         var protocolPermission = myGroup.AddPermission(HealthCarePermissions.Protocols.Default, L("Permission:Protocols"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
