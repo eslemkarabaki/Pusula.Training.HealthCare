@@ -33,20 +33,39 @@ namespace Pusula.Training.HealthCare.AppointmentReports
         }
         #endregion
 
-        #region GetWithNavigationProperties
+        //#region GetWithNavigationProperties
+        //public virtual async Task<AppointmentReportWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
+        //{
+        //    var dbContext = await GetDbContextAsync();
+
+        //    return (await GetDbSetAsync()).Where(b => b.Id == id)
+        //        .Select(appointmentReport => new AppointmentReportWithNavigationProperties
+        //        {
+        //            AppointmentReport = appointmentReport,
+        //            Appointment = dbContext.Set<Appointment>().FirstOrDefault(c => c.Id == appointmentReport.AppointmentId)!,
+
+        //        }).FirstOrDefault()!;
+        //}
+        //#endregion
+
         public virtual async Task<AppointmentReportWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var dbContext = await GetDbContextAsync();
 
-            return (await GetDbSetAsync()).Where(b => b.Id == id)
+            return await (await GetDbSetAsync())
+                .Where(appointmentReport => appointmentReport.Id == id)
+                .Include(appointmentReport => appointmentReport.Appointment) // Appointment ile ilişki
+                .ThenInclude(appointment => appointment.Patient) // Appointment üzerinden Patient'e erişim
+                .Include(appointmentReport => appointmentReport.Appointment.Doctor) // Appointment üzerinden Doctor'a erişim
                 .Select(appointmentReport => new AppointmentReportWithNavigationProperties
                 {
                     AppointmentReport = appointmentReport,
-                    Appointment = dbContext.Set<Appointment>().FirstOrDefault(c => c.Id == appointmentReport.AppointmentId)!,
-
-                }).FirstOrDefault()!;
+                    Appointment = appointmentReport.Appointment,
+                    Patient = appointmentReport.Appointment.Patient,
+                    Doctor = appointmentReport.Appointment.Doctor
+                })
+                .FirstOrDefaultAsync(cancellationToken);
         }
-        #endregion
 
         #region GetListWithNavigationProperties
         public virtual async Task<List<AppointmentReportWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
