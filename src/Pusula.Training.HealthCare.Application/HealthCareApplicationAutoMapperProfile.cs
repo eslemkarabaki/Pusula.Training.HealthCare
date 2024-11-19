@@ -15,6 +15,9 @@ using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.Tests;
+using Pusula.Training.HealthCare.TestTypes;
+using Pusula.Training.HealthCare.TestGroups;
 
 namespace Pusula.Training.HealthCare;
 
@@ -76,11 +79,26 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Doctor, DoctorExcelDto>();
         CreateMap<DoctorDto, DoctorUpdateDto>();
         CreateMap<Doctor, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
-       
+
         CreateMap<Title, TitleDto>();
         CreateMap<Title, TitleExcelDto>();
         CreateMap<TitleDto, TitleUpdateDto>();
         CreateMap<Title, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<Test, TestDto>();
+        CreateMap<Test, TestExcelDto>();
+        CreateMap<TestDto, TestUpdateDto>();
+        CreateMap<Test, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<TestType, TestTypeDto>();
+        CreateMap<TestType, TestTypeExcelDto>();
+        CreateMap<TestTypeDto, TestTypeUpdateDto>();
+        CreateMap<TestType, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        
+        CreateMap<TestGroup, TestGroupDto>();
+        CreateMap<TestGroup, TestGroupExcelDto>();
+        CreateMap<TestGroupDto, TestGroupUpdateDto>();
+        CreateMap<TestGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
