@@ -127,22 +127,54 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     protected virtual async Task<IQueryable<PatientView>> GetQueryForViewAsync()
     {
         var dbContext = await GetDbContextAsync();
-        var query = from patient in await GetDbSetAsync()
-                    join country in dbContext.Set<Country>()
-                        on patient.CountryId equals country.Id
-                        into countries
-                    from country in countries.DefaultIfEmpty()
-                    join patientType in dbContext.Set<PatientType>()
-                        on patient.PatientTypeId equals patientType.Id
-                        into patientTypes
-                    from patientType in patientTypes.DefaultIfEmpty()
-                    select new
-                    {
-                        patient,
-                        country,
-                        patientType
-                    };
-        return query.Select(e => new PatientView()
+
+        // var x = (await GetDbSetAsync())
+        //         .Join(dbContext.Countries, e => e.CountryId, c => c.Id, (patient, country) => new { patient, country })
+        //         .Join(dbContext.PatientTypes, e => e.patient.PatientTypeId, pt => pt.Id,
+        //             (patientCountries, patientType) => new { patientCountries, patientType })
+
+        var patients = from patient in await GetDbSetAsync()
+                       join country in dbContext.Countries
+                           on patient.CountryId equals country.Id
+                           into countries
+                       from country in countries.DefaultIfEmpty()
+                       join patientType in dbContext.PatientTypes
+                           on patient.PatientTypeId equals patientType.Id
+                           into patientTypes
+                       from patientType in patientTypes.DefaultIfEmpty()
+                       select new
+                       {
+                           patient,
+                           country,
+                           patientType
+                       };
+
+        var addresses = (from address in dbContext.Addresses
+                         where patients.Select(e => e.patient.Id).Contains(address.PatientId)
+                         join district in dbContext.Districts
+                             on address.DistrictId equals district.Id into districts
+                         from district in districts.DefaultIfEmpty()
+                         join city in dbContext.Cities
+                             on district.CityId equals city.Id into cities
+                         from city in cities.DefaultIfEmpty()
+                         join country in dbContext.Countries
+                             on city.CountryId equals country.Id into countries
+                         from country in countries.DefaultIfEmpty()
+                         select new AddressView()
+                         {
+                             Id = address.Id,
+                             PatientId = address.PatientId,
+                             DistrictId = district.Id,
+                             District = district.Name,
+                             CityId = city.Id,
+                             City = city.Name,
+                             CountryId = country.Id,
+                             Country = country.Name,
+                             AddressTitle = address.AddressTitle,
+                             AddressLine = address.AddressLine
+                         }).AsEnumerable();
+
+        return patients.Select(e => new PatientView()
         {
             Id = e.patient.Id,
             IdentityNumber = e.patient.IdentityNumber,
@@ -162,30 +194,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
             Country = e.country.Name,
             PatientType = e.patientType.Name,
             PatientTypeId = e.patientType.Id,
-            Addresses = (from address in dbContext.Set<Address>()
-                         where address.PatientId == e.patient.Id
-                         join district in dbContext.Set<District>()
-                             on address.DistrictId equals district.Id into districts
-                         from district in districts.DefaultIfEmpty()
-                         join city in dbContext.Set<City>()
-                             on district.CityId equals city.Id into cities
-                         from city in cities.DefaultIfEmpty()
-                         join country in dbContext.Set<Country>()
-                             on city.CountryId equals country.Id into countries
-                         from country in countries.DefaultIfEmpty()
-                         select new AddressView()
-                         {
-                             Id = address.Id,
-                             PatientId = e.patient.Id,
-                             DistrictId = district.Id,
-                             District = district.Name,
-                             CityId = city.Id,
-                             City = city.Name,
-                             CountryId = country.Id,
-                             Country = country.Name,
-                             AddressTitle = address.AddressTitle,
-                             AddressLine = address.AddressLine
-                         }).ToList()
+            Addresses = addresses.Where(a => a.PatientId == e.patient.Id).ToList()
         });
     }
 

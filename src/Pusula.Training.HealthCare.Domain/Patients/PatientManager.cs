@@ -1,22 +1,19 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.PatientNotes;
-using Volo.Abp;
 using Volo.Abp.Data;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
-using Volo.Abp.Uow;
 
 namespace Pusula.Training.HealthCare.Patients;
 
 public class PatientManager(
     IPatientRepository patientRepository,
     IPatientNoteRepository patientNoteRepository,
-    IAddressRepository addressRepository) : DomainService
+    AddressManager addressManager
+) : DomainService
 {
     public virtual async Task<Patient> CreateAsync(
         Guid countryId,
@@ -34,17 +31,30 @@ public class PatientManager(
         EnumGender gender,
         EnumBloodType bloodType,
         EnumMaritalStatus maritalStatus,
-        IEnumerable<Address> addresses)
+        IEnumerable<Address> addresses
+    )
     {
         await CheckIdentityAndPassportNumberAsync(identityNumber, passportNumber);
 
         var patient = new Patient(
-            GuidGenerator.Create(), countryId, patientTypeId, firstName, lastName, birthDate, identityNumber,
-            passportNumber, emailAddress,
-            mobilePhoneNumberCode, mobilePhoneNumber, homePhoneNumberCode, homePhoneNumber, gender, bloodType,
+            GuidGenerator.Create(),
+            countryId,
+            patientTypeId,
+            firstName,
+            lastName,
+            birthDate,
+            identityNumber,
+            passportNumber,
+            emailAddress,
+            mobilePhoneNumberCode,
+            mobilePhoneNumber,
+            homePhoneNumberCode,
+            homePhoneNumber,
+            gender,
+            bloodType,
             maritalStatus
         );
-        await CreateAddressAsync(patient.Id, addresses);
+        await addressManager.CreateAddressAsync(patient.Id, addresses);
         return await patientRepository.InsertAsync(patient);
     }
 
@@ -72,74 +82,29 @@ public class PatientManager(
         await CheckIdentityAndPassportNumberAsync(identityNumber, passportNumber, id);
 
         var patient = await patientRepository.GetAsync(id);
-        patient.Set(countryId, patientTypeId, firstName, lastName, birthDate, identityNumber, passportNumber,
-            emailAddress, mobilePhoneNumberCode, mobilePhoneNumber, homePhoneNumberCode, homePhoneNumber, gender,
-            bloodType, maritalStatus);
+        patient.SetFirstName(firstName);
+        patient.SetLastName(lastName);
+        patient.SetBirthDate(birthDate);
+        patient.SetIdentityNumber(identityNumber);
+        patient.SetPassportNumber(passportNumber);
+        patient.SetEmailAddress(emailAddress);
+        patient.SetMobilePhoneNumber(mobilePhoneNumber);
+        patient.SetMobilePhoneNumberCode(mobilePhoneNumberCode);
+        patient.SetHomePhoneNumber(homePhoneNumber);
+        patient.SetHomePhoneNumberCode(homePhoneNumberCode);
+        patient.SetGender(gender);
+        patient.SetBloodType(bloodType);
+        patient.SetMaritalStatus(maritalStatus);
+        patient.SetCountryId(countryId);
+        patient.SetPatientTypeId(patientTypeId);
 
-        await UpdateOrCreateAddressAsync(patient.Id,addresses);
+        await addressManager.UpdateOrCreateAddressAsync(patient.Id, addresses);
         patient.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await patientRepository.UpdateAsync(patient);
     }
 
-    private async Task CreateAddressAsync(Guid patientId, IEnumerable<Address> addresses)
-    {
-        foreach (var address in addresses)
-        {
-            await CreateAddressAsync(patientId, address);
-        }
-    }
-    
-    private async Task CreateAddressAsync(Guid patientId, Address address)
-    {
-            await addressRepository.InsertAsync(new Address(
-                GuidGenerator.Create(),
-                patientId,
-                address.DistrictId,
-                address.AddressTitle,
-                address.AddressLine
-            ));
-    }
-    
-    private async Task UpdateAddressAsync(Guid patientId, Address address)
-    {
-        
-        var entity = await addressRepository.GetAsync(address.Id);
-        entity.Set(patientId, address.DistrictId, address.AddressTitle, address.AddressLine);
-        await addressRepository.UpdateAsync(entity);
-    }
-    
-    private async Task DeleteAddressAsync(Guid id)
-    {
-        await addressRepository.DeleteAsync(id);
-    }
-    
-    private async Task UpdateOrCreateAddressAsync(Guid patientId, IEnumerable<Address> addresses)
-    {
-        var entities= await addressRepository.GetListAsync(e=>e.PatientId == patientId);
-        
-        // delete
-        foreach (var address in entities.Where(e=> !addresses.Any(a=>a.Id==e.Id)))
-        {
-            await DeleteAddressAsync(address.Id);
-        }
-        
-        // update
-        foreach (var address in addresses.Where(e=> entities.Any(a=>a.Id==e.Id)))
-        {
-            await UpdateAddressAsync(patientId, address);
-        }
-        
-        // create
-        foreach (var address in addresses.Where(e=> !entities.Any(a=>a.Id==e.Id)))
-        {
-            await CreateAddressAsync(patientId, address);
-        }
-    }
-
-    public async Task<PatientNote> CreateNoteAsync(Guid patientId, string note)
-    {
-        return await patientNoteRepository.InsertAsync(new PatientNote(GuidGenerator.Create(), patientId, note));
-    }
+    public async Task<PatientNote> CreateNoteAsync(Guid patientId, string note) =>
+        await patientNoteRepository.InsertAsync(new PatientNote(GuidGenerator.Create(), patientId, note));
 
     public async Task<PatientNote> UpdateNoteAsync(Guid id, Guid patientId, string note)
     {
@@ -148,19 +113,21 @@ public class PatientManager(
         return await patientNoteRepository.UpdateAsync(patientNote);
     }
 
-    private async Task CheckIdentityAndPassportNumberAsync(string? identityNumber, string? passportNumber,
-                                                           Guid? excludeId = null)
+    private async Task CheckIdentityAndPassportNumberAsync(
+        string? identityNumber,
+        string? passportNumber,
+        Guid? excludeId = null
+    )
     {
         if (identityNumber.IsNullOrWhiteSpace() && passportNumber.IsNullOrWhiteSpace())
         {
-            throw new Exception("Identity number or passport number is required.");
+            throw new Exception("Identity number or passport number is required."); //todo: custom exception
         }
 
         if (!identityNumber.IsNullOrWhiteSpace())
         {
             await CheckIdentityNumberNotExistAsync(excludeId, identityNumber);
-        }
-        else
+        } else
         {
             await CheckPassportNumberNotExistAsync(excludeId, passportNumber!);
         }
@@ -170,7 +137,7 @@ public class PatientManager(
     {
         if (await patientRepository.IdentityNumberExistsAsync(excludeId, identityNumber))
         {
-            throw new Exception("Identity number already exists.");
+            throw new Exception("Identity number already exists."); //todo: custom exception
         }
     }
 
@@ -178,7 +145,7 @@ public class PatientManager(
     {
         if (await patientRepository.PassportNumberExistsAsync(excludeId, passportNumber))
         {
-            throw new Exception("Passport number already exists.");
+            throw new Exception("Passport number already exists."); //todo: custom exception
         }
     }
 }
