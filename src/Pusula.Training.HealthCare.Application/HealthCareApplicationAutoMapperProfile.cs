@@ -21,9 +21,6 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 {
     public HealthCareApplicationAutoMapperProfile()
     {
-        /* You can configure your AutoMapper mapping configuration here.
-         * Alternatively, you can split your mapping configurations
-         * into multiple profile classes for a better organization. */
 
         CreateMap<Patient, PatientDto>();
         CreateMap<Patient, PatientExcelDto>();
@@ -66,11 +63,20 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AppointmentDto, AppointmentUpdateDto>();
         CreateMap<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>();
 
+        CreateMap<AppointmentReport, AppointmentReportDto>();
+        CreateMap<AppointmentReportDto, AppointmentReportUpdateDto>();
+        CreateMap<AppointmentReportWithNavigationProperties, AppointmentReportWithNavigationPropertiesDto>();
+
+        CreateMap<AppointmentType, AppointmentTypeDto>();
+        CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();       
+
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
         CreateMap<HospitalDto, HospitalUpdateDto>();
         CreateMap<HospitalWithDepartment, HospitalDto>();
         CreateMap<Hospital, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<Examination, ExaminationDto>();
+        CreateMap<Examination, ExaminationExcelDto>();
 
         CreateMap<Doctor, DoctorDto>();
         CreateMap<Doctor, DoctorExcelDto>();

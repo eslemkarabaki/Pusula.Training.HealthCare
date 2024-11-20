@@ -68,8 +68,24 @@ public static class HealthCarePermissions
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
-    }    
-    
+    }
+
+    public static class AppointmentReports
+    {
+        public const string Default = GroupName + ".AppointmentReports";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class AppointmentTypes
+    {
+        public const string Default = GroupName + ".AppointmentTypes";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
     public static class Hospitals
     {
         public const string Default = GroupName + ".Hospitals";
@@ -92,6 +108,11 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
-
-
+    public static class Examinations
+    {
+        public const string Default = GroupName + ".Examinations";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
 }

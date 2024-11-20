@@ -1,9 +1,11 @@
 ﻿using JetBrains.Annotations;
+using Pusula.Training.HealthCare.AppointmentTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Services;
@@ -12,53 +14,61 @@ namespace Pusula.Training.HealthCare.Appointments
 {
     public class AppointmentManager(IAppointmentRepository appointmentRepository):DomainService
     {
+        #region CreateAsync
         public virtual async Task<Appointment> CreateAsync(
-            Guid hospitalId,Guid departmentId, 
+            Guid appointmentTypeId,Guid departmentId, 
             Guid doctorId, Guid patientId, 
-            DateTime appointmentDate, EnumStatus status,
-            string? notes = null)
+            DateTime appointmentStartDate, DateTime appointmentEndDate,
+            EnumStatus status, string? notes = null)
         {
-            Check.NotNullOrWhiteSpace(hospitalId.ToString(), nameof(hospitalId));
+            Check.NotNullOrWhiteSpace(appointmentTypeId.ToString(), nameof(appointmentTypeId));
             Check.NotNullOrWhiteSpace(departmentId.ToString(), nameof(departmentId));
             Check.NotNullOrWhiteSpace(doctorId.ToString(), nameof(doctorId));
             Check.NotNullOrWhiteSpace(patientId.ToString(), nameof(patientId));
-            Check.NotNull(appointmentDate, nameof(appointmentDate));
+            Check.NotNull(appointmentStartDate, nameof(appointmentStartDate));
+            Check.NotNull(appointmentEndDate, nameof(appointmentEndDate));
             Check.Range((int)status, nameof(status), 1, 5);
-            Check.NotNullOrWhiteSpace(notes, nameof(notes));
+            Check.Length(notes, nameof(notes), AppointmentConsts.NotesMaxLength, AppointmentConsts.NotesMinLength);
 
             var appointment = new Appointment(
                 GuidGenerator.Create(),
-                hospitalId, departmentId, doctorId, patientId, appointmentDate, notes, status);
+                appointmentTypeId, departmentId, doctorId, patientId, appointmentStartDate, appointmentEndDate, notes!, status!);
 
             return await appointmentRepository.InsertAsync(appointment);
         }
+        #endregion
 
-        public virtual async Task<Appointment> UpdateAsync(
-            Guid id, Guid hospitalId, Guid departmentId,
+        #region UpdateAsync
+        public virtual async Task<Appointment> UpdateAsync(Guid id, 
+            Guid appointmentTypeId, Guid departmentId,
             Guid doctorId, Guid patientId,
-            DateTime appointmentDate, EnumStatus status,
-            string? notes = null, [CanBeNull] string? concurrencyStamp = null)
+            DateTime appointmentStartDate, DateTime appointmentEndDate,
+            EnumStatus status, string? notes = null, 
+            [CanBeNull] string? concurrencyStamp = null)
         {
-            Check.NotNullOrWhiteSpace(hospitalId.ToString(), nameof(hospitalId));
+            Check.NotNullOrWhiteSpace(appointmentTypeId.ToString(), nameof(appointmentTypeId));
             Check.NotNullOrWhiteSpace(departmentId.ToString(), nameof(departmentId));
             Check.NotNullOrWhiteSpace(doctorId.ToString(), nameof(doctorId));
             Check.NotNullOrWhiteSpace(patientId.ToString(), nameof(patientId));
-            Check.NotNull(appointmentDate, nameof(appointmentDate));
+            Check.NotNull(appointmentStartDate, nameof(appointmentStartDate));
+            Check.NotNull(appointmentEndDate, nameof(appointmentEndDate));
             Check.Range((int)status, nameof(status), 1, 5);
-            Check.NotNullOrWhiteSpace(notes, nameof(notes));
+            Check.Length(notes, nameof(notes), AppointmentConsts.NotesMaxLength, AppointmentConsts.NotesMinLength);
 
             var appointment = await appointmentRepository.GetAsync(id);
 
-            appointment.HospitalId = hospitalId;
+            appointment.AppointmentTypeId = appointmentTypeId;
             appointment.DepartmentId = departmentId;
             appointment.DoctorId = doctorId;
             appointment.PatientId = patientId;
-            appointment.AppointmentDate = appointmentDate;
-            appointment.Notes = notes;
+            appointment.AppointmentStartDate = appointmentStartDate;
+            appointment.AppointmentEndDate = appointmentEndDate;
             appointment.Status = status;
+            appointment.Notes = notes;            
 
             appointment.SetConcurrencyStampIfNotNull(concurrencyStamp);
             return await appointmentRepository.UpdateAsync(appointment);
         }
+        #endregion
     }
 }

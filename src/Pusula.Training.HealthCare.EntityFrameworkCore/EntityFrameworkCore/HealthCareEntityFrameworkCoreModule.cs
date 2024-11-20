@@ -23,6 +23,8 @@ using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Titles;
+using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.AppointmentTypes;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -60,6 +62,8 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Protocol, EfCoreProtocolRepository>();
             options.AddRepository<Department, EfCoreDepartmentRepository>();
             options.AddRepository<Appointment, EfCoreAppointmentRepository>();
+            options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
+            options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
             options.AddRepository<Hospital, EfCoreHospitalRepository>();
             options.AddRepository<Notification, EfCoreNotificationRepository>();
             options.AddRepository<Hospital, EfCoreHospitalRepository>();
