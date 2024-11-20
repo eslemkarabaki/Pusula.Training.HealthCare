@@ -14,7 +14,6 @@ using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Titles;
-using Pusula.Training.HealthCare.Examinations;
 
 namespace Pusula.Training.HealthCare;
 
@@ -63,6 +62,13 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Appointment, AppointmentDto>();
         CreateMap<AppointmentDto, AppointmentUpdateDto>();
         CreateMap<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>();
+
+        CreateMap<AppointmentReport, AppointmentReportDto>();
+        CreateMap<AppointmentReportDto, AppointmentReportUpdateDto>();
+        CreateMap<AppointmentReportWithNavigationProperties, AppointmentReportWithNavigationPropertiesDto>();
+
+        CreateMap<AppointmentType, AppointmentTypeDto>();
+        CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();       
 
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
