@@ -83,7 +83,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 
         CreateMap<Doctor, DoctorDto>();
         CreateMap<Doctor, DoctorExcelDto>();
-        CreateMap<DoctorDto, DoctorUpdateDto>();
+        CreateMap<DoctorDto, DoctorUpdateDto>(); 
         CreateMap<Doctor, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
        
         CreateMap<Title, TitleDto>();
