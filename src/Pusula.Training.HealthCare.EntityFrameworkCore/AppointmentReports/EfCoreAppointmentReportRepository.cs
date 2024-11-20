@@ -33,30 +33,32 @@ namespace Pusula.Training.HealthCare.AppointmentReports
         }
         #endregion
 
-        //#region GetWithNavigationProperties
+        #region GetWithNavigationProperties
+        public virtual async Task<AppointmentReportWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var dbContext = await GetDbContextAsync();
+
+            return (await GetDbSetAsync()).Where(b => b.Id == id)
+                .Select(appointmentReport => new AppointmentReportWithNavigationProperties
+                {
+                    AppointmentReport = appointmentReport,
+                    Appointment = dbContext.Set<Appointment>().FirstOrDefault(c => c.Id == appointmentReport.AppointmentId)!,
+
+                }).FirstOrDefault()!;
+        }
+        #endregion
+
         //public virtual async Task<AppointmentReportWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
         //{
         //    var dbContext = await GetDbContextAsync();
 
-        //    return (await GetDbSetAsync()).Where(b => b.Id == id)
-        //        .Select(appointmentReport => new AppointmentReportWithNavigationProperties
-        //        {
-        //            AppointmentReport = appointmentReport,
-        //            Appointment = dbContext.Set<Appointment>().FirstOrDefault(c => c.Id == appointmentReport.AppointmentId)!,
-
-        //        }).FirstOrDefault()!;
+        //    return await (await GetQueryForNavigationPropertiesAsync())
+        //        .Include(appointmentReport => appointmentReport.Appointment) // Include Appointment
+        //            .ThenInclude(appointment => appointment.Patient)         // Include Patient through Appointment
+        //        .Include(appointmentReport => appointmentReport.Appointment) // Include Appointment again
+        //            .ThenInclude(appointment => appointment.Doctor)          // Include Doctor through Appointment
+        //        .FirstOrDefaultAsync(appointmentReport => appointmentReport.Appointment.Id == id, cancellationToken);
         //}
-        //#endregion
-
-        public virtual async Task<AppointmentReportWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
-        {
-            return await (await GetQueryForNavigationPropertiesAsync())
-                .Include(appointmentReport => appointmentReport.Appointment) // Appointment ile ilişki
-                .ThenInclude(appointment => appointment.Patient) // Appointment üzerinden Patient'e erişim
-                .Include(appointmentReport => appointmentReport.Appointment.Doctor) // Appointment üzerinden Doctor'a erişim
-                .Where(appointmentReport => appointmentReport.Appointment.Appointment.Id == id)
-                .FirstOrDefaultAsync(cancellationToken);
-        }
 
         #region GetListWithNavigationProperties
         public virtual async Task<List<AppointmentReportWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
@@ -83,10 +85,7 @@ namespace Pusula.Training.HealthCare.AppointmentReports
                    select new AppointmentReportWithNavigationProperties
                    {
                        AppointmentReport = appointmentReport,
-                       Appointment = new()
-                       {
-                           Appointment = appointment
-                       },                       
+                       Appointment = appointment,                       
                    };
         }
         #endregion
@@ -102,7 +101,7 @@ namespace Pusula.Training.HealthCare.AppointmentReports
                     .WhereIf(reportDate.HasValue, e => e.AppointmentReport.ReportDate >= reportDate!.Value)
                     .WhereIf(!string.IsNullOrWhiteSpace(priorityNotes), e => e.AppointmentReport.PriorityNotes!.Contains(priorityNotes!))
                     .WhereIf(!string.IsNullOrWhiteSpace(doctorNotes), e => e.AppointmentReport.DoctorNotes!.Contains(doctorNotes!))
-                    .WhereIf(appointmentId != null && appointmentId != Guid.Empty, e => e.Appointment != null && e.Appointment.Appointment.Id == appointmentId);
+                    .WhereIf(appointmentId != null && appointmentId != Guid.Empty, e => e.Appointment != null && e.Appointment.Id == appointmentId);
         }
         #endregion
 
