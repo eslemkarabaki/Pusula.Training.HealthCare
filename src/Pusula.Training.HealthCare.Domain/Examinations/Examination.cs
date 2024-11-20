@@ -33,7 +33,7 @@ namespace Pusula.Training.HealthCare.Examinations
             ImagingResults = string.Empty;
         }
 
-        public Examination(Guid patientId, Guid doctorId, string? identityNumber, string? notes, DateTime visitDate, string? chronicDiseases, string? allergies, string? medications, string? diagnosis, string? prescription, string? description, string? imagingResults)
+        public Examination(Guid patientId, Guid doctorId, string? identityNumber, string? notes, DateTime visitDate, string? chronicDiseases, string? allergies, string? medications, string? diagnosis, string? prescription, string? imagingResults)
         {
 
             Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));

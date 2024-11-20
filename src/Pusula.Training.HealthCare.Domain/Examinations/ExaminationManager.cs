@@ -29,7 +29,7 @@ public class ExaminationManager(IExaminationRepository examinationRepository) : 
             Check.Length(imagingResults, nameof(imagingResults), ExaminationConsts.ImagingResultsNumberMaxLength);
         }
 
-        var examination = new Examination(
+        var examination = new Examination(  
            identityNumber:identityNumber,
            patientId:patientId,
            doctorId:doctorId,
