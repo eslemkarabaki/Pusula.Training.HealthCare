@@ -66,8 +66,18 @@ public class HealthCareMenuContributor : IMenuContributor
                 "/departments",
                 "fa fa-file-alt",
                 requiredPermissionName: HealthCarePermissions.Departments.Default)
+
         );
-        
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Hospitals,
+                l["Menu:Hospitals"],
+                url: "/hospitals",
+                icon: "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Hospitals.Default)
+        );
+
         context.Menu.AddItem(
             new ApplicationMenuItem(
                     HealthCareMenus.Locations,
@@ -98,6 +108,15 @@ public class HealthCareMenuContributor : IMenuContributor
                         requiredPermissionName: HealthCarePermissions.Districts.Default
                     )
                 )
+
+        );
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Examinations,
+                l["Menu:Examinations"],
+                url: "/examinations",
+                icon: "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Examinations.Default)
         );
 
         return Task.CompletedTask;

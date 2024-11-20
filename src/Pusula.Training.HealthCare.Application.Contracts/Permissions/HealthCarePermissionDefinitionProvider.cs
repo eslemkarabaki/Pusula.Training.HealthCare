@@ -2,6 +2,7 @@ using Pusula.Training.HealthCare.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
+using static Pusula.Training.HealthCare.Permissions.HealthCarePermissions;
 
 namespace Pusula.Training.HealthCare.Permissions;
 
@@ -15,7 +16,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         myGroup.AddPermission(HealthCarePermissions.Dashboard.Tenant, L("Permission:Dashboard"), MultiTenancySides.Tenant);
 
         //Define your own permissions here. Example:
-        //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1"));
+        //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1")); 
 
         SetPatientPermissions(myGroup);
         SetCountryPermissions(myGroup);
@@ -62,6 +63,11 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         titlePermission.AddChild(HealthCarePermissions.Titles.Edit, L("Permission:Edit"));
         titlePermission.AddChild(HealthCarePermissions.Titles.Delete, L("Permission:Delete"));
 
+        var examinationPermission = myGroup.AddPermission(HealthCarePermissions.Examinations.Default, L("Permission:Examinations"));
+        examinationPermission.AddChild(HealthCarePermissions.Examinations.Create, L("Permission:Create"));
+        examinationPermission.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
+        examinationPermission.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
+
     }
 
     private static LocalizableString L(string name)
@@ -99,5 +105,12 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Districts.Create, L("Permission:Create"));
         permission.AddChild(HealthCarePermissions.Districts.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Districts.Delete, L("Permission:Delete"));
+    }
+    private void SetExaminationsPermissions(PermissionGroupDefinition group)
+    {
+        var examinations = group.AddPermission(HealthCarePermissions.Examinations.Default, L("Permission:Examinations"));
+        examinations.AddChild(HealthCarePermissions.Examinations.Create, L("Permission:Create"));
+        examinations.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
+        examinations.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
     }
 }

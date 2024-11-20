@@ -22,7 +22,7 @@ public class EntityFrameworkCoreHealthCareDbSchemaMigrator
     {
         /* We intentionally resolve the HealthCareDbContext
          * from IServiceProvider (instead of directly injecting it)
-         * to properly get the connection string of the current tenant in the
+         * to properly get the connection string of the current tenant in the   
          * current scope.
          */
 

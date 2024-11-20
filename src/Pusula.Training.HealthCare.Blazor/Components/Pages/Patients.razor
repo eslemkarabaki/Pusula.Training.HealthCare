@@ -114,9 +114,9 @@
                     <Field>
                         <FieldLabel>@L["Gender"]</FieldLabel>
                         <Select TValue="EnumGender" SelectedValue="@Filter.Gender" SelectedValueChanged="@OnGenderChangedAsync">
-                            <SelectItem Value="EnumGender.None">@L["EnumGender:None"]</SelectItem>
-                            <SelectItem Value="EnumGender.Male">@L["EnumGender:Male"]</SelectItem>
-                            <SelectItem Value="EnumGender.Female">@L["EnumGender:Female"]</SelectItem>
+                            <SelectItem Value="EnumGender.None">@L["Gender:None"]</SelectItem>
+                            <SelectItem Value="EnumGender.Male">@L["Gender:Male"]</SelectItem>
+                            <SelectItem Value="EnumGender.Female">@L["Gender:Female"]</SelectItem>
                         </Select>
                     </Field>
                 </Column>
@@ -480,7 +480,7 @@
                                     </Field>
 
                                     <Field ColumnSize="ColumnSize.Is6">
-                                        <FieldLabel>@L["Address:City"] *</FieldLabel>
+                                        <FieldLabel>@L["Address:District"] *</FieldLabel>
                                         <Select TValue="Guid" @bind-SelectedValue="@NewPatient.DistrictId">
                                             <SelectItem></SelectItem>
                                             @foreach (var district in DistrictList)
