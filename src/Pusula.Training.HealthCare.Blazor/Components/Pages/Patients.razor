@@ -65,24 +65,25 @@
                          TooltipText="@L["Delete"]"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Button" PrefixIcon="e-icons far fa-file-excel"
-                         Text="@L["ExportExcel"]" TooltipText="@L["ExportExcel"]" OnClick="@DownloadAsExcelAsync"></ToolbarItem>
+                         Text="@L["ExportExcel"]" TooltipText="@L["ExportExcel"]"
+                         OnClick="@DownloadAsExcelAsync"></ToolbarItem>
         </ToolbarItems>
     </SfToolbar>
-    <GridEvents TValue="PatientViewDto"
+    <GridEvents TValue="PatientWithNavigationPropertiesDto"
                 RowSelected="@SelectedPatientRowChangedAsync"
                 RowDeselected="@SelectedPatientRowChangedAsync"
-                OnRecordDoubleClick="@((args) => OpenEditPatientModalAsync(args.RowData))"/>
+                OnRecordDoubleClick="@((args) => OpenEditPatientModalAsync(args.RowData.Patient))"/>
     <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
         <GridColumn HeaderText="@L["FullName"]">
             <Template>
                 @{
-                    var patient = context as PatientViewDto;
+                    var dto = context as PatientWithNavigationPropertiesDto;
                     <div>
                         <SfIcon
-                            IconCss="@($"fs-18p fas {(patient.Gender == EnumGender.Male ? "fa-mars color-blue-500" : "fa-venus color-pink-500")}")"></SfIcon>
-                        <span>@patient.FullName</span>
+                            IconCss="@($"fs-18p fas {(dto.Patient.Gender == EnumGender.Male ? "fa-mars color-blue-500" : "fa-venus color-pink-500")}")"></SfIcon>
+                        <span>@dto.Patient.FullName</span>
                     </div>
                 }
             </Template>
@@ -90,8 +91,8 @@
         <GridColumn HeaderText="@L["IdentityOrPassportNumber"]">
             <Template>
                 @{
-                    var patient = context as PatientViewDto;
-                    @(patient.IdentityNumber ?? patient.PassportNumber)
+                    var dto = context as PatientWithNavigationPropertiesDto;
+                    @(dto.Patient.IdentityNumber ?? dto.Patient.PassportNumber)
                 }
             </Template>
         </GridColumn>
@@ -99,10 +100,10 @@
         <GridColumn HeaderText="@L["Race"]">
             <Template>
                 @{
-                    var patient = context as PatientViewDto;
+                    var dto = context as PatientWithNavigationPropertiesDto;
                     <div>
                         <SfIcon IconCss="fas fa-map-marker-alt color-blue-grey-300"></SfIcon>
-                        <span>@patient.Country</span>
+                        <span>@dto.Country.Name</span>
                     </div>
                 }
             </Template>
@@ -111,21 +112,26 @@
         <GridColumn HeaderText="@L["BirthDate"]">
             <Template>
                 @{
-                    var patient = context as PatientViewDto;
+                    var dto = context as PatientWithNavigationPropertiesDto;
                     <div class="d-flex gap-1">
-                        <span>@patient.BirthDate.ToString("d")</span>
-                        <span>(@patient.Age.Item1 @patient.Age.Item2)</span>
+                        <span>@dto.Patient.BirthDate.ToString("d")</span>
+                        <span>(@dto.Patient.Age.Item1 @dto.Patient.Age.Item2)</span>
                     </div>
                 }
             </Template>
         </GridColumn>
-        <GridColumn Field="@nameof(PatientViewDto.EmailAddress)" HeaderText="@L["EmailAddress"]"/>
-        <GridColumn Field="@nameof(PatientViewDto.MobilePhoneNumber)" HeaderText="@L["MobilePhoneNumber"]"/>
+        <GridColumn Field="@nameof(PatientWithNavigationPropertiesDto.Patient.EmailAddress)"
+                    HeaderText="@L["EmailAddress"]"/>
+        <GridColumn Field="@nameof(PatientWithNavigationPropertiesDto.Patient.MobilePhoneNumber)"
+                    HeaderText="@L["MobilePhoneNumber"]"/>
         <GridColumn TextAlign="TextAlign.Right">
             <Template>
-                <SfButton OnClick="@(() => OpenEditPatientModalAsync(context as PatientViewDto))" CssClass="e-flat"
-                          IconCss="e-icons e-edit"></SfButton>
-                <SfButton OnClick="@(() => DeletePatientAsync(context as PatientViewDto))" CssClass="e-flat"
+                <SfButton
+                    OnClick="@(() => OpenEditPatientModalAsync((context as PatientWithNavigationPropertiesDto).Patient))"
+                    CssClass="e-flat"
+                    IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeletePatientAsync((context as PatientWithNavigationPropertiesDto).Patient))"
+                          CssClass="e-flat"
                           IconCss="e-icons e-trash"></SfButton>
             </Template>
         </GridColumn>

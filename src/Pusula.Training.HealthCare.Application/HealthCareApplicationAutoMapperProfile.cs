@@ -24,22 +24,38 @@ public class HealthCareApplicationAutoMapperProfile : Profile
     public HealthCareApplicationAutoMapperProfile()
     {
         CreateMap<Patient, PatientDto>();
-        CreateMap<PatientView, PatientUpdateDto>();
-        CreateMap<PatientViewDto, PatientUpdateDto>();
-        CreateMap<PatientView, PatientViewDto>();
-        CreateMap<PatientView, PatientExcelDto>()
-            .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country))
-            .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType));
-        CreateMap<Patient, LookupDto<Guid>>()
-            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
+        CreateMap<Patient, PatientUpdateDto>();
+        CreateMap<PatientDto, PatientUpdateDto>();
+        CreateMap<PatientWithNavigationProperties, PatientUpdateDto>()
+            .IncludeMembers(e => e.Patient)
+            .ForMember(e => e.Addresses, opt => opt.MapFrom(e => e.Addresses))
+            .ForAllMembers(opt => opt.Ignore());
+        CreateMap<PatientWithNavigationPropertiesDto, PatientUpdateDto>()
+            .IncludeMembers(e => e.Patient)
+            .ForMember(e => e.Addresses, opt => opt.MapFrom(e => e.Addresses))
+            .ForAllMembers(opt => opt.Ignore());
+        CreateMap<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>();
+
+        CreateMap<Patient, PatientExcelDto>();
+        CreateMap<PatientWithNavigationProperties, PatientExcelDto>()
+            .IncludeMembers(e => e.Patient)
+            .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country.Name))
+            .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType.Name))
+            .ForAllMembers(opt => opt.Ignore());
 
         CreateMap<PatientType, PatientTypeDto>();
 
         CreateMap<Address, AddressDto>().ReverseMap();
-        CreateMap<AddressView, AddressDto>();
         CreateMap<AddressCreateDto, Address>();
-        CreateMap<AddressUpdateDto, Address>();
-        CreateMap<AddressDto, AddressUpdateDto>();
+        CreateMap<Address, AddressUpdateDto>().ReverseMap();
+        CreateMap<AddressDto, AddressUpdateDto>().ReverseMap();
+        CreateMap<AddressWithNavigationProperties, AddressWithNavigationPropertiesDto>();
+        CreateMap<AddressWithNavigationPropertiesDto, AddressUpdateDto>()
+            .IncludeMembers(e => e.Address)
+            .ForAllMembers(opt => opt.Ignore());
+        CreateMap<AddressWithNavigationProperties, AddressUpdateDto>()
+            .IncludeMembers(e => e.Address)
+            .ForAllMembers(opt => opt.Ignore());
 
         CreateMap<Country, CountryDto>();
         CreateMap<CountryDto, CountryUpdateDto>();
@@ -91,7 +107,6 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
-
 
         //Burası önemli
     }

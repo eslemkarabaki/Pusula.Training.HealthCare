@@ -26,9 +26,4 @@ public class PatientUpdateDto : IHasConcurrencyStamp
 
     public List<AddressUpdateDto> Addresses { get; set; } = [];
     public string ConcurrencyStamp { get; set; } = null!;
-
-    public void AddAddress(AddressUpdateDto dto)
-    {
-        Addresses.Add(dto);
-    }
 }

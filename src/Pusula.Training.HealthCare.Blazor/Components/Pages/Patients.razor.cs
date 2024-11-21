@@ -24,7 +24,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
 public partial class Patients
 {
-    private SfGrid<PatientViewDto> SfGrid { get; set; } = null!;
+    private SfGrid<PatientWithNavigationPropertiesDto> SfGrid { get; set; } = null!;
 
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
 
@@ -33,22 +33,18 @@ public partial class Patients
     private string CurrentSorting { get; set; } = string.Empty;
     private int TotalCount { get; set; }
 
-    private IReadOnlyList<PatientViewDto> PatientList { get; set; } = [];
-    private GetPatientsInput Filter { get; set; }= null!;
+    private IReadOnlyList<PatientWithNavigationPropertiesDto> PatientList { get; set; } = [];
+    private GetPatientsInput Filter { get; set; } = null!;
 
     private IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
     private IEnumerable<CountryDto> CountryList { get; set; } = [];
     private bool AllPatientsSelected { get; set; }
 
-    public Patients()
-    {
+    public Patients() =>
         Filter = new GetPatientsInput
         {
-            MaxResultCount = PageSize,
-            SkipCount = (CurrentPage - 1) * PageSize,
-            Sorting = CurrentSorting
+            MaxResultCount = PageSize, SkipCount = (CurrentPage - 1) * PageSize, Sorting = CurrentSorting
         };
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,14 +69,13 @@ public partial class Patients
         return ValueTask.CompletedTask;
     }
 
-
     private async Task GetPatientsAsync()
     {
         Filter.MaxResultCount = PageSize;
         Filter.SkipCount = (CurrentPage - 1) * PageSize;
         Filter.Sorting = CurrentSorting;
 
-        var result = await PatientAppService.GetViewListAsync(Filter);
+        var result = await PatientAppService.GetNavigationPropertiesListAsync(Filter);
         PatientList = result.Items;
         TotalCount = (int)result.TotalCount;
 
@@ -104,7 +99,8 @@ public partial class Patients
 
         NavigationManager.NavigateTo(
             $"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/patients/as-excel-file?DownloadToken={token}{Filter.ToQueryParameterString(culture)}",
-            true);
+            true
+        );
     }
 
 #region DataGrid
@@ -119,24 +115,20 @@ public partial class Patients
 
     private Task SelectedPatientRowChangedAsync()
     {
-        AllPatientsSelected = PatientList.Count < PageSize
-            ? SfGrid.SelectedRecords.Count == PatientList.Count
-            : SfGrid.SelectedRecords.Count == PageSize;
+        AllPatientsSelected = PatientList.Count < PageSize ?
+            SfGrid.SelectedRecords.Count == PatientList.Count :
+            SfGrid.SelectedRecords.Count == PageSize;
 
         return Task.CompletedTask;
     }
 
 #endregion
 
-
 #region Create
 
-    private PatientCreateDialog CreatePatientDialog { get; set; }= null!;
+    private PatientCreateDialog CreatePatientDialog { get; set; } = null!;
 
-    private async Task OpenCreatePatientDialogAsync()
-    {
-        await CreatePatientDialog.ShowAsync();
-    }
+    private async Task OpenCreatePatientDialogAsync() => await CreatePatientDialog.ShowAsync();
 
     private async Task CreatePatientAsync(PatientCreateDto patient)
     {
@@ -193,9 +185,9 @@ public partial class Patients
 
     private async Task DeleteSelectedPatientsAsync()
     {
-        var message = AllPatientsSelected
-            ? L["DeleteAllRecords"].Value
-            : L["DeleteSelectedRecords", SfGrid.SelectedRecords.Count].Value;
+        var message = AllPatientsSelected ?
+            L["DeleteAllRecords"].Value :
+            L["DeleteSelectedRecords", SfGrid.SelectedRecords.Count].Value;
         var isConfirm = await DialogService.ConfirmAsync(message, "Delete Item");
 
         if (!isConfirm)
@@ -206,10 +198,9 @@ public partial class Patients
         if (AllPatientsSelected)
         {
             await PatientAppService.DeleteAllAsync(Filter);
-        }
-        else
+        } else
         {
-            await PatientAppService.DeleteByIdsAsync(SfGrid.SelectedRecords.Select(x => x.Id).ToList());
+            await PatientAppService.DeleteByIdsAsync(SfGrid.SelectedRecords.Select(x => x.Patient.Id).ToList());
         }
 
         await GetPatientsAsync();

@@ -1,9 +1,7 @@
-@using Microsoft.Extensions.Localization
 @using Pusula.Training.HealthCare.Addresses
 @using Pusula.Training.HealthCare.Cities
 @using Pusula.Training.HealthCare.Countries
 @using Pusula.Training.HealthCare.Districts
-@using Pusula.Training.HealthCare.Localization
 @using Pusula.Training.HealthCare.Patients
 @using Pusula.Training.HealthCare.PatientTypes
 @using Syncfusion.Blazor.Data
@@ -14,10 +12,10 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Calendars
-@using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Lists
 
-@inject IStringLocalizer<HealthCareResource> L
+@inherits HealthCareComponentBase
+
 @inject ICountryAppService CountryAppService
 @inject ICityAppService CityAppService
 @inject IDistrictAppService DistrictAppService
@@ -70,8 +68,7 @@
                                             {
                                                 <SfTextBox @bind-Value="@NewPatient.PassportNumber"
                                                            Placeholder="@L["PassportNumber"]"></SfTextBox>
-                                            }
-                                            else
+                                            } else
                                             {
                                                 <SfTextBox @bind-Value="@NewPatient.IdentityNumber"
                                                            Placeholder="@L["IdentityNumber"]"></SfTextBox>
@@ -292,8 +289,7 @@
                                                             <SfButton type="button" CssClass="e-success"
                                                                       OnClick="@SaveAddressEditingAsync">Save
                                                             </SfButton>
-                                                        }
-                                                        else
+                                                        } else
                                                         {
                                                             <SfButton type="submit" CssClass="e-success">Add</SfButton>
                                                         }
@@ -302,25 +298,29 @@
                                             </div>
 
                                             <div class="col-4">
-                                                <SfListView DataSource="@Addresses" TValue="AddressDto"
+                                                <SfListView DataSource="@Addresses"
+                                                            TValue="AddressWithNavigationPropertiesDto"
                                                             HeaderTitle="@L["Addresses"]" ShowHeader="true"
                                                             CssClass="e-list-template">
-                                                    <ListViewTemplates TValue="AddressDto">
+                                                    <ListViewTemplates TValue="AddressWithNavigationPropertiesDto">
                                                         <Template>
                                                             <div class="d-flex gap-1 align-items-start">
                                                                 <div class="flex-fill">
-                                                                    <h6 class="m-0">@context.AddressTitle</h6>
-                                                                    <p class="m-0">@context.AddressLine @context.District @(context.City)/@(context.Country)</p>
+                                                                    <h6 class="m-0">@context.Address.AddressTitle</h6>
+                                                                    <p class="m-0">@context.Address.AddressLine @context.District.Name @(context.City.Name)/@(context.Country.Name)</p>
                                                                 </div>
-                                                                <SfButton type="button" IconCss="e-icons e-trash e-danger"
+                                                                <SfButton type="button"
+                                                                          IconCss="e-icons e-trash e-danger"
                                                                           CssClass="e-small e-danger e-flat"
-                                                                          OnClick="@(()=>RemoveAddressAsync(context))"></SfButton>
+                                                                          OnClick="@(() => RemoveAddressAsync(context))"></SfButton>
                                                             </div>
                                                         </Template>
                                                     </ListViewTemplates>
-                                                    <ListViewFieldSettings TValue="AddressDto" Id="Id"
-                                                                           Text="Name"></ListViewFieldSettings>
-                                                    <ListViewEvents TValue="AddressDto" Clicked="EditAddressAsync">
+                                                    <ListViewFieldSettings TValue="AddressWithNavigationPropertiesDto"
+                                                                           Id="AddressId"
+                                                                           Text="Address.AddressTitle"></ListViewFieldSettings>
+                                                    <ListViewEvents TValue="AddressWithNavigationPropertiesDto"
+                                                                    Clicked="EditAddressAsync">
                                                     </ListViewEvents>
                                                 </SfListView>
                                             </div>
@@ -361,12 +361,11 @@
 
     private PatientCreateDtoValidator NewPatientValidator { get; set; } = null!;
 
-
     private EditContext NewAddressEditContext { get; set; } = null!;
 
     private AddressCreateDto NewAddress { get; set; } = new();
     private Guid EditingAddressId { get; set; }
-    private List<AddressDto> Addresses { get; set; } = [];
+    private List<AddressWithNavigationPropertiesDto> Addresses { get; set; } = [];
 
     private AddressCreateDtoValidator NewAddressValidator { get; set; } = null!;
 
@@ -378,17 +377,16 @@
     {
         get
         {
-            var v = CurrentCountry.Id != NewPatient.CountryId;
-            if (v)
+            var isForeigner = CurrentCountry.Id != NewPatient.CountryId;
+            if (isForeigner)
             {
                 NewPatient.IdentityNumber = null;
-            }
-            else
+            } else
             {
                 NewPatient.PassportNumber = null;
             }
 
-            return v;
+            return isForeigner;
         }
     }
 
@@ -407,10 +405,9 @@
     private async Task DefaultAutoCompleteFilterAsync<TDto>(
         SfAutoComplete<Guid, TDto> autoComplete,
         IEnumerable<TDto> dataSource,
-        FilteringEventArgs args)
-    {
+        FilteringEventArgs args
+    ) =>
         await autoComplete.FilterAsync(dataSource, GetDefaultAutoCompleteQuery(args));
-    }
 
     private Query GetDefaultAutoCompleteQuery(FilteringEventArgs args)
     {
@@ -421,44 +418,30 @@
 
     private async Task AddAddressAsync(EditContext context)
     {
-        Addresses.Add(new AddressDto()
-        {
-            Id = Guid.NewGuid(),
-            CountryId = SelectedAddressCountryId,
-            Country = CountryList.First(e => e.Id == SelectedAddressCountryId).Name,
-            CityId = SelectedAddressCityId,
-            City = CityList.First(e => e.Id == SelectedAddressCityId).Name,
-            DistrictId = NewAddress.DistrictId,
-            District = DistrictList.First(e => e.Id == NewAddress.DistrictId).Name,
-            AddressTitle = NewAddress.AddressTitle,
-            AddressLine = NewAddress.AddressLine
-        });
+        Addresses.Add(
+            new AddressWithNavigationPropertiesDto() { Address = new AddressDto() { Id = Guid.NewGuid(), AddressTitle = NewAddress.AddressTitle, AddressLine = NewAddress.AddressLine, DistrictId = NewAddress.DistrictId }, Country = CountryList.First(e => e.Id == SelectedAddressCountryId), City = CityList.First(e => e.Id == SelectedAddressCityId), District = DistrictList.First(e => e.Id == NewAddress.DistrictId) }
+        );
         SetDefaultsForAddress();
         await Task.CompletedTask;
     }
 
-    private async Task EditAddressAsync(ClickEventArgs<AddressDto> args)
+    private async Task EditAddressAsync(ClickEventArgs<AddressWithNavigationPropertiesDto> args)
     {
-        if (EditingAddressId == args.ItemData.Id)
+        if (EditingAddressId == args.ItemData.Address.Id)
         {
             return;
         }
 
-        await AddressCountryIdChangedAsync(args.ItemData.CountryId);
-        await AddressCityIdChangedAsync(args.ItemData.CityId);
-        EditingAddressId = args.ItemData.Id;
-        NewAddress = new AddressCreateDto()
-        {
-            DistrictId = args.ItemData.DistrictId,
-            AddressTitle = args.ItemData.AddressTitle,
-            AddressLine = args.ItemData.AddressLine
-        };
+        await AddressCountryIdChangedAsync(args.ItemData.Country.Id);
+        await AddressCityIdChangedAsync(args.ItemData.City.Id);
+        EditingAddressId = args.ItemData.Address.Id;
+        NewAddress = new AddressCreateDto() { DistrictId = args.ItemData.District.Id, AddressTitle = args.ItemData.Address.AddressTitle, AddressLine = args.ItemData.Address.AddressLine };
         NewAddressEditContext = new EditContext(NewAddress);
         AddressEditingMode = true;
         await Task.CompletedTask;
     }
 
-    private async Task RemoveAddressAsync(AddressDto dto)
+    private async Task RemoveAddressAsync(AddressWithNavigationPropertiesDto dto)
     {
         Addresses.Remove(dto);
         await Task.CompletedTask;
@@ -474,26 +457,18 @@
 
     private async Task SaveAddressEditingAsync()
     {
-        var address = Addresses.Find(e => e.Id == EditingAddressId);
-        address.AddressLine = NewAddress.AddressLine;
-        address.AddressTitle = NewAddress.AddressTitle;
-        address.CountryId = SelectedAddressCountryId;
-        address.Country = CountryList.First(e => e.Id == SelectedAddressCountryId).Name;
-        address.CityId = SelectedAddressCityId;
-        address.City = CityList.First(e => e.Id == SelectedAddressCityId).Name;
-        address.DistrictId = NewAddress.DistrictId;
-        address.District = DistrictList.First(e => e.Id == NewAddress.DistrictId).Name;
+        var address = Addresses.Find(e => e.Address.Id == EditingAddressId);
+        address.Address.AddressLine = NewAddress.AddressLine;
+        address.Address.AddressTitle = NewAddress.AddressTitle;
+        address.Country = CountryList.First(e => e.Id == SelectedAddressCountryId);
+        address.City = CityList.First(e => e.Id == SelectedAddressCityId);
+        address.District = DistrictList.First(e => e.Id == NewAddress.DistrictId);
         await CancelAddressEditingAsync();
     }
 
     private async Task OnSaveClickAsync(EditContext context)
     {
-        NewPatient.Addresses = Addresses.Select(e => new AddressCreateDto()
-        {
-            DistrictId = e.DistrictId,
-            AddressTitle = e.AddressTitle,
-            AddressLine = e.AddressLine
-        }).ToList();
+        ObjectMapper.Map(Addresses.Select(e => e.Address), NewPatient.Addresses);
         await OnValidSaveAsync.InvokeAsync(NewPatient);
         await HideAsync();
     }
@@ -552,12 +527,7 @@
 
     private void SetDefaultsForPatient()
     {
-        NewPatient = new PatientCreateDto
-        {
-            BirthDate = DateTime.Now,
-            CountryId = CurrentCountry.Id,
-            MobilePhoneNumberCode = CurrentCountry.PhoneCode
-        };
+        NewPatient = new PatientCreateDto { BirthDate = DateTime.Now, CountryId = CurrentCountry.Id, MobilePhoneNumberCode = CurrentCountry.PhoneCode };
         NewPatientEditContext = new EditContext(NewPatient);
     }
 

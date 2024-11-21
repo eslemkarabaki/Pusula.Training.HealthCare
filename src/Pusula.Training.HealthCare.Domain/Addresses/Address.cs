@@ -11,24 +11,34 @@ public sealed class Address : AuditedEntity<Guid>, IAddress
     public string AddressTitle { get; private set; }
     public string AddressLine { get; private set; }
 
-
-    private Address()
+    protected Address()
     {
         AddressTitle = string.Empty;
         AddressLine = string.Empty;
     }
 
-
-    internal Address(Guid id, Guid patientId, Guid districtId, string addressTitle, string addressLine) : base(id)
+    public Address(
+        Guid id,
+        Guid patientId,
+        Guid districtId,
+        string addressTitle,
+        string addressLine
+    ) : base(id)
     {
-        Set(patientId, districtId, addressTitle, addressLine);
+        SetPatientId(patientId);
+        SetDistrictId(districtId);
+        SetAddressTitle(addressTitle);
+        SetAddressLine(addressLine);
     }
 
-    internal void Set(Guid patientId, Guid districtId, string addressTitle, string addressLine)
-    {
-        PatientId = Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
+    public void SetPatientId(Guid patientId) => PatientId = Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
+
+    public void SetDistrictId(Guid districtId) =>
         DistrictId = Check.NotDefaultOrNull<Guid>(districtId, nameof(districtId));
+
+    public void SetAddressTitle(string addressTitle) =>
         AddressTitle = Check.NotNullOrWhiteSpace(addressTitle, nameof(addressTitle), AddressConsts.TitleMaxLength);
+
+    public void SetAddressLine(string addressLine) =>
         AddressLine = Check.NotNullOrWhiteSpace(addressLine, nameof(addressLine), AddressConsts.AddressMaxLength);
-    }
 }

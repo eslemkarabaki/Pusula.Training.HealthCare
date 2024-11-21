@@ -8,7 +8,7 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientRepository : IRepository<Patient, Guid>
 {
-    Task<PatientView> GetViewAsync(
+    Task<PatientWithNavigationProperties> GetNavigationPropertiesAsync(
         Guid id,
         CancellationToken cancellationToken = default
     );
@@ -34,7 +34,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         CancellationToken cancellationToken = default
     );
 
-    Task<List<PatientView>> GetViewListAsync(
+    Task<List<PatientWithNavigationProperties>> GetNavigationPropertiesListAsync(
         string? filterText = null,
         Guid? countryId = null,
         string? firstName = null,
@@ -70,7 +70,8 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     Task DeleteAllAsync(
         string? filterText = null,
@@ -87,15 +88,18 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     Task<bool> IdentityNumberExistsAsync(
         Guid? id,
         string identityNumber,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     Task<bool> PassportNumberExistsAsync(
         Guid? id,
         string passportNumber,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

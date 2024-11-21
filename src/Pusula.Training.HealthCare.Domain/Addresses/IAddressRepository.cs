@@ -8,7 +8,7 @@ namespace Pusula.Training.HealthCare.Addresses;
 
 public interface IAddressRepository : IRepository<Address, Guid>
 {
-    Task<List<AddressView>> GetViewListAsync(
+    Task<List<AddressWithNavigationProperties>> GetNavigationPropertiesListAsync(
         Guid? patientId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,

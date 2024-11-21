@@ -26,7 +26,8 @@ public class PatientAppService(
     IAddressRepository addressRepository,
     PatientManager patientManager,
     IDistributedCache<PatientDownloadTokenCacheItem, string> downloadTokenCache,
-    IDistributedEventBus distributedEventBus) : HealthCareAppService, IPatientAppService
+    IDistributedEventBus distributedEventBus
+) : HealthCareAppService, IPatientAppService
 {
 #region Get
 
@@ -36,10 +37,10 @@ public class PatientAppService(
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
 
-    public virtual async Task<PatientViewDto> GetViewAsync(Guid id)
+    public virtual async Task<PatientWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id)
     {
-        var patient = await patientRepository.GetViewAsync(id);
-        return ObjectMapper.Map<PatientView, PatientViewDto>(patient);
+        var patient = await patientRepository.GetNavigationPropertiesAsync(id);
+        return ObjectMapper.Map<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>(patient);
     }
 
 #endregion
@@ -48,53 +49,53 @@ public class PatientAppService(
 
     public virtual async Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input)
     {
-        var totalCount = await patientRepository.GetCountAsync(input.FilterText, input.CountryId, input.FirstName,
-            input.LastName,
-            input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.PassportNumber, input.EmailAddress,
-            input.MobilePhoneNumber,
-            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus);
-        var items = await patientRepository.GetListAsync(input.FilterText, input.CountryId, input.FirstName,
-            input.LastName,
-            input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.PassportNumber, input.EmailAddress,
-            input.MobilePhoneNumber,
+        var totalCount = await patientRepository.GetCountAsync(
+            input.FilterText, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin, input.BirthDateMax,
+            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
+            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
+        );
+        var items = await patientRepository.GetListAsync(
+            input.FilterText, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin, input.BirthDateMax,
+            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.Sorting,
-            input.MaxResultCount,
-            input.SkipCount);
+            input.MaxResultCount, input.SkipCount
+        );
 
         return new PagedResultDto<PatientDto>
         {
-            TotalCount = totalCount,
-            Items = ObjectMapper.Map<List<Patient>, List<PatientDto>>(items)
+            TotalCount = totalCount, Items = ObjectMapper.Map<List<Patient>, List<PatientDto>>(items)
         };
     }
 
-    public virtual async Task<PagedResultDto<PatientViewDto>> GetViewListAsync(GetPatientsInput input)
+    public virtual async Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetNavigationPropertiesListAsync(
+        GetPatientsInput input
+    )
     {
-        var totalCount = await patientRepository.GetCountAsync(input.FilterText, input.CountryId, input.FirstName,
-            input.LastName,
-            input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.PassportNumber, input.EmailAddress,
-            input.MobilePhoneNumber,
-            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus);
-        var items = await patientRepository.GetViewListAsync(input.FilterText, input.CountryId, input.FirstName,
-            input.LastName,
-            input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.PassportNumber, input.EmailAddress,
-            input.MobilePhoneNumber,
+        var totalCount = await patientRepository.GetCountAsync(
+            input.FilterText, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin, input.BirthDateMax,
+            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
+            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
+        );
+        var items = await patientRepository.GetNavigationPropertiesListAsync(
+            input.FilterText, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin, input.BirthDateMax,
+            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.Sorting,
-            input.MaxResultCount,
-            input.SkipCount);
+            input.MaxResultCount, input.SkipCount
+        );
 
-        return new PagedResultDto<PatientViewDto>
+        return new PagedResultDto<PatientWithNavigationPropertiesDto>
         {
             TotalCount = totalCount,
-            Items = ObjectMapper.Map<List<PatientView>, List<PatientViewDto>>(items)
+            Items = ObjectMapper
+                .Map<List<PatientWithNavigationProperties>, List<PatientWithNavigationPropertiesDto>>(items)
         };
     }
 
-    public async Task<List<AddressDto>> GetAddressListAsync(Guid patientId)
-    {
-        return ObjectMapper.Map<List<AddressView>, List<AddressDto>>(
-            await addressRepository.GetViewListAsync(patientId));
-    }
+    public async Task<List<AddressWithNavigationPropertiesDto>>
+        GetAddressNavigationPropertiesListAsync(Guid patientId) =>
+        ObjectMapper.Map<List<AddressWithNavigationProperties>, List<AddressWithNavigationPropertiesDto>>(
+            await addressRepository.GetNavigationPropertiesListAsync(patientId)
+        );
 
 #endregion
 
@@ -103,12 +104,11 @@ public class PatientAppService(
     [Authorize(HealthCarePermissions.Patients.Create)]
     public virtual async Task<PatientDto> CreateAsync(PatientCreateDto input)
     {
-        var patient = await patientManager.CreateAsync(input.CountryId, input.PatientTypeId, input.FirstName,
-            input.LastName,
-            input.BirthDate, input.IdentityNumber, input.PassportNumber, input.EmailAddress,
-            input.MobilePhoneNumberCode, input.MobilePhoneNumber, input.HomePhoneNumberCode,
-            input.HomePhoneNumber, input.Gender,
-            input.BloodType, input.MaritalStatus,
+        var patient = await patientManager.CreateAsync(
+            input.CountryId, input.PatientTypeId, input.FirstName, input.LastName, input.BirthDate,
+            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumberCode,
+            input.MobilePhoneNumber, input.HomePhoneNumberCode, input.HomePhoneNumber, input.Gender, input.BloodType,
+            input.MaritalStatus,
             ObjectMapper.Map<IEnumerable<AddressCreateDto>, IEnumerable<Address>>(input.Addresses)
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);
@@ -122,13 +122,10 @@ public class PatientAppService(
     public virtual async Task<PatientDto> UpdateAsync(Guid id, PatientUpdateDto input)
     {
         var patient = await patientManager.UpdateAsync(
-            id,
-            input.CountryId, input.PatientTypeId, input.FirstName, input.LastName,
-            input.BirthDate, input.IdentityNumber, input.PassportNumber, input.EmailAddress,
-            input.MobilePhoneNumberCode, input.MobilePhoneNumber, input.HomePhoneNumberCode,
-            input.HomePhoneNumber, input.Gender,
-            input.BloodType, input.MaritalStatus,
-            ObjectMapper.Map<IEnumerable<AddressUpdateDto>, IEnumerable<Address>>(input.Addresses),
+            id, input.CountryId, input.PatientTypeId, input.FirstName, input.LastName, input.BirthDate,
+            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumberCode,
+            input.MobilePhoneNumber, input.HomePhoneNumberCode, input.HomePhoneNumber, input.Gender, input.BloodType,
+            input.MaritalStatus, ObjectMapper.Map<IEnumerable<AddressUpdateDto>, IEnumerable<Address>>(input.Addresses),
             input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);
@@ -139,26 +136,19 @@ public class PatientAppService(
 #region Delete
 
     [Authorize(HealthCarePermissions.Patients.Delete)]
-    public virtual async Task DeleteAsync(Guid id)
-    {
-        await patientRepository.DeleteAsync(id);
-    }
+    public virtual async Task DeleteAsync(Guid id) => await patientRepository.DeleteAsync(id);
 
     [Authorize(HealthCarePermissions.Patients.Delete)]
-    public virtual async Task DeleteByIdsAsync(List<Guid> patientIds)
-    {
+    public virtual async Task DeleteByIdsAsync(List<Guid> patientIds) =>
         await patientRepository.DeleteManyAsync(patientIds);
-    }
 
     [Authorize(HealthCarePermissions.Patients.Delete)]
-    public virtual async Task DeleteAllAsync(GetPatientsInput input)
-    {
-        await patientRepository.DeleteAllAsync(input.FilterText, input.CountryId, input.FirstName,
-            input.LastName,
-            input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.PassportNumber, input.EmailAddress,
-            input.MobilePhoneNumber,
-            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus);
-    }
+    public virtual async Task DeleteAllAsync(GetPatientsInput input) =>
+        await patientRepository.DeleteAllAsync(
+            input.FilterText, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin, input.BirthDateMax,
+            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
+            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
+        );
 
 #endregion
 
@@ -173,20 +163,24 @@ public class PatientAppService(
             throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
         }
 
-        var items = await patientRepository.GetViewListAsync(input.FilterText, input.CountryId, input.FirstName,
-            input.LastName,
-            input.BirthDateMin, input.BirthDateMax, input.IdentityNumber, input.PassportNumber, input.EmailAddress,
-            input.MobilePhoneNumber,
-            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus);
+        var items = await patientRepository.GetNavigationPropertiesListAsync(
+            input.FilterText, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin, input.BirthDateMax,
+            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
+            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
+        );
 
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(
-            ObjectMapper.Map<List<PatientView>, List<PatientExcelDto>>(items));
+            ObjectMapper.Map<List<PatientWithNavigationProperties>, List<PatientExcelDto>>(items)
+        );
         memoryStream.Seek(0, SeekOrigin.Begin);
 
         //todo excel name
-        return new RemoteStreamContent(memoryStream, $"Patients_{DateTime.Now:dd.MM.yyyy hh:mm}.xlsx",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        return new RemoteStreamContent(
+            memoryStream,
+            $"Patients_{DateTime.Now:dd.MM.yyyy hh:mm}.xlsx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
     }
 
     public virtual async Task<Shared.DownloadTokenResultDto> GetDownloadTokenAsync()
@@ -196,15 +190,10 @@ public class PatientAppService(
         await downloadTokenCache.SetAsync(
             token,
             new PatientDownloadTokenCacheItem { Token = token },
-            new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
-            });
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30) }
+        );
 
-        return new Shared.DownloadTokenResultDto
-        {
-            Token = token
-        };
+        return new Shared.DownloadTokenResultDto { Token = token };
     }
 
 #endregion
