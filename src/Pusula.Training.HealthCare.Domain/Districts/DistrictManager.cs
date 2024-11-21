@@ -26,7 +26,8 @@ public class DistrictManager(IDistrictRepository districtRepository) : DomainSer
     )
     {
         var district = await districtRepository.GetAsync(id);
-        district.Set(cityId, name);
+        district.SetName(name);
+        district.SetCityId(cityId);
         district.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await districtRepository.UpdateAsync(district);
     }

@@ -103,16 +103,6 @@ public class PatientManager(
         return await patientRepository.UpdateAsync(patient);
     }
 
-    public async Task<PatientNote> CreateNoteAsync(Guid patientId, string note) =>
-        await patientNoteRepository.InsertAsync(new PatientNote(GuidGenerator.Create(), patientId, note));
-
-    public async Task<PatientNote> UpdateNoteAsync(Guid id, Guid patientId, string note)
-    {
-        var patientNote = await patientNoteRepository.GetAsync(id);
-        patientNote.Set(patientId, note);
-        return await patientNoteRepository.UpdateAsync(patientNote);
-    }
-
     private async Task CheckIdentityAndPassportNumberAsync(
         string? identityNumber,
         string? passportNumber,

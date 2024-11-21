@@ -10,19 +10,16 @@ public sealed class PatientNote : FullAuditedEntity<Guid>
     public Guid PatientId { get; private set; }
     public string Note { get; private set; }
 
-    private PatientNote()
+    protected PatientNote() => Note = string.Empty;
+
+    public PatientNote(Guid id, Guid patientId, string note) : base(id)
     {
-        Note = string.Empty;
+        SetPatientId(patientId);
+        SetNote(note);
     }
 
-    internal PatientNote(Guid id, Guid patientId, string note) : base(id)
-    {
-        Set(patientId, note);
-    }
+    public void SetPatientId(Guid patientId) => PatientId = Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
 
-    internal void Set(Guid patientId, string note)
-    {
-        PatientId = Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
+    public void SetNote(string note) =>
         Note = Check.NotNullOrWhiteSpace(note, nameof(note), PatientNoteConsts.NoteMaxLength);
-    }
 }

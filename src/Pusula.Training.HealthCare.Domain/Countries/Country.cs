@@ -11,24 +11,36 @@ public sealed class Country : FullAuditedAggregateRoot<Guid>
     public string PhoneCode { get; private set; }
     public bool IsCurrent { get; private set; }
 
-    private Country()
+    protected Country()
     {
         Name = string.Empty;
         Iso = string.Empty;
         PhoneCode = string.Empty;
     }
 
-    internal Country(Guid id, string name, string iso, string phoneCode, bool isCurrent = false) : base(id)
+    public Country(
+        Guid id,
+        string name,
+        string iso,
+        string phoneCode,
+        bool isCurrent = false
+    ) : base(id)
     {
-        Set(name, iso, phoneCode, isCurrent);
+        SetIsCurrent(isCurrent);
+        SetName(name);
+        SetIso(iso);
+        SetPhoneCode(phoneCode);
     }
 
-    internal void Set(string name, string iso, string phoneCode, bool isCurrent = false)
-    {
+    public void SetIsCurrent(bool isCurrent) => IsCurrent = isCurrent;
+
+    public void SetName(string name) =>
         Name = Check.NotNullOrWhiteSpace(name, nameof(name), CountryConsts.NameMaxLength);
+
+    public void SetIso(string iso) =>
         Iso =
             Check.NotNullOrWhiteSpace(iso, nameof(iso), CountryConsts.IsoMaxLength);
+
+    public void SetPhoneCode(string phoneCode) =>
         PhoneCode = Check.NotNullOrWhiteSpace(phoneCode, nameof(phoneCode), CountryConsts.PhoneCodeMaxLength);
-        IsCurrent = isCurrent;
-    }
 }

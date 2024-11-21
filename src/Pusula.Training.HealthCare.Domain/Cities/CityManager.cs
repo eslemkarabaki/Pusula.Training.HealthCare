@@ -26,7 +26,8 @@ public class CityManager(ICityRepository cityRepository) : DomainService
     )
     {
         var city = await cityRepository.GetAsync(id);
-        city.Set(countryId, name);
+        city.SetCountryId(countryId);
+        city.SetName(name);
         city.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await cityRepository.UpdateAsync(city);
     }

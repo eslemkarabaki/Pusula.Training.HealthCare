@@ -9,20 +9,15 @@ public sealed class City : FullAuditedAggregateRoot<Guid>
     public Guid CountryId { get; private set; }
     public string Name { get; private set; }
 
-    private City()
+    protected City() => Name = string.Empty;
+
+    public City(Guid id, Guid countryId, string name) : base(id)
     {
-        Name = string.Empty;
+        SetCountryId(countryId);
+        SetName(name);
     }
 
+    public void SetCountryId(Guid countryId) => CountryId = Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
 
-    internal City(Guid id, Guid countryId, string name) : base(id)
-    {
-        Set(countryId, name);
-    }
-
-    internal void Set(Guid countryId, string name)
-    {
-        CountryId = Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
-        Name = Check.NotNullOrWhiteSpace(name, nameof(name), CityConsts.NameMaxLength);
-    }
+    public void SetName(string name) => Name = Check.NotNullOrWhiteSpace(name, nameof(name), CityConsts.NameMaxLength);
 }

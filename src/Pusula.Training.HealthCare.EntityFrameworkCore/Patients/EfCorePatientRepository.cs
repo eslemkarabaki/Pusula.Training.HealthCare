@@ -174,7 +174,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         //             (patientCountries, patientType) => new { patientCountries, patientType })
 
         var patients =
-            from patient in await GetDbSetAsync()
+            from patient in dbContext.Patients
             join country in dbContext.Countries
                 on patient.CountryId equals country.Id
                 into countries
@@ -183,7 +183,12 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 on patient.PatientTypeId equals patientType.Id
                 into patientTypes
             from patientType in patientTypes.DefaultIfEmpty()
-            select new { patient, country, patientType };
+            select new
+            {
+                patient,
+                country,
+                patientType
+            };
 
         var addresses = (
             from address in dbContext.Addresses
@@ -199,7 +204,10 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
             from country in countries.DefaultIfEmpty()
             select new AddressWithNavigationProperties()
             {
-                Address = address, District = district, Country = country, City = city
+                Address = address,
+                District = district,
+                Country = country,
+                City = city
             }).AsEnumerable();
 
         return patients.Select(

@@ -30,7 +30,9 @@ public class CountryManager(ICountryRepository countryRepository) : DomainServic
     )
     {
         var country = await countryRepository.GetAsync(id);
-        country.Set(name, iso, phoneCode, isCurrent);
+        country.SetName(name);
+        country.SetIso(iso);
+        country.SetPhoneCode(phoneCode);
         country.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await countryRepository.UpdateAsync(country);
     }
