@@ -7,7 +7,6 @@ public class HealthCareMenus
 
     //Add your menu items here...
     public const string Patients = Prefix + ".Patients";
-    public const string Protocols = Prefix + ".Protocols";
     public const string Departments = Prefix + ".Departments";
     public const string Locations = Prefix + ".Locations";
     public const string Countries = Locations + ".Countries";
