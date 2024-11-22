@@ -6,23 +6,18 @@ namespace Pusula.Training.HealthCare.Cities;
 
 public sealed class City : FullAuditedAggregateRoot<Guid>
 {
-    public Guid CountryId { get; set; }
-    public string Name { get; set; }
+    public Guid CountryId { get; private set; }
+    public string Name { get; private set; }
 
-    private City()
+    protected City() => Name = string.Empty;
+
+    public City(Guid id, Guid countryId, string name) : base(id)
     {
-        Name = string.Empty;
+        SetCountryId(countryId);
+        SetName(name);
     }
 
+    public void SetCountryId(Guid countryId) => CountryId = Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
 
-    public City(Guid id, Guid countryId, string name)
-    {
-        Check.NotDefaultOrNull<Guid>(id, nameof(id));
-        Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
-        Check.NotNullOrWhiteSpace(name, nameof(name), CityConsts.NameMaxLength);
-
-        Id = id;
-        CountryId = countryId;
-        Name = name;
-    }
+    public void SetName(string name) => Name = Check.NotNullOrWhiteSpace(name, nameof(name), CityConsts.NameMaxLength);
 }
