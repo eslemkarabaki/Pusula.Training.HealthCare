@@ -13,7 +13,7 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
     public interface IAppointmentTypesAppService : IApplicationService
     {
         Task<PagedResultDto<AppointmentTypeDto>> GetListAsync(GetAppointmentTypesInput input);
-
+        Task<List<AppointmentTypeDto>> GetListAppointmentTypesAsync();
         Task<AppointmentTypeDto> GetAsync(Guid id);
 
         Task DeleteAsync(Guid id);

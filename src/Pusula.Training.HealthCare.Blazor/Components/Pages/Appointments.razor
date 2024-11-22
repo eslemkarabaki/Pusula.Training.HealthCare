@@ -1,0 +1,135 @@
+﻿@page "/appointments"
+
+@attribute [Authorize(HealthCarePermissions.Appointments.Default)]
+
+@using Pusula.Training.HealthCare.Appointments
+@using Pusula.Training.HealthCare.AppointmentTypes
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.AppointmentTypes
+@using Pusula.Training.HealthCare.Localization
+@using Pusula.Training.HealthCare.Patients
+@using Syncfusion.Blazor.Schedule
+@using Syncfusion.Blazor.Navigations
+@using Pusula.Training.HealthCare.Permissions
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Http.Client
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@using Position = Syncfusion.Blazor.Popups.Position
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.DropDowns
+
+@inherits HealthCareComponentBase
+
+@inject IAppointmentsAppService AppointmentsAppService
+@inject IDepartmentsAppService DepartmentsAppService
+@inject IDoctorAppService DoctorsAppService
+@inject IAppointmentTypesAppService AppointmentTypeAppService
+@inject IPatientsAppService PatientAppService
+@inject IUiMessageService UiMessageService
+@inject AbpBlazorMessageLocalizerHelper<HealthCareResource> LH
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+<PageHeader BreadcrumbItems="BreadcrumbItems" />
+
+
+<div class="col-lg-12" style="padding-top:15px">
+    <div class="col-md-3">
+        <SfDropDownList TItem="DepartmentDto" TValue="Guid" PopupHeight="230px" Placeholder="e.g. Select Department" @bind-Value="@SelectedDepartmentId" DataSource="@Departments">
+            <DropDownListEvents TItem="DepartmentDto" TValue="Guid" ValueChange="DepartmentSelect" />
+            <DropDownListFieldSettings Text="Name" Value="Id" />
+            </SfDropDownList>
+    </div>
+    <div class="col-md-3">
+        <SfDropDownList TItem="DoctorDto" TValue="Guid" PopupHeight="230px" Placeholder="e.g. Select Doctor" @bind-Value="@SelectedDoctorId" DataSource="@Doctors">
+            <DropDownListEvents TItem="DoctorDto" TValue="Guid" ValueChange="DoctorSelect" />
+            <DropDownListFieldSettings Text="FullName" Value="Id" />
+        </SfDropDownList>
+    </div>
+</div>
+<div class="col-lg-12 control-section">
+    <SfSchedule TValue="AppointmentDto" Width="100%" Height="650px" @bind-SelectedDate="@CurrentDate">
+        <ScheduleEvents TValue="AppointmentDto" OnActionBegin="OnActionBegin"></ScheduleEvents>
+
+        <ScheduleEventSettings DataSource="@AppointmentLists"></ScheduleEventSettings>
+
+        <ScheduleTemplates>
+            <EditorHeaderTemplate>
+                @if (((context as AppointmentDto).Id) == default)
+                {
+                    <div>Create New Appointment</div>
+                }
+                else
+                {
+                    <div>Update Appointment</div>
+                }
+            </EditorHeaderTemplate>
+            <EditorTemplate>
+                <input type="hidden" name="Id" class="e-field" value="@((context as AppointmentDto).Id)" />
+                <input type="hidden" name="DoctorId" class="e-field" value="@SelectedDoctorId" />
+                <input type="hidden" name="DepartmentId" class="e-field" value="@SelectedDepartmentId" />
+
+                <table class="custom-event-editor" width="100%" cellpadding="5">
+                    <tbody>
+                        <tr>
+                            <td class="e-textlabel">Hasta</td>
+                            <td colspan="4">
+                                <SfDropDownList TValue="Guid" TItem="PatientDto" DataSource="@Patients" Placeholder="Choose patients" @bind-Value="@((context as AppointmentDto).PatientId)">
+                                    <DropDownListFieldSettings Text="FullName" Value="Id"></DropDownListFieldSettings>
+                                </SfDropDownList>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="e-textlabel">Type</td>
+                            <td colspan="4">
+                                <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto"  DataSource="@AppointmentTypes" Placeholder="Choose type" @bind-Value="@((context as AppointmentDto).AppointmentTypeId)">
+                                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                                </SfDropDownList>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="e-textlabel">Status</td>
+                            <td class="dropdown" colspan="4">
+                                <SfDropDownList TValue="EnumStatus" TItem="string" DataSource="@Enum.GetNames(typeof(EnumStatus))" Placeholder="Choose status" @bind-Value="@((context as AppointmentDto).Status)">
+                                    <DropDownListFieldSettings Text="string" Value="EnumStatus"></DropDownListFieldSettings>
+                                </SfDropDownList>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="e-textlabel">From</td>
+                            <td colspan="4">
+                                <SfDateTimePicker @bind-Value="@((context as AppointmentDto).StartTime)"></SfDateTimePicker>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="e-textlabel">To</td>
+                            <td colspan="4">
+                                <SfDateTimePicker @bind-Value="@((context as AppointmentDto).EndTime)"></SfDateTimePicker>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="e-textlabel">Reason</td>
+                            <td colspan="4">
+                                <SfTextBox Multiline="true" @bind-Value="@((context as AppointmentDto).Notes)"></SfTextBox>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </EditorTemplate>
+        </ScheduleTemplates>
+        <ScheduleViews>
+            <ScheduleView Option="View.Day"></ScheduleView>
+            <ScheduleView Option="View.Week"></ScheduleView>
+            <ScheduleView Option="View.WorkWeek"></ScheduleView>
+            <ScheduleView Option="View.Month"></ScheduleView>
+            <ScheduleView Option="View.Agenda"></ScheduleView>
+        </ScheduleViews>
+    </SfSchedule>
+</div>

@@ -47,6 +47,11 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
         }
         #endregion
 
+        public virtual async Task<List<AppointmentTypeDto>> GetListAppointmentTypesAsync()
+        {
+            return ObjectMapper.Map<List<AppointmentType>, List<AppointmentTypeDto>>(await appointmentTypeRepository.GetListAsync());
+        }
+
         #region Delete
         [Authorize(HealthCarePermissions.AppointmentTypes.Delete)]
         public virtual async Task DeleteAsync(Guid id)

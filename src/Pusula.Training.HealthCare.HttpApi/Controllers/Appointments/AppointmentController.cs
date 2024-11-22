@@ -120,5 +120,12 @@ namespace Pusula.Training.HealthCare.Controllers.Appointments
         {
             return _appointmentsAppService.DeleteAllAsync(input);
         }
+
+        [HttpGet]
+        [Route("list-doctor-appointment/{id}")]
+        public Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id)
+        {
+            return _appointmentsAppService.GetListAppointmentsAsync(id);
+        }
     }
 }

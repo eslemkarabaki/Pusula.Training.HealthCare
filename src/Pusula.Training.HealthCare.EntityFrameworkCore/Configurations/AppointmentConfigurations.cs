@@ -16,10 +16,10 @@ public class AppointmentConfigurations : IEntityTypeConfiguration<Appointment>
     {
         b.ToTable(HealthCareConsts.DbTablePrefix + "Appointments", HealthCareConsts.DbSchema);
         b.ConfigureByConvention();
-        b.Property(x => x.AppointmentStartDate).HasColumnName(nameof(Appointment.AppointmentStartDate)).IsRequired();
-        b.Property(x => x.AppointmentEndDate).HasColumnName(nameof(Appointment.AppointmentEndDate)).IsRequired();
-        b.Property(x => x.Status).HasColumnName(nameof(Appointment.Status)).IsRequired().HasMaxLength(AppointmentConsts.NotesMaxLength);
-        b.Property(x => x.Notes).HasColumnName(nameof(Appointment.Notes)).HasMaxLength(AppointmentConsts.NotesMaxLength);
+        b.Property(x => x.StartTime).HasColumnName(nameof(Appointment.StartTime)).IsRequired();
+        b.Property(x => x.EndTime).HasColumnName(nameof(Appointment.EndTime)).IsRequired();
+        b.Property(x => x.Status).HasColumnName(nameof(Appointment.Status)).IsRequired().HasMaxLength(AppointmentConsts.NoteMaxLength);
+        b.Property(x => x.Note).HasColumnName(nameof(Appointment.Note)).HasMaxLength(AppointmentConsts.NoteMaxLength);
 
         b.HasOne<AppointmentType>().WithMany().IsRequired().HasForeignKey(x => x.AppointmentTypeId).OnDelete(DeleteBehavior.NoAction);
         b.HasOne<Department>().WithMany().IsRequired().HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.NoAction);

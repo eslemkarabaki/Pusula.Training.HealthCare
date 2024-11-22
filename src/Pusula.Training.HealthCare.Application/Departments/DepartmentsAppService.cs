@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using MiniExcelLibs;
+using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
 using System;
@@ -24,7 +25,7 @@ namespace Pusula.Training.HealthCare.Departments
         public virtual async Task<PagedResultDto<DepartmentDto>> GetListAsync(GetDepartmentsInput input)
         {
             var totalCount = await departmentRepository.GetCountAsync(input.FilterText, input.Name, input.Description, input.Duration);
-            var items = await departmentRepository.GetListAsync(input.FilterText, input.Name,input.Description, input.Duration, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var items = await departmentRepository.GetListAsync(input.FilterText, input.Name, input.Description, input.Duration, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<DepartmentDto>
             {
@@ -32,6 +33,13 @@ namespace Pusula.Training.HealthCare.Departments
                 Items = ObjectMapper.Map<List<Department>, List<DepartmentDto>>(items)
             };
         }
+        // For Appointment
+        public async Task<List<DepartmentDto>> GetListDepartmentsAsync()
+        {
+            return ObjectMapper.Map<List<Department>, List<DepartmentDto>>(await departmentRepository.GetListAsync());
+        }
+
+  
 
         public virtual async Task<DepartmentDto> GetAsync(Guid id)
         {

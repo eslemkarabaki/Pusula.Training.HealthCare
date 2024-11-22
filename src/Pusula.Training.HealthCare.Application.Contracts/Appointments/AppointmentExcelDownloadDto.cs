@@ -11,8 +11,8 @@ namespace Pusula.Training.HealthCare.Appointments
         public string DownloadToken { get; set; } = null!;
         public string? FilterText { get; set; }
 
-        public DateTime? AppointmentStartDate { get; set; }
-        public DateTime? AppointmentEndDate { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
         public EnumStatus? Status { get; set; }
         public string? Notes { get; set; }
         public Guid? AppointmentTypeId { get; set; }
