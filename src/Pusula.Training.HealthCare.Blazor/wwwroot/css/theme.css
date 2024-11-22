@@ -1,0 +1,26 @@
+@import url(./theme/colors/amber.css);
+@import url(./theme/colors/blue-grey.css);
+@import url(./theme/colors/blue.css);
+@import url(./theme/colors/brown.css);
+@import url(./theme/colors/cyan.css);
+@import url(./theme/colors/deep-orange.css);
+@import url(./theme/colors/deep-purple.css);
+@import url(./theme/colors/green.css);
+@import url(./theme/colors/grey.css);
+@import url(./theme/colors/indigo.css);
+@import url(./theme/colors/light-blue.css);
+@import url(./theme/colors/light-green.css);
+@import url(./theme/colors/lime.css);
+@import url(./theme/colors/orange.css);
+@import url(./theme/colors/pink.css);
+@import url(./theme/colors/purple.css);
+@import url(./theme/colors/red.css);
+@import url(./theme/colors/teal.css);
+@import url(./theme/colors/yellow.css);
+
+@import url(./theme/border.css);
+@import url(./theme/font.css);
+@import url(./theme/height.css);
+@import url(./theme/margin.css);
+@import url(./theme/padding.css);
+@import url(./theme/width.css);

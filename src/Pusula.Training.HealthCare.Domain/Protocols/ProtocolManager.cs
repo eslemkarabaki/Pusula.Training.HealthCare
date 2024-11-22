@@ -10,43 +10,51 @@ namespace Pusula.Training.HealthCare.Protocols;
 public class ProtocolManager(IProtocolRepository protocolRepository) : DomainService
 {
     public virtual async Task<Protocol> CreateAsync(
-    Guid patientId, Guid departmentId, string type, DateTime startTime, string? endTime = null)
+        Guid patientId,
+        Guid doctorId,
+        Guid departmentId,
+        Guid typeId,
+        string? description,
+        EnumProtocolStatus status
+    )
     {
-        Check.NotNull(patientId, nameof(patientId));
-        Check.NotNull(departmentId, nameof(departmentId));
-        Check.NotNullOrWhiteSpace(type, nameof(type));
-        Check.Length(type, nameof(type), ProtocolConsts.TypeMaxLength, ProtocolConsts.TypeMinLength);
-        Check.NotNull(startTime, nameof(startTime));
-
         var protocol = new Protocol(
-         GuidGenerator.Create(),
-         patientId, departmentId, type, startTime, endTime
-         );
+            GuidGenerator.Create(), patientId, doctorId, departmentId, typeId, description, status, DateTime.Now
+        );
 
         return await protocolRepository.InsertAsync(protocol);
     }
 
-    public virtual async Task<Protocol> UpdateAsync(
+    public virtual async Task<Protocol> UpdateDescriptionAsync(
         Guid id,
-        Guid patientId, Guid departmentId, string type, DateTime startTime, string? endTime = null, [CanBeNull] string? concurrencyStamp = null
+        string? description,
+        string? concurrencyStamp = null
     )
     {
-        Check.NotNull(patientId, nameof(patientId));
-        Check.NotNull(departmentId, nameof(departmentId));
-        Check.NotNullOrWhiteSpace(type, nameof(type));
-        Check.Length(type, nameof(type), ProtocolConsts.TypeMaxLength, ProtocolConsts.TypeMinLength);
-        Check.NotNull(startTime, nameof(startTime));
-
         var protocol = await protocolRepository.GetAsync(id);
-
-        protocol.PatientId = patientId;
-        protocol.DepartmentId = departmentId;
-        protocol.Type = type;
-        protocol.StartTime = startTime;
-        protocol.EndTime = endTime;
-
+        protocol.SetDescription(description);
         protocol.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await protocolRepository.UpdateAsync(protocol);
     }
 
+    public virtual async Task<Protocol> UpdateStatusAsync(
+        Guid id,
+        EnumProtocolStatus status,
+        string? concurrencyStamp = null
+    )
+    {
+        var protocol = await protocolRepository.GetAsync(id);
+        protocol.SetStatus(status);
+        protocol.SetConcurrencyStampIfNotNull(concurrencyStamp);
+        return await protocolRepository.UpdateAsync(protocol);
+    }
+
+    public virtual async Task<Protocol> CompleteAsync(Guid id, string? concurrencyStamp = null)
+    {
+        var protocol = await protocolRepository.GetAsync(id);
+        protocol.SetStatus(EnumProtocolStatus.Completed);
+        protocol.SetEndTime(DateTime.Now);
+        protocol.SetConcurrencyStampIfNotNull(concurrencyStamp);
+        return await protocolRepository.UpdateAsync(protocol);
+    }
 }

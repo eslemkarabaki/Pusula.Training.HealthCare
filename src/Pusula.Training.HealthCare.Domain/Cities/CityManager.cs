@@ -14,9 +14,6 @@ public class CityManager(ICityRepository cityRepository) : DomainService
         string name
     )
     {
-        Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
-        Check.NotNullOrWhiteSpace(name, nameof(name), CityConsts.NameMaxLength);
-
         var city = new City(GuidGenerator.Create(), countryId, name);
         return await cityRepository.InsertAsync(city);
     }
@@ -25,19 +22,13 @@ public class CityManager(ICityRepository cityRepository) : DomainService
         Guid id,
         Guid countryId,
         string name,
-        [CanBeNull] string? concurrencyStamp = null
+        string? concurrencyStamp = null
     )
     {
-        Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
-        Check.NotNullOrWhiteSpace(name, nameof(name), CityConsts.NameMaxLength);
-
         var city = await cityRepository.GetAsync(id);
-
-        city.Name = name;
-        city.CountryId = countryId;
-
+        city.SetCountryId(countryId);
+        city.SetName(name);
         city.SetConcurrencyStampIfNotNull(concurrencyStamp);
-
         return await cityRepository.UpdateAsync(city);
     }
 }

@@ -1,0 +1,272 @@
+:root {
+    --material-cyan-50: #E0F7FA;
+    --material-cyan-100: #B2EBF2;
+    --material-cyan-200: #80DEEA;
+    --material-cyan-300: #4DD0E1;
+    --material-cyan-400: #26C6DA;
+    --material-cyan-500: #00BCD4;
+    --material-cyan-600: #00ACC1;
+    --material-cyan-700: #0097A7;
+    --material-cyan-800: #00838F;
+    --material-cyan-900: #006064;
+}
+
+.color-cyan-50,
+.color-cyan-50 * {
+    color: var(--material-cyan-50) !important;
+}
+
+.color-cyan-100,
+.color-cyan-100 * {
+    color: var(--material-cyan-100) !important;
+}
+
+.color-cyan-200,
+.color-cyan-200 * {
+    color: var(--material-cyan-200) !important;
+}
+
+.color-cyan-300,
+.color-cyan-300 * {
+    color: var(--material-cyan-300) !important;
+}
+
+.color-cyan-400,
+.color-cyan-400 * {
+    color: var(--material-cyan-400) !important;
+}
+
+.color-cyan-500,
+.color-cyan-500 * {
+    color: var(--material-cyan-500) !important;
+}
+
+.color-cyan-600,
+.color-cyan-600 * {
+    color: var(--material-cyan-600) !important;
+}
+
+.color-cyan-700,
+.color-cyan-700 * {
+    color: var(--material-cyan-700) !important;
+}
+
+.color-cyan-800,
+.color-cyan-800 * {
+    color: var(--material-cyan-800) !important;
+}
+
+.color-cyan-900,
+.color-cyan-900 * {
+    color: var(--material-cyan-900) !important;
+}
+
+.hover-color-cyan-50:hover,
+.hover-color-cyan-50:hover * {
+    color: var(--material-cyan-50) !important;
+}
+
+.hover-color-cyan-100:hover,
+.hover-color-cyan-100:hover * {
+    color: var(--material-cyan-100) !important;
+}
+
+.hover-color-cyan-200:hover,
+.hover-color-cyan-200:hover * {
+    color: var(--material-cyan-200) !important;
+}
+
+.hover-color-cyan-300:hover,
+.hover-color-cyan-300:hover * {
+    color: var(--material-cyan-300) !important;
+}
+
+.hover-color-cyan-400:hover,
+.hover-color-cyan-400:hover * {
+    color: var(--material-cyan-400) !important;
+}
+
+.hover-color-cyan-500:hover,
+.hover-color-cyan-500:hover * {
+    color: var(--material-cyan-500) !important;
+}
+
+.hover-color-cyan-600:hover,
+.hover-color-cyan-600:hover * {
+    color: var(--material-cyan-600) !important;
+}
+
+.hover-color-cyan-700:hover,
+.hover-color-cyan-700:hover * {
+    color: var(--material-cyan-700) !important;
+}
+
+.hover-color-cyan-800:hover,
+.hover-color-cyan-800:hover * {
+    color: var(--material-cyan-800) !important;
+}
+
+.hover-color-cyan-900:hover,
+.hover-color-cyan-900:hover * {
+    color: var(--material-cyan-900) !important;
+}
+
+.bg-cyan-50 {
+    background-color: var(--material-cyan-50) !important;
+}
+
+.bg-cyan-100 {
+    background-color: var(--material-cyan-100) !important;
+}
+
+.bg-cyan-200 {
+    background-color: var(--material-cyan-200) !important;
+}
+
+.bg-cyan-300 {
+    background-color: var(--material-cyan-300) !important;
+}
+
+.bg-cyan-400 {
+    background-color: var(--material-cyan-400) !important;
+}
+
+.bg-cyan-500 {
+    background-color: var(--material-cyan-500) !important;
+}
+
+.bg-cyan-600 {
+    background-color: var(--material-cyan-600) !important;
+}
+
+.bg-cyan-700 {
+    background-color: var(--material-cyan-700) !important;
+}
+
+.bg-cyan-800 {
+    background-color: var(--material-cyan-800) !important;
+}
+
+.bg-cyan-900 {
+    background-color: var(--material-cyan-900) !important;
+}
+
+.hover-bg-cyan-50:hover {
+    background-color: var(--material-cyan-50) !important;
+}
+
+.hover-bg-cyan-100:hover {
+    background-color: var(--material-cyan-100) !important;
+}
+
+.hover-bg-cyan-200:hover {
+    background-color: var(--material-cyan-200) !important;
+}
+
+.hover-bg-cyan-300:hover {
+    background-color: var(--material-cyan-300) !important;
+}
+
+.hover-bg-cyan-400:hover {
+    background-color: var(--material-cyan-400) !important;
+}
+
+.hover-bg-cyan-500:hover {
+    background-color: var(--material-cyan-500) !important;
+}
+
+.hover-bg-cyan-600:hover {
+    background-color: var(--material-cyan-600) !important;
+}
+
+.hover-bg-cyan-700:hover {
+    background-color: var(--material-cyan-700) !important;
+}
+
+.hover-bg-cyan-800:hover {
+    background-color: var(--material-cyan-800) !important;
+}
+
+.hover-bg-cyan-900:hover {
+    background-color: var(--material-cyan-900) !important;
+}
+
+.border-cyan-50 {
+    border-color: var(--material-cyan-50) !important;
+}
+
+.border-cyan-100 {
+    border-color: var(--material-cyan-100) !important;
+}
+
+.border-cyan-200 {
+    border-color: var(--material-cyan-200) !important;
+}
+
+.border-cyan-300 {
+    border-color: var(--material-cyan-300) !important;
+}
+
+.border-cyan-400 {
+    border-color: var(--material-cyan-400) !important;
+}
+
+.border-cyan-500 {
+    border-color: var(--material-cyan-500) !important;
+}
+
+.border-cyan-600 {
+    border-color: var(--material-cyan-600) !important;
+}
+
+.border-cyan-700 {
+    border-color: var(--material-cyan-700) !important;
+}
+
+.border-cyan-800 {
+    border-color: var(--material-cyan-800) !important;
+}
+
+.border-cyan-900 {
+    border-color: var(--material-cyan-900) !important;
+}
+
+.hover-border-cyan-50:hover {
+    border-color: var(--material-cyan-50) !important;
+}
+
+.hover-border-cyan-100:hover {
+    border-color: var(--material-cyan-100) !important;
+}
+
+.hover-border-cyan-200:hover {
+    border-color: var(--material-cyan-200) !important;
+}
+
+.hover-border-cyan-300:hover {
+    border-color: var(--material-cyan-300) !important;
+}
+
+.hover-border-cyan-400:hover {
+    border-color: var(--material-cyan-400) !important;
+}
+
+.hover-border-cyan-500:hover {
+    border-color: var(--material-cyan-500) !important;
+}
+
+.hover-border-cyan-600:hover {
+    border-color: var(--material-cyan-600) !important;
+}
+
+.hover-border-cyan-700:hover {
+    border-color: var(--material-cyan-700) !important;
+}
+
+.hover-border-cyan-800:hover {
+    border-color: var(--material-cyan-800) !important;
+}
+
+.hover-border-cyan-900:hover {
+    border-color: var(--material-cyan-900) !important;
+}

@@ -1,0 +1,272 @@
+:root {
+    --material-yellow-50: #FFFDE7;
+    --material-yellow-100: #FFF9C4;
+    --material-yellow-200: #FFF59D;
+    --material-yellow-300: #FFF176;
+    --material-yellow-400: #FFEE58;
+    --material-yellow-500: #FFEB3B;
+    --material-yellow-600: #FDD835;
+    --material-yellow-700: #FBC02D;
+    --material-yellow-800: #F9A825;
+    --material-yellow-900: #F57F17;
+}
+
+.color-yellow-50,
+.color-yellow-50 * {
+    color: var(--material-yellow-50) !important;
+}
+
+.color-yellow-100,
+.color-yellow-100 * {
+    color: var(--material-yellow-100) !important;
+}
+
+.color-yellow-200,
+.color-yellow-200 * {
+    color: var(--material-yellow-200) !important;
+}
+
+.color-yellow-300,
+.color-yellow-300 * {
+    color: var(--material-yellow-300) !important;
+}
+
+.color-yellow-400,
+.color-yellow-400 * {
+    color: var(--material-yellow-400) !important;
+}
+
+.color-yellow-500,
+.color-yellow-500 * {
+    color: var(--material-yellow-500) !important;
+}
+
+.color-yellow-600,
+.color-yellow-600 * {
+    color: var(--material-yellow-600) !important;
+}
+
+.color-yellow-700,
+.color-yellow-700 * {
+    color: var(--material-yellow-700) !important;
+}
+
+.color-yellow-800,
+.color-yellow-800 * {
+    color: var(--material-yellow-800) !important;
+}
+
+.color-yellow-900,
+.color-yellow-900 * {
+    color: var(--material-yellow-900) !important;
+}
+
+.hover-color-yellow-50:hover,
+.hover-color-yellow-50:hover * {
+    color: var(--material-yellow-50) !important;
+}
+
+.hover-color-yellow-100:hover,
+.hover-color-yellow-100:hover * {
+    color: var(--material-yellow-100) !important;
+}
+
+.hover-color-yellow-200:hover,
+.hover-color-yellow-200:hover * {
+    color: var(--material-yellow-200) !important;
+}
+
+.hover-color-yellow-300:hover,
+.hover-color-yellow-300:hover * {
+    color: var(--material-yellow-300) !important;
+}
+
+.hover-color-yellow-400:hover,
+.hover-color-yellow-400:hover * {
+    color: var(--material-yellow-400) !important;
+}
+
+.hover-color-yellow-500:hover,
+.hover-color-yellow-500:hover * {
+    color: var(--material-yellow-500) !important;
+}
+
+.hover-color-yellow-600:hover,
+.hover-color-yellow-600:hover * {
+    color: var(--material-yellow-600) !important;
+}
+
+.hover-color-yellow-700:hover,
+.hover-color-yellow-700:hover * {
+    color: var(--material-yellow-700) !important;
+}
+
+.hover-color-yellow-800:hover,
+.hover-color-yellow-800:hover * {
+    color: var(--material-yellow-800) !important;
+}
+
+.hover-color-yellow-900:hover,
+.hover-color-yellow-900:hover * {
+    color: var(--material-yellow-900) !important;
+}
+
+.bg-yellow-50 {
+    background-color: var(--material-yellow-50) !important;
+}
+
+.bg-yellow-100 {
+    background-color: var(--material-yellow-100) !important;
+}
+
+.bg-yellow-200 {
+    background-color: var(--material-yellow-200) !important;
+}
+
+.bg-yellow-300 {
+    background-color: var(--material-yellow-300) !important;
+}
+
+.bg-yellow-400 {
+    background-color: var(--material-yellow-400) !important;
+}
+
+.bg-yellow-500 {
+    background-color: var(--material-yellow-500) !important;
+}
+
+.bg-yellow-600 {
+    background-color: var(--material-yellow-600) !important;
+}
+
+.bg-yellow-700 {
+    background-color: var(--material-yellow-700) !important;
+}
+
+.bg-yellow-800 {
+    background-color: var(--material-yellow-800) !important;
+}
+
+.bg-yellow-900 {
+    background-color: var(--material-yellow-900) !important;
+}
+
+.hover-bg-yellow-50:hover {
+    background-color: var(--material-yellow-50) !important;
+}
+
+.hover-bg-yellow-100:hover {
+    background-color: var(--material-yellow-100) !important;
+}
+
+.hover-bg-yellow-200:hover {
+    background-color: var(--material-yellow-200) !important;
+}
+
+.hover-bg-yellow-300:hover {
+    background-color: var(--material-yellow-300) !important;
+}
+
+.hover-bg-yellow-400:hover {
+    background-color: var(--material-yellow-400) !important;
+}
+
+.hover-bg-yellow-500:hover {
+    background-color: var(--material-yellow-500) !important;
+}
+
+.hover-bg-yellow-600:hover {
+    background-color: var(--material-yellow-600) !important;
+}
+
+.hover-bg-yellow-700:hover {
+    background-color: var(--material-yellow-700) !important;
+}
+
+.hover-bg-yellow-800:hover {
+    background-color: var(--material-yellow-800) !important;
+}
+
+.hover-bg-yellow-900:hover {
+    background-color: var(--material-yellow-900) !important;
+}
+
+.border-yellow-50 {
+    border-color: var(--material-yellow-50) !important;
+}
+
+.border-yellow-100 {
+    border-color: var(--material-yellow-100) !important;
+}
+
+.border-yellow-200 {
+    border-color: var(--material-yellow-200) !important;
+}
+
+.border-yellow-300 {
+    border-color: var(--material-yellow-300) !important;
+}
+
+.border-yellow-400 {
+    border-color: var(--material-yellow-400) !important;
+}
+
+.border-yellow-500 {
+    border-color: var(--material-yellow-500) !important;
+}
+
+.border-yellow-600 {
+    border-color: var(--material-yellow-600) !important;
+}
+
+.border-yellow-700 {
+    border-color: var(--material-yellow-700) !important;
+}
+
+.border-yellow-800 {
+    border-color: var(--material-yellow-800) !important;
+}
+
+.border-yellow-900 {
+    border-color: var(--material-yellow-900) !important;
+}
+
+.hover-border-yellow-50:hover {
+    border-color: var(--material-yellow-50) !important;
+}
+
+.hover-border-yellow-100:hover {
+    border-color: var(--material-yellow-100) !important;
+}
+
+.hover-border-yellow-200:hover {
+    border-color: var(--material-yellow-200) !important;
+}
+
+.hover-border-yellow-300:hover {
+    border-color: var(--material-yellow-300) !important;
+}
+
+.hover-border-yellow-400:hover {
+    border-color: var(--material-yellow-400) !important;
+}
+
+.hover-border-yellow-500:hover {
+    border-color: var(--material-yellow-500) !important;
+}
+
+.hover-border-yellow-600:hover {
+    border-color: var(--material-yellow-600) !important;
+}
+
+.hover-border-yellow-700:hover {
+    border-color: var(--material-yellow-700) !important;
+}
+
+.hover-border-yellow-800:hover {
+    border-color: var(--material-yellow-800) !important;
+}
+
+.hover-border-yellow-900:hover {
+    border-color: var(--material-yellow-900) !important;
+}

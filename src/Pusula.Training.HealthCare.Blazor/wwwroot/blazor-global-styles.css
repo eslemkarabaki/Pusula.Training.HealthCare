@@ -1,3 +1,6 @@
+@import url(./css/theme.css);
+@import url(./css/sycnfusion-override.css);
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -16,6 +19,7 @@
     right: 0.75rem;
     top: 0.5rem;
 }
+
 :root .lpx-brand-logo {
     --lpx-logo: url('/images/logo/leptonx/logo-light.png');
     --lpx-logo-icon: url('/images/logo/leptonx/logo-light-thumbnail.png');
