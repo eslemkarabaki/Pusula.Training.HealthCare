@@ -22,6 +22,8 @@ using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
+using Pusula.Training.HealthCare.PatientNotes;
+using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
@@ -74,6 +76,8 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Address, EfCoreAddressRepository>();
             options.AddRepository<Doctor, EfCoreDoctorRepository>();
             options.AddRepository<Title, EfCoreTitleRepository>();
+            options.AddRepository<PatientType, EfCorePatientTypeRepository>();
+            options.AddRepository<PatientNote, EfCorePatientNoteRepository>();
         });
 
         Configure<AbpDbContextOptions>(options =>

@@ -11,7 +11,8 @@ public interface ICountryRepository : IRepository<Country, Guid>
     Task<List<Country>> GetListAsync(
         string? filterText = null,
         string? name = null,
-        string? abbreviation = null,
+        string? iso = null,
+        string? phoneCode = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
@@ -21,12 +22,14 @@ public interface ICountryRepository : IRepository<Country, Guid>
     Task<long> GetCountAsync(
         string? filterText = null,
         string? name = null,
-        string? abbreviation = null,
+        string? iso = null,
+        string? phoneCode = null,
         CancellationToken cancellationToken = default);
 
     Task DeleteAllAsync(
         string? filterText = null,
         string? name = null,
-        string? abbreviation = null,
+        string? iso = null,
+        string? phoneCode = null,
         CancellationToken cancellationToken = default);
 }
