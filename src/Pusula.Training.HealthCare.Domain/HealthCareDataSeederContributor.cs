@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pusula.Training.HealthCare.Addresses;
+using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Districts;
@@ -11,6 +12,7 @@ using Pusula.Training.HealthCare.PatientTypes;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 
 namespace Pusula.Training.HealthCare;
@@ -22,12 +24,14 @@ public class HealthCareDataSeederContributor(
     IAddressRepository addressRepository,
     IPatientRepository patientRepository,
     IPatientTypeRepository patientTypeRepository,
-    IGuidGenerator guidGenerator)
+    IAppDefaultRepository appDefaultRepository,
+    IGuidGenerator guidGenerator
+)
     : IDataSeedContributor, ITransientDependency
 {
     public async Task SeedAsync(DataSeedContext context)
     {
-        if (await patientRepository.GetCountAsync() == 0)
+        if (!await patientRepository.AnyAsync())
         {
             var countries = await SeedCountriesAsync();
             var cities = await SeedCitiesAsync(countries);
@@ -36,8 +40,12 @@ public class HealthCareDataSeederContributor(
             var patients = await SeedPatientsAsync(countries, patientTypes);
             await SeedAddressesAsync(patients, districts);
         }
-    }
 
+        if (!await appDefaultRepository.AnyAsync())
+        {
+            await appDefaultRepository.InsertAsync(new AppDefault(guidGenerator.Create()));
+        }
+    }
 
     // Country
     private async Task<IEnumerable<Country>> SeedCountriesAsync()
@@ -103,26 +111,34 @@ public class HealthCareDataSeederContributor(
     }
 
     // Patient
-    private async Task<IEnumerable<Guid>> SeedPatientsAsync(IEnumerable<Country> countries,
-                                                            IEnumerable<Guid> patientTypes)
+    private async Task<IEnumerable<Guid>> SeedPatientsAsync(
+        IEnumerable<Country> countries,
+        IEnumerable<Guid> patientTypes
+    )
     {
         IEnumerable<Patient> patients =
         [
-            new(guidGenerator.Create(), countries.ElementAt(0).Id, patientTypes.ElementAt(0), "Selçuk", "Şahin",
+            new(
+                guidGenerator.Create(), countries.ElementAt(0).Id, patientTypes.ElementAt(0), "Selçuk", "Şahin",
                 new DateTime(1998, 5, 18),
                 "12345678900", null, "muselcuksahin@gmail.com", countries.ElementAt(0).PhoneCode, "5555555555", null,
                 null, EnumGender.Male, EnumBloodType.AbPositive,
-                EnumMaritalStatus.Single),
-            new(guidGenerator.Create(), countries.ElementAt(1).Id, patientTypes.ElementAt(1), "Joel", "Bond",
+                EnumMaritalStatus.Single
+            ),
+            new(
+                guidGenerator.Create(), countries.ElementAt(1).Id, patientTypes.ElementAt(1), "Joel", "Bond",
                 new DateTime(1991, 8, 7),
                 null, "64279023471", "johndoe@gmail.com", countries.ElementAt(0).PhoneCode, "07836668374", null, null,
                 EnumGender.Male, EnumBloodType.BPositive,
-                EnumMaritalStatus.Married),
-            new(guidGenerator.Create(), countries.ElementAt(2).Id, patientTypes.ElementAt(2), "Kristin", "Saenger",
+                EnumMaritalStatus.Married
+            ),
+            new(
+                guidGenerator.Create(), countries.ElementAt(2).Id, patientTypes.ElementAt(2), "Kristin", "Saenger",
                 new DateTime(1970, 8, 23),
                 null, "44748015944", "kristinSaenger@dayrep.com", countries.ElementAt(2).PhoneCode, "0471266747", null,
                 null, EnumGender.Female, EnumBloodType.ZeroPositive,
-                EnumMaritalStatus.Single)
+                EnumMaritalStatus.Single
+            )
         ];
 
         return await SeedEntitiesAsync(patients, e => patientRepository.InsertManyAsync(e, true));
@@ -141,10 +157,11 @@ public class HealthCareDataSeederContributor(
         await addressRepository.InsertManyAsync(addresses, true);
     }
 
-
     // Generic Entities
-    private async Task<List<Guid>> SeedEntitiesAsync<T>(IEnumerable<T> entities,
-                                                        Func<IEnumerable<T>, Task> insertFunction)
+    private async Task<List<Guid>> SeedEntitiesAsync<T>(
+        IEnumerable<T> entities,
+        Func<IEnumerable<T>, Task> insertFunction
+    )
         where T : AggregateRoot<Guid>
     {
         await insertFunction(entities);

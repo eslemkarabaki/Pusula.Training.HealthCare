@@ -72,6 +72,58 @@ namespace Pusula.Training.HealthCare.Migrations
                     b.ToTable("AppAddresses", (string)null);
                 });
 
+            modelBuilder.Entity("Pusula.Training.HealthCare.AppDefaults.AppDefault", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("CurrentCountryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CurrentCountryId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("LastModifierId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppAppDefaults", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("87e927c6-88c8-425c-8e3b-e9c0778d0b32"),
+                            CreationTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false
+                        });
+                });
+
             modelBuilder.Entity("Pusula.Training.HealthCare.Appointments.Appointment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -955,6 +1007,13 @@ namespace Pusula.Training.HealthCare.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("No")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("No");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("No"));
+
                     b.Property<string>("PassportNumber")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -969,7 +1028,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasIndex("PatientTypeId");
 
-                    b.HasIndex("FirstName", "LastName", "IdentityNumber");
+                    b.HasIndex("FirstName", "LastName", "IdentityNumber", "PassportNumber");
 
                     b.ToTable("AppPatients", (string)null);
                 });
