@@ -8,13 +8,17 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Blazorise.DeepCloner;
+using Blazorise.Extensions;
 using Microsoft.AspNetCore.Components.Forms;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients;
+using Pusula.Training.HealthCare.Blazor.Extensions;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.PatientTypes;
 using Syncfusion.Blazor.Grids;
+using Syncfusion.Blazor.Notifications;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
 using Volo.Abp.BlazoriseUI.Components;
@@ -33,18 +37,29 @@ public partial class Patients
     private string CurrentSorting { get; set; } = string.Empty;
     private int TotalCount { get; set; }
 
+    private bool ShowAdvancedFilters { get; set; }
+
     private IReadOnlyList<PatientWithNavigationPropertiesDto> PatientList { get; set; } = [];
-    private GetPatientsInput Filter { get; set; } = null!;
+    private GetPatientsInput Filter { get; set; }
+    private GetPatientsInput LastFilter { get; set; }
+    private GetPatientsInputValidator FilterValidator { get; set; } = null!;
+    private EditContext FilterContext { get; set; }
 
     private IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
     private IEnumerable<CountryDto> CountryList { get; set; } = [];
     private bool AllPatientsSelected { get; set; }
+    private SfToast FilterToast { get; set; } = null!;
 
-    public Patients() =>
+    public Patients()
+    {
         Filter = new GetPatientsInput
         {
-            MaxResultCount = PageSize, SkipCount = (CurrentPage - 1) * PageSize, Sorting = CurrentSorting
+            MaxResultCount = PageSize,
+            SkipCount = (CurrentPage - 1) * PageSize,
+            Sorting = CurrentSorting
         };
+        FilterContext = new EditContext(Filter);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,9 +86,15 @@ public partial class Patients
 
     private async Task GetPatientsAsync()
     {
+        if (Filter.DeepCompare(LastFilter))
+        {
+            return;
+        }
+
         Filter.MaxResultCount = PageSize;
         Filter.SkipCount = (CurrentPage - 1) * PageSize;
         Filter.Sorting = CurrentSorting;
+        LastFilter = Filter.DeepClone();
 
         var result = await PatientAppService.GetNavigationPropertiesListAsync(Filter);
         PatientList = result.Items;
@@ -84,6 +105,12 @@ public partial class Patients
 
     protected virtual async Task SearchAsync()
     {
+        if (Filter.AreAllPropertiesEmpty())
+        {
+            await FilterToast.ShowAsync();
+            return;
+        }
+
         CurrentPage = 1;
         await GetPatientsAsync();
         await InvokeAsync(StateHasChanged);

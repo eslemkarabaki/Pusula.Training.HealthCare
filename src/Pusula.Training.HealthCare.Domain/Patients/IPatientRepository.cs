@@ -15,6 +15,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
 
     Task<List<Patient>> GetListAsync(
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -36,6 +37,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
 
     Task<List<PatientWithNavigationProperties>> GetNavigationPropertiesListAsync(
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -57,6 +59,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
 
     Task<long> GetCountAsync(
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -75,6 +78,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
 
     Task DeleteAllAsync(
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,

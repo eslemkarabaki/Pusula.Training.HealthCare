@@ -8,7 +8,7 @@ namespace Pusula.Training.HealthCare.Patients;
 public class GetPatientsInput : PagedAndSortedResultRequestDto
 {
     public string? FilterText { get; set; }
-
+    public int? No { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public DateTime? BirthDateMin { get; set; }
@@ -24,7 +24,6 @@ public class GetPatientsInput : PagedAndSortedResultRequestDto
 
     public Guid? CountryId { get; set; }
     public Guid? PatientTypeId { get; set; }
-
 
     public string ToQueryParameterString(string? culture = null)
     {
@@ -51,4 +50,20 @@ public class GetPatientsInput : PagedAndSortedResultRequestDto
         parameters.Append($"&PatientTypeId={PatientTypeId}");
         return parameters.ToString();
     }
+
+    public bool AreAllPropertiesEmpty() =>
+        !No.HasValue&&
+        string.IsNullOrEmpty(FilterText) &&
+        string.IsNullOrEmpty(FirstName) &&
+        string.IsNullOrEmpty(LastName) &&
+        !BirthDateMin.HasValue &&
+        !BirthDateMax.HasValue &&
+        string.IsNullOrEmpty(IdentityNumber) &&
+        string.IsNullOrEmpty(PassportNumber) &&
+        string.IsNullOrEmpty(MobilePhoneNumber) &&
+        string.IsNullOrEmpty(HomePhoneNumber) &&
+        string.IsNullOrEmpty(EmailAddress) &&
+        Gender == EnumGender.None &&
+        BloodType == EnumBloodType.None &&
+        MaritalStatus == EnumMaritalStatus.None;
 }

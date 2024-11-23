@@ -13,29 +13,68 @@ public class PatientConfigurations : IEntityTypeConfiguration<Patient>
     {
         b.ToTable(HealthCareConsts.DbTablePrefix + "Patients", HealthCareConsts.DbSchema);
         b.ConfigureByConvention();
-        b.HasIndex(e => new { e.FirstName, e.LastName, e.IdentityNumber });
-        b.Property(x => x.FirstName).HasColumnName(nameof(Patient.FirstName)).IsRequired()
-         .HasMaxLength(PatientConsts.FirstNameMaxLength);
-        b.Property(x => x.LastName).HasColumnName(nameof(Patient.LastName)).IsRequired()
-         .HasMaxLength(PatientConsts.LastNameMaxLength);
+        b.HasIndex(
+            e => new
+            {
+                e.FirstName,
+                e.LastName,
+                e.IdentityNumber,
+                e.PassportNumber
+            }
+        );
+
+        b.Property(x => x.No).HasColumnName(nameof(Patient.No)).ValueGeneratedOnAdd();
+        b
+            .Property(x => x.FirstName)
+            .HasColumnName(nameof(Patient.FirstName))
+            .IsRequired()
+            .HasMaxLength(PatientConsts.FirstNameMaxLength);
+        b
+            .Property(x => x.LastName)
+            .HasColumnName(nameof(Patient.LastName))
+            .IsRequired()
+            .HasMaxLength(PatientConsts.LastNameMaxLength);
         b.Property(x => x.BirthDate).HasColumnName(nameof(Patient.BirthDate));
-        b.Property(x => x.IdentityNumber).HasColumnName(nameof(Patient.IdentityNumber)).IsRequired(false)
-         .HasMaxLength(PatientConsts.IdentityNumberMaxLength);
-        b.Property(x => x.PassportNumber).HasColumnName(nameof(Patient.PassportNumber)).IsRequired(false)
-         .HasMaxLength(PatientConsts.PassportNumberMaxLength);
-        b.Property(x => x.EmailAddress).HasColumnName(nameof(Patient.EmailAddress)).IsRequired()
-         .HasMaxLength(PatientConsts.EmailAddressMaxLength);
-        b.Property(x => x.MobilePhoneNumber).HasColumnName(nameof(Patient.MobilePhoneNumber)).IsRequired()
-         .HasMaxLength(PatientConsts.PhoneNumberMaxLength);
-        b.Property(x => x.HomePhoneNumber).HasColumnName(nameof(Patient.HomePhoneNumber)).IsRequired(false)
-         .HasMaxLength(PatientConsts.PhoneNumberMaxLength);
+        b
+            .Property(x => x.IdentityNumber)
+            .HasColumnName(nameof(Patient.IdentityNumber))
+            .IsRequired(false)
+            .HasMaxLength(PatientConsts.IdentityNumberMaxLength);
+        b
+            .Property(x => x.PassportNumber)
+            .HasColumnName(nameof(Patient.PassportNumber))
+            .IsRequired(false)
+            .HasMaxLength(PatientConsts.PassportNumberMaxLength);
+        b
+            .Property(x => x.EmailAddress)
+            .HasColumnName(nameof(Patient.EmailAddress))
+            .IsRequired()
+            .HasMaxLength(PatientConsts.EmailAddressMaxLength);
+        b
+            .Property(x => x.MobilePhoneNumber)
+            .HasColumnName(nameof(Patient.MobilePhoneNumber))
+            .IsRequired()
+            .HasMaxLength(PatientConsts.PhoneNumberMaxLength);
+        b
+            .Property(x => x.HomePhoneNumber)
+            .HasColumnName(nameof(Patient.HomePhoneNumber))
+            .IsRequired(false)
+            .HasMaxLength(PatientConsts.PhoneNumberMaxLength);
         b.Property(x => x.Gender).HasColumnName(nameof(Patient.Gender)).IsRequired();
         b.Property(x => x.BloodType).HasColumnName(nameof(Patient.BloodType)).IsRequired();
         b.Property(x => x.MaritalStatus).HasColumnName(nameof(Patient.MaritalStatus)).IsRequired();
 
-        b.HasOne<Country>().WithMany().IsRequired().HasForeignKey(e => e.CountryId)
-         .OnDelete(DeleteBehavior.NoAction);
-        b.HasOne<PatientType>().WithMany().IsRequired().HasForeignKey(e => e.PatientTypeId)
-         .OnDelete(DeleteBehavior.NoAction);
+        b
+            .HasOne<Country>()
+            .WithMany()
+            .IsRequired()
+            .HasForeignKey(e => e.CountryId)
+            .OnDelete(DeleteBehavior.NoAction);
+        b
+            .HasOne<PatientType>()
+            .WithMany()
+            .IsRequired()
+            .HasForeignKey(e => e.PatientTypeId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -49,6 +49,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AddressCreateDto, Address>();
         CreateMap<Address, AddressUpdateDto>().ReverseMap();
         CreateMap<AddressDto, AddressUpdateDto>().ReverseMap();
+        CreateMap<AddressDto, AddressCreateDto>().ReverseMap();
         CreateMap<AddressWithNavigationProperties, AddressWithNavigationPropertiesDto>();
         CreateMap<AddressWithNavigationPropertiesDto, AddressUpdateDto>()
             .IncludeMembers(e => e.Address)

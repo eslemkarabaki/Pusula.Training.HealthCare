@@ -5,6 +5,7 @@ namespace Pusula.Training.HealthCare.Patients;
 public interface IPatient
 {
     Guid Id { get; }
+    int No { get; }
     string FirstName { get; }
     string LastName { get; }
     DateTime BirthDate { get; }

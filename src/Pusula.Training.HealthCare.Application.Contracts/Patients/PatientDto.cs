@@ -7,6 +7,7 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IPatient
 {
+    public int No { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string FullName => $"{FirstName} {LastName}";
@@ -40,13 +41,11 @@ public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IPat
             if (totalDays < 30)
             {
                 return new Tuple<int, string>((int)totalDays, "gün");
-            }
-            else
+            } else
             {
                 return new Tuple<int, string>((int)totalDays / 30, "ay");
             }
-        }
-        else
+        } else
         {
             return new Tuple<int, string>((int)year, "yıl");
         }

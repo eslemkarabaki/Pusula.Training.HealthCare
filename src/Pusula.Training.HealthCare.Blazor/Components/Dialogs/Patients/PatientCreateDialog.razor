@@ -317,7 +317,7 @@
                                                         </Template>
                                                     </ListViewTemplates>
                                                     <ListViewFieldSettings TValue="AddressWithNavigationPropertiesDto"
-                                                                           Id="AddressId"
+                                                                           Id="Address.Id"
                                                                            Text="Address.AddressTitle"></ListViewFieldSettings>
                                                     <ListViewEvents TValue="AddressWithNavigationPropertiesDto"
                                                                     Clicked="EditAddressAsync">
@@ -399,7 +399,7 @@
     protected override async Task OnInitializedAsync()
     {
         SetDefaultValuesForDialog();
-        CurrentCountry = await CountryAppService.GetCurrentAsync();
+        CurrentCountry = await AppDefaultAppService.GetCurrentCountryAsync();
     }
 
     private async Task DefaultAutoCompleteFilterAsync<TDto>(
@@ -412,14 +412,34 @@
     private Query GetDefaultAutoCompleteQuery(FilteringEventArgs args)
     {
         args.PreventDefaultAction = true;
-        var query = new Query().Where(new WhereFilter { Field = "Name", Operator = "contains", value = args.Text, IgnoreCase = true });
+        var query = new Query().Where(
+            new WhereFilter
+            {
+                Field = "Name",
+                Operator = "contains",
+                value = args.Text,
+                IgnoreCase = true
+            }
+        );
         return !string.IsNullOrEmpty(args.Text) ? query : new Query();
     }
 
     private async Task AddAddressAsync(EditContext context)
     {
         Addresses.Add(
-            new AddressWithNavigationPropertiesDto() { Address = new AddressDto() { Id = Guid.NewGuid(), AddressTitle = NewAddress.AddressTitle, AddressLine = NewAddress.AddressLine, DistrictId = NewAddress.DistrictId }, Country = CountryList.First(e => e.Id == SelectedAddressCountryId), City = CityList.First(e => e.Id == SelectedAddressCityId), District = DistrictList.First(e => e.Id == NewAddress.DistrictId) }
+            new AddressWithNavigationPropertiesDto()
+            {
+                Address = new AddressDto()
+                {
+                    Id = Guid.NewGuid(),
+                    AddressTitle = NewAddress.AddressTitle,
+                    AddressLine = NewAddress.AddressLine,
+                    DistrictId = NewAddress.DistrictId
+                },
+                Country = CountryList.First(e => e.Id == SelectedAddressCountryId),
+                City = CityList.First(e => e.Id == SelectedAddressCityId),
+                District = DistrictList.First(e => e.Id == NewAddress.DistrictId)
+            }
         );
         SetDefaultsForAddress();
         await Task.CompletedTask;
@@ -435,7 +455,12 @@
         await AddressCountryIdChangedAsync(args.ItemData.Country.Id);
         await AddressCityIdChangedAsync(args.ItemData.City.Id);
         EditingAddressId = args.ItemData.Address.Id;
-        NewAddress = new AddressCreateDto() { DistrictId = args.ItemData.District.Id, AddressTitle = args.ItemData.Address.AddressTitle, AddressLine = args.ItemData.Address.AddressLine };
+        NewAddress = new AddressCreateDto()
+        {
+            DistrictId = args.ItemData.District.Id,
+            AddressTitle = args.ItemData.Address.AddressTitle,
+            AddressLine = args.ItemData.Address.AddressLine
+        };
         NewAddressEditContext = new EditContext(NewAddress);
         AddressEditingMode = true;
         await Task.CompletedTask;
@@ -527,7 +552,12 @@
 
     private void SetDefaultsForPatient()
     {
-        NewPatient = new PatientCreateDto { BirthDate = DateTime.Now, CountryId = CurrentCountry.Id, MobilePhoneNumberCode = CurrentCountry.PhoneCode };
+        NewPatient = new PatientCreateDto
+        {
+            BirthDate = DateTime.Now,
+            CountryId = CurrentCountry.Id,
+            MobilePhoneNumberCode = CurrentCountry.PhoneCode
+        };
         NewPatientEditContext = new EditContext(NewPatient);
     }
 

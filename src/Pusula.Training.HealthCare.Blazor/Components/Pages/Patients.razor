@@ -2,12 +2,9 @@
 
 @attribute [Authorize(HealthCarePermissions.Patients.Default)]
 @using Pusula.Training.HealthCare.Patients
-@using Pusula.Training.HealthCare.Localization
-@using Volo.Abp.AspNetCore.Components.Messages
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
 
 @using Pusula.Training.HealthCare.Permissions
-@using Volo.Abp.AspNetCore.Components.Web
 @using Pusula.Training.HealthCare.Countries
 @using Pusula.Training.HealthCare.PatientTypes
 @using Volo.Abp.Http.Client
@@ -15,15 +12,14 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Popups
-@using Position = Syncfusion.Blazor.Popups.Position
 @using Syncfusion.Blazor.DataForm
 @using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
 @inherits HealthCareComponentBase
 @inject IPatientAppService PatientAppService
 @inject IPatientTypeAppService PatientTypeAppService
 @inject ICountryAppService CountryAppService
 @inject SfDialogService DialogService
-@inject AbpBlazorMessageLocalizerHelper<HealthCareResource> LH
 @inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
 @inject NavigationManager NavigationManager
 
@@ -31,37 +27,59 @@
 
 @* ************************* SEARCH ************************* *@
 <div class="bg-white mb-3">
-    <EditForm Model="@Filter" OnSubmit="@SearchAsync">
-        <div class="p-2">
-            <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]"/>
-        </div>
-        <hr class="m-0">
-        <div class=" d-flex gap-2 p-2 align-items-end">
-            <SfTextBox @bind-Value="@Filter.FirstName" FloatLabelType="FloatLabelType.Always"
-                       Placeholder="@L["FirstName"]"/>
-            <SfTextBox @bind-Value="@Filter.LastName" FloatLabelType="FloatLabelType.Always"
-                       Placeholder="@L["LastName"]"/>
-            <SfTextBox @bind-Value="@Filter.IdentityNumber" FloatLabelType="FloatLabelType.Always"
-                       Placeholder="@L["IdentityNumber"]"/>
-            <SfTextBox @bind-Value="@Filter.PassportNumber" FloatLabelType="FloatLabelType.Always"
-                       Placeholder="@L["PassportNumber"]"/>
-            <SfTextBox @bind-Value="@Filter.MobilePhoneNumber" FloatLabelType="FloatLabelType.Always"
-                       Placeholder="@L["MobilePhoneNumber"]"/>
-            <SfButton type="submit" IsPrimary CssClass="e-outline" IconCss="e-icons e-filter"
-                      IconPosition="IconPosition.Left">@L["ApplyFilter"]</SfButton>
-        </div>
-    </EditForm>
+    <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync"
+                ButtonsAlignment="FormButtonsAlignment.Stretch"
+                ValidationDisplayMode="FormValidationDisplay.Tooltip">
+        <FormValidator>
+            <Blazored.FluentValidation.FluentValidationValidator
+                Validator="@FilterValidator"></Blazored.FluentValidation.FluentValidationValidator>
+        </FormValidator>
+        <FormTemplate>
+            <div class="p-2">
+                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search:Patient"]" CssClass="mb-2"/>
+                <a href="javascript:;" class="text-decoration-none"
+                   @onclick="@(() => ShowAdvancedFilters = !ShowAdvancedFilters)">
+                    @L["SeeAdvancedFilters"] <SfIcon
+                        IconCss="@($"e-icons fas fa-chevron-{(ShowAdvancedFilters ? "up" : "down")}")"/>
+                </a>
+            </div>
+            <hr class="m-0">
+            @* ************************* ADVANCED FILTER ************************* *@
+            @if (ShowAdvancedFilters)
+            {
+                <div class="d-flex gap-2 p-2 align-items-end">
+                    <SfNumericTextBox @bind-Value="@Filter.No" ShowSpinButton="false" FloatLabelType="FloatLabelType.Always"
+                               Placeholder="@L["No"]"/> 
+                    <SfTextBox @bind-Value="@Filter.FirstName" FloatLabelType="FloatLabelType.Always"
+                               Placeholder="@L["FirstName"]"/>
+                    <SfTextBox @bind-Value="@Filter.LastName" FloatLabelType="FloatLabelType.Always"
+                               Placeholder="@L["LastName"]"/>
+                    <SfTextBox @bind-Value="@Filter.IdentityNumber" FloatLabelType="FloatLabelType.Always"
+                               Placeholder="@L["IdentityNumber"]"/>
+                    <SfTextBox @bind-Value="@Filter.PassportNumber" FloatLabelType="FloatLabelType.Always"
+                               Placeholder="@L["PassportNumber"]"/>
+                    <SfTextBox @bind-Value="@Filter.MobilePhoneNumber" FloatLabelType="FloatLabelType.Always"
+                               Placeholder="@L["MobilePhoneNumber"]"/>
+                    <SfButton type="submit" IsPrimary CssClass="e-outline" IconCss="e-icons e-filter"
+                              IconPosition="IconPosition.Left">@L["ApplyFilter"]</SfButton>
+                </div>
+            }
+        </FormTemplate>
+        <FormButtons></FormButtons>
+    </SfDataForm>
 </div>
 
 @* ************************* DATA GRID ************************* *@
-<SfGrid @ref="SfGrid" DataSource="@PatientList" AllowPaging AllowSelection EnableHover>
+<SfGrid @ref="SfGrid" TValue="PatientWithNavigationPropertiesDto" DataSource="@PatientList" AllowPaging AllowSelection
+        EnableHover AllowSorting EnableVirtualization
+        EnableVirtualMaskRow Height="400">
     <SfToolbar>
         <ToolbarItems>
             <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreatePatientDialogAsync" Text="@L["Add"]"
-                         PrefixIcon="e-icons e-plus" TooltipText="@L["NewPatient"]"></ToolbarItem>
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewPatient"]"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedPatientsAsync"
                          Disabled="@(SfGrid.SelectedRecords.Count == 0)"
-                         Text="@L["Delete"]" PrefixIcon="e-icons e-delete"
+                         Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
                          TooltipText="@L["Delete"]"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Button" PrefixIcon="e-icons far fa-file-excel"
@@ -76,14 +94,24 @@
     <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
-        <GridColumn HeaderText="@L["FullName"]">
+        <GridColumn HeaderText="@L["Patient"]">
             <Template>
                 @{
                     var dto = context as PatientWithNavigationPropertiesDto;
-                    <div>
+                    <div class="fw-500">
+                        @dto.Patient.FullName
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
                         <SfIcon
                             IconCss="@($"fs-18p fas {(dto.Patient.Gender == EnumGender.Male ? "fa-mars color-blue-500" : "fa-venus color-pink-500")}")"></SfIcon>
-                        <span>@dto.Patient.FullName</span>
+                        <div>
+                            <span>Hasta No:</span>
+                            <span>@dto.Patient.No</span>
+                        </div>
+                        <span class="vr"></span>
+                        <div>
+                            @dto.Country.Iso
+                        </div>
                     </div>
                 }
             </Template>
@@ -93,18 +121,10 @@
                 @{
                     var dto = context as PatientWithNavigationPropertiesDto;
                     @(dto.Patient.IdentityNumber ?? dto.Patient.PassportNumber)
-                }
-            </Template>
-        </GridColumn>
-
-        <GridColumn HeaderText="@L["Race"]">
-            <Template>
-                @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
-                    <div>
-                        <SfIcon IconCss="fas fa-map-marker-alt color-blue-grey-300"></SfIcon>
-                        <span>@dto.Country.Name</span>
-                    </div>
+                    if (dto.Patient.IdentityNumber.IsNullOrWhiteSpace())
+                    {
+                        <SfIcon IconCss="fas fa-passport color-blue-grey-500 ms-1"></SfIcon>
+                    }
                 }
             </Template>
         </GridColumn>
@@ -114,8 +134,8 @@
                 @{
                     var dto = context as PatientWithNavigationPropertiesDto;
                     <div class="d-flex gap-1">
-                        <span>@dto.Patient.BirthDate.ToString("d")</span>
-                        <span>(@dto.Patient.Age.Item1 @dto.Patient.Age.Item2)</span>
+                        <span>@dto.Patient.BirthDate.ToString("MM.dd.yyyy")</span>
+                        <span class="fs-12p">(@dto.Patient.Age.Item1 @dto.Patient.Age.Item2)</span>
                     </div>
                 }
             </Template>
@@ -145,3 +165,18 @@
 @* ************************* UPDATE MODAL ************************* *@
 <PatientUpdateDialog @ref="UpdatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
                      OnValidSaveAsync="UpdatePatientAsync"/>
+
+@* ************************* SEARCH ERROR TOAST ************************* *@
+<SfToast @ref="FilterToast" CssClass="e-toast-danger" Timeout="3000">
+    <ToastPosition X="Right" Y="Top"></ToastPosition>
+    <ToastTemplates>
+        <Template>
+            <div class="d-flex align-items-center gap-2 py-1 px-2">
+                <div class="fs-24p">
+                    <SfIcon IconCss="e-icons e-error fas fa-exclamation"/>
+                </div>
+                All values are empty.
+            </div>
+        </Template>
+    </ToastTemplates>
+</SfToast>
