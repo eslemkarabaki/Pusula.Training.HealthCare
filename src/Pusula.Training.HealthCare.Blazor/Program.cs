@@ -39,7 +39,8 @@ public class Program
                              AutoRegisterTemplate = true,
                              AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv8,
                              IndexFormat = "Pusula-Training-HealthCare-log-{0:yyyy.MM}"
-                         })
+                         }
+                     )
                      .WriteTo.Async(c => c.Console())
                      .CreateLogger();
 
@@ -47,14 +48,14 @@ public class Program
         {
             Log.Information("Starting web host.");
             var builder = WebApplication.CreateBuilder(args);
-            builder.Host.AddAppSettingsSecretsJson()
-                   .UseAutofac()
-                   .UseSerilog();
+            builder
+                .Host.AddAppSettingsSecretsJson()
+                .UseAutofac()
+                .UseSerilog();
 
             await builder.AddApplicationAsync<HealthCareBlazorModule>();
 
             var app = builder.Build();
-            SyncfusionLicenseProvider.RegisterLicense(configuration["Syncfusion:LicenseKey"]);
             await app.InitializeApplicationAsync();
             await app.RunAsync();
             return 0;
