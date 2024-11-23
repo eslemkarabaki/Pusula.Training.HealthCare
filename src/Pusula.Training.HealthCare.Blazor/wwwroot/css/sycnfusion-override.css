@@ -5,3 +5,10 @@
 .e-list-template .e-list-item {
     padding: 6px;
 }
+
+.e-data-form .e-button-right:not(:has(button)),
+.e-data-form .e-button-left:not(:has(button)),
+.e-data-form .e-button-center:not(:has(button)),
+.e-data-form .e-button-stretch:not(:has(button)) {
+    margin-top: 0 !important;
+}
