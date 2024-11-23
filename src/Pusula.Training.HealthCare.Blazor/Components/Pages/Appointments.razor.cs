@@ -1,30 +1,15 @@
-﻿using Blazorise;
-using Blazorise.DataGrid;
-using Microsoft.AspNetCore.Authorization;
-using Pusula.Training.HealthCare.Appointments;
-using Pusula.Training.HealthCare.Permissions;
+﻿using Pusula.Training.HealthCare.Appointments;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNetCore.Components;
 using Pusula.Training.HealthCare.AppointmentTypes;
-using Volo.Abp.Application.Dtos;
-using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
-using Volo.Abp.BlazoriseUI.Components;
-using Syncfusion.Blazor.Navigations;
 using Syncfusion.Blazor.Schedule;
-using Pusula.Training.HealthCare.Shared;
-using Syncfusion.Blazor.Schedule.Internal;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.Countries;
-using static Pusula.Training.HealthCare.Permissions.HealthCarePermissions;
 using Syncfusion.Blazor.DropDowns;
-using Syncfusion.Blazor.Inputs;
+using Polly;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
@@ -42,7 +27,7 @@ public partial class Appointments
     private Guid SelectedDoctorId { get; set; }
 
     protected override async Task OnInitializedAsync()
-    {
+    {        
         Departments = await DepartmentsAppService.GetListDepartmentsAsync();
         AppointmentTypes = await AppointmentTypeAppService.GetListAppointmentTypesAsync();
         var patients = await PatientAppService.GetListAsync(new());
@@ -93,5 +78,8 @@ public partial class Appointments
             await InvokeAsync(StateHasChanged);
         }
     }
+
+   
+
 
 }

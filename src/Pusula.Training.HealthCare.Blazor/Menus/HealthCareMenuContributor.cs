@@ -74,7 +74,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 HealthCareMenus.Appointments,
                 l["Menu:Appointments"],
                 url: "/appointments",
-                icon: "fa fa-file-alt",
+                icon: "fa fa-calendar-check",
                 requiredPermissionName: HealthCarePermissions.Appointments.Default)
         );
 

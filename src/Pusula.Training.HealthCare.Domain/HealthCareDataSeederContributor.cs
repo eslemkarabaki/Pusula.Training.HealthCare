@@ -9,6 +9,7 @@ using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
+using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.PatientTypes;
@@ -29,6 +30,7 @@ public class HealthCareDataSeederContributor(
     IAppointmentRepository appointmentRepository,
     IAppointmentTypeRepository appointmentTypeRepository,
     IAppointmentReportRepository appointmentReportRepository,
+    IDepartmentRepository departmentRepository,
     IGuidGenerator guidGenerator)
     : IDataSeedContributor, ITransientDependency
 {
@@ -42,13 +44,24 @@ public class HealthCareDataSeederContributor(
             var patientTypes = await SeedPatientTypesAsync();
             var patients = await SeedPatientsAsync(countries, patientTypes);
             await SeedAddressesAsync(patients, districts);
-        }
-
-
-
+        }        
         
     }
 
+    //Department 
+    private async Task<IEnumerable<Department>> SeedDepartmentsAsync()
+    {
+        IEnumerable<Department> departments = [
+            new(guidGenerator.Create(), "Genel Cerrahi", "Genel cerrahi işlemleri ve ameliyatlar.", 15),
+            new(guidGenerator.Create(), "Kardiyoloji", "Kalp ve damar sağlığı ile ilgili hizmetler.", 15),
+            new(guidGenerator.Create(), "Kadın Hastalıkları ve Doğum", "Kadın hastalıkları ve doğum hizmetleri.", 15),
+            new(guidGenerator.Create(), "Ortopedi ve Travmatoloji", "Kemik, eklem ve kas hastalıkları tedavisi.", 15),
+            new(guidGenerator.Create(), "Dermatoloji", "Kemik, eklem ve kas hastalıkları tedavisi.", 15),
+            ];
+
+        await departmentRepository.InsertManyAsync(departments, true);
+        return departments;
+    }
 
     // Country
     private async Task<IEnumerable<Country>> SeedCountriesAsync()

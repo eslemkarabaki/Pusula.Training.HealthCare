@@ -42,20 +42,23 @@
 
 <div class="col-lg-12" style="padding-top:15px">
     <div class="col-md-3">
+        <label class="example-label">Departman Seçin</label>
         <SfDropDownList TItem="DepartmentDto" TValue="Guid" PopupHeight="230px" Placeholder="e.g. Select Department" @bind-Value="@SelectedDepartmentId" DataSource="@Departments">
             <DropDownListEvents TItem="DepartmentDto" TValue="Guid" ValueChange="DepartmentSelect" />
             <DropDownListFieldSettings Text="Name" Value="Id" />
             </SfDropDownList>
     </div>
     <div class="col-md-3">
+        <label class="example-label">Doktor Seçin</label>
         <SfDropDownList TItem="DoctorDto" TValue="Guid" PopupHeight="230px" Placeholder="e.g. Select Doctor" @bind-Value="@SelectedDoctorId" DataSource="@Doctors">
             <DropDownListEvents TItem="DoctorDto" TValue="Guid" ValueChange="DoctorSelect" />
             <DropDownListFieldSettings Text="FullName" Value="Id" />
         </SfDropDownList>
     </div>
 </div>
+<br /> <br />
 <div class="col-lg-12 control-section">
-    <SfSchedule TValue="AppointmentDto" Width="100%" Height="650px" @bind-SelectedDate="@CurrentDate">
+    <SfSchedule TValue="AppointmentDto" Width="100%" Height="650px" @bind-SelectedDate="@CurrentDate" StartHour="09:00" EndHour="18:00">
         <ScheduleEvents TValue="AppointmentDto" OnActionBegin="OnActionBegin"></ScheduleEvents>
 
         <ScheduleEventSettings DataSource="@AppointmentLists"></ScheduleEventSettings>
@@ -81,41 +84,43 @@
                         <tr>
                             <td class="e-textlabel">Hasta</td>
                             <td colspan="4">
-                                <SfDropDownList TValue="Guid" TItem="PatientDto" DataSource="@Patients" Placeholder="Choose patients" @bind-Value="@((context as AppointmentDto).PatientId)">
+                                
+                                <SfDropDownList TValue="Guid" TItem="PatientDto" DataSource="@Patients" Placeholder="Hasta seç" @bind-Value="@((context as AppointmentDto).PatientId)">
                                     <DropDownListFieldSettings Text="FullName" Value="Id"></DropDownListFieldSettings>
                                 </SfDropDownList>
                             </td>
                         </tr>
                         <tr>
-                            <td class="e-textlabel">Type</td>
+                            <td class="e-textlabel">Randevu Rütü</td>
                             <td colspan="4">
-                                <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto"  DataSource="@AppointmentTypes" Placeholder="Choose type" @bind-Value="@((context as AppointmentDto).AppointmentTypeId)">
+                                
+                                <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto"  DataSource="@AppointmentTypes" Placeholder="Randevu türü seç" @bind-Value="@((context as AppointmentDto).AppointmentTypeId)">
                                     <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
                                 </SfDropDownList>
                             </td>
                         </tr>
                         <tr>
-                            <td class="e-textlabel">Status</td>
+                            <td class="e-textlabel">Statü</td>
                             <td class="dropdown" colspan="4">
-                                <SfDropDownList TValue="EnumStatus" TItem="string" DataSource="@Enum.GetNames(typeof(EnumStatus))" Placeholder="Choose status" @bind-Value="@((context as AppointmentDto).Status)">
+                                <SfDropDownList TValue="EnumStatus" TItem="string" DataSource="@Enum.GetNames(typeof(EnumStatus))" Placeholder="Randevu statüsü seç" @bind-Value="@((context as AppointmentDto).Status)">
                                     <DropDownListFieldSettings Text="string" Value="EnumStatus"></DropDownListFieldSettings>
                                 </SfDropDownList>
                             </td>
                         </tr>
                         <tr>
-                            <td class="e-textlabel">From</td>
+                            <td class="e-textlabel">Başlangıç Saati</td>
                             <td colspan="4">
-                                <SfDateTimePicker @bind-Value="@((context as AppointmentDto).StartTime)"></SfDateTimePicker>
+                                <SfDateTimePicker @bind-Value="@((context as AppointmentDto).StartTime)" Step="15"></SfDateTimePicker>
                             </td>
                         </tr>
                         <tr>
-                            <td class="e-textlabel">To</td>
+                            <td class="e-textlabel">Bitiş Saati</td>
                             <td colspan="4">
-                                <SfDateTimePicker @bind-Value="@((context as AppointmentDto).EndTime)"></SfDateTimePicker>
+                                <SfDateTimePicker @bind-Value="@((context as AppointmentDto).EndTime)" Step="15"></SfDateTimePicker>
                             </td>
                         </tr>
                         <tr>
-                            <td class="e-textlabel">Reason</td>
+                            <td class="e-textlabel">Not</td>
                             <td colspan="4">
                                 <SfTextBox Multiline="true" @bind-Value="@((context as AppointmentDto).Notes)"></SfTextBox>
                             </td>
@@ -133,3 +138,28 @@
         </ScheduleViews>
     </SfSchedule>
 </div>
+
+<style>
+    .col-md-3 {
+        display: inline-block; 
+        vertical-align: top; 
+        margin-right: 15px; 
+    }
+
+        .col-md-3:last-child {
+            margin-right: 0; 
+        }
+
+    .col-lg-12 {
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 15px; 
+    }
+
+    .weekend-cell {
+        background-color: #f5f5f5; /* Hafif gri */
+        color: #d9534f; /* Kırmızı yazı */
+        pointer-events: none; /* Tıklamayı engelle */
+    }
+    
+</style>
