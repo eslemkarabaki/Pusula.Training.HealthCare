@@ -10,6 +10,9 @@ using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Departments;
 using Syncfusion.Blazor.DropDowns;
 using Polly;
+using Microsoft.AspNetCore.Components;
+using System.Net.Http;
+using Syncfusion.Blazor.Data;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
@@ -22,16 +25,46 @@ public partial class Appointments
     private List<DoctorDto> Doctors { get; set; } = [];
     private List<DepartmentDto> Departments { get; set; } = [];
     private List<AppointmentTypeDto> AppointmentTypes { get; set; } = [];
-    private IReadOnlyList<PatientDto> Patients { get; set; } = [];
+    private Guid SelectedPatientId { get; set; } 
     private Guid SelectedDepartmentId { get; set; }
     private Guid SelectedDoctorId { get; set; }
+    private string PatientFilter { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+    private IReadOnlyList<PatientDto> Patients { get; set; } = [];
+    private SfAutoComplete<Guid, PatientDto> refAutoComplate { get; set; }
+    private bool valueSelected => SelectedPatientId != Guid.Empty && SelectedDepartmentId != Guid.Empty && SelectedDoctorId != Guid.Empty;
+
+    
+    protected async void GetPatientFilter(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        if (args.Text.IsNullOrEmpty())
+        {
+            return;            
+        }
+
+        var patients = await PatientAppService.GetListAsync(new GetPatientsInput { FilterText=args.Text});
+        Patients = patients.Items;
+
+        refAutoComplate.DataSource = Patients;
+        var query = new Query().Where(new WhereFilter() { Field = "FullName", Operator = "contains", value = args.Text, IgnoreCase = true });
+        query = !string.IsNullOrEmpty(args.Text) ? query : new Query();
+        await refAutoComplate.FilterAsync(Patients, query);
+        await InvokeAsync(StateHasChanged);
+
+    }
+
+    private void NavigateToPage()
+    {
+        NavigationManager.NavigateTo("/patients"); 
+    }
 
     protected override async Task OnInitializedAsync()
     {        
         Departments = await DepartmentsAppService.GetListDepartmentsAsync();
         AppointmentTypes = await AppointmentTypeAppService.GetListAppointmentTypesAsync();
-        var patients = await PatientAppService.GetListAsync(new());
-        Patients = patients.Items;
+        
+        
     }
 
     protected async void DepartmentSelect(ChangeEventArgs<Guid, DepartmentDto>args)
@@ -46,7 +79,7 @@ public partial class Appointments
         SelectedDoctorId = args.ItemData.Id;
         AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(args.ItemData.Id);
         await InvokeAsync(StateHasChanged);
-    }
+    }    
 
     public async void OnActionBegin(ActionEventArgs<AppointmentDto> args)
     {
@@ -55,6 +88,7 @@ public partial class Appointments
             var input=ObjectMapper.Map<AppointmentDto, AppointmentCreateDto>(args.AddedRecords.First());
             input.DepartmentId = SelectedDepartmentId;
             input.DoctorId = SelectedDoctorId;
+            input.PatientId = SelectedPatientId;
             await AppointmentsAppService.CreateAsync(input);
             AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
             await InvokeAsync(StateHasChanged);
@@ -66,6 +100,7 @@ public partial class Appointments
             var input = ObjectMapper.Map<AppointmentDto, AppointmentUpdateDto>(x);
             input.DepartmentId = SelectedDepartmentId;
             input.DoctorId = SelectedDoctorId;
+            input.PatientId = SelectedPatientId;
             await AppointmentsAppService.UpdateAsync(x.Id, input);
             AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
             await InvokeAsync(StateHasChanged);

@@ -37,27 +37,44 @@
 @inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
 @inject NavigationManager NavigationManager
 
-<PageHeader BreadcrumbItems="BreadcrumbItems" />
+<PageHeader Title="Randevu" BreadcrumbItems="BreadcrumbItems" />
 
+<div class="row g-0">
+<div class="col-lg-3" style="padding-top:15px">        
 
-<div class="col-lg-12" style="padding-top:15px">
-    <div class="col-md-3">
+    <div class="col-md-12">
         <label class="example-label">Departman Seçin</label>
-        <SfDropDownList TItem="DepartmentDto" TValue="Guid" PopupHeight="230px" Placeholder="e.g. Select Department" @bind-Value="@SelectedDepartmentId" DataSource="@Departments">
+        <SfDropDownList TItem="DepartmentDto" TValue="Guid" PopupHeight="230px" Placeholder="e.g. Departman Seç" @bind-Value="@SelectedDepartmentId" DataSource="@Departments">
             <DropDownListEvents TItem="DepartmentDto" TValue="Guid" ValueChange="DepartmentSelect" />
             <DropDownListFieldSettings Text="Name" Value="Id" />
             </SfDropDownList>
     </div>
-    <div class="col-md-3">
+    <br />
+    <div class="col-md-12">
         <label class="example-label">Doktor Seçin</label>
-        <SfDropDownList TItem="DoctorDto" TValue="Guid" PopupHeight="230px" Placeholder="e.g. Select Doctor" @bind-Value="@SelectedDoctorId" DataSource="@Doctors">
+        <SfDropDownList TItem="DoctorDto" TValue="Guid" PopupHeight="230px" Placeholder="e.g. Doktor Seç" @bind-Value="@SelectedDoctorId" DataSource="@Doctors">
             <DropDownListEvents TItem="DoctorDto" TValue="Guid" ValueChange="DoctorSelect" />
             <DropDownListFieldSettings Text="FullName" Value="Id" />
         </SfDropDownList>
     </div>
+    <br />
+        <div class="col-md-12">
+            <label class="example-label">Hasta Seçin</label>
+            <SfAutoComplete TValue="Guid" TItem="PatientDto" @bind-Value="@SelectedPatientId" @ref="@refAutoComplate">
+                <AutoCompleteFieldSettings   Value="Id" Text="FullName"/>
+                <AutoCompleteEvents  TItem="PatientDto" TValue="Guid" Filtering="GetPatientFilter"></AutoCompleteEvents>
+            </SfAutoComplete>
+        </div>
+        <br 
+        <div class="submit-btn">
+        <SfButton type="submit" IsPrimary CssClass="e-outline" @onclick="NavigateToPage">Hasta Ekle</SfButton>
+    </div>
+
 </div>
-<br /> <br />
-<div class="col-lg-12 control-section">
+
+
+<div class="col-lg-9 control-section">
+    @if(valueSelected) {
     <SfSchedule TValue="AppointmentDto" Width="100%" Height="650px" @bind-SelectedDate="@CurrentDate" StartHour="09:00" EndHour="18:00">
         <ScheduleEvents TValue="AppointmentDto" OnActionBegin="OnActionBegin"></ScheduleEvents>
 
@@ -67,31 +84,20 @@
             <EditorHeaderTemplate>
                 @if (((context as AppointmentDto).Id) == default)
                 {
-                    <div>Create New Appointment</div>
+                    <div>Randevu Oluştur</div>
                 }
                 else
                 {
-                    <div>Update Appointment</div>
+                    <div>Randevu Güncelle</div>
                 }
             </EditorHeaderTemplate>
-            <EditorTemplate>
-                <input type="hidden" name="Id" class="e-field" value="@((context as AppointmentDto).Id)" />
-                <input type="hidden" name="DoctorId" class="e-field" value="@SelectedDoctorId" />
-                <input type="hidden" name="DepartmentId" class="e-field" value="@SelectedDepartmentId" />
+            <EditorTemplate>              
 
                 <table class="custom-event-editor" width="100%" cellpadding="5">
                     <tbody>
+                        
                         <tr>
-                            <td class="e-textlabel">Hasta</td>
-                            <td colspan="4">
-                                
-                                <SfDropDownList TValue="Guid" TItem="PatientDto" DataSource="@Patients" Placeholder="Hasta seç" @bind-Value="@((context as AppointmentDto).PatientId)">
-                                    <DropDownListFieldSettings Text="FullName" Value="Id"></DropDownListFieldSettings>
-                                </SfDropDownList>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="e-textlabel">Randevu Rütü</td>
+                            <td class="e-textlabel">Randevu Türü</td>
                             <td colspan="4">
                                 
                                 <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto"  DataSource="@AppointmentTypes" Placeholder="Randevu türü seç" @bind-Value="@((context as AppointmentDto).AppointmentTypeId)">
@@ -137,6 +143,8 @@
             <ScheduleView Option="View.Agenda"></ScheduleView>
         </ScheduleViews>
     </SfSchedule>
+    }
+</div>
 </div>
 
 <style>
@@ -157,9 +165,18 @@
     }
 
     .weekend-cell {
-        background-color: #f5f5f5; /* Hafif gri */
-        color: #d9534f; /* Kırmızı yazı */
-        pointer-events: none; /* Tıklamayı engelle */
+        background-color: #f5f5f5; 
+        color: #d9534f; 
+        pointer-events: none; 
+    }   
+   
+
+    .example-content {
+        padding: 0px 0px 15px 0px;
     }
-    
+
+        .example-content:last-child {
+            padding: 0px 0px 15px 0px;
+        }
+        
 </style>

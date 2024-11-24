@@ -127,7 +127,7 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         string? sorting = null, int maxResultCount = int.MaxValue,
         int skipCount = 0, CancellationToken cancellationToken = default)
     {
-        var query = ApplyFilter(await GetQueryableAsync(), filterText, startTime, endTime, status, note);
+        var query = ApplyFilter(await GetQueryableAsync(), filterText, doctorId, startTime, endTime, status, note);
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? AppointmentConsts.GetDefaultSorting(false) : sorting);
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
@@ -151,11 +151,12 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     #region ApplyFilter
     protected virtual IQueryable<Appointment> ApplyFilter(
     IQueryable<Appointment> query,
-    string? filterText = null, DateTime? startTime = null, DateTime? endTime = null,
+    string? filterText = null, Guid? doctorId = null, DateTime? startTime = null, DateTime? endTime = null,
     EnumStatus? status = null, string? note = null)
 {
     return query
-        //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.AppointmentDate.ToString().Contains(filterText!) || e.Status.ToString().Contains(filterText!))
+        //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.DoctorId.ToString().Contains(filterText!))
+        .WhereIf(doctorId.HasValue, e=>e.DoctorId==doctorId!.Value)
         .WhereIf(status.HasValue, e => e.Status == status!.Value)
         .WhereIf(startTime.HasValue, e => e.StartTime >= startTime!.Value)
         .WhereIf(endTime.HasValue, e => e.EndTime >= endTime!.Value)

@@ -23,6 +23,9 @@ public class IPatientController(IPatientAppService patientAppService) : HealthCa
     public virtual Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input) =>
         patientAppService.GetListAsync(input);
 
+    [HttpGet("with-identity-or-pasport/{number}")]
+    public virtual Task<PatientDto> GetAsync(string number) => patientAppService.GetAsync(number);
+
     [HttpGet("all/navigation-properties")]
     public Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetNavigationPropertiesListAsync(
         GetPatientsInput input
