@@ -23,6 +23,8 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetCityPermissions(myGroup);
         SetDistrictPermissions(myGroup);
         SetExaminationsPermissions(myGroup);
+        SetPatientTypePermissions(myGroup);
+        
         var protocolPermission = myGroup.AddPermission(HealthCarePermissions.Protocols.Default, L("Permission:Protocols"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Edit, L("Permission:Edit"));

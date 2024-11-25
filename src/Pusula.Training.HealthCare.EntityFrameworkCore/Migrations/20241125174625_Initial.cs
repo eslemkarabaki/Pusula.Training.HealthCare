@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -409,6 +410,25 @@ namespace Pusula.Training.HealthCare.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AbpUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppAppDefaults",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CurrentCountryId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppAppDefaults", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -924,6 +944,8 @@ namespace Pusula.Training.HealthCare.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    No = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FirstName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     LastName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     BirthDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -1653,9 +1675,9 @@ namespace Pusula.Training.HealthCare.Migrations
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppPatients_FirstName_LastName_IdentityNumber",
+                name: "IX_AppPatients_FirstName_LastName_IdentityNumber_PassportNumber",
                 table: "AppPatients",
-                columns: new[] { "FirstName", "LastName", "IdentityNumber" });
+                columns: new[] { "FirstName", "LastName", "IdentityNumber", "PassportNumber" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppPatients_PatientTypeId",
@@ -1790,6 +1812,9 @@ namespace Pusula.Training.HealthCare.Migrations
 
             migrationBuilder.DropTable(
                 name: "AppAddresses");
+
+            migrationBuilder.DropTable(
+                name: "AppAppDefaults");
 
             migrationBuilder.DropTable(
                 name: "AppAppointmentReports");

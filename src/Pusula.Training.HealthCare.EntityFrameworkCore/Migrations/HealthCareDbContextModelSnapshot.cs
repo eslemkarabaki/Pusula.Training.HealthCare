@@ -114,14 +114,6 @@ namespace Pusula.Training.HealthCare.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppAppDefaults", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("87e927c6-88c8-425c-8e3b-e9c0778d0b32"),
-                            CreationTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false
-                        });
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.AppointmentReports.AppointmentReport", b =>

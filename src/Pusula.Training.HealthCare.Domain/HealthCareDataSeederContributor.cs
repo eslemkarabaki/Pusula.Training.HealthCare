@@ -156,7 +156,7 @@ public class HealthCareDataSeederContributor(
                         guidGenerator.Create(),
                         f.PickRandom(patients),
                         f.PickRandom(districts),
-                        f.Lorem.Sentences(2),
+                        f.Lorem.Word(),
                         f.Address.SecondaryAddress()
                     )
             );
