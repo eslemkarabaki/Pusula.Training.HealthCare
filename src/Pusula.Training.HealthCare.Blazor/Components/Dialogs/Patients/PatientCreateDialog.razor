@@ -1,4 +1,5 @@
 @using Pusula.Training.HealthCare.Addresses
+@using Pusula.Training.HealthCare.AppDefaults
 @using Pusula.Training.HealthCare.Cities
 @using Pusula.Training.HealthCare.Countries
 @using Pusula.Training.HealthCare.Districts
@@ -19,6 +20,7 @@
 @inherits HealthCareComponentBase
 
 @inject ICountryAppService CountryAppService
+@inject IAppDefaultAppService AppDefaultAppService
 @inject ICityAppService CityAppService
 @inject IDistrictAppService DistrictAppService
 
