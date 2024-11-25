@@ -1,0 +1,76 @@
+@using Pusula.Training.HealthCare.Countries
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Blazored.FluentValidation
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inherits HealthCareComponentBase
+
+<SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogTemplates>
+        <Header>@L["NewCountry"]</Header>
+        <Content>
+            <SfDataForm ID="NewCountryForm"
+                        EditContext="@NewCountryEditContext"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                <FormValidator>
+                    <FluentValidationValidator
+                        Validator="@NewCountryValidator"></FluentValidationValidator>
+                </FormValidator>
+                <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <SfTextBox @bind-Value="@NewCountry.Name"
+                                   Placeholder="@L["Country"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                        <SfTextBox @bind-Value="@NewCountry.Iso"
+                                   Placeholder="@L["Iso"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                        <SfTextBox @bind-Value="@NewCountry.PhoneCode"
+                                   Placeholder="@L["PhoneCode"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    </div>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+    [Parameter] public EventCallback<CountryCreateDto> OnValidSaveAsync { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private EditContext NewCountryEditContext { get; set; } = null!;
+
+    private CountryCreateDto NewCountry { get; set; } = new();
+
+    private CountryCreateDtoValidator NewCountryValidator { get; set; } = null!;
+
+    private async Task OnSaveClickAsync(EditContext context)
+    {
+        await OnValidSaveAsync.InvokeAsync(NewCountry);
+        await HideAsync();
+    }
+
+    public async Task ShowAsync()
+    {
+        NewCountryEditContext = new EditContext(NewCountry);
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        NewCountry = new CountryCreateDto();
+        await Dialog.HideAsync();
+    }
+
+}
