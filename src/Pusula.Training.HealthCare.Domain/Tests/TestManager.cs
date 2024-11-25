@@ -21,11 +21,6 @@ namespace Pusula.Training.HealthCare.Tests
             return await testRepository.InsertAsync(test);
         }
 
-        public async Task<Test> CreateAsync(string code, string name, Guid testGroupId)
-        {
-            throw new NotImplementedException();
-        }
-
         public virtual async Task<Test> UpdateAsync(Guid id, string code, string name, Guid groupId, Guid testTypeId, [CanBeNull] string? concurrencyStamp = null)
         {
             Check.NotNullOrWhiteSpace(code, nameof(code));
@@ -41,11 +36,6 @@ namespace Pusula.Training.HealthCare.Tests
 
             test.SetConcurrencyStampIfNotNull(concurrencyStamp);
             return await testRepository.UpdateAsync(test);
-        }
-
-        public async Task<Test> UpdateAsync(Guid id, string code, string name, Guid GroupId, string concurrencyStamp)
-        {
-            throw new NotImplementedException();
         }
     }
 }
