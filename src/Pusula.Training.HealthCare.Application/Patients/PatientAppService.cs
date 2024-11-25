@@ -29,8 +29,13 @@ public class PatientAppService(
     IDistributedEventBus distributedEventBus
 ) : HealthCareAppService, IPatientAppService
 {
-#region Get
+    #region Get
 
+    public virtual async Task<PatientDto> GetAsync(string number)
+    {
+        var patient = await patientRepository.GetAsync(e=>e.IdentityNumber== number || e.PassportNumber== number);
+        return ObjectMapper.Map<Patient, PatientDto>(patient);
+    }
     public virtual async Task<PatientDto> GetAsync(Guid id)
     {
         var patient = await patientRepository.GetAsync(id);

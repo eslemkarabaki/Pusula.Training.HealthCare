@@ -10,10 +10,10 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(GroupName);
+        var myGroup = context.AddGroup(HealthCarePermissions.GroupName);
 
-        myGroup.AddPermission(Dashboard.Host, L("Permission:Dashboard"), MultiTenancySides.Host);
-        myGroup.AddPermission(Dashboard.Tenant, L("Permission:Dashboard"), MultiTenancySides.Tenant);
+        myGroup.AddPermission(HealthCarePermissions.Dashboard.Host, L("Permission:Dashboard"), MultiTenancySides.Host);
+        myGroup.AddPermission(HealthCarePermissions.Dashboard.Tenant, L("Permission:Dashboard"), MultiTenancySides.Tenant);
 
         //Define your own permissions here. Example:
         //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1")); 
@@ -37,14 +37,22 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Edit, L("Permission:Edit"));
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Delete, L("Permission:Delete"));
 
-        var departmentPermission =
-            myGroup.AddPermission(HealthCarePermissions.Departments.Default, L("Permission:Departments"));
+        var appointmentReportPermission = myGroup.AddPermission(HealthCarePermissions.AppointmentReports.Default, L("Permission:AppointmentReports"));
+        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Create, L("Permission:Create"));
+        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Edit, L("Permission:Edit"));
+        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Delete, L("Permission:Delete"));
+
+        var appointmentTypePermission = myGroup.AddPermission(HealthCarePermissions.AppointmentTypes.Default, L("Permission:AppointmentTypes"));
+        appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Create, L("Permission:Create"));
+        appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Edit, L("Permission:Edit"));
+        appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Delete, L("Permission:Delete"));
+
+        var departmentPermission = myGroup.AddPermission(HealthCarePermissions.Departments.Default, L("Permission:Departments"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Create, L("Permission:Create"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Edit, L("Permission:Edit"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Delete, L("Permission:Delete"));
 
-        var hospitalPermission =
-            myGroup.AddPermission(HealthCarePermissions.Hospitals.Default, L("Permission:Hospitals"));
+        var hospitalPermission = myGroup.AddPermission(HealthCarePermissions.Hospitals.Default, L("Permission:Hospitals"));
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Create, L("Permission:Create"));
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Edit, L("Permission:Edit"));
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Delete, L("Permission:Delete"));
@@ -107,8 +115,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
 
     private void SetExaminationsPermissions(PermissionGroupDefinition group)
     {
-        var examinations =
-            group.AddPermission(HealthCarePermissions.Examinations.Default, L("Permission:Examinations"));
+        var examinations = group.AddPermission(HealthCarePermissions.Examinations.Default, L("Permission:Examinations"));
         examinations.AddChild(HealthCarePermissions.Examinations.Create, L("Permission:Create"));
         examinations.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
         examinations.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));

@@ -14,7 +14,12 @@ using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Titles;
+using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.AppointmentTypes;
+using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.PatientTypes;
 
 namespace Pusula.Training.HealthCare;
@@ -85,6 +90,14 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Appointment, AppointmentDto>();
         CreateMap<AppointmentDto, AppointmentUpdateDto>();
         CreateMap<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>();
+        CreateMap<AppointmentDto, AppointmentCreateDto>();
+
+        CreateMap<AppointmentReport, AppointmentReportDto>();
+        CreateMap<AppointmentReportDto, AppointmentReportUpdateDto>();
+        CreateMap<AppointmentReportWithNavigationProperties, AppointmentReportWithNavigationPropertiesDto>();
+
+        CreateMap<AppointmentType, AppointmentTypeDto>();
+        CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();       
 
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
@@ -109,6 +122,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
 
+
         //Burası önemli
+
+
     }
 }

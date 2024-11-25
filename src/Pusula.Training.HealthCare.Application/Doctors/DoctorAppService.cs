@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using MiniExcelLibs;
+using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
 using System;
@@ -35,6 +36,16 @@ namespace Pusula.Training.HealthCare.Doctors
             _doctorManager = doctorManager ?? throw new ArgumentNullException(nameof(doctorManager));
             _downloadTokenCache = downloadTokenCache ?? throw new ArgumentNullException(nameof(downloadTokenCache));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger)); // Assign logger
+        }
+        //For Appointment
+        public async Task<List<DoctorDto>> GetListDoctorsAsync()
+        {
+            return ObjectMapper.Map<List<Doctor>, List<DoctorDto>>(await _doctorRepository.GetListAsync());
+        }
+        // For Appointment
+        public async Task<List<DoctorDto>> GetListDoctorsAsync(Guid id)
+        {
+            return ObjectMapper.Map<List<Doctor>, List<DoctorDto>>(await _doctorRepository.GetListAsync(departmentId: id));
         }
 
         public virtual async Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input)

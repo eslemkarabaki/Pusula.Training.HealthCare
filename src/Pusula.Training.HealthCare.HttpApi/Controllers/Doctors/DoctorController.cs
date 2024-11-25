@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Shared;
 using System;
@@ -23,6 +24,20 @@ namespace Pusula.Training.HealthCare.Controllers.Doctors
         public DoctorController(IDoctorAppService doctorAppService)
         {
             _doctorAppService = doctorAppService ?? throw new ArgumentNullException(nameof(doctorAppService));
+        }
+
+        [HttpGet]
+        [Route("list-doctor")]
+        public virtual Task<List<DoctorDto>> GetListDoctorsAsync()
+        {
+            return _doctorAppService.GetListDoctorsAsync();
+        }
+
+        [HttpGet]
+        [Route("list-doctor/{id}")]
+        public virtual Task<List<DoctorDto>> GetListDoctorsAsync(Guid id)
+        {
+            return _doctorAppService.GetListDoctorsAsync(id);
         }
 
         // Get list of doctors with pagination
