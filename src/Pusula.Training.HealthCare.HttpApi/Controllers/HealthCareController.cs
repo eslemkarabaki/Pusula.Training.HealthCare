@@ -1,7 +1,4 @@
 ﻿using Pusula.Training.HealthCare.Localization;
-using Pusula.Training.HealthCare.Tests;
-using System;
-using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc;
 
 namespace Pusula.Training.HealthCare.Controllers;
@@ -14,6 +11,4 @@ public abstract class HealthCareController : AbpControllerBase
     {
         LocalizationResource = typeof(HealthCareResource);
     }
-
-    public Task<TestDto> CreateAsync(TestCreateDto input) => throw new NotImplementedException();
 }

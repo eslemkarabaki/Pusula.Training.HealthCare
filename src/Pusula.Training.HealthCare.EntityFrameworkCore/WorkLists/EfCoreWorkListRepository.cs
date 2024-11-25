@@ -84,24 +84,69 @@ namespace Pusula.Training.HealthCare.WorkLists
                 .WhereIf(isCompleted.HasValue, e => e.IsCompleted == isCompleted.Value);
         }
 
-        public Task DeleteAllAsync(string? filterText, string? code, string? name, Guid? departmentId)
+        public virtual async Task DeleteAllAsync(string? filterText, string? code, string? name, Guid? departmentId)
         {
-            throw new NotImplementedException();
+            var query = await GetQueryableAsync();
+
+
+            query = ApplyFilter(query, filterText, code, name, departmentId);
+
+
+            var ids = query.Select(x => x.Id);
+
+            await DeleteManyAsync(ids);
         }
 
-        public Task<List<WorkList>> GetListAsync(string? filterText, string? code, string? name, Guid? departmentId, string? sorting, int maxResultCount, int skipCount)
+        public virtual async Task<List<WorkList>> GetListAsync(string? filterText, string? code, string? name, Guid? departmentId, string? sorting, int maxResultCount, int skipCount)
         {
-            throw new NotImplementedException();
+            var query = await GetQueryableAsync();
+
+
+            query = ApplyFilter(query, filterText, code, name, departmentId);
+
+
+            query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? "ScheduledDate DESC" : sorting);
+
+            return await query.PageBy(skipCount, maxResultCount).ToListAsync();
         }
 
-        public Task<long> GetCountAsync(string? filterText, string? code, string? name, Guid? departmentId)
+
+        public virtual async Task<long> GetCountAsync(string? filterText, string? code, string? name, Guid? departmentId)
         {
-            throw new NotImplementedException();
+            var query = await GetQueryableAsync();
+
+
+            query = ApplyFilter(query, filterText, code, name, departmentId);
+
+
+            return await query.LongCountAsync();
         }
 
-        public Task<List<WorkList>> GetListAsync(string? filterText, string? code, string? name, Guid? departmentId)
+
+        public virtual async Task<List<WorkList>> GetListAsync(string? filterText, string? code, string? name, Guid? departmentId)
         {
-            throw new NotImplementedException();
+            var query = await GetQueryableAsync();
+
+
+            query = ApplyFilter(query, filterText, code, name, departmentId);
+
+
+            return await query.ToListAsync();
+        }
+
+
+        protected virtual IQueryable<WorkList> ApplyFilter(
+            IQueryable<WorkList> query,
+            string? filterText = null,
+            string? code = null,
+            string? name = null,
+            Guid? departmentId = null)
+        {
+            return query
+                .WhereIf(!string.IsNullOrWhiteSpace(filterText), x => x.PatientId.ToString().Contains(filterText!) || x.DoctorId.ToString().Contains(filterText!))
+                .WhereIf(!string.IsNullOrWhiteSpace(code), x => x.TestId.ToString().Contains(code!))
+                .WhereIf(!string.IsNullOrWhiteSpace(name), x => x.TestId.ToString().Contains(name!))
+                .WhereIf(departmentId.HasValue, x => x.DoctorId == departmentId.Value);
         }
     }
 }

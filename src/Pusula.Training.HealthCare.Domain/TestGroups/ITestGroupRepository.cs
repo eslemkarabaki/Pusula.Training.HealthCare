@@ -23,5 +23,7 @@ namespace Pusula.Training.HealthCare.TestGroups
             string? code = null,
             string? name = null,
             CancellationToken cancellationToken = default);
+        Task DeleteAllAsync(string? filterText, string? code, string? name);
+        Task DeleteAllByFilterAsync(string? filterText, string? code, string? name);
     }
 }

@@ -65,5 +65,15 @@ namespace Pusula.Training.HealthCare.TestGroups
                 .WhereIf(!string.IsNullOrWhiteSpace(code), e => e.Code.Contains(code!))
                 .WhereIf(!string.IsNullOrWhiteSpace(name), e => e.Name.Contains(name!));
         }
+
+        public Task DeleteAllAsync(string? filterText, string? code, string? name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteAllByFilterAsync(string? filterText, string? code, string? name)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

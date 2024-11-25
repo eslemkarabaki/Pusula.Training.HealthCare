@@ -31,5 +31,10 @@ namespace Pusula.Training.HealthCare.TestGroups
             testGroup.SetConcurrencyStampIfNotNull(concurrencyStamp);
             return await testGroupRepository.UpdateAsync(testGroup);
         }
+
+        public async Task<TestGroup> UpdateAsync(Guid id, string code, string name, object concurrencyStamp)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
