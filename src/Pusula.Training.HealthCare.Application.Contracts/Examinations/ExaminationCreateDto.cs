@@ -13,7 +13,7 @@ public class ExaminationCreateDto
     [StringLength(ExaminationConsts.NotesNumberMaxLength)]
     public string Notes { get; set; } = null!;
 
-    [Required] public DateTime VisitDate { get; set; }
+    [Required] public DateTime VisitDate { get; set; } = DateTime.Now;
 
     [Required]
     [StringLength(ExaminationConsts.ChronicDiseasesNumberMaxLength)]
