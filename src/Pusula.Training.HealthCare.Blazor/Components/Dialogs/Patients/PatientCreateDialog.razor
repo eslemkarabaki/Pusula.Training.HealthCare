@@ -16,6 +16,7 @@
 @using Syncfusion.Blazor.Lists
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Notifications
+@using Blazored.FluentValidation
 
 @inherits HealthCareComponentBase
 
@@ -35,8 +36,8 @@
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <Blazored.FluentValidation.FluentValidationValidator
-                        Validator="@NewPatientValidator"></Blazored.FluentValidation.FluentValidationValidator>
+                    <FluentValidationValidator
+                        Validator="@NewPatientValidator"></FluentValidationValidator>
                 </FormValidator>
                 <FormTemplate>
                     <SfTab HeaderPlacement="HeaderPosition.Left" LoadOn="ContentLoad.Init" CssClass="e-fill">

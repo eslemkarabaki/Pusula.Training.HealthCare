@@ -14,6 +14,7 @@
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Notifications
+@using Blazored.FluentValidation
 
 @inherits HealthCareComponentBase
 
@@ -32,8 +33,8 @@
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <Blazored.FluentValidation.FluentValidationValidator
-                        Validator="@EditingPatientValidator"></Blazored.FluentValidation.FluentValidationValidator>
+                    <FluentValidationValidator
+                        Validator="@EditingPatientValidator"></FluentValidationValidator>
                 </FormValidator>
                 <FormTemplate>
                     <SfTab HeaderPlacement="HeaderPosition.Left" LoadOn="ContentLoad.Init">
@@ -70,12 +71,14 @@
                                             {
                                                 <SfTextBox @bind-Value="@EditingPatient.PassportNumber"
                                                            Placeholder="@L["PassportNumber"]"
-                                                           OnChange="@PassportNumberChangedAsync" OnInput="@(()=>IdentityOrPassportNotChecked=true)"></SfTextBox>
+                                                           OnChange="@PassportNumberChangedAsync"
+                                                           OnInput="@(() => IdentityOrPassportNotChecked = true)"></SfTextBox>
                                             } else
                                             {
                                                 <SfTextBox @bind-Value="@EditingPatient.IdentityNumber"
                                                            Placeholder="@L["IdentityNumber"]"
-                                                           OnChange="@IdentityNumberChangedAsync"  OnInput="@(()=>IdentityOrPassportNotChecked=true)"></SfTextBox>
+                                                           OnChange="@IdentityNumberChangedAsync"
+                                                           OnInput="@(() => IdentityOrPassportNotChecked = true)"></SfTextBox>
                                             }
                                             @if (IdentityOrPassportExist)
                                             {
@@ -349,7 +352,8 @@
                 <FormButtons>
                     <SfButton type="button" CssClass="e-outline"
                               OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
-                    <SfButton type="submit" IsPrimary Disabled="@(IdentityOrPassportNotChecked && IdentityOrPassportExist)">@L["Save"]</SfButton>
+                    <SfButton type="submit" IsPrimary
+                              Disabled="@(IdentityOrPassportNotChecked || IdentityOrPassportExist)">@L["Save"]</SfButton>
                 </FormButtons>
             </SfDataForm>
         </Content>
@@ -540,6 +544,7 @@
 
     public async Task ShowAsync(Guid patientId)
     {
+        IdentityOrPassportExist = false;
         var patient = await PatientAppService.GetNavigationPropertiesAsync(patientId);
         ObjectMapper.Map(patient.Patient, EditingPatient);
         ObjectMapper.Map(patient.Addresses, EditingPatient.Addresses);

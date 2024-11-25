@@ -3,7 +3,6 @@
 @attribute [Authorize(HealthCarePermissions.Patients.Default)]
 @using Pusula.Training.HealthCare.Patients
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
-
 @using Pusula.Training.HealthCare.Permissions
 @using Pusula.Training.HealthCare.Countries
 @using Pusula.Training.HealthCare.PatientTypes
@@ -15,6 +14,7 @@
 @using Syncfusion.Blazor.DataForm
 @using Syncfusion.Blazor.Navigations
 @using Syncfusion.Blazor.Notifications
+@using Blazored.FluentValidation
 @inherits HealthCareComponentBase
 @inject IPatientAppService PatientAppService
 @inject IPatientTypeAppService PatientTypeAppService
@@ -31,8 +31,8 @@
                 ButtonsAlignment="FormButtonsAlignment.Stretch"
                 ValidationDisplayMode="FormValidationDisplay.Tooltip">
         <FormValidator>
-            <Blazored.FluentValidation.FluentValidationValidator
-                Validator="@FilterValidator"></Blazored.FluentValidation.FluentValidationValidator>
+            <FluentValidationValidator
+                Validator="@FilterValidator"></FluentValidationValidator>
         </FormValidator>
         <FormTemplate>
             <div class="p-2">
