@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bogus;
+using Bogus.DataSets;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.Cities;
@@ -14,6 +16,7 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
+using Address = Pusula.Training.HealthCare.Addresses.Address;
 
 namespace Pusula.Training.HealthCare;
 
@@ -39,18 +42,16 @@ public class HealthCareDataSeederContributor(
             var patientTypes = await SeedPatientTypesAsync();
             var patients = await SeedPatientsAsync(countries, patientTypes);
             await SeedAddressesAsync(patients, districts);
-        }
-
-        if (!await appDefaultRepository.AnyAsync())
-        {
-            await appDefaultRepository.InsertAsync(new AppDefault(guidGenerator.Create()));
+            await appDefaultRepository.InsertAsync(
+                new AppDefault(guidGenerator.Create()) { CurrentCountryId = countries.FirstOrDefault(e => e.IsCurrent)?.Id ?? Guid.Empty }
+            );
         }
     }
 
     // Country
-    private async Task<IEnumerable<Country>> SeedCountriesAsync()
+    private async Task<List<Country>> SeedCountriesAsync()
     {
-        IEnumerable<Country> countries =
+        List<Country> countries =
         [
             new(guidGenerator.Create(), "Türkiye", "TR", "90", true),
             new(guidGenerator.Create(), "İngiltere", "UK", "1"),
@@ -64,9 +65,9 @@ public class HealthCareDataSeederContributor(
     }
 
     // City
-    private async Task<IEnumerable<Guid>> SeedCitiesAsync(IEnumerable<Country> countries)
+    private async Task<List<Guid>> SeedCitiesAsync(List<Country> countries)
     {
-        IEnumerable<City> cities =
+        List<City> cities =
         [
             new(guidGenerator.Create(), countries.ElementAt(0).Id, "İstanbul"),
             new(guidGenerator.Create(), countries.ElementAt(0).Id, "Ankara"),
@@ -80,9 +81,9 @@ public class HealthCareDataSeederContributor(
     }
 
     // District
-    private async Task<IEnumerable<Guid>> SeedDistrictsAsync(IEnumerable<Guid> cities)
+    private async Task<List<Guid>> SeedDistrictsAsync(List<Guid> cities)
     {
-        IEnumerable<District> districts =
+        List<District> districts =
         [
             new(guidGenerator.Create(), cities.ElementAt(0), "Ümraniye"),
             new(guidGenerator.Create(), cities.ElementAt(0), "Maltepe"),
@@ -98,9 +99,9 @@ public class HealthCareDataSeederContributor(
     }
 
     // Patient types
-    private async Task<IEnumerable<Guid>> SeedPatientTypesAsync()
+    private async Task<List<Guid>> SeedPatientTypesAsync()
     {
-        IEnumerable<PatientType> types =
+        List<PatientType> types =
         [
             new(guidGenerator.Create(), "Normal"),
             new(guidGenerator.Create(), "Yabancı"),
@@ -111,56 +112,62 @@ public class HealthCareDataSeederContributor(
     }
 
     // Patient
-    private async Task<IEnumerable<Guid>> SeedPatientsAsync(
-        IEnumerable<Country> countries,
-        IEnumerable<Guid> patientTypes
+    private async Task<List<Guid>> SeedPatientsAsync(
+        List<Country> countries,
+        List<Guid> patientTypes
     )
     {
-        IEnumerable<Patient> patients =
-        [
-            new(
-                guidGenerator.Create(), countries.ElementAt(0).Id, patientTypes.ElementAt(0), "Selçuk", "Şahin",
-                new DateTime(1998, 5, 18),
-                "12345678900", null, "muselcuksahin@gmail.com", countries.ElementAt(0).PhoneCode, "5555555555", null,
-                null, EnumGender.Male, EnumBloodType.AbPositive,
-                EnumMaritalStatus.Single
-            ),
-            new(
-                guidGenerator.Create(), countries.ElementAt(1).Id, patientTypes.ElementAt(1), "Joel", "Bond",
-                new DateTime(1991, 8, 7),
-                null, "64279023471", "johndoe@gmail.com", countries.ElementAt(0).PhoneCode, "07836668374", null, null,
-                EnumGender.Male, EnumBloodType.BPositive,
-                EnumMaritalStatus.Married
-            ),
-            new(
-                guidGenerator.Create(), countries.ElementAt(2).Id, patientTypes.ElementAt(2), "Kristin", "Saenger",
-                new DateTime(1970, 8, 23),
-                null, "44748015944", "kristinSaenger@dayrep.com", countries.ElementAt(2).PhoneCode, "0471266747", null,
-                null, EnumGender.Female, EnumBloodType.ZeroPositive,
-                EnumMaritalStatus.Single
-            )
-        ];
+        var faker = new Faker<Patient>("tr")
+            .CustomInstantiator(
+                f =>
+                {
+                    var country = f.PickRandom(countries);
+                    return new Patient(
+                        guidGenerator.Create(),
+                        country.Id,
+                        f.PickRandom(patientTypes),
+                        f.Name.FirstName(),
+                        f.Name.LastName(),
+                        f.Date.Past(100),
+                        country.IsCurrent ? f.Random.String2(11, "0123456789") : null,
+                        country.IsCurrent ? null : f.Random.String2(11, "0123456789"),
+                        f.Internet.Email(),
+                        country.PhoneCode,
+                        f.Phone.PhoneNumber("##########"),
+                        null,
+                        null,
+                        f.PickRandomWithout<EnumGender>(EnumGender.None),
+                        f.PickRandomWithout<EnumBloodType>(EnumBloodType.None),
+                        f.PickRandomWithout<EnumMaritalStatus>(EnumMaritalStatus.None)
+                    );
+                }
+            );
 
-        return await SeedEntitiesAsync(patients, e => patientRepository.InsertManyAsync(e, true));
+        return await SeedEntitiesAsync(faker.Generate(100), e => patientRepository.InsertManyAsync(e, true));
     }
 
     // Address
-    private async Task SeedAddressesAsync(IEnumerable<Guid> patients, IEnumerable<Guid> districts)
+    private async Task SeedAddressesAsync(List<Guid> patients, List<Guid> districts)
     {
-        IEnumerable<Address> addresses =
-        [
-            new(guidGenerator.Create(), patients.ElementAt(0), districts.ElementAt(0), "Ev", "Asya Sokak"),
-            new(guidGenerator.Create(), patients.ElementAt(1), districts.ElementAt(4), "Ev", "lorem"),
-            new(guidGenerator.Create(), patients.ElementAt(2), districts.ElementAt(5), "Ev", "ipsum")
-        ];
+        var faker = new Faker<Address>("tr")
+            .CustomInstantiator(
+                f =>
+                    new Address(
+                        guidGenerator.Create(),
+                        f.PickRandom(patients),
+                        f.PickRandom(districts),
+                        f.Lorem.Sentences(2),
+                        f.Address.SecondaryAddress()
+                    )
+            );
 
-        await addressRepository.InsertManyAsync(addresses, true);
+        await addressRepository.InsertManyAsync(faker.Generate(200), true);
     }
 
     // Generic Entities
     private async Task<List<Guid>> SeedEntitiesAsync<T>(
-        IEnumerable<T> entities,
-        Func<IEnumerable<T>, Task> insertFunction
+        List<T> entities,
+        Func<List<T>, Task> insertFunction
     )
         where T : AggregateRoot<Guid>
     {

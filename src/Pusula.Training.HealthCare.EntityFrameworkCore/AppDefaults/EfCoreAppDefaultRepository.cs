@@ -21,6 +21,6 @@ public class EfCoreAppDefaultRepository(IDbContextProvider<HealthCareDbContext> 
                 on appDefault.CurrentCountryId equals country.Id
             where appDefault.CurrentCountryId == country.Id
             select country;
-        return await query.SingleOrDefaultAsync();
+        return await query.FirstOrDefaultAsync();
     }
 }
