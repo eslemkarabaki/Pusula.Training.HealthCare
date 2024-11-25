@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,12 +6,8 @@ using Bogus;
 using Bogus.DataSets;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.AppDefaults;
-using Pusula.Training.HealthCare.AppointmentReports;
-using Pusula.Training.HealthCare.Appointments;
-using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
-using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.PatientTypes;
@@ -35,11 +30,6 @@ public class HealthCareDataSeederContributor(
     IAppDefaultRepository appDefaultRepository,
     IGuidGenerator guidGenerator
 )
-    IAppointmentRepository appointmentRepository,
-    IAppointmentTypeRepository appointmentTypeRepository,
-    IAppointmentReportRepository appointmentReportRepository,
-    IDepartmentRepository departmentRepository,
-    IGuidGenerator guidGenerator)
     : IDataSeedContributor, ITransientDependency
 {
     public async Task SeedAsync(DataSeedContext context)
@@ -56,12 +46,6 @@ public class HealthCareDataSeederContributor(
                 new AppDefault(guidGenerator.Create()) { CurrentCountryId = countries.FirstOrDefault(e => e.IsCurrent)?.Id ?? Guid.Empty }
             );
         }
-        }        
-        
-    }
-
-        await departmentRepository.InsertManyAsync(departments, true);
-        return departments;
     }
 
     // Country
@@ -160,59 +144,6 @@ public class HealthCareDataSeederContributor(
             );
 
         return await SeedEntitiesAsync(faker.Generate(100), e => patientRepository.InsertManyAsync(e, true));
-    }
-
-    // Appointment
-    private async Task<IEnumerable<Guid>> SeedAppointmentsAsync(IEnumerable<Guid> appointmentTypes, IEnumerable<Guid> departments, IEnumerable<Guid> doctors, IEnumerable<Guid> patients)
-    {
-        IEnumerable<Appointment> appointments =
-        [
-            new(guidGenerator.Create(), appointmentTypes.ElementAt(0), departments.ElementAt(0), doctors.ElementAt(0), patients.ElementAt(0), new DateTime(2024, 11, 12, 09, 00, 00), new DateTime(2024, 11, 12, 09, 15, 00),
-            "Lorem ipsum odor amet, consectetuer adipiscing elit.", EnumStatus.Completed),
-            new(guidGenerator.Create(), appointmentTypes.ElementAt(0), departments.ElementAt(0), doctors.ElementAt(0), patients.ElementAt(0), new DateTime(2024, 11, 12, 14, 15, 00), new DateTime(2024, 11, 12, 14, 30, 00),
-            "Parturient ipsum quam facilisis facilisi consectetur curabitur enim.", EnumStatus.Scheduled),
-            new(guidGenerator.Create(), appointmentTypes.ElementAt(1), departments.ElementAt(0), doctors.ElementAt(0), patients.ElementAt(0), new DateTime(2024, 11, 12, 14, 30, 00),  new DateTime(2024, 11, 12, 14, 45, 00),
-            "Suspendisse nascetur fusce molestie penatibus mi tempus fermentum dis.", EnumStatus.Rescheduled),
-
-
-        ];
-
-        return await SeedEntitiesAsync(appointments, e => appointmentRepository.InsertManyAsync(e, true));
-    }
-
-    //AppointmentType
-    private async Task<IEnumerable<Guid>> SeedAppointmentTypesAsync()
-    {
-        IEnumerable<AppointmentType> appointmentTypes = [
-            new(guidGenerator.Create(), "Genel Randevu"), 
-            new(guidGenerator.Create(), "Danışmanlık Randevusu"), 
-            new(guidGenerator.Create(), "Düzenli Kontrol Randevusu"), 
-            new(guidGenerator.Create(), "Acil Durum Randevusu"), 
-            new(guidGenerator.Create(), "Takip Eden Randevu"), 
-            new(guidGenerator.Create(), "Ameliyat Randevusu"), 
-            new(guidGenerator.Create(), "Diş hekimliği Randevusu"), 
-            new(guidGenerator.Create(), "Fizyoterapi Randevusu"), 
-            new(guidGenerator.Create(), "Psikolojik veya Psikiyatri Randevusu"), 
-            new(guidGenerator.Create(), "Aşı Randevusu"),
-            new(guidGenerator.Create(), "Laboratuvar Testleri Randevusu"), 
-            ];
-
-        return await SeedEntitiesAsync(appointmentTypes, e => appointmentTypeRepository.InsertManyAsync(e, true));
-    }
-
-    //AppointmentReport
-    private async Task<IEnumerable<Guid>> SeedAppointmentReportAsync(IEnumerable<Guid> appointments)
-    {
-        IEnumerable<AppointmentReport> appointmentReports = [
-            new(guidGenerator.Create(), appointments.ElementAt(0), new DateTime(2024, 11, 18),
-            "Lorem ipsum odor amet, consectetuer adipiscing elit.", "Parturient ipsum quam facilisis facilisi consectetur curabitur enim."),
-            new(guidGenerator.Create(), appointments.ElementAt(0), new DateTime(2024, 11, 18),
-            "Suspendisse nascetur fusce molestie penatibus mi tempus fermentum dis.", "Leo inceptos dapibus semper neque massa eleifend nam."),
-            new(guidGenerator.Create(), appointments.ElementAt(1), new DateTime(2024, 11, 18),
-            "Sem placerat eget fermentum leo ullamcorper aenean fames natoque. ", "Nisi nunc pretium metus a vestibulum hac."),
-            ];
-
-        return await SeedEntitiesAsync(appointmentReports, e => appointmentReportRepository.InsertManyAsync(e, true));
     }
 
     // Address

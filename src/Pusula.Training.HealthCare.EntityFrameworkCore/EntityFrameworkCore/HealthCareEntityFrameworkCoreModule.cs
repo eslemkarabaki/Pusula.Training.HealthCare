@@ -26,8 +26,8 @@ using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
-using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
+using Pusula.Training.HealthCare.AppointmentReports;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -79,27 +79,10 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<PatientType, EfCorePatientTypeRepository>();
                 options.AddRepository<PatientNote, EfCorePatientNoteRepository>();
                 options.AddRepository<AppDefault, EfCoreAppDefaultRepository>();
+                options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
+                options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
             }
         );
-            options.AddRepository<Patient, EfCorePatientRepository>();
-            options.AddRepository<Protocol, EfCoreProtocolRepository>();
-            options.AddRepository<Department, EfCoreDepartmentRepository>();
-            options.AddRepository<Appointment, EfCoreAppointmentRepository>();
-            options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
-            options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
-            options.AddRepository<Hospital, EfCoreHospitalRepository>();
-            options.AddRepository<Notification, EfCoreNotificationRepository>();
-            options.AddRepository<Hospital, EfCoreHospitalRepository>();
-            options.AddRepository<Notification, EfCoreNotificationRepository>();
-            options.AddRepository<Country, EfCoreCountryRepository>();
-            options.AddRepository<City, EfCoreCityRepository>();
-            options.AddRepository<District, EfCoreDistrictRepository>();
-            options.AddRepository<Address, EfCoreAddressRepository>();
-            options.AddRepository<Doctor, EfCoreDoctorRepository>();
-            options.AddRepository<Title, EfCoreTitleRepository>();
-            options.AddRepository<PatientType, EfCorePatientTypeRepository>();
-            options.AddRepository<PatientNote, EfCorePatientNoteRepository>();
-        });
 
         Configure<AbpDbContextOptions>(
             options =>
