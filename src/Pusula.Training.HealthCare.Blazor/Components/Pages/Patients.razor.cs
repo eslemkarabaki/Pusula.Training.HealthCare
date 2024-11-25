@@ -32,7 +32,7 @@ public partial class Patients
 
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
 
-    private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
+    private int PageSize => 100;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; } = string.Empty;
     private int TotalCount { get; set; }
@@ -99,15 +99,11 @@ public partial class Patients
 
     protected virtual async Task SearchAsync()
     {
-        if (Filter.AreAllPropertiesEmpty())
-        {
-            await FilterToast.ShowAsync();
-            return;
-        }
         if (Filter.DeepCompare(LastFilter))
         {
             return;
         }
+
         LastFilter = Filter.DeepClone();
 
         CurrentPage = 1;

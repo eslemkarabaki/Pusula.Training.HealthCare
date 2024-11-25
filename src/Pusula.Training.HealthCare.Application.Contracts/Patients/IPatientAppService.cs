@@ -30,4 +30,7 @@ public interface IPatientAppService : IApplicationService
     Task DeleteAllAsync(GetPatientsInput input);
 
     Task<DownloadTokenResultDto> GetDownloadTokenAsync();
+
+    Task<bool> PassportNumberExistsAsync(string passportNumber, Guid? excludePatientId = null);
+    Task<bool> IdentityNumberExistsAsync(string identityNumber, Guid? excludePatientId = null);
 }

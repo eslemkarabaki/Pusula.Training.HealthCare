@@ -2,12 +2,10 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public static class PatientConsts
 {
-    private const string DefaultSorting = "{0}FirstName asc";
+    private const string DefaultSorting = "{0}CreationTime desc";
 
-    public static string GetDefaultSorting(bool withEntityName)
-    {
-        return string.Format(DefaultSorting, withEntityName ? "Patient." : string.Empty);
-    }
+    public static string GetDefaultSorting(bool withEntityName) =>
+        string.Format(DefaultSorting, withEntityName ? "Patient." : string.Empty);
 
     public const int FirstNameMaxLength = 128;
     public const int LastNameMaxLength = 128;
