@@ -86,15 +86,9 @@ public partial class Patients
 
     private async Task GetPatientsAsync()
     {
-        if (Filter.DeepCompare(LastFilter))
-        {
-            return;
-        }
-
         Filter.MaxResultCount = PageSize;
         Filter.SkipCount = (CurrentPage - 1) * PageSize;
         Filter.Sorting = CurrentSorting;
-        LastFilter = Filter.DeepClone();
 
         var result = await PatientAppService.GetNavigationPropertiesListAsync(Filter);
         PatientList = result.Items;
@@ -110,6 +104,11 @@ public partial class Patients
             await FilterToast.ShowAsync();
             return;
         }
+        if (Filter.DeepCompare(LastFilter))
+        {
+            return;
+        }
+        LastFilter = Filter.DeepClone();
 
         CurrentPage = 1;
         await GetPatientsAsync();

@@ -1,9 +1,7 @@
-@using Microsoft.Extensions.Localization
 @using Pusula.Training.HealthCare.Addresses
 @using Pusula.Training.HealthCare.Cities
 @using Pusula.Training.HealthCare.Countries
 @using Pusula.Training.HealthCare.Districts
-@using Pusula.Training.HealthCare.Localization
 @using Pusula.Training.HealthCare.Patients
 @using Pusula.Training.HealthCare.PatientTypes
 @using Syncfusion.Blazor.Data
@@ -14,8 +12,8 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Calendars
-@using Syncfusion.Blazor.Lists
 @using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Notifications
 
 @inherits HealthCareComponentBase
 
@@ -304,31 +302,31 @@
                                             </div>
 
                                             <div class="col-4">
-                                                <SfListView DataSource="@Addresses"
-                                                            TValue="AddressWithNavigationPropertiesDto"
-                                                            HeaderTitle="@L["Addresses"]" ShowHeader="true"
-                                                            CssClass="e-list-template">
-                                                    <ListViewTemplates TValue="AddressWithNavigationPropertiesDto">
-                                                        <Template>
-                                                            <div class="d-flex gap-1 align-items-start">
-                                                                <div class="flex-fill">
-                                                                    <h6 class="m-0">@context.Address.AddressTitle</h6>
-                                                                    <p class="m-0">@context.Address.AddressLine @context.District.Name @(context.City.Name)/@(context.Country.Name)</p>
+                                                <p class="mb-6p fs-12p fw-700 color-grey-500">@L["Addresses"]</p>
+                                                <div class="d-flex flex-column gap-1">
+                                                    @foreach (var address in Addresses)
+                                                    {
+                                                        <SfCard ID="@address.Address.Id.ToString("N")" CssClass="@(EditingAddressId==address.Address.Id?"selected":string.Empty)" @onclick="@(() => EditAddressAsync(address))">
+                                                            <CardContent>
+                                                                <div class="d-flex align-items-start">
+                                                                    <div class="flex-fill">
+                                                                        <h6 class="m-0">@address.Address.AddressTitle</h6>
+                                                                        <p class="m-0">@address.Address.AddressLine @address.District.Name @(address.City.Name)/@(address.Country.Name)</p>
+                                                                    </div>
+                                                                    <SfButton type="button"
+                                                                              IconCss="e-icons far fa-trash-alt e-danger"
+                                                                              CssClass="e-small e-danger e-flat"
+                                                                              OnClick="@(() => RemoveAddressAsync(address))"></SfButton>
                                                                 </div>
-                                                                <SfButton type="button"
-                                                                          IconCss="e-icons e-trash e-danger"
-                                                                          CssClass="e-small e-danger e-flat"
-                                                                          OnClick="@(() => RemoveAddressAsync(context))"></SfButton>
-                                                            </div>
-                                                        </Template>
-                                                    </ListViewTemplates>
-                                                    <ListViewFieldSettings TValue="AddressWithNavigationPropertiesDto"
-                                                                           Id="Address.Id"
-                                                                           Text="Address.AddressTitle"></ListViewFieldSettings>
-                                                    <ListViewEvents TValue="AddressWithNavigationPropertiesDto"
-                                                                    Clicked="EditAddressAsync">
-                                                    </ListViewEvents>
-                                                </SfListView>
+                                                            </CardContent>
+                                                        </SfCard>
+                                                    }
+                                                </div>
+                                                @if (Addresses.Count == 0)
+                                                {
+                                                    <SfMessage>There is no address added for this patient.</SfMessage> // todo
+                                                }
+
                                             </div>
                                         </div>
                                     </div>
@@ -418,7 +416,15 @@
     private Query GetDefaultAutoCompleteQuery(FilteringEventArgs args)
     {
         args.PreventDefaultAction = true;
-        var query = new Query().Where(new WhereFilter { Field = "Name", Operator = "contains", value = args.Text, IgnoreCase = true });
+        var query = new Query().Where(
+            new WhereFilter
+            {
+                Field = "Name",
+                Operator = "contains",
+                value = args.Text,
+                IgnoreCase = true
+            }
+        );
         return !string.IsNullOrEmpty(args.Text) ? query : new Query();
     }
 
@@ -444,23 +450,23 @@
         await Task.CompletedTask;
     }
 
-    private async Task EditAddressAsync(ClickEventArgs<AddressWithNavigationPropertiesDto> args)
+    private async Task EditAddressAsync(AddressWithNavigationPropertiesDto dto)
     {
-        if (EditingAddressId == args.ItemData.Address.Id)
+        if (EditingAddressId == dto.Address.Id)
         {
             return;
         }
 
-        await AddressCountryIdChangedAsync(args.ItemData.Country.Id);
-        await AddressCityIdChangedAsync(args.ItemData.City.Id);
-        EditingAddressId = args.ItemData.Address.Id;
+        await AddressCountryIdChangedAsync(dto.Country.Id);
+        await AddressCityIdChangedAsync(dto.City.Id);
+        EditingAddressId = dto.Address.Id;
         EditingAddress = new AddressUpdateDto()
         {
-            Id = args.ItemData.Address.Id,
-            PatientId = args.ItemData.Address.PatientId,
-            DistrictId = args.ItemData.District.Id,
-            AddressTitle = args.ItemData.Address.AddressTitle,
-            AddressLine = args.ItemData.Address.AddressLine
+            Id = dto.Address.Id,
+            PatientId = dto.Address.PatientId,
+            DistrictId = dto.District.Id,
+            AddressTitle = dto.Address.AddressTitle,
+            AddressLine = dto.Address.AddressLine
         };
         EditingAddressEditContext = new EditContext(EditingAddress);
         AddressEditingMode = true;

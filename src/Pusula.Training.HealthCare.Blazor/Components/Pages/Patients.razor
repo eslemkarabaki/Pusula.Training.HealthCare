@@ -23,7 +23,7 @@
 @inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
 @inject NavigationManager NavigationManager
 
-<PageHeader BreadcrumbItems="BreadcrumbItems"/>
+<PageHeader Title="" BreadcrumbItems="BreadcrumbItems"/>
 
 @* ************************* SEARCH ************************* *@
 <div class="bg-white mb-3">
@@ -48,8 +48,9 @@
             @if (ShowAdvancedFilters)
             {
                 <div class="d-flex gap-2 p-2 align-items-end">
-                    <SfNumericTextBox @bind-Value="@Filter.No" ShowSpinButton="false" FloatLabelType="FloatLabelType.Always"
-                               Placeholder="@L["No"]"/> 
+                    <SfNumericTextBox @bind-Value="@Filter.No" ShowSpinButton="false"
+                                      FloatLabelType="FloatLabelType.Always"
+                                      Placeholder="@L["No"]"/>
                     <SfTextBox @bind-Value="@Filter.FirstName" FloatLabelType="FloatLabelType.Always"
                                Placeholder="@L["FirstName"]"/>
                     <SfTextBox @bind-Value="@Filter.LastName" FloatLabelType="FloatLabelType.Always"
@@ -72,7 +73,7 @@
 @* ************************* DATA GRID ************************* *@
 <SfGrid @ref="SfGrid" TValue="PatientWithNavigationPropertiesDto" DataSource="@PatientList" AllowPaging AllowSelection
         EnableHover AllowSorting EnableVirtualization
-        EnableVirtualMaskRow Height="400">
+        EnableVirtualMaskRow Height="500">
     <SfToolbar>
         <ToolbarItems>
             <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreatePatientDialogAsync" Text="@L["Add"]"
@@ -89,8 +90,7 @@
     </SfToolbar>
     <GridEvents TValue="PatientWithNavigationPropertiesDto"
                 RowSelected="@SelectedPatientRowChangedAsync"
-                RowDeselected="@SelectedPatientRowChangedAsync"
-                OnRecordDoubleClick="@((args) => OpenEditPatientModalAsync(args.RowData.Patient))"/>
+                RowDeselected="@SelectedPatientRowChangedAsync"/>
     <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
@@ -140,10 +140,26 @@
                 }
             </Template>
         </GridColumn>
-        <GridColumn Field="@nameof(PatientWithNavigationPropertiesDto.Patient.EmailAddress)"
-                    HeaderText="@L["EmailAddress"]"/>
-        <GridColumn Field="@nameof(PatientWithNavigationPropertiesDto.Patient.MobilePhoneNumber)"
-                    HeaderText="@L["MobilePhoneNumber"]"/>
+        <GridColumn HeaderText="@L["EmailAddress"]">
+            <Template>
+                @{
+                    var dto = context as PatientWithNavigationPropertiesDto;
+                    <div>
+                        @dto.Patient.EmailAddress
+                    </div>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["MobilePhoneNumber"]">
+            <Template>
+                @{
+                    var dto = context as PatientWithNavigationPropertiesDto;
+                    <div>
+                        @dto.Patient.MobilePhoneNumber
+                    </div>
+                }
+            </Template>
+        </GridColumn>
         <GridColumn TextAlign="TextAlign.Right">
             <Template>
                 <SfButton
