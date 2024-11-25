@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Pusula.Training.HealthCare.Appointments;
-using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.HospitalDepartments;
-using Pusula.Training.HealthCare.Hospitals;
-using Pusula.Training.HealthCare.Notifications;
+using Pusula.Training.HealthCare.Departments; 
+using Pusula.Training.HealthCare.Hospitals; 
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Shared;
@@ -15,6 +13,10 @@ using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminations;
+using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 
 namespace Pusula.Training.HealthCare;
 
@@ -82,13 +84,27 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<TitleDto, TitleUpdateDto>();
         CreateMap<Title, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
-        //CreateMap<Notification, NotificationDto>();
-        //CreateMap<Notification, NotificationExcelDto>();
-        //CreateMap<NotificationDto, NotificationUpdateDto>();
+        #region Radiology
 
+        CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
+        CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupExcelDto>();
+        CreateMap<RadiologyExaminationGroupDto, RadiologyExaminationGroupUpdateDto>();
+        CreateMap<RadiologyExaminationGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
-        //Burası önemli
+        CreateMap<RadiologyExamination, RadiologyExaminationDto>();
+        CreateMap<RadiologyExamination, RadiologyExaminationExcelDto>();
+        CreateMap<RadiologyExaminationDto, RadiologyExaminationUpdateDto>();
+        CreateMap<RadiologyExamination, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
+        CreateMap<RadiologyExaminationProcedure, RadiologyExaminationProcedureDto>();
+        CreateMap<RadiologyExaminationProcedure, RadiologyExaminationProcedureExcelDto>();
+        CreateMap<RadiologyExaminationProcedureDto, RadiologyExaminationProcedureUpdateDto>();
+        CreateMap<RadiologyExaminationProcedure, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Result));
 
+        CreateMap<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>(); 
+        CreateMap<RadiologyExaminationDocumentDto, RadiologyExaminationDocumentUpdateDto>();
+        CreateMap<RadiologyExaminationDocument, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DocumentName));
+
+        #endregion 
     }
 }

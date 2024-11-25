@@ -58,6 +58,29 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         examinationPermission.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
         examinationPermission.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
 
+        #region Radiology
+
+        var radiologyExaminationGroupPermission = myGroup.AddPermission(HealthCarePermissions.RadiologyExaminationGroups.Default, L("Permission:RadiologyExaminationGroups"));
+        radiologyExaminationGroupPermission.AddChild(HealthCarePermissions.RadiologyExaminationGroups.Create, L("Permission:Create"));
+        radiologyExaminationGroupPermission.AddChild(HealthCarePermissions.RadiologyExaminationGroups.Edit, L("Permission:Edit"));
+        radiologyExaminationGroupPermission.AddChild(HealthCarePermissions.RadiologyExaminationGroups.Delete, L("Permission:Delete"));
+
+        var radiologyExaminationPermission = myGroup.AddPermission(HealthCarePermissions.RadiologyExaminations.Default, L("Permission:RadiologyExaminations"));
+        radiologyExaminationPermission.AddChild(HealthCarePermissions.RadiologyExaminations.Create, L("Permission:Create"));
+        radiologyExaminationPermission.AddChild(HealthCarePermissions.RadiologyExaminations.Edit, L("Permission:Edit"));
+        radiologyExaminationPermission.AddChild(HealthCarePermissions.RadiologyExaminations.Delete, L("Permission:Delete"));
+
+        var radiologyExaminationProcedurePermission = myGroup.AddPermission(HealthCarePermissions.RadiologyExaminationProcedures.Default, L("Permission:RadiologyExaminationProcedures"));
+        radiologyExaminationProcedurePermission.AddChild(HealthCarePermissions.RadiologyExaminationProcedures.Create, L("Permission:Create"));
+        radiologyExaminationProcedurePermission.AddChild(HealthCarePermissions.RadiologyExaminationProcedures.Edit, L("Permission:Edit"));
+        radiologyExaminationProcedurePermission.AddChild(HealthCarePermissions.RadiologyExaminationProcedures.Delete, L("Permission:Delete"));
+
+        var radiologyExaminationDocumentPermission = myGroup.AddPermission(HealthCarePermissions.RadiologyExaminationDocuments.Default, L("Permission:RadiologyExaminationDocuments"));
+        radiologyExaminationDocumentPermission.AddChild(HealthCarePermissions.RadiologyExaminationDocuments.Create, L("Permission:Create"));
+        radiologyExaminationDocumentPermission.AddChild(HealthCarePermissions.RadiologyExaminationDocuments.Edit, L("Permission:Edit"));
+        radiologyExaminationDocumentPermission.AddChild(HealthCarePermissions.RadiologyExaminationDocuments.Delete, L("Permission:Delete"));
+
+        #endregion
     }
 
     private static LocalizableString L(string name)

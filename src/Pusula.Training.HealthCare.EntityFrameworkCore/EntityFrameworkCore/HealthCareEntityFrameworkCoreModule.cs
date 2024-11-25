@@ -23,6 +23,9 @@ using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Titles;
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using Pusula.Training.HealthCare.RadiologyExaminations;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -70,6 +73,10 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Address, EfCoreAddressRepository>();
             options.AddRepository<Doctor, EfCoreDoctorRepository>();
             options.AddRepository<Title, EfCoreTitleRepository>();
+            options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+            options.AddRepository<RadiologyExamination, EfCoreRadiologyExaminationRepository>();
+            options.AddRepository<RadiologyExaminationProcedure, EfCoreRadiologyExaminationProcedureRepository>();
+            options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
         });
 
         Configure<AbpDbContextOptions>(options =>

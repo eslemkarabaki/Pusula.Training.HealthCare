@@ -4,25 +4,19 @@ using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.Examinations;
-using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.Examinations; 
 using Pusula.Training.HealthCare.Districts;
-using Pusula.Training.HealthCare.Doctors;
-using Pusula.Training.HealthCare.HospitalDepartments;
+using Pusula.Training.HealthCare.Doctors; 
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
-using Pusula.Training.HealthCare.Protocols;
-using System.Numerics;
-using System.Reflection;
-using Pusula.Training.HealthCare.Configurations;
+using Pusula.Training.HealthCare.Protocols;  
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.EntityFrameworkCore;
-using Volo.Abp.EntityFrameworkCore.Modeling;
+using Volo.Abp.EntityFrameworkCore; 
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -30,8 +24,12 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
-using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using Npgsql.Replication.PgOutput.Messages;
+using Volo.Abp.TenantManagement.EntityFrameworkCore; 
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminations;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using System.Reflection;
+using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -55,12 +53,19 @@ public class HealthCareDbContext :
     public DbSet<City> Cities { get; set; } = null!;
     public DbSet<District> Districts { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
-    public DbSet<Appointment> Appointments { get; set; } = null!;
-    //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
+    public DbSet<Appointment> Appointments { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;
 
+    #region Radiology
 
-#region Entities from the modules
+    public DbSet<RadiologyExaminationGroup> RadiologyExaminationGroups { get; set; } = null!;
+    public DbSet<RadiologyExamination> RadiologyExaminations { get; set; } = null!;
+    public DbSet<RadiologyExaminationProcedure> RadiologyExaminationProcedures { get; set; } = null!;
+    public DbSet<RadiologyExaminationDocument> RadiologyExaminationDocuments { get; set; } = null!;
+
+    #endregion
+
+    #region Entities from the modules
 
     /* Notice: We only implemented IIdentityDbContext and ITenantManagementDbContext
      * and replaced them for this DbContext. This allows you to perform JOIN
@@ -111,7 +116,7 @@ public class HealthCareDbContext :
 
         /* Configure your own tables/entities inside here */
         if (builder.IsHostDatabase())
-        {
+        { 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
