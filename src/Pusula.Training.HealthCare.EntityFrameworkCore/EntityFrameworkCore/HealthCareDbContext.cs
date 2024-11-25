@@ -30,6 +30,11 @@ using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using System.Reflection;
 using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
+using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Npgsql.Replication.PgOutput.Messages;
+using Pusula.Training.HealthCare.AppDefaults;
+using Pusula.Training.HealthCare.PatientNotes;
+using Pusula.Training.HealthCare.PatientTypes;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -45,6 +50,8 @@ public class HealthCareDbContext :
     public DbSet<Department> Departments { get; set; } = null!;
     public DbSet<Protocol> Protocols { get; set; } = null!;
     public DbSet<Patient> Patients { get; set; } = null!;
+    public DbSet<PatientType> PatientTypes { get; set; } = null!;
+    public DbSet<PatientNote> PatientNotes { get; set; } = null!;
     public DbSet<Hospital> Hospitals { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<Doctor> Doctors { get; set; } = null!;
@@ -112,7 +119,6 @@ public class HealthCareDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
-
 
         /* Configure your own tables/entities inside here */
         if (builder.IsHostDatabase())

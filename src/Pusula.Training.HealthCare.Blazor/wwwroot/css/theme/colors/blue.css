@@ -1,0 +1,272 @@
+:root {
+    --material-blue-50: #E3F2FD;
+    --material-blue-100: #BBDEFB;
+    --material-blue-200: #90CAF9;
+    --material-blue-300: #64B5F6;
+    --material-blue-400: #42A5F5;
+    --material-blue-500: #2196F3;
+    --material-blue-600: #1E88E5;
+    --material-blue-700: #1976D2;
+    --material-blue-800: #1565C0;
+    --material-blue-900: #0D47A1;
+}
+
+.color-blue-50,
+.color-blue-50 * {
+    color: var(--material-blue-50) !important;
+}
+
+.color-blue-100,
+.color-blue-100 * {
+    color: var(--material-blue-100) !important;
+}
+
+.color-blue-200,
+.color-blue-200 * {
+    color: var(--material-blue-200) !important;
+}
+
+.color-blue-300,
+.color-blue-300 * {
+    color: var(--material-blue-300) !important;
+}
+
+.color-blue-400,
+.color-blue-400 * {
+    color: var(--material-blue-400) !important;
+}
+
+.color-blue-500,
+.color-blue-500 * {
+    color: var(--material-blue-500) !important;
+}
+
+.color-blue-600,
+.color-blue-600 * {
+    color: var(--material-blue-600) !important;
+}
+
+.color-blue-700,
+.color-blue-700 * {
+    color: var(--material-blue-700) !important;
+}
+
+.color-blue-800,
+.color-blue-800 * {
+    color: var(--material-blue-800) !important;
+}
+
+.color-blue-900,
+.color-blue-900 * {
+    color: var(--material-blue-900) !important;
+}
+
+.hover-color-blue-50:hover,
+.hover-color-blue-50:hover * {
+    color: var(--material-blue-50) !important;
+}
+
+.hover-color-blue-100:hover,
+.hover-color-blue-100:hover * {
+    color: var(--material-blue-100) !important;
+}
+
+.hover-color-blue-200:hover,
+.hover-color-blue-200:hover * {
+    color: var(--material-blue-200) !important;
+}
+
+.hover-color-blue-300:hover,
+.hover-color-blue-300:hover * {
+    color: var(--material-blue-300) !important;
+}
+
+.hover-color-blue-400:hover,
+.hover-color-blue-400:hover * {
+    color: var(--material-blue-400) !important;
+}
+
+.hover-color-blue-500:hover,
+.hover-color-blue-500:hover * {
+    color: var(--material-blue-500) !important;
+}
+
+.hover-color-blue-600:hover,
+.hover-color-blue-600:hover * {
+    color: var(--material-blue-600) !important;
+}
+
+.hover-color-blue-700:hover,
+.hover-color-blue-700:hover * {
+    color: var(--material-blue-700) !important;
+}
+
+.hover-color-blue-800:hover,
+.hover-color-blue-800:hover * {
+    color: var(--material-blue-800) !important;
+}
+
+.hover-color-blue-900:hover,
+.hover-color-blue-900:hover * {
+    color: var(--material-blue-900) !important;
+}
+
+.bg-blue-50 {
+    background-color: var(--material-blue-50) !important;
+}
+
+.bg-blue-100 {
+    background-color: var(--material-blue-100) !important;
+}
+
+.bg-blue-200 {
+    background-color: var(--material-blue-200) !important;
+}
+
+.bg-blue-300 {
+    background-color: var(--material-blue-300) !important;
+}
+
+.bg-blue-400 {
+    background-color: var(--material-blue-400) !important;
+}
+
+.bg-blue-500 {
+    background-color: var(--material-blue-500) !important;
+}
+
+.bg-blue-600 {
+    background-color: var(--material-blue-600) !important;
+}
+
+.bg-blue-700 {
+    background-color: var(--material-blue-700) !important;
+}
+
+.bg-blue-800 {
+    background-color: var(--material-blue-800) !important;
+}
+
+.bg-blue-900 {
+    background-color: var(--material-blue-900) !important;
+}
+
+.hover-bg-blue-50:hover {
+    background-color: var(--material-blue-50) !important;
+}
+
+.hover-bg-blue-100:hover {
+    background-color: var(--material-blue-100) !important;
+}
+
+.hover-bg-blue-200:hover {
+    background-color: var(--material-blue-200) !important;
+}
+
+.hover-bg-blue-300:hover {
+    background-color: var(--material-blue-300) !important;
+}
+
+.hover-bg-blue-400:hover {
+    background-color: var(--material-blue-400) !important;
+}
+
+.hover-bg-blue-500:hover {
+    background-color: var(--material-blue-500) !important;
+}
+
+.hover-bg-blue-600:hover {
+    background-color: var(--material-blue-600) !important;
+}
+
+.hover-bg-blue-700:hover {
+    background-color: var(--material-blue-700) !important;
+}
+
+.hover-bg-blue-800:hover {
+    background-color: var(--material-blue-800) !important;
+}
+
+.hover-bg-blue-900:hover {
+    background-color: var(--material-blue-900) !important;
+}
+
+.border-blue-50 {
+    border-color: var(--material-blue-50) !important;
+}
+
+.border-blue-100 {
+    border-color: var(--material-blue-100) !important;
+}
+
+.border-blue-200 {
+    border-color: var(--material-blue-200) !important;
+}
+
+.border-blue-300 {
+    border-color: var(--material-blue-300) !important;
+}
+
+.border-blue-400 {
+    border-color: var(--material-blue-400) !important;
+}
+
+.border-blue-500 {
+    border-color: var(--material-blue-500) !important;
+}
+
+.border-blue-600 {
+    border-color: var(--material-blue-600) !important;
+}
+
+.border-blue-700 {
+    border-color: var(--material-blue-700) !important;
+}
+
+.border-blue-800 {
+    border-color: var(--material-blue-800) !important;
+}
+
+.border-blue-900 {
+    border-color: var(--material-blue-900) !important;
+}
+
+.hover-border-blue-50:hover {
+    border-color: var(--material-blue-50) !important;
+}
+
+.hover-border-blue-100:hover {
+    border-color: var(--material-blue-100) !important;
+}
+
+.hover-border-blue-200:hover {
+    border-color: var(--material-blue-200) !important;
+}
+
+.hover-border-blue-300:hover {
+    border-color: var(--material-blue-300) !important;
+}
+
+.hover-border-blue-400:hover {
+    border-color: var(--material-blue-400) !important;
+}
+
+.hover-border-blue-500:hover {
+    border-color: var(--material-blue-500) !important;
+}
+
+.hover-border-blue-600:hover {
+    border-color: var(--material-blue-600) !important;
+}
+
+.hover-border-blue-700:hover {
+    border-color: var(--material-blue-700) !important;
+}
+
+.hover-border-blue-800:hover {
+    border-color: var(--material-blue-800) !important;
+}
+
+.hover-border-blue-900:hover {
+    border-color: var(--material-blue-900) !important;
+}

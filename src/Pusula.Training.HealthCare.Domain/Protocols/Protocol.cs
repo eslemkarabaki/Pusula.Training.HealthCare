@@ -1,36 +1,53 @@
-using JetBrains.Annotations;
 using System;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Protocols;
 
-public class Protocol : FullAuditedAggregateRoot<Guid>
+public sealed class Protocol : FullAuditedAggregateRoot<Guid>
 {
-    [NotNull]
-    public virtual string Type { get; set; }
+    public Guid PatientId { get; private set; }
+    public Guid DoctorId { get; private set; }
+    public Guid DepartmentId { get; private set; }
+    public Guid ProtocolTypeId { get; private set; }
+    public EnumProtocolStatus Status { get; private set; }
+    public string? Description { get; private set; }
+    public DateTime StartTime { get; private set; }
+    public DateTime? EndTime { get; private set; }
 
-    public virtual DateTime StartTime { get; set; }
+    protected Protocol() => Description = string.Empty;
 
-    [CanBeNull]
-    public virtual string? EndTime { get; set; }
-    public Guid PatientId { get; set; }
-    public Guid DepartmentId { get; set; }
-
-    protected Protocol()
+    public Protocol(
+        Guid id,
+        Guid patientId,
+        Guid doctorId,
+        Guid departmentId,
+        Guid typeId,
+        string? description,
+        EnumProtocolStatus status,
+        DateTime startTime,
+        DateTime? endTime = null
+    ) : base(id)
     {
-        Type = string.Empty;
+        SetPatientId(patientId);
+        SetDoctorId(doctorId);
+        SetDepartmentId(departmentId);
+        SetTypeId(typeId);
+        SetDescription(description);
+        SetStatus(status);
+        SetStartTime(startTime);
+        SetEndTime(endTime);
     }
 
-    public Protocol(Guid id, Guid patientId, Guid departmentId, string type, DateTime startTime, string? endTime = null) : base(id)
-    {
-        Check.NotNull(type, nameof(type));
-        Check.Length(type, nameof(type), ProtocolConsts.TypeMaxLength, ProtocolConsts.TypeMinLength);
-        Type = type;
-        StartTime = startTime;
-        EndTime = endTime;
-        PatientId = patientId;
-        DepartmentId = departmentId;
-    }
+    public void SetPatientId(Guid patientId) => Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
+    public void SetDoctorId(Guid doctorId) => Check.NotDefaultOrNull<Guid>(doctorId, nameof(doctorId));
+    public void SetDepartmentId(Guid departmentId) => Check.NotDefaultOrNull<Guid>(departmentId, nameof(departmentId));
+    public void SetTypeId(Guid typeId) => Check.NotDefaultOrNull<Guid>(typeId, nameof(typeId));
+    public void SetStatus(EnumProtocolStatus status) => Status = status;
 
+    public void SetDescription(string? description) =>
+        Check.Length(description, nameof(description), ProtocolConsts.DescriptionMaxLength);
+
+    public void SetStartTime(DateTime startTime) => StartTime = startTime;
+    public void SetEndTime(DateTime? endTime) => EndTime = endTime;
 }

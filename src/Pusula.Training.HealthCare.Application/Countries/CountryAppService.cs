@@ -19,6 +19,11 @@ public class CountryAppService(ICountryRepository countryRepository, CountryMana
         return ObjectMapper.Map<Country, CountryDto>(await countryRepository.GetAsync(id));
     }
 
+    public async Task<CountryDto> GetCurrentAsync()
+    {
+        return ObjectMapper.Map<Country, CountryDto>(await countryRepository.GetAsync(e => e.IsCurrent));
+    }
+
     public async Task<List<CountryDto>> GetListAsync()
     {
         return ObjectMapper.Map<List<Country>, List<CountryDto>>(await countryRepository.GetListAsync());
@@ -26,23 +31,23 @@ public class CountryAppService(ICountryRepository countryRepository, CountryMana
 
     public async Task<PagedResultDto<CountryDto>> GetListAsync(GetCountriesInput input)
     {
-        var items = await countryRepository.GetListAsync(input.FilterText, input.Name, input.Abbreviation,
+        var items = await countryRepository.GetListAsync(input.FilterText, input.Name, input.Iso, input.PhoneCode,
             input.Sorting, input.MaxResultCount, input.SkipCount);
 
-        var count = await countryRepository.GetCountAsync(input.FilterText, input.Name, input.Abbreviation);
+        var count = await countryRepository.GetCountAsync(input.FilterText, input.Name, input.Iso, input.PhoneCode);
 
         return new PagedResultDto<CountryDto>(count, ObjectMapper.Map<List<Country>, List<CountryDto>>(items));
     }
 
     public async Task<CountryDto> CreateAsync(CountryCreateDto input)
     {
-        var country = await countryManager.CreateAsync(input.Name, input.Abbreviation);
+        var country = await countryManager.CreateAsync(input.Name, input.Iso, input.PhoneCode);
         return ObjectMapper.Map<Country, CountryDto>(country);
     }
 
     public async Task<CountryDto> UpdateAsync(Guid id, CountryUpdateDto input)
     {
-        var country = await countryManager.UpdateAsync(id, input.Name, input.Abbreviation);
+        var country = await countryManager.UpdateAsync(id, input.Name, input.Iso, input.PhoneCode);
         return ObjectMapper.Map<Country, CountryDto>(country);
     }
 
@@ -58,6 +63,6 @@ public class CountryAppService(ICountryRepository countryRepository, CountryMana
 
     public async Task DeleteAllAsync(GetCountriesInput input)
     {
-        await countryRepository.DeleteAllAsync(input.FilterText, input.Name, input.Abbreviation);
+        await countryRepository.DeleteAllAsync(input.FilterText, input.Name, input.Iso, input.PhoneCode);
     }
 }

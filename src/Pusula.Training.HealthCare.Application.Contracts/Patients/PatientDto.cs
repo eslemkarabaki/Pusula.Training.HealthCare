@@ -5,8 +5,9 @@ using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.Patients;
 
-public class PatientDto : AuditedEntityDto<Guid>, IHasConcurrencyStamp
+public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IPatient
 {
+    public int No { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string FullName => $"{FirstName} {LastName}";
@@ -14,21 +15,22 @@ public class PatientDto : AuditedEntityDto<Guid>, IHasConcurrencyStamp
 
     public Tuple<int, string> Age => CalculateAge();
 
-    public string IdentityNumber { get; set; } = null!;
+    public string? IdentityNumber { get; set; }
+    public string? PassportNumber { get; set; }
     public string EmailAddress { get; set; } = null!;
+
+    public string MobilePhoneNumberCode { get; set; } = null!;
     public string MobilePhoneNumber { get; set; } = null!;
-    public string HomePhoneNumber { get; set; } = null!;
+    public string? HomePhoneNumberCode { get; set; }
+    public string? HomePhoneNumber { get; set; }
     public EnumGender Gender { get; set; }
     public EnumBloodType BloodType { get; set; }
     public EnumMaritalStatus MaritalStatus { get; set; }
 
     public Guid CountryId { get; set; }
-    public string Country { get; set; } = null!;
-
-    public AddressDto Address { get; set; }
+    public Guid PatientTypeId { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;
-
 
     private Tuple<int, string> CalculateAge()
     {
@@ -39,13 +41,11 @@ public class PatientDto : AuditedEntityDto<Guid>, IHasConcurrencyStamp
             if (totalDays < 30)
             {
                 return new Tuple<int, string>((int)totalDays, "gün");
-            }
-            else
+            } else
             {
                 return new Tuple<int, string>((int)totalDays / 30, "ay");
             }
-        }
-        else
+        } else
         {
             return new Tuple<int, string>((int)year, "yıl");
         }

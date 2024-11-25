@@ -10,10 +10,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: myPassw0rd
       POSTGRES_DB: test_db
-      TZ: Europe/Istanbul 
+      TZ: Europe/Istanbul
     ports:
       - "5432:5432"
     networks: 
+      - pth-network
+    networks:
       - pth-network
 
 
@@ -30,6 +32,8 @@ services:
     volumes:
       - pthpgadmin4data:/var/lib/pgadmin
     networks: 
+      - pth-network
+    networks:
       - pth-network
 
 
@@ -62,7 +66,7 @@ services:
       - XPACK_MONITORING_COLLECTION_ENABLED=true
       # - ELASTIC_USERNAME=elastic
       # - ELASTIC_PASSWORD=1q2w3e*
-    ports: 
+    ports:
       - "5601:5601"
     depends_on:
       - elasticsearch

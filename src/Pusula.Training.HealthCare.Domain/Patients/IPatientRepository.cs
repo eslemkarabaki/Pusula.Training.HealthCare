@@ -8,45 +8,49 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientRepository : IRepository<Patient, Guid>
 {
-    Task<PatientWithAddressAndCountry> GetWithAddressAndCountryAsync(
+    Task<PatientWithNavigationProperties> GetNavigationPropertiesAsync(
         Guid id,
         CancellationToken cancellationToken = default
     );
 
     Task<List<Patient>> GetListAsync(
         string? filterText = null,
+        int? no = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
         CancellationToken cancellationToken = default
     );
 
-    Task<List<PatientWithAddressAndCountry>> GetListWithAddressAndCountryAsync(
+    Task<List<PatientWithNavigationProperties>> GetNavigationPropertiesListAsync(
         string? filterText = null,
+        int? no = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
@@ -55,33 +59,51 @@ public interface IPatientRepository : IRepository<Patient, Guid>
 
     Task<long> GetCountAsync(
         string? filterText = null,
+        int? no = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     Task DeleteAllAsync(
         string? filterText = null,
+        int? no = null,
+        Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
+        string? passportNumber = null,
         string? emailAddress = null,
         string? mobilePhoneNumber = null,
         string? homePhoneNumber = null,
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        Guid? countryId = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
+
+    Task<bool> IdentityNumberExistsAsync(
+        Guid? id,
+        string identityNumber,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<bool> PassportNumberExistsAsync(
+        Guid? id,
+        string passportNumber,
+        CancellationToken cancellationToken = default
+    );
 }

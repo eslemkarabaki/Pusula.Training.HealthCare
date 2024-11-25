@@ -11,33 +11,29 @@ public class CountryManager(ICountryRepository countryRepository) : DomainServic
 {
     public virtual async Task<Country> CreateAsync(
         string name,
-        string abbreviation
+        string iso,
+        string phoneCode,
+        bool isCurrent = false
     )
     {
-        Check.NotNullOrWhiteSpace(name, nameof(name), CountryConsts.NameMaxLength);
-        Check.NotNullOrWhiteSpace(abbreviation, nameof(abbreviation), CountryConsts.AbbreviationMaxLength);
-
-        var country = new Country(GuidGenerator.Create(), name, abbreviation);
+        var country = new Country(GuidGenerator.Create(), name, iso, phoneCode, isCurrent);
         return await countryRepository.InsertAsync(country);
     }
 
     public virtual async Task<Country> UpdateAsync(
         Guid id,
         string name,
-        string abbreviation,
-        [CanBeNull] string? concurrencyStamp = null
+        string iso,
+        string phoneCode,
+        bool isCurrent = false,
+        string? concurrencyStamp = null
     )
     {
-        Check.NotNullOrWhiteSpace(name, nameof(name), CountryConsts.NameMaxLength);
-        Check.NotNullOrWhiteSpace(abbreviation, nameof(abbreviation), CountryConsts.AbbreviationMaxLength);
-
         var country = await countryRepository.GetAsync(id);
-
-        country.Name = name;
-        country.Abbreviation = abbreviation;
-
+        country.SetName(name);
+        country.SetIso(iso);
+        country.SetPhoneCode(phoneCode);
         country.SetConcurrencyStampIfNotNull(concurrencyStamp);
-
         return await countryRepository.UpdateAsync(country);
     }
 }
