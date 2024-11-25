@@ -64,6 +64,16 @@ public class IPatientController(IPatientAppService patientAppService) : HealthCa
     [Route("download-token")]
     public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync() => patientAppService.GetDownloadTokenAsync();
 
+    [HttpGet("passport-exist/{passportNumber}")]
+    public async Task<bool>
+        PassportNumberExistsAsync(string passportNumber, [FromQuery] Guid? exludePatientId = null) =>
+        await patientAppService.PassportNumberExistsAsync(passportNumber);
+
+    [HttpGet("identity-exist/{passportNumber}")]
+    public async Task<bool>
+        IdentityNumberExistsAsync(string identityNumber, [FromQuery] Guid? exludePatientId = null) =>
+        await patientAppService.IdentityNumberExistsAsync(identityNumber);
+
     [HttpDelete]
     [Route("")]
     public virtual Task DeleteByIdsAsync(List<Guid> patientIds) => patientAppService.DeleteByIdsAsync(patientIds);

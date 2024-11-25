@@ -19,6 +19,7 @@
 
 @inherits HealthCareComponentBase
 
+@inject IPatientAppService PatientAppService
 @inject ICountryAppService CountryAppService
 @inject IAppDefaultAppService AppDefaultAppService
 @inject ICityAppService CityAppService
@@ -71,11 +72,17 @@
                                             @if (IsForeigner)
                                             {
                                                 <SfTextBox @bind-Value="@NewPatient.PassportNumber"
-                                                           Placeholder="@L["PassportNumber"]"></SfTextBox>
+                                                           Placeholder="@L["PassportNumber"]"
+                                                           OnChange="@PassportNumberChangedAsync"></SfTextBox>
                                             } else
                                             {
                                                 <SfTextBox @bind-Value="@NewPatient.IdentityNumber"
-                                                           Placeholder="@L["IdentityNumber"]"></SfTextBox>
+                                                           Placeholder="@L["IdentityNumber"]"
+                                                           OnChange="@IdentityNumberChangedAsync"></SfTextBox>
+                                            }
+                                            @if (IdentityOrPassportExist)
+                                            {
+                                                <div class="validation-message">Already exist</div>
                                             }
                                         </div>
                                         <div class="col-4">
@@ -306,7 +313,9 @@
                                                 <div class="d-flex flex-column gap-1">
                                                     @foreach (var address in Addresses)
                                                     {
-                                                        <SfCard ID="@address.Address.Id.ToString("N")" CssClass="@(EditingAddressId==address.Address.Id?"selected":string.Empty)" @onclick="@(() => EditAddressAsync(address))">
+                                                        <SfCard ID="@address.Address.Id.ToString("N")"
+                                                                CssClass="@(EditingAddressId == address.Address.Id ? "selected" : string.Empty)"
+                                                                @onclick="@(() => EditAddressAsync(address))">
                                                             <CardContent>
                                                                 <div class="d-flex align-items-start">
                                                                     <div class="flex-fill">
@@ -324,7 +333,8 @@
                                                 </div>
                                                 @if (Addresses.Count == 0)
                                                 {
-                                                    <SfMessage>There is no address added for this patient.</SfMessage> // todo
+                                                    <SfMessage>There is no address added for this patient.
+                                                    </SfMessage> // todo
                                                 }
                                             </div>
                                         </div>
@@ -337,7 +347,8 @@
                 <FormButtons>
                     <SfButton type="button" CssClass="e-outline"
                               OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
-                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                    <SfButton type="submit" IsPrimary
+                              Disabled="@(Checking || IdentityOrPassportExist)">@L["Save"]</SfButton>
                 </FormButtons>
             </SfDataForm>
 
@@ -375,6 +386,8 @@
     private CountryDto CurrentCountry { get; set; } = new();
 
     private bool AddressEditingMode { get; set; }
+    private bool Checking { get; set; }
+    private bool IdentityOrPassportExist { get; set; }
 
     private bool IsForeigner
     {
@@ -492,6 +505,20 @@
         address.City = CityList.First(e => e.Id == SelectedAddressCityId);
         address.District = DistrictList.First(e => e.Id == NewAddress.DistrictId);
         await CancelAddressEditingAsync();
+    }
+
+    private async Task PassportNumberChangedAsync()
+    {
+        Checking = true;
+        IdentityOrPassportExist = await PatientAppService.PassportNumberExistsAsync(NewPatient.PassportNumber!);
+        Checking = false;
+    }
+
+    private async Task IdentityNumberChangedAsync()
+    {
+        Checking = true;
+        IdentityOrPassportExist = await PatientAppService.IdentityNumberExistsAsync(NewPatient.IdentityNumber!);
+        Checking = false;
     }
 
     private async Task OnSaveClickAsync(EditContext context)
