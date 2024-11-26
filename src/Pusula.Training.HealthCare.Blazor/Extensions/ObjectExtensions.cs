@@ -1,3 +1,5 @@
+using Blazorise.Extensions;
+
 namespace Pusula.Training.HealthCare.Blazor.Extensions;
 
 public static class ObjectExtensions
@@ -23,7 +25,7 @@ public static class ObjectExtensions
         {
             var objValue = property.GetValue(obj);
             var anotherValue = property.GetValue(another);
-            if (objValue != null && !objValue.Equals(anotherValue))
+            if (!objValue.IsEqual(anotherValue))
             {
                 return false;
             }
