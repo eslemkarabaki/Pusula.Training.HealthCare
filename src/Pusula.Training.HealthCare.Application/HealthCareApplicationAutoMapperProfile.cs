@@ -106,6 +106,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Hospital, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
         CreateMap<Examination, ExaminationDto>();
         CreateMap<Examination, ExaminationExcelDto>();
+        CreateMap<ExaminationDto, ExaminationUpdateDto>();
 
         CreateMap<Doctor, DoctorDto>();
         CreateMap<Doctor, DoctorExcelDto>();
