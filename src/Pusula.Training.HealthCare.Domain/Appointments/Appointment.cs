@@ -14,14 +14,14 @@ namespace Pusula.Training.HealthCare.Appointments
     public class Appointment : FullAuditedAggregateRoot<Guid>
     {
         [NotNull]
-        public virtual DateTime AppointmentStartDate { get;  set; }
+        public virtual DateTime StartTime { get;  set; }
         [NotNull]
-        public virtual DateTime AppointmentEndDate { get;  set; }
+        public virtual DateTime EndTime { get;  set; }
         [NotNull]
         public virtual EnumStatus Status { get;  set; }
 
         [CanBeNull]
-        public virtual string? Notes { get; set; }        
+        public virtual string? Note { get; set; }        
 
         public virtual Guid AppointmentTypeId { get; set; }
         public virtual Guid DepartmentId { get; set; }
@@ -30,25 +30,25 @@ namespace Pusula.Training.HealthCare.Appointments
 
         protected Appointment()
         {
-            AppointmentStartDate = DateTime.Now;
-            AppointmentEndDate = DateTime.Now;
-            Notes = string.Empty;
+            StartTime = DateTime.Now;
+            EndTime = DateTime.Now;
+            Note = string.Empty;
         }
 
         public Appointment(Guid id, Guid appointmentTypeId, 
             Guid departmentId, Guid doctorId, 
-            Guid patientId, DateTime appointmentStartDate,
-            DateTime appointmentEndDate, string notes,
+            Guid patientId, DateTime startTime,
+            DateTime endTime, string note,
             EnumStatus status = default)
         {
             Check.NotNullOrWhiteSpace(appointmentTypeId.ToString(), nameof(appointmentTypeId));
             Check.NotNullOrWhiteSpace(departmentId.ToString(), nameof(departmentId));
             Check.NotNullOrWhiteSpace(doctorId.ToString(), nameof(doctorId));
             Check.NotNullOrWhiteSpace(patientId.ToString(), nameof(patientId));
-            Check.NotNull(appointmentStartDate, nameof(appointmentStartDate));
-            Check.NotNull(appointmentEndDate, nameof(appointmentEndDate));
+            Check.NotNull(startTime, nameof(startTime));
+            Check.NotNull(endTime, nameof(endTime));
             Check.Range((int)status, nameof(status), 1, 5);
-            Check.NotNullOrWhiteSpace(notes, nameof(notes));
+            Check.Length(note, nameof(note), AppointmentConsts.NoteMaxLength);
                        
 
             Id = id;
@@ -56,9 +56,9 @@ namespace Pusula.Training.HealthCare.Appointments
             DepartmentId = departmentId;
             DoctorId = doctorId;
             PatientId = patientId;
-            AppointmentStartDate = appointmentStartDate;
-            AppointmentEndDate = appointmentEndDate;
-            Notes = notes;
+            StartTime = startTime;
+            EndTime = endTime;
+            Note = note;
             Status = status;
            
         }

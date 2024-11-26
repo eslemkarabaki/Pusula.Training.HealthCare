@@ -34,6 +34,7 @@ using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Npgsql.Replication.PgOutput.Messages;
+using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 
@@ -66,7 +67,7 @@ public class HealthCareDbContext :
     public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;
-
+    public DbSet<AppDefault> AppDefaults { get; set; } = null!;
 
 #region Entities from the modules
 
@@ -115,7 +116,6 @@ public class HealthCareDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
-
 
         /* Configure your own tables/entities inside here */
         if (builder.IsHostDatabase())

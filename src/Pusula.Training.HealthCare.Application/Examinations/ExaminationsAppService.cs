@@ -21,8 +21,8 @@ namespace Pusula.Training.HealthCare.Examinations;
 public class ExaminationAppService(
     IExaminationRepository examinationRepository,
     ExaminationManager examinationManager,
-    IDistributedCache<ExaminationDownloadTokenCacheItem, string> downloadTokenCache,
-    IDistributedEventBus distributedEventBus) : HealthCareAppService, IExaminationAppService
+    IDistributedCache<ExaminationDownloadTokenCacheItem, string> downloadTokenCache
+    ) : HealthCareAppService, IExaminationAppService
 {
     public virtual async Task<ExaminationDto> GetAsync(Guid id)
     {

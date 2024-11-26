@@ -7,10 +7,6 @@ using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
 using Pusula.Training.HealthCare.Addresses;
-using Pusula.Training.HealthCare.Cities;
-using Pusula.Training.HealthCare.Countries;
-using Pusula.Training.HealthCare.Districts;
-using Pusula.Training.HealthCare.PatientTypes;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -28,6 +24,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
 
     public virtual async Task<List<Patient>> GetListAsync(
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -49,6 +46,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         await ApplyFilter(
                   await GetQueryableAsync(),
                   filterText,
+                  no,
                   countryId,
                   firstName,
                   lastName,
@@ -69,6 +67,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
 
     public async Task<List<PatientWithNavigationProperties>> GetNavigationPropertiesListAsync(
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -90,6 +89,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         await ApplyFilter(
                   await GetQueryForNavigationPropertiesAsync(),
                   filterText,
+                  no,
                   countryId,
                   firstName,
                   lastName,
@@ -110,6 +110,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
 
     public virtual async Task<long> GetCountAsync(
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -128,6 +129,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         await ApplyFilter(
                 await GetQueryableAsync(),
                 filterText,
+                no,
                 countryId,
                 firstName,
                 lastName,
@@ -167,11 +169,6 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     protected virtual async Task<IQueryable<PatientWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()
     {
         var dbContext = await GetDbContextAsync();
-
-        // var x = (await GetDbSetAsync())
-        //         .Join(dbContext.Countries, e => e.CountryId, c => c.Id, (patient, country) => new { patient, country })
-        //         .Join(dbContext.PatientTypes, e => e.patient.PatientTypeId, pt => pt.Id,
-        //             (patientCountries, patientType) => new { patientCountries, patientType })
 
         var patients =
             from patient in dbContext.Patients
@@ -225,6 +222,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
 
     public virtual async Task DeleteAllAsync(
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -244,6 +242,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         var ids = ApplyFilter(
                 await GetQueryableAsync(),
                 filterText,
+                no,
                 countryId,
                 firstName,
                 lastName,
@@ -269,6 +268,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     protected virtual IQueryable<Patient> ApplyFilter(
         IQueryable<Patient> query,
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -289,24 +289,41 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 e => e.FirstName!.Contains(filterText!) ||
                     e.LastName!.Contains(filterText!) ||
                     e.IdentityNumber!.Contains(filterText!) ||
-                    e.EmailAddress!.Contains(filterText!) ||
-                    e.MobilePhoneNumber!.Contains(filterText!) ||
-                    e.HomePhoneNumber!.Contains(filterText!)
+                    e.PassportNumber!.Contains(filterText!)
             )
-            .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.FirstName.Contains(firstName!))
-            .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.LastName.Contains(lastName!))
+            .WhereIf(
+                no.HasValue, e => e.No == no!.Value
+            )
+            .WhereIf(
+                !string.IsNullOrWhiteSpace(firstName),
+                e => e.FirstName.Contains(firstName!)
+            )
+            .WhereIf(
+                !string.IsNullOrWhiteSpace(lastName),
+                e => e.LastName.Contains(lastName!)
+            )
             .WhereIf(birthDateMin.HasValue, e => e.BirthDate >= birthDateMin!.Value)
             .WhereIf(birthDateMax.HasValue, e => e.BirthDate <= birthDateMax!.Value)
-            .WhereIf(!string.IsNullOrWhiteSpace(identityNumber), e => e.IdentityNumber!.Contains(identityNumber!))
-            .WhereIf(!string.IsNullOrWhiteSpace(passportNumber), e => e.PassportNumber!.Contains(passportNumber!))
-            .WhereIf(!string.IsNullOrWhiteSpace(emailAddress), e => e.EmailAddress.Contains(emailAddress!))
+            .WhereIf(
+                !string.IsNullOrWhiteSpace(identityNumber),
+                e => e.IdentityNumber!.Contains(identityNumber!)
+            )
+            .WhereIf(
+                !string.IsNullOrWhiteSpace(passportNumber),
+                e => e.PassportNumber!.Contains(passportNumber!)
+            )
+            .WhereIf(
+                !string.IsNullOrWhiteSpace(emailAddress),
+                e => e.EmailAddress.Contains(emailAddress!)
+            )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(mobilePhoneNumber),
                 e => e.MobilePhoneNumber.Contains(mobilePhoneNumber!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(homePhoneNumber),
-                e => e.HomePhoneNumber != null && e.HomePhoneNumber.Contains(homePhoneNumber!)
+                e => e.HomePhoneNumber != null &&
+                    e.HomePhoneNumber.Contains(homePhoneNumber!)
             )
             .WhereIf(gender != EnumGender.None, e => e.Gender == gender)
             .WhereIf(bloodType != EnumBloodType.None, e => e.BloodType == bloodType)
@@ -316,6 +333,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     protected virtual IQueryable<PatientWithNavigationProperties> ApplyFilter(
         IQueryable<PatientWithNavigationProperties> query,
         string? filterText = null,
+        int? no = null,
         Guid? countryId = null,
         string? firstName = null,
         string? lastName = null,
@@ -336,12 +354,19 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 e => e.Patient.FirstName!.Contains(filterText!) ||
                     e.Patient.LastName!.Contains(filterText!) ||
                     e.Patient.IdentityNumber!.Contains(filterText!) ||
-                    e.Patient.EmailAddress!.Contains(filterText!) ||
-                    e.Patient.MobilePhoneNumber!.Contains(filterText!) ||
-                    e.Patient.HomePhoneNumber!.Contains(filterText!)
+                    e.Patient.PassportNumber!.Contains(filterText!)
             )
-            .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.Patient.FirstName.Contains(firstName!))
-            .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.Patient.LastName.Contains(lastName!))
+            .WhereIf(
+                no.HasValue, e => e.Patient.No == no!.Value
+            )
+            .WhereIf(
+                !string.IsNullOrWhiteSpace(firstName),
+                e => e.Patient.FirstName.Contains(firstName!)
+            )
+            .WhereIf(
+                !string.IsNullOrWhiteSpace(lastName),
+                e => e.Patient.LastName.Contains(lastName!)
+            )
             .WhereIf(birthDateMin.HasValue, e => e.Patient.BirthDate >= birthDateMin!.Value)
             .WhereIf(birthDateMax.HasValue, e => e.Patient.BirthDate <= birthDateMax!.Value)
             .WhereIf(
@@ -352,14 +377,18 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 !string.IsNullOrWhiteSpace(passportNumber),
                 e => e.Patient.PassportNumber!.Contains(passportNumber!)
             )
-            .WhereIf(!string.IsNullOrWhiteSpace(emailAddress), e => e.Patient.EmailAddress.Contains(emailAddress!))
+            .WhereIf(
+                !string.IsNullOrWhiteSpace(emailAddress),
+                e => e.Patient.EmailAddress.Contains(emailAddress!)
+            )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(mobilePhoneNumber),
                 e => e.Patient.MobilePhoneNumber.Contains(mobilePhoneNumber!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(homePhoneNumber),
-                e => e.Patient.HomePhoneNumber != null && e.Patient.HomePhoneNumber.Contains(homePhoneNumber!)
+                e => e.Patient.HomePhoneNumber != null &&
+                    e.Patient.HomePhoneNumber.Contains(homePhoneNumber!)
             )
             .WhereIf(gender != EnumGender.None, e => e.Patient.Gender == gender)
             .WhereIf(bloodType != EnumBloodType.None, e => e.Patient.BloodType == bloodType)

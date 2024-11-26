@@ -14,6 +14,9 @@ using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Titles;
+using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.AppointmentTypes;
+using Pusula.Training.HealthCare.Examinations;
 using Pusula.Training.HealthCare.Examinations;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.AppointmentReports;
@@ -51,6 +54,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AddressCreateDto, Address>();
         CreateMap<Address, AddressUpdateDto>().ReverseMap();
         CreateMap<AddressDto, AddressUpdateDto>().ReverseMap();
+        CreateMap<AddressDto, AddressCreateDto>().ReverseMap();
         CreateMap<AddressWithNavigationProperties, AddressWithNavigationPropertiesDto>();
         CreateMap<AddressWithNavigationPropertiesDto, AddressUpdateDto>()
             .IncludeMembers(e => e.Address)
@@ -86,6 +90,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Appointment, AppointmentDto>();
         CreateMap<AppointmentDto, AppointmentUpdateDto>();
         CreateMap<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>();
+        CreateMap<AppointmentDto, AppointmentCreateDto>();
 
         CreateMap<AppointmentReport, AppointmentReportDto>();
         CreateMap<AppointmentReportDto, AppointmentReportUpdateDto>();

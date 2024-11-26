@@ -59,15 +59,15 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     #region GetListWithNavigationProperties
     public virtual async Task<List<AppointmentWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
          string? filterText = null,
-        DateTime? appointmentStartDate = null, DateTime? appointmentEndDate = null,
-        string? notes = null, EnumStatus? status = null,
+        DateTime? startTime = null, DateTime? endTime = null,
+        string? note = null, EnumStatus? status = null,
         Guid? appointmentTypeId = null, Guid? departmentId = null,
         Guid? doctorId = null, Guid? patientId = null,
         string? sorting = null, int maxResultCount = int.MaxValue,
         int skipCount = 0, CancellationToken cancellationToken = default)
     {
         var query = await GetQueryForNavigationPropertiesAsync();
-        query = ApplyFilter(query, filterText, appointmentStartDate, appointmentEndDate, status, notes, appointmentTypeId, departmentId, doctorId, patientId);
+        query = ApplyFilter(query, filterText, startTime, endTime, status, note, appointmentTypeId, departmentId, doctorId, patientId);
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? AppointmentConsts.GetDefaultSorting(true) : sorting);
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
@@ -99,16 +99,16 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     #region ApplyFiterWithNavigationProperties
     protected virtual IQueryable<AppointmentWithNavigationProperties> ApplyFilter(
         IQueryable<AppointmentWithNavigationProperties> query,
-        string? filterText = null, DateTime? appointmentStartDate = null, DateTime? appointmentEndDate =null,
-        EnumStatus? status = null, string? notes = null,
+        string? filterText = null, DateTime? startTime = null, DateTime? endTime =null,
+        EnumStatus? status = null, string? note = null,
         Guid? appointmentTypeId = null, Guid? departmentId = null,
         Guid? doctorId = null, Guid? patientId = null)
     {
         return query
                //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Appointment.AppointmentDate!.Contains(filterText!) || e.Appointment.Status!.Contains(filterText!))
-                .WhereIf(appointmentStartDate.HasValue, e => e.Appointment.AppointmentStartDate >= appointmentStartDate!.Value)
-                .WhereIf(appointmentEndDate.HasValue, e => e.Appointment.AppointmentEndDate >= appointmentEndDate!.Value)
-                .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Appointment.Notes!.Contains(notes!))
+                .WhereIf(startTime.HasValue, e => e.Appointment.StartTime >= startTime!.Value)
+                .WhereIf(endTime.HasValue, e => e.Appointment.EndTime >= endTime!.Value)
+                .WhereIf(!string.IsNullOrWhiteSpace(note), e => e.Appointment.Note!.Contains(note!))
                 .WhereIf(status.HasValue, e => e.Appointment.Status == status!.Value) 
                 .WhereIf(appointmentTypeId != null && appointmentTypeId != Guid.Empty, e => e.AppointmentType != null && e.AppointmentType.Id == appointmentTypeId)
                 .WhereIf(departmentId != null && departmentId != Guid.Empty, e => e.Department != null && e.Department.Id == departmentId)
@@ -120,14 +120,14 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     #region GetList
     public virtual async Task<List<Appointment>> GetListAsync(
         string? filterText = null,
-        DateTime? appointmentStartDate = null, DateTime? appointmentEndDate = null,
-        string? notes = null, EnumStatus? status = null,
+        DateTime? startTime = null, DateTime? endTime = null,
+        string? note = null, EnumStatus? status = null,
         Guid? appointmentTypeId = null, Guid? departmentId = null,
         Guid? doctorId = null, Guid? patientId = null,
         string? sorting = null, int maxResultCount = int.MaxValue,
         int skipCount = 0, CancellationToken cancellationToken = default)
     {
-        var query = ApplyFilter(await GetQueryableAsync(), filterText, appointmentStartDate, appointmentEndDate, status, notes);
+        var query = ApplyFilter(await GetQueryableAsync(), filterText, doctorId, startTime, endTime, status, note);
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? AppointmentConsts.GetDefaultSorting(false) : sorting);
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
@@ -136,14 +136,14 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     #region GetCount
     public virtual async Task<long> GetCountAsync(
         string? filterText = null,
-        DateTime? appointmentStartDate = null, DateTime? appointmentEndDate = null,
-        string? notes = null, EnumStatus? status = null,
+        DateTime? startTime = null, DateTime? endTime = null,
+        string? note = null, EnumStatus? status = null,
         Guid? appointmentTypeId = null, Guid? departmentId = null,
         Guid? doctorId = null, Guid? patientId = null,
         CancellationToken cancellationToken = default)
     {
         var query = await GetQueryForNavigationPropertiesAsync();
-        query = ApplyFilter(query, filterText, appointmentStartDate, appointmentEndDate, status, notes, appointmentTypeId, departmentId, doctorId, patientId);
+        query = ApplyFilter(query, filterText, startTime, endTime, status, note, appointmentTypeId, departmentId, doctorId, patientId);
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
     }
     #endregion
@@ -151,15 +151,16 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     #region ApplyFilter
     protected virtual IQueryable<Appointment> ApplyFilter(
     IQueryable<Appointment> query,
-    string? filterText = null, DateTime? appointmentStartDate = null, DateTime? appointmentEndDate = null,
-    EnumStatus? status = null, string? notes = null)
+    string? filterText = null, Guid? doctorId = null, DateTime? startTime = null, DateTime? endTime = null,
+    EnumStatus? status = null, string? note = null)
 {
     return query
-        //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.AppointmentDate.ToString().Contains(filterText!) || e.Status.ToString().Contains(filterText!))
+        //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.DoctorId.ToString().Contains(filterText!))
+        .WhereIf(doctorId.HasValue, e=>e.DoctorId==doctorId!.Value)
         .WhereIf(status.HasValue, e => e.Status == status!.Value)
-        .WhereIf(appointmentStartDate.HasValue, e => e.AppointmentStartDate >= appointmentStartDate!.Value)
-        .WhereIf(appointmentEndDate.HasValue, e => e.AppointmentEndDate >= appointmentEndDate!.Value)
-        .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Notes!.Contains(notes!));
+        .WhereIf(startTime.HasValue, e => e.StartTime >= startTime!.Value)
+        .WhereIf(endTime.HasValue, e => e.EndTime >= endTime!.Value)
+        .WhereIf(!string.IsNullOrWhiteSpace(note), e => e.Note!.Contains(note!));
 }
     #endregion
 }

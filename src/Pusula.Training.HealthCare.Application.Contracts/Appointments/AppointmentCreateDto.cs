@@ -11,12 +11,12 @@ namespace Pusula.Training.HealthCare.Appointments
     public class AppointmentCreateDto
     {
         [Required]
-        public DateTime AppointmentStartDate { get; set; }
+        public DateTime StartTime { get; set; }
         [Required]
-        public DateTime AppointmentEndDate { get; set; }
+        public DateTime EndTime { get; set; }
         [Required]
         public EnumStatus Status { get; set; }
-        [StringLength(AppointmentConsts.NotesMaxLength)]
+        [StringLength(AppointmentConsts.NoteMaxLength)]
         public string Notes { get; set; } = null!;
         public Guid AppointmentTypeId { get; set; }
         public Guid DepartmentId { get; set; }

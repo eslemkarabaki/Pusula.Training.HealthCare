@@ -74,7 +74,7 @@ public class ExaminationManager(IExaminationRepository examinationRepository) : 
 
         var examination = await examinationRepository.GetAsync(id);
 
-        examination.DoctorId = doctorId;
+        //examination.DoctorId = doctorId;
         examination.PatientId = patientId;
         examination.Notes = notes;
         examination.ChronicDiseases = chronicDiseases;

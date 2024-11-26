@@ -13,8 +13,9 @@ namespace Pusula.Training.HealthCare.Appointments
     public interface IAppointmentsAppService:IApplicationService
     {
         Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input);
+        Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id);
         Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id);
-        Task<AppointmentDto> GetAsync(Guid id);
+        Task<AppointmentDto> GetAsync(Guid id);        
         Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input);
         Task<PagedResultDto<LookupDto<Guid>>> GetDepartmentLookupAsync(LookupRequestDto input);
         Task<PagedResultDto<LookupDto<Guid>>> GetDoctorLookupAsync(LookupRequestDto input);

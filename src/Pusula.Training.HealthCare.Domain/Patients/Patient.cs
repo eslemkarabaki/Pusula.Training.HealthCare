@@ -8,6 +8,7 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
 {
+    public int No { get; private set; }
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public DateTime BirthDate { get; private set; }

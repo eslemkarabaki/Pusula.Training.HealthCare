@@ -10,6 +10,7 @@
         }
     
         public const int IdentityNumberMaxLength = 11;
+        public const int NameNumberMaxLength = 11;
         public const int NotesNumberMaxLength = 128;
         public const int ChronicDiseasesNumberMaxLength = 128;
         public const int AllergiesNumberMaxLength = 128;

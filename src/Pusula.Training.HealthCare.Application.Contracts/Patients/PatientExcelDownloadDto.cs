@@ -6,6 +6,8 @@ public class PatientExcelDownloadDto
 {
     public string DownloadToken { get; set; } = null!;
     public string? FilterText { get; set; }
+    public int? No { get; set; }
+
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public DateTime? BirthDateMin { get; set; }

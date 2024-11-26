@@ -31,6 +31,13 @@ public class DepartmentController : HealthCareController, IDepartmentsAppService
     }
 
     [HttpGet]
+    [Route("list-departments")]
+    public virtual Task<List<DepartmentDto>> GetListDepartmentsAsync()
+    {
+        return _departmentsAppService.GetListDepartmentsAsync();
+    }
+
+    [HttpGet]
     [Route("{id}")]
     public virtual Task<DepartmentDto> GetAsync(Guid id)
     {

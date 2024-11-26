@@ -39,8 +39,8 @@ namespace Pusula.Training.HealthCare.Appointments
         #region GetList
         public virtual async Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
         {
-            var totalCount = await appointmentRepository.GetCountAsync(input.FilterText, input.AppointmentStartDate, input.AppointmentEndDate, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
-            var items = await appointmentRepository.GetListAsync(input.FilterText, input.AppointmentStartDate, input.AppointmentEndDate, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await appointmentRepository.GetCountAsync(input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
+            var items = await appointmentRepository.GetListAsync(input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<AppointmentDto>
             {
@@ -163,7 +163,7 @@ namespace Pusula.Training.HealthCare.Appointments
             }            
 
             var appointment = await appointmentManager.CreateAsync(
-            input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.AppointmentStartDate, input.AppointmentEndDate, input.Status, input.Notes);
+            input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.StartTime, input.EndTime, input.Status, input.Notes);
 
             return ObjectMapper.Map<Appointment, AppointmentDto>(appointment);
         }
@@ -175,7 +175,7 @@ namespace Pusula.Training.HealthCare.Appointments
         {         
 
             var appointment = await appointmentManager.UpdateAsync(
-                id,input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.AppointmentStartDate, input.AppointmentEndDate, input.Status, input.Notes);
+                id,input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.StartTime, input.EndTime, input.Status, input.Notes);
 
             return ObjectMapper.Map<Appointment, AppointmentDto>(appointment);
         }
@@ -191,13 +191,13 @@ namespace Pusula.Training.HealthCare.Appointments
                 throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             }
 
-            var appointments = await appointmentRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.AppointmentStartDate, input.AppointmentEndDate, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
+            var appointments = await appointmentRepository.GetListWithNavigationPropertiesAsync(input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status, input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
             var items = appointments.Select(item => new
             {
-                item.Appointment.AppointmentStartDate,
-                item.Appointment.AppointmentEndDate,
+                item.Appointment.StartTime,
+                item.Appointment.EndTime,
                 item.Appointment.Status,
-                item.Appointment.Notes,
+                item.Appointment.Note,
 
                 AppointmentType=item.AppointmentType?.Name,
                 Department = item.Department?.Name,
@@ -224,7 +224,7 @@ namespace Pusula.Training.HealthCare.Appointments
         [Authorize(HealthCarePermissions.Appointments.Delete)]
         public virtual async Task DeleteAllAsync(GetAppointmentsInput input)
         {
-            await appointmentRepository.DeleteAllAsync(input.FilterText, input.AppointmentStartDate, input.AppointmentEndDate, input.Notes, input.Status,  input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
+            await appointmentRepository.DeleteAllAsync(input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status,  input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
         }
         #endregion
 
@@ -245,6 +245,11 @@ namespace Pusula.Training.HealthCare.Appointments
             {
                 Token = token
             };
+        }
+    //GetDoctorAppointment
+        public async Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id)
+        {
+            return ObjectMapper.Map<List<Appointment>, List<AppointmentDto>>(await appointmentRepository.GetListAsync(doctorId: id));
         }
         #endregion
     }

@@ -65,12 +65,12 @@ string? notes = null, string? chronicDiseases = null, string? allergies = null, 
             .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Notes.Contains(notes!))
             .WhereIf(!string.IsNullOrWhiteSpace(chronicDiseases), e => e.ChronicDiseases.Contains(chronicDiseases!))
             .WhereIf(!string.IsNullOrWhiteSpace(allergies), e => e.Allergies.Contains(allergies!))
-            .WhereIf(!string.IsNullOrWhiteSpace(medications),e => e.Medications.Contains(medications!))
+            .WhereIf(!string.IsNullOrWhiteSpace(medications), e => e.Medications.Contains(medications!))
             .WhereIf(!string.IsNullOrWhiteSpace(diagnosis), e => e.Diagnosis.Contains(diagnosis!))
             .WhereIf(!string.IsNullOrWhiteSpace(prescription), e => e.Prescription.Contains(prescription!))
             .WhereIf(!string.IsNullOrWhiteSpace(imagingResults), e => e.ImagingResults.Contains(imagingResults!))
-            .WhereIf(patientId.HasValue, e => e.PatientId == patientId!.Value)
-            .WhereIf(doctorId.HasValue, e => e.DoctorId == doctorId!.Value);
+            .WhereIf(patientId.HasValue, e => e.PatientId == patientId!.Value);
+            //.WhereIf(doctorId.HasValue, e => e.DoctorId == doctorId!.Value);
     }
 }
    

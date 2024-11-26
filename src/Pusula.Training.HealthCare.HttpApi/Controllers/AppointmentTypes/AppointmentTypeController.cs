@@ -27,6 +27,14 @@ namespace Pusula.Training.HealthCare.Controllers.AppointmentTypes
             _appointmentTypesAppService = appointmentTypesAppService;
         }
 
+        
+        [HttpGet]
+        [Route("list-appoinmentTypes")]
+        public virtual Task<List<AppointmentTypeDto>> GetListAppointmentTypesAsync()
+        {
+            return _appointmentTypesAppService.GetListAppointmentTypesAsync();
+        }
+
         [HttpGet("all")]
         public virtual Task<PagedResultDto<AppointmentTypeDto>> GetListAsync(GetAppointmentTypesInput input)
         {
