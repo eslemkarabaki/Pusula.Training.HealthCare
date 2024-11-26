@@ -10,6 +10,7 @@ namespace Pusula.Training.HealthCare.Examinations
     {
         [NotNull]
         public virtual string IdentityNumber { get; set; }
+        [NotNull]
         public virtual Guid ExaminationId { get; set; }
         public virtual string Complaint { get; set; } // Şikayet
         public virtual string History { get; set; }

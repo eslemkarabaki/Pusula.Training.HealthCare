@@ -50,7 +50,7 @@ public class HealthCareApplicationModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        var configuration = context.Services.GetConfiguration();
+        var configuration = context.Services.GetConfiguration();    
 
         Configure<AbpDistributedCacheOptions>(options => { options.KeyPrefix = "PTH:"; });
 

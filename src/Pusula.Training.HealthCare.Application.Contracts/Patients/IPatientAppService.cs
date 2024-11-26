@@ -11,6 +11,7 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientAppService : IApplicationService
 {
+    Task<PatientDto> GetAsync(string number);
     Task<PatientDto> GetAsync(Guid id);
     Task<PatientWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id);
 
@@ -30,4 +31,7 @@ public interface IPatientAppService : IApplicationService
     Task DeleteAllAsync(GetPatientsInput input);
 
     Task<DownloadTokenResultDto> GetDownloadTokenAsync();
+
+    Task<bool> PassportNumberExistsAsync(string passportNumber, Guid? excludePatientId = null);
+    Task<bool> IdentityNumberExistsAsync(string identityNumber, Guid? excludePatientId = null);
 }

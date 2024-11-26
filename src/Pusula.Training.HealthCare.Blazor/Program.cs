@@ -55,6 +55,10 @@ public class Program
 
             await builder.AddApplicationAsync<HealthCareBlazorModule>();
 
+                
+
+
+
             var app = builder.Build();
             await app.InitializeApplicationAsync();
             await app.RunAsync();

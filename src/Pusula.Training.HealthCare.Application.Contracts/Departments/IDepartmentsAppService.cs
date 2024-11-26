@@ -10,6 +10,7 @@ namespace Pusula.Training.HealthCare.Departments;
 public interface IDepartmentsAppService : IApplicationService
 {
     Task<PagedResultDto<DepartmentDto>> GetListAsync(GetDepartmentsInput input);
+    Task<List<DepartmentDto>> GetListDepartmentsAsync();
 
     Task<DepartmentDto> GetAsync(Guid id);
 

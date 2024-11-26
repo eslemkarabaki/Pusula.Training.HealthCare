@@ -37,8 +37,17 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Edit, L("Permission:Edit"));
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Delete, L("Permission:Delete"));
 
-        var departmentPermission =
-            myGroup.AddPermission(HealthCarePermissions.Departments.Default, L("Permission:Departments"));
+        var appointmentReportPermission = myGroup.AddPermission(HealthCarePermissions.AppointmentReports.Default, L("Permission:AppointmentReports"));
+        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Create, L("Permission:Create"));
+        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Edit, L("Permission:Edit"));
+        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Delete, L("Permission:Delete"));
+
+        var appointmentTypePermission = myGroup.AddPermission(HealthCarePermissions.AppointmentTypes.Default, L("Permission:AppointmentTypes"));
+        appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Create, L("Permission:Create"));
+        appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Edit, L("Permission:Edit"));
+        appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Delete, L("Permission:Delete"));
+
+        var departmentPermission = myGroup.AddPermission(HealthCarePermissions.Departments.Default, L("Permission:Departments"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Create, L("Permission:Create"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Edit, L("Permission:Edit"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Delete, L("Permission:Delete"));

@@ -21,8 +21,8 @@ namespace Pusula.Training.HealthCare.Examinations;
 public class ExaminationAppService(
     IExaminationRepository examinationRepository,
     ExaminationManager examinationManager,
-    IDistributedCache<ExaminationDownloadTokenCacheItem, string> downloadTokenCache,
-    IDistributedEventBus distributedEventBus) : HealthCareAppService, IExaminationAppService
+    IDistributedCache<ExaminationDownloadTokenCacheItem, string> downloadTokenCache
+    ) : HealthCareAppService, IExaminationAppService
 {
     public virtual async Task<ExaminationDto> GetAsync(Guid id)
     {
@@ -33,9 +33,9 @@ public class ExaminationAppService(
     public virtual async Task<PagedResultDto<ExaminationDto>> GetListAsync(GetExaminationsInput input)
     {
         var totalCount = await examinationRepository.GetCountAsync(input.FilterText, input.Notes, input.ChronicDiseases, input.Allergies, input.VisitDate, input.IdentityNumber, input.Medications, input.Diagnosis,
-            input.Prescription, input.ImagingResults, input.PatientId, input.DoctorId);
+            input.Prescription,input.ImagingResults, input.PatientId, input.DoctorId);
         var items = await examinationRepository.GetListAsync(input.FilterText, input.Notes, input.ChronicDiseases, input.Allergies, input.VisitDate, input.IdentityNumber, input.Medications, input.Diagnosis,
-            input.Prescription, input.ImagingResults, input.PatientId, input.DoctorId, input.Sorting,
+            input.Prescription,input.ImagingResults, input.PatientId, input.DoctorId, input.Sorting,
             input.MaxResultCount,
             input.SkipCount);
         return new PagedResultDto<ExaminationDto>

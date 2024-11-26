@@ -3,7 +3,6 @@
 @attribute [Authorize(HealthCarePermissions.Patients.Default)]
 @using Pusula.Training.HealthCare.Patients
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
-
 @using Pusula.Training.HealthCare.Permissions
 @using Pusula.Training.HealthCare.Countries
 @using Pusula.Training.HealthCare.PatientTypes
@@ -15,6 +14,7 @@
 @using Syncfusion.Blazor.DataForm
 @using Syncfusion.Blazor.Navigations
 @using Syncfusion.Blazor.Notifications
+@using Blazored.FluentValidation
 @inherits HealthCareComponentBase
 @inject IPatientAppService PatientAppService
 @inject IPatientTypeAppService PatientTypeAppService
@@ -31,8 +31,8 @@
                 ButtonsAlignment="FormButtonsAlignment.Stretch"
                 ValidationDisplayMode="FormValidationDisplay.Tooltip">
         <FormValidator>
-            <Blazored.FluentValidation.FluentValidationValidator
-                Validator="@FilterValidator"></Blazored.FluentValidation.FluentValidationValidator>
+            <FluentValidationValidator
+                Validator="@FilterValidator"></FluentValidationValidator>
         </FormValidator>
         <FormTemplate>
             <div class="p-2">
@@ -71,9 +71,8 @@
 </div>
 
 @* ************************* DATA GRID ************************* *@
-<SfGrid @ref="SfGrid" TValue="PatientWithNavigationPropertiesDto" DataSource="@PatientList" AllowPaging AllowSelection
-        EnableHover AllowSorting EnableVirtualization
-        EnableVirtualMaskRow Height="500">
+<SfGrid @ref="SfGrid" TValue="PatientWithNavigationPropertiesDto" DataSource="@PatientList" AllowPaging="true"
+        AllowSelection EnableHover AllowSorting Height="570">
     <SfToolbar>
         <ToolbarItems>
             <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreatePatientDialogAsync" Text="@L["Add"]"
@@ -91,6 +90,7 @@
     <GridEvents TValue="PatientWithNavigationPropertiesDto"
                 RowSelected="@SelectedPatientRowChangedAsync"
                 RowDeselected="@SelectedPatientRowChangedAsync"/>
+    <GridPageSettings PageSize="10"/>
     <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
@@ -155,7 +155,7 @@
                 @{
                     var dto = context as PatientWithNavigationPropertiesDto;
                     <div>
-                        @dto.Patient.MobilePhoneNumber
+                        +@dto.Patient.MobilePhoneNumberCode @dto.Patient.MobilePhoneNumber
                     </div>
                 }
             </Template>

@@ -32,7 +32,6 @@ using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI;
 using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
@@ -48,6 +47,7 @@ using Volo.Abp.Ui.LayoutHooks;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using Syncfusion.Blazor;
 
 namespace Pusula.Training.HealthCare.Blazor;
 
@@ -133,6 +133,9 @@ public class HealthCareBlazorModule : AbpModule
             .Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
+        context.Services.AddSyncfusionBlazor();
+       
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR LICENSE KEY");
         ConfigureAuthentication(context);
         ConfigureUrls(configuration);
         ConfigureBundles();

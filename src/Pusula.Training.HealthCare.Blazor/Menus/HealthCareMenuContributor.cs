@@ -71,6 +71,15 @@ public class HealthCareMenuContributor : IMenuContributor
 
         context.Menu.AddItem(
             new ApplicationMenuItem(
+                HealthCareMenus.Appointments,
+                l["Menu:Appointments"],
+                url: "/appointments",
+                icon: "fa fa-calendar-check",
+                requiredPermissionName: HealthCarePermissions.Appointments.Default)
+        );
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
                     HealthCareMenus.Locations,
                     l["Menu:Locations"],
                     icon: "fas fa-compass"

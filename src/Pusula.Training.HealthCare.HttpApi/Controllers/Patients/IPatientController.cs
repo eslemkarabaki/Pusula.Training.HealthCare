@@ -23,6 +23,9 @@ public class IPatientController(IPatientAppService patientAppService) : HealthCa
     public virtual Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input) =>
         patientAppService.GetListAsync(input);
 
+    [HttpGet("with-identity-or-pasport/{number}")]
+    public virtual Task<PatientDto> GetAsync(string number) => patientAppService.GetAsync(number);
+
     [HttpGet("all/navigation-properties")]
     public Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetNavigationPropertiesListAsync(
         GetPatientsInput input
@@ -60,6 +63,16 @@ public class IPatientController(IPatientAppService patientAppService) : HealthCa
     [HttpGet]
     [Route("download-token")]
     public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync() => patientAppService.GetDownloadTokenAsync();
+
+    [HttpGet("passport-exist/{passportNumber}")]
+    public async Task<bool>
+        PassportNumberExistsAsync(string passportNumber, [FromQuery] Guid? exludePatientId = null) =>
+        await patientAppService.PassportNumberExistsAsync(passportNumber);
+
+    [HttpGet("identity-exist/{passportNumber}")]
+    public async Task<bool>
+        IdentityNumberExistsAsync(string identityNumber, [FromQuery] Guid? exludePatientId = null) =>
+        await patientAppService.IdentityNumberExistsAsync(identityNumber);
 
     [HttpDelete]
     [Route("")]

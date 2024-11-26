@@ -7,7 +7,9 @@ namespace Pusula.Training.HealthCare.Blazor;
 
 public abstract class HealthCareComponentBase : AbpComponentBase
 {
-    private IAppDefaultAppService? _appDefaultAppService;
-    protected IAppDefaultAppService AppDefaultAppService => LazyGetRequiredService(ref _appDefaultAppService)!;
-    protected HealthCareComponentBase() => LocalizationResource = typeof(HealthCareResource);
+    protected HealthCareComponentBase()
+    {
+        LocalizationResource = typeof(HealthCareResource);
+    }
 }
+    

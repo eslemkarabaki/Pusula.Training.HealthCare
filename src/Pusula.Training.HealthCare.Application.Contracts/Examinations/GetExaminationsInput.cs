@@ -9,7 +9,7 @@ namespace Pusula.Training.HealthCare.Examinations
 {
     public class GetExaminationsInput : PagedAndSortedResultRequestDto
     {
-        public string? FilterText { get; set; }
+        public string? FilterText { get; set; } = string.Empty;
         public virtual string? IdentityNumber { get; set; }
         public virtual DateTime? VisitDate { get; set; }
         public virtual string? Notes { get; set; }
