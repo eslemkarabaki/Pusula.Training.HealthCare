@@ -14,18 +14,8 @@ ENV PATH="$PATH:/root/.dotnet/tools"
 
 RUN abp install-libs
 
-WORKDIR /src/src/Pusula.Training.HealthCare.DbMigrator
-RUN dotnet publish "Pusula.Training.HealthCare.DbMigrator.csproj" -c Release -o /app/db-migrator
-
 WORKDIR /src/src/Pusula.Training.HealthCare.Blazor
 RUN dotnet publish "Pusula.Training.HealthCare.Blazor.csproj" -c Release -o /app/blazor
-
-FROM mcr.microsoft.com/dotnet/runtime:8.0 AS db-migrator
-WORKDIR /app/db-migrator
-
-COPY --from=build /app/db-migrator .
-
-ENTRYPOINT ["dotnet", "Pusula.Training.HealthCare.DbMigrator.dll"]
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS blazor
 WORKDIR /app
