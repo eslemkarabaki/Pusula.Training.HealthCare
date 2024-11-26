@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:latest
+    container_name: c_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - frontend
+    volumes:
+      - redisdata:/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure     
+      placement:
+        constraints: [node.role == worker]
+
+networks:
+  frontend:
+    external: true
+
+volumes:
+  redisdata:

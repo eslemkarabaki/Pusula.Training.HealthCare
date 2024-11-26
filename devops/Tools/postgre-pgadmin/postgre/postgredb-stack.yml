@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: myPassw0rd
+      POSTGRES_DB: HealthCare
+      TZ: Europe/Istanbul
+    ports:
+      - "5432:5432"
+    networks:
+      - frontend
+    volumes:
+      - postgresdb-data:/var/lib/postgresql/data
+    command: postgres -c 'max_connections=250'
+    deploy:
+      restart_policy:
+        condition: on-failure     
+      placement:
+        constraints: [node.hostname == team3-node1]
+
+networks:
+  frontend:
+    external: true
+
+volumes:
+  postgresdb-data:
