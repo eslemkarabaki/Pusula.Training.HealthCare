@@ -25,6 +25,7 @@ services:
 
   db-migrator:
     image: registry.gitlab.com/berkmkaracayir/pusula:${imageTag}
+    command: dotnet ef database update
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
     depends_on:
