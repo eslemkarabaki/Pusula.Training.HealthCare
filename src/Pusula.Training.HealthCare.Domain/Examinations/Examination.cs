@@ -19,7 +19,7 @@ namespace Pusula.Training.HealthCare.Examinations
         public string ImagingResults { get; set; }
   
         public Guid PatientId { get; set; }    
-        public Guid DoctorId { get; set; }
+        //public Guid DoctorId { get; set; }
 
         protected Examination()
         {
@@ -58,7 +58,7 @@ namespace Pusula.Training.HealthCare.Examinations
 
 
             PatientId = patientId;
-            DoctorId = doctorId;
+            //DoctorId = doctorId;
             Notes = notes;
             ChronicDiseases = chronicDiseases;
             VisitDate = visitDate;
