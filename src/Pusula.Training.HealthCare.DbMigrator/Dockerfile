@@ -23,7 +23,7 @@ WORKDIR /app
 COPY --from=build /publish .
 
 # Appsettings dosyasını kopyala (Production ortamı için)
-COPY appsettings.Production.json .
+COPY src/Pusula.Training.HealthCare.DbMigrator/appsettings.Production.json .
 
 # Uygulamayı çalıştır
 ENTRYPOINT ["dotnet", "Pusula.Training.HealthCare.DbMigrator.dll"]
