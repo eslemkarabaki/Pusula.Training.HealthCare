@@ -48,7 +48,6 @@ public partial class Patients
     private IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
     private IEnumerable<CountryDto> CountryList { get; set; } = [];
     private bool AllPatientsSelected { get; set; }
-    private SfToast FilterToast { get; set; } = null!;
 
     public Patients()
     {

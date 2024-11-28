@@ -183,18 +183,3 @@
 @* ************************* UPDATE MODAL ************************* *@
 <PatientUpdateDialog @ref="UpdatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
                      OnValidSaveAsync="UpdatePatientAsync"/>
-
-@* ************************* SEARCH ERROR TOAST ************************* *@
-<SfToast @ref="FilterToast" CssClass="e-toast-danger" Timeout="3000">
-    <ToastPosition X="Right" Y="Top"></ToastPosition>
-    <ToastTemplates>
-        <Template>
-            <div class="d-flex align-items-center gap-2 py-1 px-2">
-                <div class="fs-24p">
-                    <SfIcon IconCss="e-icons e-error fas fa-exclamation"/>
-                </div>
-                All values are empty.
-            </div>
-        </Template>
-    </ToastTemplates>
-</SfToast>
