@@ -8,3 +8,5 @@ Navigate to _etc/build_ folder and run the `build-images-locally.ps1` script. Yo
 Navigate to _etc/docker_ folder and run the `run-docker.ps1` script. The script will generate developer certificates (if it doesn't exist already) with `dotnet dev-certs` command to use HTTPS. Then, the script runs the provided docker-compose file on detached mode.
 
 > Not: Developer certificate is only valid for **localhost** domain. If you want to deploy to a real DNS in a production environment, use LetsEncrypt or similar tools.
+
+### silinecek
