@@ -29,13 +29,14 @@ public class PatientAppService(
     IDistributedEventBus distributedEventBus
 ) : HealthCareAppService, IPatientAppService
 {
-    #region Get
+#region Get
 
     public virtual async Task<PatientDto> GetAsync(string number)
     {
-        var patient = await patientRepository.GetAsync(e=>e.IdentityNumber== number || e.PassportNumber== number);
+        var patient = await patientRepository.GetAsync(e => e.IdentityNumber == number || e.PassportNumber == number);
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
+
     public virtual async Task<PatientDto> GetAsync(Guid id)
     {
         var patient = await patientRepository.GetAsync(id);
@@ -184,7 +185,8 @@ public class PatientAppService(
             input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
-            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
+            input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus,
+            $"{nameof(PatientExcelDto.No)} asc", 100
         );
 
         var memoryStream = new MemoryStream();

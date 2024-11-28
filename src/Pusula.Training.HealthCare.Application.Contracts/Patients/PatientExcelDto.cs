@@ -9,6 +9,7 @@ public class PatientExcelDto
     public string LastName { get; set; } = null!;
     public DateTime BirthDate { get; set; }
     public string IdentityNumber { get; set; } = null!;
+    public string PassportNumber { get; set; } = null!;
     public string EmailAddress { get; set; } = null!;
     public string MobilePhoneNumberCode { get; set; } = null!;
     public string MobilePhoneNumber { get; set; } = null!;
