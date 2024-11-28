@@ -9,8 +9,8 @@ services:
       "--cluster-config-file", "/data/nodes.conf",
       "--cluster-node-timeout", "5000",
       "--appendonly", "yes",
-      "--requirepass", "pusulateam3",
-      "--masterauth", "pusulateam3"
+      "--requirepass", "pusulateam3node",
+      "--masterauth", "pusulateam3node"
     ]
     ports:
       - "6379:6379"
@@ -37,8 +37,8 @@ services:
       "--cluster-config-file", "/data/nodes.conf",
       "--cluster-node-timeout", "5000",
       "--appendonly", "yes",
-      "--requirepass", "pusulateam3",
-      "--masterauth", "pusulateam3"
+      "--requirepass", "pusulateam3node",
+      "--masterauth", "pusulateam3node"
     ]
     ports:
       - "6380:6379"
@@ -65,8 +65,8 @@ services:
       "--cluster-config-file", "/data/nodes.conf",
       "--cluster-node-timeout", "5000",
       "--appendonly", "yes",
-      "--requirepass", "pusulateam3",
-      "--masterauth", "pusulateam3"
+      "--requirepass", "pusulateam3node",
+      "--masterauth", "pusulateam3node"
     ]
     ports:
       - "6381:6379"
@@ -93,8 +93,8 @@ services:
       "--cluster-config-file", "/data/nodes.conf",
       "--cluster-node-timeout", "5000",
       "--appendonly", "yes",
-      "--requirepass", "pusulateam3",
-      "--masterauth", "pusulateam3"
+      "--requirepass", "pusulateam3node",
+      "--masterauth", "pusulateam3node"
     ]
     ports:
       - "6382:6379"
@@ -121,8 +121,8 @@ services:
       "--cluster-config-file", "/data/nodes.conf",
       "--cluster-node-timeout", "5000",
       "--appendonly", "yes",
-      "--requirepass", "pusulateam3",
-      "--masterauth", "pusulateam3"
+      "--requirepass", "pusulateam3node",
+      "--masterauth", "pusulateam3node"
     ]
     ports:
       - "6383:6379"
@@ -149,8 +149,8 @@ services:
       "--cluster-config-file", "/data/nodes.conf",
       "--cluster-node-timeout", "5000",
       "--appendonly", "yes",
-      "--requirepass", "pusulateam3",
-      "--masterauth", "pusulateam3"
+      "--requirepass", "pusulateam3node",
+      "--masterauth", "pusulateam3node"
     ]
     ports:
       - "6384:6379"
