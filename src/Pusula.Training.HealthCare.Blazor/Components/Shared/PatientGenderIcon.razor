@@ -1,0 +1,10 @@
+@using Pusula.Training.HealthCare.Patients
+@using Syncfusion.Blazor.Buttons
+<SfIcon
+    IconCss="@($"fs-18p fas {(Gender == EnumGender.Male ? "fa-mars color-blue-500" : "fa-venus color-pink-500")}")"></SfIcon>
+
+@code{
+
+    [Parameter] public EnumGender Gender { get; set; }
+
+}
