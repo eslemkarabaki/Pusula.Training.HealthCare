@@ -82,8 +82,7 @@ public class PatientManager(
         await CheckIdentityAndPassportNumberAsync(identityNumber, passportNumber, id);
 
         var patient = await patientRepository.GetAsync(id);
-        patient.SetFirstName(firstName);
-        patient.SetLastName(lastName);
+        patient.SetName(firstName, lastName);
         patient.SetBirthDate(birthDate);
         patient.SetIdentityNumber(identityNumber);
         patient.SetPassportNumber(passportNumber);

@@ -11,6 +11,7 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
     public int No { get; private set; }
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
+    public string FullName { get; private set; }
     public DateTime BirthDate { get; private set; }
     public string? IdentityNumber { get; private set; }
     public string? PassportNumber { get; private set; }
@@ -29,6 +30,7 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
     {
         FirstName = string.Empty;
         LastName = string.Empty;
+        FullName = string.Empty;
         EmailAddress = string.Empty;
         MobilePhoneNumber = string.Empty;
         MobilePhoneNumberCode = string.Empty;
@@ -55,8 +57,7 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
     {
         SetCountryId(countryId);
         SetPatientTypeId(patientTypeId);
-        SetFirstName(firstName);
-        SetLastName(lastName);
+        SetName(firstName,lastName);
         SetBirthDate(birthDate);
         SetIdentityNumber(identityNumber);
         SetPassportNumber(passportNumber);
@@ -70,11 +71,20 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
         SetMaritalStatus(maritalStatus);
     }
 
-    public void SetFirstName(string firstName) =>
+    private void SetFirstName(string firstName) =>
         FirstName = Check.NotNullOrWhiteSpace(firstName, nameof(firstName), PatientConsts.FirstNameMaxLength);
 
-    public void SetLastName(string lastName) =>
+    private void SetLastName(string lastName) =>
         LastName = Check.NotNullOrWhiteSpace(lastName, nameof(lastName), PatientConsts.LastNameMaxLength);
+
+    private void SetFullName(string firstName, string lastName) => FullName = $"{firstName} {lastName}";
+
+    public void SetName(string firstName, string lastName)
+    {
+        SetFirstName(firstName);
+        SetLastName(lastName);
+        SetFullName(firstName, lastName);
+    }
 
     public void SetCountryId(Guid countryId) => CountryId = Check.NotDefaultOrNull<Guid>(countryId, nameof(countryId));
 
