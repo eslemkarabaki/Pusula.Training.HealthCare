@@ -8,10 +8,16 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientRepository : IRepository<Patient, Guid>
 {
-    Task<PatientWithNavigationProperties> GetNavigationPropertiesAsync(
+    Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
         Guid id,
         CancellationToken cancellationToken = default
     );
+    
+    Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
+        int patientNo,
+        CancellationToken cancellationToken = default
+    );
+
 
     Task<List<Patient>> GetListAsync(
         string? filterText = null,
@@ -35,7 +41,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         CancellationToken cancellationToken = default
     );
 
-    Task<List<PatientWithNavigationProperties>> GetNavigationPropertiesListAsync(
+    Task<List<PatientWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,

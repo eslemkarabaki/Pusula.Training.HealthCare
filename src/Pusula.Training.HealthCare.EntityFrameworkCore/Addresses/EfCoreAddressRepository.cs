@@ -18,7 +18,7 @@ namespace Pusula.Training.HealthCare.Addresses;
 public class EfCoreAddressRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
     : EfCoreRepository<HealthCareDbContext, Address, Guid>(dbContextProvider), IAddressRepository
 {
-    public async Task<List<AddressWithNavigationProperties>> GetNavigationPropertiesListAsync(
+    public async Task<List<AddressWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         Guid? patientId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,

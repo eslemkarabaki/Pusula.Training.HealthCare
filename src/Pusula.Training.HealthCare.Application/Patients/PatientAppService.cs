@@ -42,9 +42,15 @@ public class PatientAppService(
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
 
-    public virtual async Task<PatientWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id)
+    public virtual async Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
     {
-        var patient = await patientRepository.GetNavigationPropertiesAsync(id);
+        var patient = await patientRepository.GetWithNavigationPropertiesAsync(id);
+        return ObjectMapper.Map<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>(patient);
+    }
+
+    public virtual async Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(int patientNo)
+    {
+        var patient = await patientRepository.GetWithNavigationPropertiesAsync(patientNo);
         return ObjectMapper.Map<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>(patient);
     }
 
@@ -75,7 +81,7 @@ public class PatientAppService(
         };
     }
 
-    public virtual async Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetNavigationPropertiesListAsync(
+    public virtual async Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
         GetPatientsInput input
     )
     {
@@ -85,7 +91,7 @@ public class PatientAppService(
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
         );
-        var items = await patientRepository.GetNavigationPropertiesListAsync(
+        var items = await patientRepository.GetListWithNavigationPropertiesAsync(
             input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
@@ -102,9 +108,9 @@ public class PatientAppService(
     }
 
     public async Task<List<AddressWithNavigationPropertiesDto>>
-        GetAddressNavigationPropertiesListAsync(Guid patientId) =>
+        GetAddressListWithNavigationPropertiesAsync(Guid patientId) =>
         ObjectMapper.Map<List<AddressWithNavigationProperties>, List<AddressWithNavigationPropertiesDto>>(
-            await addressRepository.GetNavigationPropertiesListAsync(patientId)
+            await addressRepository.GetListWithNavigationPropertiesAsync(patientId)
         );
 
 #endregion
@@ -174,7 +180,7 @@ public class PatientAppService(
             throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
         }
 
-        var items = await patientRepository.GetNavigationPropertiesListAsync(
+        var items = await patientRepository.GetListWithNavigationPropertiesAsync(
             input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,

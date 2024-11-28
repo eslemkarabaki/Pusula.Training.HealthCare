@@ -36,7 +36,8 @@
         </FormValidator>
         <FormTemplate>
             <div class="p-2">
-                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search:Patient"]" Type="InputType.Search" CssClass="mb-2"/>
+                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search:Patient"]" Type="InputType.Search"
+                           CssClass="mb-2"/>
                 <a href="javascript:;" class="text-decoration-none"
                    @onclick="@(() => ShowAdvancedFilters = !ShowAdvancedFilters)">
                     @L["SeeAdvancedFilters"] <SfIcon
@@ -89,7 +90,9 @@
     </SfToolbar>
     <GridEvents TValue="PatientWithNavigationPropertiesDto"
                 RowSelected="@SelectedPatientRowChangedAsync"
-                RowDeselected="@SelectedPatientRowChangedAsync"/>
+                RowDeselected="@SelectedPatientRowChangedAsync"
+                OnRecordDoubleClick="@((args) => NavigationManager.NavigateTo($"patient-detail/{args.RowData.Patient.No}"))"
+    />
     <GridPageSettings PageSize="10"/>
     <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridColumns>
@@ -102,8 +105,7 @@
                         @dto.Patient.FullName
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <SfIcon
-                            IconCss="@($"fs-18p fas {(dto.Patient.Gender == EnumGender.Male ? "fa-mars color-blue-500" : "fa-venus color-pink-500")}")"></SfIcon>
+                        <PatientGenderIcon Gender="@dto.Patient.Gender"/>
                         <div>
                             <span>Hasta No:</span>
                             <span>@dto.Patient.No</span>
@@ -134,7 +136,7 @@
                 @{
                     var dto = context as PatientWithNavigationPropertiesDto;
                     <div class="d-flex gap-1">
-                        <span>@dto.Patient.BirthDate.ToString("MM.dd.yyyy")</span>
+                        <span>@dto.Patient.BirthDate.ToString("dd.MM.yyyy")</span>
                         <span class="fs-12p">(@dto.Patient.Age.Item1 @dto.Patient.Age.Item2)</span>
                     </div>
                 }

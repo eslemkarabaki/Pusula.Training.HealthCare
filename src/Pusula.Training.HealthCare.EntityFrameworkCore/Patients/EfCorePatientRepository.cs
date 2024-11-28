@@ -15,12 +15,17 @@ namespace Pusula.Training.HealthCare.Patients;
 public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
     : EfCoreRepository<HealthCareDbContext, Patient, Guid>(dbContextProvider), IPatientRepository
 {
-    public async Task<PatientWithNavigationProperties> GetNavigationPropertiesAsync(
+    public async Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
         Guid id,
         CancellationToken cancellationToken = default
     ) =>
         await (await GetQueryForNavigationPropertiesAsync())
             .FirstOrDefaultAsync(e => e.Patient.Id == id, cancellationToken);
+
+    public async Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(int patientNo, CancellationToken cancellationToken = default) 
+        =>
+            await (await GetQueryForNavigationPropertiesAsync())
+                .FirstOrDefaultAsync(e => e.Patient.No == patientNo, cancellationToken);
 
     public virtual async Task<List<Patient>> GetListAsync(
         string? filterText = null,
@@ -65,7 +70,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
               .PageBy(skipCount, maxResultCount)
               .ToListAsync(cancellationToken);
 
-    public async Task<List<PatientWithNavigationProperties>> GetNavigationPropertiesListAsync(
+    public async Task<List<PatientWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,

@@ -54,7 +54,7 @@ public class PatientManager(
             bloodType,
             maritalStatus
         );
-        await addressManager.CreateAddressAsync(patient.Id, addresses);
+        await addressManager.CreateAddressesAsync(patient.Id, addresses);
         return await patientRepository.InsertAsync(patient);
     }
 
@@ -98,7 +98,7 @@ public class PatientManager(
         patient.SetCountryId(countryId);
         patient.SetPatientTypeId(patientTypeId);
 
-        await addressManager.UpdateOrCreateAddressAsync(patient.Id, addresses);
+        await addressManager.SetAddressesAsync(patient.Id, addresses);
         patient.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await patientRepository.UpdateAsync(patient);
     }
