@@ -1,175 +1,27 @@
 version: "3.9"
 services:
-  redis-node-1:
+  redis:
     image: redis:latest
-    command: [
-      "redis-server",
-      "--port", "6379",
-      "--cluster-enabled", "yes",
-      "--cluster-config-file", "/data/nodes.conf",
-      "--cluster-node-timeout", "5000",
-      "--appendonly", "yes",
-      "--requirepass", "pusulateam3node"
-    ]
+    container_name: c_redis
     ports:
       - "6379:6379"
-    volumes:
-      - redis-node-1-data:/data
     networks:
       - frontend
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == worker
-      restart_policy:
-        condition: on-failure
     environment:
-      - TZ=Europe/Istanbul
-
-  redis-node-2:
-    image: redis:latest
-    command: [
-      "redis-server",
-      "--port", "6379",
-      "--cluster-enabled", "yes",
-      "--cluster-config-file", "/data/nodes.conf",
-      "--cluster-node-timeout", "5000",
-      "--appendonly", "yes",
-      "--requirepass", "pusulateam3node"
-    ]
-    ports:
-      - "6380:6379"
+      - REDIS_PASSWORD=pusulateam3node  
+    command: ["redis-server", "--requirepass", "pusulateam3node"]  
     volumes:
-      - redis-node-2-data:/data
-    networks:
-      - frontend
+      - redisdata:/data
     deploy:
       replicas: 1
-      placement:
-        constraints:
-          - node.role == worker
       restart_policy:
-        condition: on-failure
-    environment:
-      - TZ=Europe/Istanbul
-
-  redis-node-3:
-    image: redis:latest
-    command: [
-      "redis-server",
-      "--port", "6379",
-      "--cluster-enabled", "yes",
-      "--cluster-config-file", "/data/nodes.conf",
-      "--cluster-node-timeout", "5000",
-      "--appendonly", "yes",
-      "--requirepass", "pusulateam3node"
-    ]
-    ports:
-      - "6381:6379"
-    volumes:
-      - redis-node-3-data:/data
-    networks:
-      - frontend
-    deploy:
-      replicas: 1
+        condition: on-failure     
       placement:
-        constraints:
-          - node.role == worker
-      restart_policy:
-        condition: on-failure
-    environment:
-      - TZ=Europe/Istanbul
-
-  redis-node-4:
-    image: redis:latest
-    command: [
-      "redis-server",
-      "--port", "6379",
-      "--cluster-enabled", "yes",
-      "--cluster-config-file", "/data/nodes.conf",
-      "--cluster-node-timeout", "5000",
-      "--appendonly", "yes",
-      "--requirepass", "pusulateam3node"
-    ]
-    ports:
-      - "6382:6379"
-    volumes:
-      - redis-node-4-data:/data
-    networks:
-      - frontend
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == worker
-      restart_policy:
-        condition: on-failure
-    environment:
-      - TZ=Europe/Istanbul
-
-  redis-node-5:
-    image: redis:latest
-    command: [
-      "redis-server",
-      "--port", "6379",
-      "--cluster-enabled", "yes",
-      "--cluster-config-file", "/data/nodes.conf",
-      "--cluster-node-timeout", "5000",
-      "--appendonly", "yes",
-      "--requirepass", "pusulateam3node"
-    ]
-    ports:
-      - "6383:6379"
-    volumes:
-      - redis-node-5-data:/data
-    networks:
-      - frontend
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == worker
-      restart_policy:
-        condition: on-failure
-    environment:
-      - TZ=Europe/Istanbul
-
-  redis-node-6:
-    image: redis:latest
-    command: [
-      "redis-server",
-      "--port", "6379",
-      "--cluster-enabled", "yes",
-      "--cluster-config-file", "/data/nodes.conf",
-      "--cluster-node-timeout", "5000",
-      "--appendonly", "yes",
-      "--requirepass", "pusulateam3node"
-    ]
-    ports:
-      - "6384:6379"
-    volumes:
-      - redis-node-6-data:/data
-    networks:
-      - frontend
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == worker
-      restart_policy:
-        condition: on-failure
-    environment:
-      - TZ=Europe/Istanbul
+        constraints: [node.role == worker]
 
 networks:
   frontend:
     external: true
 
 volumes:
-  redis-node-1-data:
-  redis-node-2-data:
-  redis-node-3-data:
-  redis-node-4-data:
-  redis-node-5-data:
-  redis-node-6-data:
+  redisdata:
