@@ -9,4 +9,3 @@ Navigate to _etc/docker_ folder and run the `run-docker.ps1` script. The script 
 
 > Not: Developer certificate is only valid for **localhost** domain. If you want to deploy to a real DNS in a production environment, use LetsEncrypt or similar tools.
 
-### silinecek
