@@ -1,24 +1,181 @@
 version: "3.9"
 services:
-  redis:
+  redis-node-1:
     image: redis:latest
-    container_name: c_redis
+    command: [
+      "redis-server",
+      "--port", "6379",
+      "--cluster-enabled", "yes",
+      "--cluster-config-file", "/data/nodes.conf",
+      "--cluster-node-timeout", "5000",
+      "--appendonly", "yes",
+      "--requirepass", "pusulateam3",
+      "--masterauth", "pusulateam3"
+    ]
     ports:
       - "6379:6379"
+    volumes:
+      - redis-node-1-data:/data
     networks:
       - frontend
-    volumes:
-      - redisdata:/data
     deploy:
       replicas: 1
-      restart_policy:
-        condition: on-failure     
       placement:
-        constraints: [node.role == worker]
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+    environment:
+      - TZ=Europe/Istanbul
+
+  redis-node-2:
+    image: redis:latest
+    command: [
+      "redis-server",
+      "--port", "6379",
+      "--cluster-enabled", "yes",
+      "--cluster-config-file", "/data/nodes.conf",
+      "--cluster-node-timeout", "5000",
+      "--appendonly", "yes",
+      "--requirepass", "pusulateam3",
+      "--masterauth", "pusulateam3"
+    ]
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-node-2-data:/data
+    networks:
+      - frontend
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+    environment:
+      - TZ=Europe/Istanbul
+
+  redis-node-3:
+    image: redis:latest
+    command: [
+      "redis-server",
+      "--port", "6379",
+      "--cluster-enabled", "yes",
+      "--cluster-config-file", "/data/nodes.conf",
+      "--cluster-node-timeout", "5000",
+      "--appendonly", "yes",
+      "--requirepass", "pusulateam3",
+      "--masterauth", "pusulateam3"
+    ]
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis-node-3-data:/data
+    networks:
+      - frontend
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+    environment:
+      - TZ=Europe/Istanbul
+
+  redis-node-4:
+    image: redis:latest
+    command: [
+      "redis-server",
+      "--port", "6379",
+      "--cluster-enabled", "yes",
+      "--cluster-config-file", "/data/nodes.conf",
+      "--cluster-node-timeout", "5000",
+      "--appendonly", "yes",
+      "--requirepass", "pusulateam3",
+      "--masterauth", "pusulateam3"
+    ]
+    ports:
+      - "6382:6379"
+    volumes:
+      - redis-node-4-data:/data
+    networks:
+      - frontend
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+    environment:
+      - TZ=Europe/Istanbul
+
+  redis-node-5:
+    image: redis:latest
+    command: [
+      "redis-server",
+      "--port", "6379",
+      "--cluster-enabled", "yes",
+      "--cluster-config-file", "/data/nodes.conf",
+      "--cluster-node-timeout", "5000",
+      "--appendonly", "yes",
+      "--requirepass", "pusulateam3",
+      "--masterauth", "pusulateam3"
+    ]
+    ports:
+      - "6383:6379"
+    volumes:
+      - redis-node-5-data:/data
+    networks:
+      - frontend
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+    environment:
+      - TZ=Europe/Istanbul
+
+  redis-node-6:
+    image: redis:latest
+    command: [
+      "redis-server",
+      "--port", "6379",
+      "--cluster-enabled", "yes",
+      "--cluster-config-file", "/data/nodes.conf",
+      "--cluster-node-timeout", "5000",
+      "--appendonly", "yes",
+      "--requirepass", "pusulateam3",
+      "--masterauth", "pusulateam3"
+    ]
+    ports:
+      - "6384:6379"
+    volumes:
+      - redis-node-6-data:/data
+    networks:
+      - frontend
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+    environment:
+      - TZ=Europe/Istanbul
 
 networks:
   frontend:
     external: true
 
 volumes:
-  redisdata:
+  redis-node-1-data:
+  redis-node-2-data:
+  redis-node-3-data:
+  redis-node-4-data:
+  redis-node-5-data:
+  redis-node-6-data:
