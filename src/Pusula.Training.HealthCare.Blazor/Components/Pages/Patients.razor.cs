@@ -90,7 +90,7 @@ public partial class Patients
         Filter.SkipCount = (CurrentPage - 1) * PageSize;
         Filter.Sorting = CurrentSorting;
 
-        var result = await PatientAppService.GetNavigationPropertiesListAsync(Filter);
+        var result = await PatientAppService.GetListWithNavigationPropertiesAsync(Filter);
         PatientList = result.Items;
         TotalCount = (int)result.TotalCount;
 

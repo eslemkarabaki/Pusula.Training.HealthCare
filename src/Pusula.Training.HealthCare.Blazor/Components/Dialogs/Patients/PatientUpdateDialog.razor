@@ -545,12 +545,12 @@
     public async Task ShowAsync(Guid patientId)
     {
         IdentityOrPassportExist = false;
-        var patient = await PatientAppService.GetNavigationPropertiesAsync(patientId);
+        var patient = await PatientAppService.GetWithNavigationPropertiesAsync(patientId);
         ObjectMapper.Map(patient.Patient, EditingPatient);
         ObjectMapper.Map(patient.Addresses, EditingPatient.Addresses);
         EditingPatientId = patientId;
         EditingPatientEditContext = new EditContext(EditingPatient);
-        Addresses = await PatientAppService.GetAddressNavigationPropertiesListAsync(patientId);
+        Addresses = await PatientAppService.GetAddressListWithNavigationPropertiesAsync(patientId);
         SetDefaultsForAddress();
         await Dialog.ShowAsync();
     }
