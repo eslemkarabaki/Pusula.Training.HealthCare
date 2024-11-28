@@ -22,10 +22,12 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         await (await GetQueryForNavigationPropertiesAsync())
             .FirstOrDefaultAsync(e => e.Patient.Id == id, cancellationToken);
 
-    public async Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(int patientNo, CancellationToken cancellationToken = default) 
-        =>
-            await (await GetQueryForNavigationPropertiesAsync())
-                .FirstOrDefaultAsync(e => e.Patient.No == patientNo, cancellationToken);
+    public async Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
+        int patientNo,
+        CancellationToken cancellationToken = default
+    ) =>
+        await (await GetQueryForNavigationPropertiesAsync())
+            .FirstOrDefaultAsync(e => e.Patient.No == patientNo, cancellationToken);
 
     public virtual async Task<List<Patient>> GetListAsync(
         string? filterText = null,
@@ -66,7 +68,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                   bloodType,
                   maritalStatus
               )
-              .OrderBy(string.IsNullOrWhiteSpace(sorting) ? PatientConsts.GetDefaultSorting(false) : sorting)
+              .OrderBy(GetSorting(sorting, false))
               .PageBy(skipCount, maxResultCount)
               .ToListAsync(cancellationToken);
 
@@ -109,7 +111,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                   bloodType,
                   maritalStatus
               )
-              .OrderBy(string.IsNullOrWhiteSpace(sorting) ? PatientConsts.GetDefaultSorting(true) : sorting)
+              .OrderBy(GetSorting(sorting, true))
               .PageBy(skipCount, maxResultCount)
               .ToListAsync(cancellationToken);
 
@@ -401,4 +403,9 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
             .WhereIf(countryId.HasValue, e => e.Patient.CountryId == countryId!.Value);
 
 #endregion
+
+    private string GetSorting(string? sorting, bool withEntityName) =>
+        sorting.IsNullOrWhiteSpace() ?
+            PatientConsts.GetDefaultSorting(withEntityName) :
+            $"{(withEntityName ? "Patient." : string.Empty)}{sorting}";
 }
