@@ -17,7 +17,7 @@ namespace Pusula.Training.HealthCare.Controllers.Patients;
 [Area("app")]
 [ControllerName("Patient")]
 [Route("api/app/patients")]
-public class IPatientController(IPatientAppService patientAppService) : HealthCareController, IPatientAppService
+public class PatientController(IPatientAppService patientAppService) : HealthCareController, IPatientAppService
 {
 
     [HttpGet("get/all")]
