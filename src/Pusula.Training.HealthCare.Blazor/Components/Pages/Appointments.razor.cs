@@ -23,7 +23,7 @@ public partial class Appointments
 {
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
     private DateTime CurrentDate { get; set; } = DateTime.Today;
-   
+    private GetPatientsInputValidator PatientsInputValidator { get; set; } = new();
     private SfSchedule<AppointmentDto> refSchedule { get; set; }
     private List<AppointmentDto> AppointmentLists { get; set; } = [];
     private AppointmentCreateDto AppointmentCreateDto { get; set; } = new();

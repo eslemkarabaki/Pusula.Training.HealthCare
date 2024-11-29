@@ -120,7 +120,6 @@
     "Menu:Countries": "Countries",
     "Menu:Cities": "Cities",
     "Menu:Districts": "Districts",
-<<<<<<< HEAD
     "Tests": "Tests",
     "NewTest": "New Test",
     "Menu:Tests": "Tests",
@@ -145,8 +144,7 @@
     "NewTestGroups": "New TestGroups",
     "Menu:TestGroups": "TestGroups",
     "TestGroup": "TestGroup",
-    "Permission:TestGroups": "TestGroups"
-=======
+    "Permission:TestGroups": "TestGroups",
     "IsForeign": "Foreigner",
     "Address": "Address",
     "AddressTitle": "Address Title",
@@ -157,6 +155,5 @@
     "AddressLine": "Address",
     "Placeholder:AddressLine": "Enter address",
     "PleaseAddAddressMessage": "The address list is empty."
->>>>>>> development
   }
 }
