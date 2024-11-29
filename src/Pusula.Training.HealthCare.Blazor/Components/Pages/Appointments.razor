@@ -6,7 +6,6 @@
 @using Pusula.Training.HealthCare.AppointmentTypes
 @using Pusula.Training.HealthCare.Departments
 @using Pusula.Training.HealthCare.Doctors
-@using Pusula.Training.HealthCare.AppointmentTypes
 @using Pusula.Training.HealthCare.Localization
 @using Pusula.Training.HealthCare.Patients
 @using Syncfusion.Blazor.Schedule
@@ -37,7 +36,7 @@
 @inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
 @inject NavigationManager NavigationManager
 
-<PageHeader Title="Randevu" BreadcrumbItems="BreadcrumbItems" />
+<PageHeader Title="Randevu İşlemleri" BreadcrumbItems="BreadcrumbItems" />
 
 <div class="row g-0">
 <div class="col-lg-3" style="padding-top:15px">        
@@ -49,6 +48,13 @@
             <DropDownListFieldSettings Text="Name" Value="Id" />
             </SfDropDownList>
     </div>
+        @* <div class="col-md-12">
+            <label class="example-label">Departman Seçin</label>
+            <SfAutoComplete TValue="Guid" TItem="DepartmentDto" @bind-Value="@SelectedDepartmentId" @ref="@refAutoComplateDepartment">
+                <AutoCompleteFieldSettings Value="Id" Text="Name" />
+                <AutoCompleteEvents TItem="DepartmentDto" TValue="Guid" Filtering="GetDepartmentFilter"></AutoCompleteEvents>
+            </SfAutoComplete>
+        </div> *@
     <br />
     <div class="col-md-12">
         <label class="example-label">Doktor Seçin</label>
@@ -60,7 +66,7 @@
     <br />
         <div class="col-md-12">
             <label class="example-label">Hasta Seçin</label>
-            <SfAutoComplete TValue="Guid" TItem="PatientDto" @bind-Value="@SelectedPatientId" @ref="@refAutoComplate">
+            <SfAutoComplete TValue="Guid" TItem="PatientDto" @bind-Value="@SelectedPatientId" @ref="@refAutoComplatePatient">
                 <AutoCompleteFieldSettings   Value="Id" Text="FullName"/>
                 <AutoCompleteEvents  TItem="PatientDto" TValue="Guid" Filtering="GetPatientFilter"></AutoCompleteEvents>
             </SfAutoComplete>
@@ -75,12 +81,21 @@
 
 <div class="col-lg-9 control-section">
     @if(valueSelected) {
-    <SfSchedule TValue="AppointmentDto" Width="100%" Height="650px" @bind-SelectedDate="@CurrentDate" StartHour="09:00" EndHour="18:00">
-        <ScheduleEvents TValue="AppointmentDto" OnActionBegin="OnActionBegin"></ScheduleEvents>
+            <SfSchedule TValue="AppointmentDto" Width="100%" Height="650px" @bind-SelectedDate="@CurrentDate" @bind-CurrentView="@CurrentView" StartHour="09:00" EndHour="18:00" WorkDays="@ValidWorkDays" CssClass="block-events" >
+                <ScheduleEvents TValue="AppointmentDto" OnActionBegin="OnActionBegin" EventRendered="OnEventRendered">
+                   
+                </ScheduleEvents>
+        
+                <ScheduleTimeScale Enable="@GridLine" Interval="@IntervalValue" SlotCount="@SlotValue"></ScheduleTimeScale>
 
-        <ScheduleEventSettings DataSource="@AppointmentLists"></ScheduleEventSettings>
+                <ScheduleEventSettings DataSource="@AppointmentLists" AllowAdding="true" AllowEditing="true" AllowDeleting="true">
+                    <Template>
+                        <div>@((context as AppointmentDto).Status)</div>
+                    </Template>
+                </ScheduleEventSettings>
 
         <ScheduleTemplates>
+            
             <EditorHeaderTemplate>
                 @if (((context as AppointmentDto).Id) == default)
                 {
@@ -137,8 +152,8 @@
         </ScheduleTemplates>
         <ScheduleViews>
             <ScheduleView Option="View.Day"></ScheduleView>
-            <ScheduleView Option="View.Week"></ScheduleView>
-            <ScheduleView Option="View.WorkWeek"></ScheduleView>
+             <ScheduleView Option="View.Week"></ScheduleView>
+             <ScheduleView Option="View.WorkWeek"></ScheduleView>
             <ScheduleView Option="View.Month"></ScheduleView>
             <ScheduleView Option="View.Agenda"></ScheduleView>
         </ScheduleViews>
@@ -148,35 +163,115 @@
 </div>
 
 <style>
-    .col-md-3 {
-        display: inline-block; 
-        vertical-align: top; 
-        margin-right: 15px; 
+    /* .e-popup-footer {
+        display: none !important;
+    } */
+    /* Departman ve Doktor Seçilen Bölümün Rengi (Mavi Tonları) */
+    .col-lg-3 {
+        background: linear-gradient(135deg, #7FC8FF 0%, #4E90FF 100%); /* Mavi tonları */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-        .col-md-3:last-child {
-            margin-right: 0; 
+    .col-lg-9 {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Label Görünümü */
+    .example-label {
+        font-weight: bold;
+        font-size: 14px;
+        color: #555; /* Daha yumuşak ton */
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    /* DropDownList - Mavi Çerçeve */
+    .sf-dropdownlist {
+        border: 1px solid #4E90FF; /* Mavi çerçeve */
+        border-radius: 6px;
+    }
+
+    /* Buton Tarzı */
+    .submit-btn SfButton {
+        background-color: #4CAF50;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .submit-btn SfButton:hover {
+            background-color: #45a049;
         }
 
-    .col-lg-12 {
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 15px; 
+    /* Tarih Picker'lar */
+    .sf-datetimepicker {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 5px;
+    }
+
+    /* Slotlar İçin */
+    .e-disable-slot {
+        pointer-events: none;
+        background-color: #f5f5f5;
+        color: #999;
     }
 
     .weekend-cell {
-        background-color: #f5f5f5; 
-        color: #d9534f; 
-        pointer-events: none; 
-    }   
-   
-
-    .example-content {
-        padding: 0px 0px 15px 0px;
+        background-color: #ffe6e6;
+        color: #d9534f;
+        pointer-events: none;
     }
 
-        .example-content:last-child {
-            padding: 0px 0px 15px 0px;
+    /* Program Şablonları */
+    .block-events .e-work-cells {
+        background-color: #fdfdff;
+        border: 1px solid #e3e3e3;
+        transition: all 0.2s ease;
+    }
+
+        .block-events .e-work-cells:hover {
+            background-color: #eaf8ff;
+            border-color: #007bff;
         }
-        
+
+    /* Randevu Statüsü */
+    .schedule-template div {
+        background: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 3px;
+        display: inline-block;
+    }
+
+    /* Tablo Stil */
+    .custom-event-editor td {
+        padding: 10px;
+    }
+
+    .custom-event-editor .e-textlabel {
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Header Tarzı */
+    .PageHeader {
+        background: linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
 </style>
