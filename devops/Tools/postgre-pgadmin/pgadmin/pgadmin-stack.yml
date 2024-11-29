@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  pgadmin4:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: training@pusulayazilim.com.tr
+      PGADMIN_DEFAULT_PASSWORD: myPassw0rd
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - "5050:5050"
+    networks:
+      - frontend
+    volumes:
+      - pgadmin4data:/var/lib/pgadmin
+    deploy:
+      restart_policy:
+        condition: on-failure     
+      placement:
+        constraints: [node.hostname == team3-node1]
+
+networks:
+  frontend:
+    external: true
+
+volumes:
+  pgadmin4data:

@@ -10,7 +10,6 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Appointments
 {
-
     public class Appointment : FullAuditedAggregateRoot<Guid>
     {
         [NotNull]

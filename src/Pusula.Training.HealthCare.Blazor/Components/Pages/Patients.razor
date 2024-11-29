@@ -36,7 +36,7 @@
         </FormValidator>
         <FormTemplate>
             <div class="p-2">
-                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search:Patient"]" CssClass="mb-2"/>
+                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search:Patient"]" Type="InputType.Search" CssClass="mb-2"/>
                 <a href="javascript:;" class="text-decoration-none"
                    @onclick="@(() => ShowAdvancedFilters = !ShowAdvancedFilters)">
                     @L["SeeAdvancedFilters"] <SfIcon
@@ -56,11 +56,11 @@
                     <SfTextBox @bind-Value="@Filter.LastName" FloatLabelType="FloatLabelType.Always"
                                Placeholder="@L["LastName"]"/>
                     <SfTextBox @bind-Value="@Filter.IdentityNumber" FloatLabelType="FloatLabelType.Always"
-                               Placeholder="@L["IdentityNumber"]"/>
+                               Placeholder="@L["IdentityNumber"]" Type="InputType.Number"/>
                     <SfTextBox @bind-Value="@Filter.PassportNumber" FloatLabelType="FloatLabelType.Always"
-                               Placeholder="@L["PassportNumber"]"/>
+                               Placeholder="@L["PassportNumber"]" Type="InputType.Number"/>
                     <SfTextBox @bind-Value="@Filter.MobilePhoneNumber" FloatLabelType="FloatLabelType.Always"
-                               Placeholder="@L["MobilePhoneNumber"]"/>
+                               Placeholder="@L["MobilePhoneNumber"]" Type="InputType.Number"/>
                     <SfButton type="submit" IsPrimary CssClass="e-outline" IconCss="e-icons e-filter"
                               IconPosition="IconPosition.Left">@L["ApplyFilter"]</SfButton>
                 </div>
