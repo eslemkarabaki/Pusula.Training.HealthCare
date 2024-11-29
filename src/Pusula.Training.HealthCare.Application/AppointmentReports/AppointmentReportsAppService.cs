@@ -29,8 +29,8 @@ namespace Pusula.Training.HealthCare.AppointmentReports
         IAppointmentReportRepository appointmentReportRepository,
         AppointmentReportManager appointmentReportManager,
         IDistributedCache<AppointmentReportDownloadTokenCacheItem, string> downloadTokenCache,
-                IRepository<Appointment, Guid> appointmentRepository,
-                IRepository<Patient,Guid> patientRepository) :HealthCareAppService, IAppointmentReportsAppService
+                IAppointmentReportRepository appointmentRepository,
+                IPatientRepository patientRepository) :HealthCareAppService, IAppointmentReportsAppService
     {
         #region GetList
         public virtual async Task<PagedResultDto<AppointmentReportDto>> GetListAsync(GetAppointmentReportsInput input)
@@ -47,37 +47,26 @@ namespace Pusula.Training.HealthCare.AppointmentReports
         #endregion
 
         #region GetWithNavigationProperties
-        public virtual async Task<AppointmentReportWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
-        {
-            return ObjectMapper.Map<AppointmentReportWithNavigationProperties, AppointmentReportWithNavigationPropertiesDto>
+        public virtual async Task<AppointmentReportWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) => ObjectMapper.Map<AppointmentReportWithNavigationProperties, AppointmentReportWithNavigationPropertiesDto>
                 (await appointmentReportRepository.GetWithNavigationPropertiesAsync(id));
-        }
+        
         #endregion        
 
         #region Get
-        public virtual async Task<AppointmentReportDto> GetAsync(Guid id)
-        {
-            return ObjectMapper.Map<AppointmentReport, AppointmentReportDto>(await appointmentReportRepository.GetAsync(id));
-        }
+        public virtual async Task<AppointmentReportDto> GetAsync(Guid id) => ObjectMapper.Map<AppointmentReport, AppointmentReportDto>(await appointmentReportRepository.GetAsync(id));
+        
         #endregion
 
         #region Delete
         [Authorize(HealthCarePermissions.AppointmentReports.Delete)]
-        public virtual async Task DeleteAsync(Guid id)
-        {
-            await appointmentReportRepository.DeleteAsync(id);
-        }
+        public virtual async Task DeleteAsync(Guid id) => await appointmentReportRepository.DeleteAsync(id);
+        
         #endregion
 
         #region Create
         [Authorize(HealthCarePermissions.AppointmentReports.Create)]
         public virtual async Task<AppointmentReportDto> CreateAsync(AppointmentReportCreateDto input)
-        {
-            if (input.AppointmentId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Appointment"]]);
-            }            
-
+        {                      
             var appointmentReport = await appointmentReportManager.CreateAsync(
             input.AppointmentId,input.ReportDate, input.PriorityNotes, input.DoctorNotes);
 
@@ -89,7 +78,6 @@ namespace Pusula.Training.HealthCare.AppointmentReports
         [Authorize(HealthCarePermissions.AppointmentReports.Edit)]
         public virtual async Task<AppointmentReportDto> UpdateAsync(Guid id, AppointmentReportUpdateDto input)
         {
-
             var appointmentReport = await appointmentReportManager.UpdateAsync(
                 id, input.AppointmentId, input.ReportDate, input.PriorityNotes, input.DoctorNotes);
 
@@ -99,18 +87,14 @@ namespace Pusula.Training.HealthCare.AppointmentReports
 
         #region DeleteById
         [Authorize(HealthCarePermissions.AppointmentReports.Delete)]
-        public virtual async Task DeleteByIdsAsync(List<Guid> appointmentReportIds)
-        {
-            await appointmentReportRepository.DeleteManyAsync(appointmentReportIds);
-        }
+        public virtual async Task DeleteByIdsAsync(List<Guid> appointmentReportIds) =>   await appointmentReportRepository.DeleteManyAsync(appointmentReportIds);
+        
         #endregion
 
         #region DeleteAll
         [Authorize(HealthCarePermissions.AppointmentReports.Delete)]
-        public virtual async Task DeleteAllAsync(GetAppointmentReportsInput input)
-        {
-            await appointmentReportRepository.DeleteAllAsync(input.FilterText, input.ReportDate, input.PriorityNotes, input.DoctorNotes, input.AppointmentId);
-        }
+        public virtual async Task DeleteAllAsync(GetAppointmentReportsInput input) => await appointmentReportRepository.DeleteAllAsync(input.FilterText, input.ReportDate, input.PriorityNotes, input.DoctorNotes, input.AppointmentId);
+        
         #endregion
 
         #region GetDownloadToken
@@ -132,29 +116,5 @@ namespace Pusula.Training.HealthCare.AppointmentReports
             };
         }
         #endregion
-
-        //public virtual async Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentLookupAsync(LookupRequestDto input)
-        //{
-        //    // Appointment ve Patient tablolarını birleştiriyoruz
-        //    var query = from appointment in (await appointmentRepository.GetQueryableAsync())
-        //                join patient in (await patientRepository.GetQueryableAsync())
-        //                    on appointment.PatientId equals patient.Id
-        //                where string.IsNullOrWhiteSpace(input.Filter) || patient.FirstName.Contains(input.Filter)
-        //                select new
-        //                {
-        //                    appointment.Id,
-        //                    appointment.AppointmentStartDate,
-        //                    appointment.PatientId,
-        //                    PatientName = patient.FirstName
-        //                };
-
-        //    var lookupData = await query.PageBy(input.SkipCount, input.MaxResultCount).ToDynamicListAsync<Appointment>();
-        //    var totalCount = query.Count();
-        //    return new PagedResultDto<LookupDto<Guid>>
-        //    {
-        //        TotalCount = totalCount,
-        //        Items = ObjectMapper.Map<List<Appointment>, List<LookupDto<Guid>>>(lookupData)
-        //    };
-        //}
     }
 }

@@ -26,81 +26,40 @@ namespace Pusula.Training.HealthCare.Controllers.AppointmentReports
         {
             _appointmentReportsAppService = appointmentReportsAppService;
         }
-
+        
         [HttpGet("all")]
-        public virtual Task<PagedResultDto<AppointmentReportDto>> GetListAsync(GetAppointmentReportsInput input)
-        {
-            return _appointmentReportsAppService.GetListAsync(input);
-        }
+        public virtual Task<PagedResultDto<AppointmentReportDto>> GetListAsync(GetAppointmentReportsInput input)=> _appointmentReportsAppService.GetListAsync(input);
 
         [HttpGet]
         [Route("with-navigation-properties/{id}")]
-        public virtual Task<AppointmentReportWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
-        {
-            return _appointmentReportsAppService.GetWithNavigationPropertiesAsync(id);
-        }
-
+        public virtual Task<AppointmentReportWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) => _appointmentReportsAppService.GetWithNavigationPropertiesAsync(id);
+        
         [HttpGet]
         [Route("{id}")]
-        public virtual Task<AppointmentReportDto> GetAsync(Guid id)
-        {
-            return _appointmentReportsAppService.GetAsync(id);
-        }
-
-        //[HttpGet]
-        //[Route("appointment-lookup")]
-        //public virtual Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentLookupAsync(LookupRequestDto input)
-        //{
-        //    return _appointmentReportsAppService.GetAppointmentLookupAsync(input);
-        //}      
-                       
+        public virtual Task<AppointmentReportDto> GetAsync(Guid id) => _appointmentReportsAppService.GetAsync(id);
 
         [HttpPost]
-        public virtual Task<AppointmentReportDto> CreateAsync(AppointmentReportCreateDto input)
-        {
-            return _appointmentReportsAppService.CreateAsync(input);
-        }
-
+        public virtual Task<AppointmentReportDto> CreateAsync(AppointmentReportCreateDto input) => _appointmentReportsAppService.CreateAsync(input);
+        
         [HttpPut]
         [Route("{id}")]
-        public virtual Task<AppointmentReportDto> UpdateAsync(Guid id, AppointmentReportUpdateDto input)
-        {
-            return _appointmentReportsAppService.UpdateAsync(id, input);
-        }
-
+        public virtual Task<AppointmentReportDto> UpdateAsync(Guid id, AppointmentReportUpdateDto input) => _appointmentReportsAppService.UpdateAsync(id, input);
+        
         [HttpDelete]
         [Route("{id}")]
-        public virtual Task DeleteAsync(Guid id)
-        {
-            return _appointmentReportsAppService.DeleteAsync(id);
-        }
-
-        //[HttpGet]
-        //[Route("as-excel-file")]
-        //public virtual Task<IRemoteStreamContent> GetListAsExcelFileAsync(AppointmentReportExcelDownloadDto input)
-        //{
-        //    return _appointmentReportsAppService.GetListAsExcelFileAsync(input);
-        //}
+        public virtual Task DeleteAsync(Guid id) => _appointmentReportsAppService.DeleteAsync(id);        
 
         [HttpGet]
         [Route("download-token")]
-        public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync()
-        {
-            return _appointmentReportsAppService.GetDownloadTokenAsync();
-        }
-
+        public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync() => _appointmentReportsAppService.GetDownloadTokenAsync();
+        
         [HttpDelete]
         [Route("")]
-        public virtual Task DeleteByIdsAsync(List<Guid> appointmentReportIds)
-        {
-            return _appointmentReportsAppService.DeleteByIdsAsync(appointmentReportIds);
-        }
-
+        public virtual Task DeleteByIdsAsync(List<Guid> appointmentReportIds) => _appointmentReportsAppService.DeleteByIdsAsync(appointmentReportIds);
+        
         [HttpDelete]
         [Route("all")]
-        public virtual Task DeleteAllAsync(GetAppointmentReportsInput input)
-        {
-            return _appointmentReportsAppService.DeleteAllAsync(input);
-        }
+        public virtual Task DeleteAllAsync(GetAppointmentReportsInput input) =>  _appointmentReportsAppService.DeleteAllAsync(input);
+        
     }
 }
