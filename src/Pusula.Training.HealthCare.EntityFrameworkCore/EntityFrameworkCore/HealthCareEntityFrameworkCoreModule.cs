@@ -28,6 +28,9 @@ using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using Pusula.Training.HealthCare.RadiologyExaminations;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -62,6 +65,25 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                  * default repositories only for aggregate roots */
                 options.AddDefaultRepositories(true);
 
+            options.AddRepository<Patient, EfCorePatientRepository>();
+            options.AddRepository<Protocol, EfCoreProtocolRepository>();
+            options.AddRepository<Department, EfCoreDepartmentRepository>();
+            options.AddRepository<Appointment, EfCoreAppointmentRepository>();
+            options.AddRepository<Hospital, EfCoreHospitalRepository>();
+            options.AddRepository<Notification, EfCoreNotificationRepository>();
+            options.AddRepository<Hospital, EfCoreHospitalRepository>();
+            options.AddRepository<Notification, EfCoreNotificationRepository>();
+            options.AddRepository<Country, EfCoreCountryRepository>();
+            options.AddRepository<City, EfCoreCityRepository>();
+            options.AddRepository<District, EfCoreDistrictRepository>();
+            options.AddRepository<Address, EfCoreAddressRepository>();
+            options.AddRepository<Doctor, EfCoreDoctorRepository>();
+            options.AddRepository<Title, EfCoreTitleRepository>();
+            options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+            options.AddRepository<RadiologyExamination, EfCoreRadiologyExaminationRepository>();
+            options.AddRepository<RadiologyExaminationProcedure, EfCoreRadiologyExaminationProcedureRepository>();
+            options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+        });
                 options.AddRepository<Patient, EfCorePatientRepository>();
                 options.AddRepository<Protocol, EfCoreProtocolRepository>();
                 options.AddRepository<Department, EfCoreDepartmentRepository>();

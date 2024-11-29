@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pusula.Training.HealthCare.EntityFrameworkCore;
@@ -12,9 +13,21 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Pusula.Training.HealthCare.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    partial class HealthCareDbContextModelSnapshot : ModelSnapshot
+<<<<<<< HEAD:src/Pusula.Training.HealthCare.EntityFrameworkCore/Migrations/20241114204502_Initial.Designer.cs
+<<<<<<<< HEAD:src/Pusula.Training.HealthCare.EntityFrameworkCore/Migrations/20241122073445_RadiologyAdded.Designer.cs
+    [Migration("20241122073445_RadiologyAdded")]
+    partial class RadiologyAdded
+========
+    [Migration("20241114204502_Initial")]
+    partial class Initial
+>>>>>>>> origin/dev2:src/Pusula.Training.HealthCare.EntityFrameworkCore/Migrations/20241114204502_Initial.Designer.cs
+=======
+    [Migration("20241125190937_Examination")]
+    partial class Examination
+>>>>>>> origin/dev2:src/Pusula.Training.HealthCare.EntityFrameworkCore/Migrations/20241125190937_Examination.Designer.cs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

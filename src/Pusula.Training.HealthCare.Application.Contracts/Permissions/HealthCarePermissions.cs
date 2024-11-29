@@ -123,4 +123,39 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
+    #region Radiology
+    public static class RadiologyExaminationGroups
+    {
+        public const string Default = GroupName + ".RadiologyExaminationGroups";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminations
+    {
+        public const string Default = GroupName + ".RadiologyExaminations";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminationProcedures
+    {
+        public const string Default = GroupName + ".RadiologyExaminationProcedures";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminationDocuments
+    {
+        public const string Default = GroupName + ".RadiologyExaminationDocuments";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    #endregion
 }

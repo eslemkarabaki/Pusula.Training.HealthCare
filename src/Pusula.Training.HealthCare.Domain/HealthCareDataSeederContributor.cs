@@ -14,6 +14,9 @@ using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Patients;
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.Data;
@@ -40,6 +43,10 @@ public class HealthCareDataSeederContributor(
     IAppointmentTypeRepository appointmentTypeRepository,
     IGuidGenerator guidGenerator
 )
+    IRadiologyExaminationGroupRepository radiologyExaminationGroupRepository,
+    IRadiologyExaminationRepository radiologyExaminationRepository,
+    IRadiologyExaminationProcedureRepository radiologyExaminationProcedureRepository,
+    IGuidGenerator guidGenerator)
     : IDataSeedContributor, ITransientDependency
 {
     public async Task SeedAsync(DataSeedContext context)
@@ -59,6 +66,14 @@ public class HealthCareDataSeederContributor(
                 }
             );
         }
+
+        if (await radiologyExaminationGroupRepository.GetCountAsync() == 0)
+        {
+            var radiologyExaminationGroups = await SeedRadiologyExaminationGroupsAsync();
+            await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
+            //await SeedRadiologyExaminationProcedureAsync(radiologyExaminationGroups);
+        }
+    }
 
         if (!await doctorRepository.AnyAsync())
         {
@@ -267,12 +282,48 @@ public class HealthCareDataSeederContributor(
         await SeedEntitiesAsync(appointmentTypes, e => appointmentTypeRepository.InsertManyAsync(e, true));
     }
     
+    private async Task<List<Guid>> SeedRadiologyExaminationGroupsAsync()
+    {
+        IEnumerable<RadiologyExaminationGroup> groups =
+        [
+            new(guidGenerator.Create(), "Radyoloji Genel", "Genel radyoloji işlemleri"),
+        new(guidGenerator.Create(), "Manyetik Rezonans (MR)", "Manyetik rezonans görüntüleme işlemleri"),
+        new(guidGenerator.Create(), "Doppler Ultrasonografi", "Kan akışı ve damar incelemeleri")
+        ];
+
+        return await SeedEntitiesAsync(groups, e => radiologyExaminationGroupRepository.InsertManyAsync(e, true));
+    }
+
+
+    private async Task SeedRadiologyExaminationsAsync(IEnumerable<Guid> radiologyExaminationGroups)
+    {
+        IEnumerable<RadiologyExamination> examinations =
+        [
+            new(guidGenerator.Create(), "Akciğer Röntgeni", "72081", radiologyExaminationGroups.ElementAt(0)),
+        new(guidGenerator.Create(), "Beyin MR", "70555", radiologyExaminationGroups.ElementAt(1)),
+        new(guidGenerator.Create(), "Karotis Doppler Ultrason", "70552", radiologyExaminationGroups.ElementAt(2))
+        ];
+
+        await SeedEntitiesAsync(examinations, e => radiologyExaminationRepository.InsertManyAsync(e, true));
+    }
+
+    //private async Task SeedRadiologyExaminationProcedureAsync(IEnumerable<Guid> radiologyExaminationProcedures)
+    //{
+    //    IEnumerable<RadiologyExaminationProcedure> procedures =
+    //    [
+    //        new(guidGenerator.Create(), "Akciğer Röntgeni", DateTime.Now, Guid.NewGuid(), radiologyExaminationProcedures.ElementAt(0), Guid.NewGuid()),
+    //    new(guidGenerator.Create(), "Beyin MR", DateTime.Now, Guid.NewGuid(), radiologyExaminationProcedures.ElementAt(1), Guid.NewGuid()),
+    //    new(guidGenerator.Create(), "Karotis Doppler Ultrason", DateTime.Now, Guid.NewGuid(), radiologyExaminationProcedures.ElementAt(2), Guid.NewGuid())
+    //    ];
+
+    //    await SeedEntitiesAsync(procedures, e => radiologyExaminationProcedureRepository.InsertManyAsync(e, true));
+    //}
+
+
     // Generic Entities
-    private async Task<List<Guid>> SeedEntitiesAsync<T>(
-        List<T> entities,
-        Func<List<T>, Task> insertFunction
-    )
-        where T : AggregateRoot<Guid>
+    private async Task<List<Guid>> SeedEntitiesAsync<T>(IEnumerable<T> entities,
+                                                    Func<IEnumerable<T>, Task> insertFunction)
+    where T : AggregateRoot<Guid>
     {
         await insertFunction(entities);
         return entities.Select(e => e.Id).ToList();
