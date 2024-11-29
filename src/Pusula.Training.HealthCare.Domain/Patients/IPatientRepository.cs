@@ -12,19 +12,17 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         Guid id,
         CancellationToken cancellationToken = default
     );
-    
+
     Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
         int patientNo,
         CancellationToken cancellationToken = default
     );
 
-
     Task<List<Patient>> GetListAsync(
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -45,8 +43,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -67,8 +64,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -86,8 +82,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,

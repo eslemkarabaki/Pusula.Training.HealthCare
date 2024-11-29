@@ -33,8 +33,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -55,8 +54,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                   filterText,
                   no,
                   countryId,
-                  firstName,
-                  lastName,
+                  fullname,
                   birthDateMin,
                   birthDateMax,
                   identityNumber,
@@ -76,8 +74,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -98,8 +95,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                   filterText,
                   no,
                   countryId,
-                  firstName,
-                  lastName,
+                  fullname,
                   birthDateMin,
                   birthDateMax,
                   identityNumber,
@@ -119,8 +115,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -138,8 +133,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 filterText,
                 no,
                 countryId,
-                firstName,
-                lastName,
+                fullname,
                 birthDateMin,
                 birthDateMax,
                 identityNumber,
@@ -231,8 +225,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -251,8 +244,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 filterText,
                 no,
                 countryId,
-                firstName,
-                lastName,
+                fullname,
                 birthDateMin,
                 birthDateMax,
                 identityNumber,
@@ -277,8 +269,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -293,8 +284,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => e.FirstName!.Contains(filterText!) ||
-                    e.LastName!.Contains(filterText!) ||
+                e => e.FullName!.Contains(filterText!) ||
                     e.IdentityNumber!.Contains(filterText!) ||
                     e.PassportNumber!.Contains(filterText!)
             )
@@ -302,12 +292,8 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 no.HasValue, e => e.No == no!.Value
             )
             .WhereIf(
-                !string.IsNullOrWhiteSpace(firstName),
-                e => e.FirstName.Contains(firstName!)
-            )
-            .WhereIf(
-                !string.IsNullOrWhiteSpace(lastName),
-                e => e.LastName.Contains(lastName!)
+                !string.IsNullOrWhiteSpace(fullname),
+                e => e.FullName.Contains(fullname!)
             )
             .WhereIf(birthDateMin.HasValue, e => e.BirthDate >= birthDateMin!.Value)
             .WhereIf(birthDateMax.HasValue, e => e.BirthDate <= birthDateMax!.Value)
@@ -342,8 +328,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -358,8 +343,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => e.Patient.FirstName!.Contains(filterText!) ||
-                    e.Patient.LastName!.Contains(filterText!) ||
+                e => e.Patient.FullName!.Contains(filterText!) ||
                     e.Patient.IdentityNumber!.Contains(filterText!) ||
                     e.Patient.PassportNumber!.Contains(filterText!)
             )
@@ -367,12 +351,8 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 no.HasValue, e => e.Patient.No == no!.Value
             )
             .WhereIf(
-                !string.IsNullOrWhiteSpace(firstName),
-                e => e.Patient.FirstName.Contains(firstName!)
-            )
-            .WhereIf(
-                !string.IsNullOrWhiteSpace(lastName),
-                e => e.Patient.LastName.Contains(lastName!)
+                !string.IsNullOrWhiteSpace(fullname),
+                e => e.Patient.FullName.Contains(fullname!)
             )
             .WhereIf(birthDateMin.HasValue, e => e.Patient.BirthDate >= birthDateMin!.Value)
             .WhereIf(birthDateMax.HasValue, e => e.Patient.BirthDate <= birthDateMax!.Value)

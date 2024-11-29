@@ -62,13 +62,13 @@ public class PatientAppService(
     public virtual async Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input)
     {
         var totalCount = await patientRepository.GetCountAsync(
-            input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
+            input.FilterText, input.No, input.CountryId, input.FullName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
         );
         var items = await patientRepository.GetListAsync(
-            input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
+            input.FilterText, input.No, input.CountryId, input.FullName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.Sorting,
@@ -87,13 +87,13 @@ public class PatientAppService(
     )
     {
         var totalCount = await patientRepository.GetCountAsync(
-            input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
+            input.FilterText, input.No, input.CountryId, input.FullName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
         );
         var items = await patientRepository.GetListWithNavigationPropertiesAsync(
-            input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
+            input.FilterText, input.No, input.CountryId, input.FullName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus, input.Sorting,
@@ -162,7 +162,7 @@ public class PatientAppService(
     [Authorize(HealthCarePermissions.Patients.Delete)]
     public virtual async Task DeleteAllAsync(GetPatientsInput input) =>
         await patientRepository.DeleteAllAsync(
-            input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
+            input.FilterText, input.No, input.CountryId, input.FullName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus
@@ -182,7 +182,7 @@ public class PatientAppService(
         }
 
         var items = await patientRepository.GetListWithNavigationPropertiesAsync(
-            input.FilterText, input.No, input.CountryId, input.FirstName, input.LastName, input.BirthDateMin,
+            input.FilterText, input.No, input.CountryId, input.FullName, input.BirthDateMin,
             input.BirthDateMax,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumber,
             input.HomePhoneNumber, input.Gender, input.BloodType, input.MaritalStatus,

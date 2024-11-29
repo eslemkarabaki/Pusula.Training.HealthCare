@@ -8,8 +8,7 @@ public class PatientExcelDownloadDto
     public string? FilterText { get; set; }
     public int? No { get; set; }
 
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
+    public string? FullName { get; set; }
     public DateTime? BirthDateMin { get; set; }
     public DateTime? BirthDateMax { get; set; }
     public string? IdentityNumber { get; set; }
