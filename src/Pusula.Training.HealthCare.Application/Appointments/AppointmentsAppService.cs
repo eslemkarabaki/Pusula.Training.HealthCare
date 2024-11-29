@@ -31,10 +31,10 @@ namespace Pusula.Training.HealthCare.Appointments
         AppointmentManager appointmentManager,
         IDistributedCache<AppointmentDownloadTokenCacheItem, string> downloadTokenCache,
         
-        IRepository<AppointmentType, Guid> appointmentTypeRepository,
-        IRepository<Department, Guid> departmentRepository,
-        IRepository<Doctor, Guid> doctorRepository,
-        IRepository<Patient, Guid> patientRepository) :HealthCareAppService, IAppointmentsAppService
+        IAppointmentTypeRepository appointmentTypeRepository,
+        IDepartmentRepository departmentRepository,
+        IDoctorRepository doctorRepository,
+        IPatientRepository patientRepository) :HealthCareAppService, IAppointmentsAppService
     {
         #region GetList
         public virtual async Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
@@ -51,18 +51,14 @@ namespace Pusula.Training.HealthCare.Appointments
         #endregion
 
         #region GetWithNavigationProperties
-        public virtual async Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
-        {
-            return ObjectMapper.Map<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>
+        public virtual async Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) => ObjectMapper.Map<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>
                 (await appointmentRepository.GetWithNavigationPropertiesAsync(id));
-        }
+        
         #endregion
 
         #region Get
-        public virtual async Task<AppointmentDto> GetAsync(Guid id)
-        {
-            return ObjectMapper.Map<Appointment, AppointmentDto>(await appointmentRepository.GetAsync(id));
-        }
+        public virtual async Task<AppointmentDto> GetAsync(Guid id) => ObjectMapper.Map<Appointment, AppointmentDto>(await appointmentRepository.GetAsync(id));
+        
         #endregion
 
         #region GetAppointmentTypeLookup
@@ -135,33 +131,14 @@ namespace Pusula.Training.HealthCare.Appointments
 
         #region Delete
         [Authorize(HealthCarePermissions.Appointments.Delete)]
-        public virtual async Task DeleteAsync(Guid id)
-        {
-            await appointmentRepository.DeleteAsync(id);
-        }
+        public virtual async Task DeleteAsync(Guid id) => await appointmentRepository.DeleteAsync(id);
+        
         #endregion
 
         #region Create
         [Authorize(HealthCarePermissions.Appointments.Create)]
         public virtual async Task<AppointmentDto> CreateAsync(AppointmentCreateDto input)
-        {
-            if (input.AppointmentTypeId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["AppointmentType"]]);
-            }
-            if (input.DepartmentId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Department"]]);
-            }
-            if (input.DoctorId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Doctor"]]);
-            }
-            if (input.PatientId == default)
-            {
-                throw new UserFriendlyException(L["The {0} field is required.", L["Patient"]]);
-            }            
-
+        {         
             var appointment = await appointmentManager.CreateAsync(
             input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.StartTime, input.EndTime, input.Status, input.Notes);
 
@@ -173,7 +150,6 @@ namespace Pusula.Training.HealthCare.Appointments
         [Authorize(HealthCarePermissions.Appointments.Edit)]
         public virtual async Task<AppointmentDto> UpdateAsync(Guid id, AppointmentUpdateDto input)
         {         
-
             var appointment = await appointmentManager.UpdateAsync(
                 id,input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId, input.StartTime, input.EndTime, input.Status, input.Notes);
 
@@ -214,18 +190,14 @@ namespace Pusula.Training.HealthCare.Appointments
 
         #region DeleteById
         [Authorize(HealthCarePermissions.Appointments.Delete)]
-        public virtual async Task DeleteByIdsAsync(List<Guid> appointmentIds)
-        {
-            await appointmentRepository.DeleteManyAsync(appointmentIds);
-        }
+        public virtual async Task DeleteByIdsAsync(List<Guid> appointmentIds) =>  await appointmentRepository.DeleteManyAsync(appointmentIds);
+        
         #endregion
 
         #region DeleteAll
         [Authorize(HealthCarePermissions.Appointments.Delete)]
-        public virtual async Task DeleteAllAsync(GetAppointmentsInput input)
-        {
-            await appointmentRepository.DeleteAllAsync(input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status,  input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
-        }
+        public virtual async Task DeleteAllAsync(GetAppointmentsInput input) => await appointmentRepository.DeleteAllAsync(input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status,  input.AppointmentTypeId, input.DepartmentId, input.DoctorId, input.PatientId);
+        
         #endregion
 
         #region GetDownloadToken
@@ -246,11 +218,11 @@ namespace Pusula.Training.HealthCare.Appointments
                 Token = token
             };
         }
-    //GetDoctorAppointment
-        public async Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id)
-        {
-            return ObjectMapper.Map<List<Appointment>, List<AppointmentDto>>(await appointmentRepository.GetListAsync(doctorId: id));
-        }
         #endregion
+
+        #region GetDoctorAppointment
+        public async Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id) => ObjectMapper.Map<List<Appointment>, List<AppointmentDto>>(await appointmentRepository.GetListAsync(startTime: DateTime.Now ,doctorId: id));
+        #endregion
+
     }
 }

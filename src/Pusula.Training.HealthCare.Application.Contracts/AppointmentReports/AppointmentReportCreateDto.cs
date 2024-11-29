@@ -17,6 +17,7 @@ namespace Pusula.Training.HealthCare.AppointmentReports
         public string PriorityNotes { get; set; } = null!;
         [StringLength(AppointmentReportConsts.DoctorNotesMaxLength)]
         public string DoctorNotes { get; set; } = null!;
+        [Required]
         public Guid AppointmentId { get; set; }
 
     }
