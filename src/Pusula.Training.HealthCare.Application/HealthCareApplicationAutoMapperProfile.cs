@@ -15,20 +15,14 @@ using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Examinations;
-<<<<<<< HEAD
 using Pusula.Training.HealthCare.Tests;
 using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.TestGroups;
-=======
-using Pusula.Training.HealthCare.Examinations;
-using Pusula.Training.HealthCare.AppointmentTypes;
-using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.PatientTypes;
->>>>>>> development
 
 namespace Pusula.Training.HealthCare;
 
@@ -118,19 +112,15 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Doctor, DoctorDto>();
         CreateMap<Doctor, DoctorExcelDto>();
         CreateMap<DoctorDto, DoctorUpdateDto>();
-<<<<<<< HEAD
         CreateMap<Doctor, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
-=======
         CreateMap<Doctor, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FirstName));
->>>>>>> development
 
         CreateMap<Title, TitleDto>();
         CreateMap<Title, TitleExcelDto>();
         CreateMap<TitleDto, TitleUpdateDto>();
         CreateMap<Title, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
-<<<<<<< HEAD
         CreateMap<Test, TestDto>();
         CreateMap<Test, TestExcelDto>();
         CreateMap<TestDto, TestUpdateDto>();
@@ -149,9 +139,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
-=======
         #region Radiology
->>>>>>> development
 
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupExcelDto>();

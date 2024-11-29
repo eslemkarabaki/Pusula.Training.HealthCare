@@ -41,13 +41,11 @@ public class HealthCareDataSeederContributor(
     ITitleRepository titleRepository,
     IDoctorRepository doctorRepository,
     IAppointmentTypeRepository appointmentTypeRepository,
-    IGuidGenerator guidGenerator
-)
     IRadiologyExaminationGroupRepository radiologyExaminationGroupRepository,
     IRadiologyExaminationRepository radiologyExaminationRepository,
     IRadiologyExaminationProcedureRepository radiologyExaminationProcedureRepository,
-    IGuidGenerator guidGenerator)
-    : IDataSeedContributor, ITransientDependency
+    IGuidGenerator guidGenerator
+) : IDataSeedContributor, ITransientDependency
 {
     public async Task SeedAsync(DataSeedContext context)
     {
@@ -73,14 +71,14 @@ public class HealthCareDataSeederContributor(
             await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
             //await SeedRadiologyExaminationProcedureAsync(radiologyExaminationGroups);
         }
-    }
+
 
         if (!await doctorRepository.AnyAsync())
         {
-           var departments= await SeedDepartmentsAsync();
-           var hospital=  await SeedHospitalsAsync();
-           var titles= await SeedTitlesAsync();
-           await SeedDoctorsAsync(departments, hospital, titles);
+            var departments = await SeedDepartmentsAsync();
+            var hospital = await SeedHospitalsAsync();
+            var titles = await SeedTitlesAsync();
+            await SeedDoctorsAsync(departments, hospital, titles);
         }
 
         if (!await appointmentTypeRepository.AnyAsync())
@@ -243,13 +241,13 @@ public class HealthCareDataSeederContributor(
             new(guidGenerator.Create(), "Dr.")
         ];
 
-       return await SeedEntitiesAsync(titles, e => titleRepository.InsertManyAsync(e, true));
+        return await SeedEntitiesAsync(titles, e => titleRepository.InsertManyAsync(e, true));
     }
-    
+
     // Doctor
-    private async Task SeedDoctorsAsync(List<Guid> departmentsId,Hospital hospital,List<Guid> titleId)
+    private async Task SeedDoctorsAsync(List<Guid> departmentsId, Hospital hospital, List<Guid> titleId)
     {
-        
+
         var faker = new Faker<Doctor>("tr")
             .CustomInstantiator(
                 f =>
@@ -262,7 +260,7 @@ public class HealthCareDataSeederContributor(
                         f.PickRandom(departmentsId),
                         hospital.Id
                      )
-                
+
             );
         await SeedEntitiesAsync(faker.Generate(100), e => doctorRepository.InsertManyAsync(e, true));
     }
@@ -278,10 +276,10 @@ public class HealthCareDataSeederContributor(
             new AppointmentType(guidGenerator.Create(),"Radyoloji"),
             new AppointmentType(guidGenerator.Create(),"Aşı")
         ];
-       
+
         await SeedEntitiesAsync(appointmentTypes, e => appointmentTypeRepository.InsertManyAsync(e, true));
     }
-    
+
     private async Task<List<Guid>> SeedRadiologyExaminationGroupsAsync()
     {
         IEnumerable<RadiologyExaminationGroup> groups =

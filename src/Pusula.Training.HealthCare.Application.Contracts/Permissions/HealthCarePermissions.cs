@@ -21,7 +21,7 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
-    
+
     public static class PatientTypes
     {
         public const string Default = GroupName + ".PatientTypes";
@@ -124,7 +124,6 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-<<<<<<< HEAD
     public static class Tests
     {
         public const string Default = GroupName + ".Tests";
@@ -162,8 +161,7 @@ public static class HealthCarePermissions
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
     }
-}
-=======
+
     #region Radiology
     public static class RadiologyExaminationGroups
     {
@@ -199,4 +197,4 @@ public static class HealthCarePermissions
 
     #endregion
 }
->>>>>>> development
+

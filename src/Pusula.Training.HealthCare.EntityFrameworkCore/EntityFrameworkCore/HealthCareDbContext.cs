@@ -35,18 +35,15 @@ using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Npgsql.Replication.PgOutput.Messages;
-<<<<<<< HEAD
 using Pusula.Training.HealthCare.TestGroups;
 using Pusula.Training.HealthCare.Tests;
 using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.TestProcesses;
 using Pusula.Training.HealthCare.WorkLists;
 
-=======
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
->>>>>>> development
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -73,26 +70,17 @@ public class HealthCareDbContext :
     public DbSet<District> Districts { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Appointment> Appointments { get; set; } = null!;
-<<<<<<< HEAD
-    
-=======
     public DbSet<AppointmentReport> AppointmentReports { get; set; } = null!;
     public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
->>>>>>> development
     public DbSet<Examination> Examinations { get; set; } = null!;
     public DbSet<AppDefault> AppDefaults { get; set; } = null!;
-    public DbSet<Appointment> Appointments { get; set; } = null!; 
-    public DbSet<Examination> Examinations { get; set; } = null!;
-
-<<<<<<< HEAD
     public DbSet<TestGroup> TestGroups { get; set; } = null!;
     public DbSet<Test> Tests { get; set; } = null!;
     public DbSet<TestType> TestTypes { get; set; } = null!;
     public DbSet<TestProcess> TestProcesses { get; set; } = null!;
     public DbSet<WorkList> WorkLists { get; set; } = null!;
 
-=======
     #region Radiology
 
     public DbSet<RadiologyExaminationGroup> RadiologyExaminationGroups { get; set; } = null!;
@@ -101,7 +89,6 @@ public class HealthCareDbContext :
     public DbSet<RadiologyExaminationDocument> RadiologyExaminationDocuments { get; set; } = null!;
 
     #endregion
->>>>>>> development
 
     #region Entities from the modules
 

@@ -29,8 +29,6 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
-<<<<<<< HEAD
-=======
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Departments;
@@ -46,7 +44,6 @@ using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.RadiologyExaminations;
->>>>>>> development
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -73,76 +70,48 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-<<<<<<< HEAD
         context.Services.AddAbpDbContext<HealthCareDbContext>(options =>
         {
-          
+
             options.AddDefaultRepositories(includeAllEntities: true);
-=======
-        context.Services.AddAbpDbContext<HealthCareDbContext>(
-            options =>
-            {
-                /* Remove "includeAllEntities: true" to create
-                 * default repositories only for aggregate roots */
-                options.AddDefaultRepositories(true);
->>>>>>> development
+            context.Services.AddAbpDbContext<HealthCareDbContext>(
+                options =>
+                {
+                    /* Remove "includeAllEntities: true" to create
+                     * default repositories only for aggregate roots */
+                    options.AddDefaultRepositories(true);
 
-            options.AddRepository<Patient, EfCorePatientRepository>();
-            options.AddRepository<Protocol, EfCoreProtocolRepository>();
-            options.AddRepository<Department, EfCoreDepartmentRepository>();
-            options.AddRepository<Appointment, EfCoreAppointmentRepository>();
-            options.AddRepository<Hospital, EfCoreHospitalRepository>();
-            options.AddRepository<Notification, EfCoreNotificationRepository>();
-            options.AddRepository<Country, EfCoreCountryRepository>();
-            options.AddRepository<City, EfCoreCityRepository>();
-            options.AddRepository<District, EfCoreDistrictRepository>();
-            options.AddRepository<Address, EfCoreAddressRepository>();
-            options.AddRepository<Doctor, EfCoreDoctorRepository>();
-            options.AddRepository<Title, EfCoreTitleRepository>();
-<<<<<<< HEAD
+                    options.AddRepository<Patient, EfCorePatientRepository>();
+                    options.AddRepository<Protocol, EfCoreProtocolRepository>();
+                    options.AddRepository<Department, EfCoreDepartmentRepository>();
+                    options.AddRepository<Appointment, EfCoreAppointmentRepository>();
+                    options.AddRepository<Hospital, EfCoreHospitalRepository>();
+                    options.AddRepository<Notification, EfCoreNotificationRepository>();
+                    options.AddRepository<Country, EfCoreCountryRepository>();
+                    options.AddRepository<City, EfCoreCityRepository>();
+                    options.AddRepository<District, EfCoreDistrictRepository>();
+                    options.AddRepository<Address, EfCoreAddressRepository>();
+                    options.AddRepository<Doctor, EfCoreDoctorRepository>();
+                    options.AddRepository<Title, EfCoreTitleRepository>();
 
-            
-            options.AddRepository<Test, EfCoreTestRepository>();
-            options.AddRepository<TestType, EfCoreTestTypeRepository>();
-            options.AddRepository<TestGroup, EfCoreTestGroupRepository>();
-            options.AddRepository<TestProcess, EfCoreTestProcessRepository>();
-            options.AddRepository<WorkList, EfCoreWorkListRepository>();
-=======
-            options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
-            options.AddRepository<RadiologyExamination, EfCoreRadiologyExaminationRepository>();
-            options.AddRepository<RadiologyExaminationProcedure, EfCoreRadiologyExaminationProcedureRepository>();
-            options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
->>>>>>> development
+
+                    options.AddRepository<Test, EfCoreTestRepository>();
+                    options.AddRepository<TestType, EfCoreTestTypeRepository>();
+                    options.AddRepository<TestGroup, EfCoreTestGroupRepository>();
+                    options.AddRepository<TestProcess, EfCoreTestProcessRepository>();
+                    options.AddRepository<WorkList, EfCoreWorkListRepository>();
+                    options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+                    options.AddRepository<RadiologyExamination, EfCoreRadiologyExaminationRepository>();
+                    options.AddRepository<RadiologyExaminationProcedure, EfCoreRadiologyExaminationProcedureRepository>();
+                    options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+                });
         });
-                options.AddRepository<Patient, EfCorePatientRepository>();
-                options.AddRepository<Protocol, EfCoreProtocolRepository>();
-                options.AddRepository<Department, EfCoreDepartmentRepository>();
-                options.AddRepository<Appointment, EfCoreAppointmentRepository>();
-                options.AddRepository<Hospital, EfCoreHospitalRepository>();
-                options.AddRepository<Notification, EfCoreNotificationRepository>();
-                options.AddRepository<Hospital, EfCoreHospitalRepository>();
-                options.AddRepository<Notification, EfCoreNotificationRepository>();
-                options.AddRepository<Country, EfCoreCountryRepository>();
-                options.AddRepository<City, EfCoreCityRepository>();
-                options.AddRepository<District, EfCoreDistrictRepository>();
-                options.AddRepository<Address, EfCoreAddressRepository>();
-                options.AddRepository<Doctor, EfCoreDoctorRepository>();
-                options.AddRepository<Title, EfCoreTitleRepository>();
-                options.AddRepository<PatientType, EfCorePatientTypeRepository>();
-                options.AddRepository<PatientNote, EfCorePatientNoteRepository>();
-                options.AddRepository<AppDefault, EfCoreAppDefaultRepository>();
-                options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
-                options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
-            }
-        );
 
-<<<<<<< HEAD
         Configure<AbpDbContextOptions>(options =>
         {
-            
+
             options.UseNpgsql();
         });
-=======
         Configure<AbpDbContextOptions>(
             options =>
             {
@@ -151,6 +120,5 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.UseNpgsql();
             }
         );
->>>>>>> development
     }
 }
