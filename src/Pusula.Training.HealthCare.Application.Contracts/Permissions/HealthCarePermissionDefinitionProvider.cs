@@ -1,4 +1,5 @@
 using Pusula.Training.HealthCare.Localization;
+using System.Text.RegularExpressions;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
@@ -15,9 +16,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         myGroup.AddPermission(Dashboard.Host, L("Permission:Dashboard"), MultiTenancySides.Host);
         myGroup.AddPermission(Dashboard.Tenant, L("Permission:Dashboard"), MultiTenancySides.Tenant);
 
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1")); 
-
+        // Define other permissions here
         SetPatientPermissions(myGroup);
         SetCountryPermissions(myGroup);
         SetCityPermissions(myGroup);
@@ -73,6 +72,33 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         examinationPermission.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
         examinationPermission.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
 
+<<<<<<< HEAD
+        var testPermission = myGroup.AddPermission(HealthCarePermissions.Tests.Default, L("Permission:Tests"));
+        testPermission.AddChild(HealthCarePermissions.Tests.Create, L("Permission:Create"));
+        testPermission.AddChild(HealthCarePermissions.Tests.Edit, L("Permission:Edit"));
+        testPermission.AddChild(HealthCarePermissions.Tests.Delete, L("Permission:Delete"));
+
+        var testTypePermission = myGroup.AddPermission(HealthCarePermissions.TestTypes.Default, L("Permission:TestTypes"));
+        testTypePermission.AddChild(HealthCarePermissions.TestTypes.Create, L("Permission:Create"));
+        testTypePermission.AddChild(HealthCarePermissions.TestTypes.Edit, L("Permission:Edit"));
+        testTypePermission.AddChild(HealthCarePermissions.TestTypes.Delete, L("Permission:Delete"));
+        
+        var testGroupPermission = myGroup.AddPermission(HealthCarePermissions.TestGroups.Default, L("Permission:TestGroups"));
+        testTypePermission.AddChild(HealthCarePermissions.TestGroups.Create, L("Permission:Create"));
+        testTypePermission.AddChild(HealthCarePermissions.TestGroups.Edit, L("Permission:Edit"));
+        testTypePermission.AddChild(HealthCarePermissions.TestGroups.Delete, L("Permission:Delete"));
+
+        var testProcessPermission = myGroup.AddPermission(HealthCarePermissions.TestProcesses.Default, L("Permission:TestProcesses"));
+        testProcessPermission.AddChild(HealthCarePermissions.TestProcesses.Create, L("Permission:Create"));
+        testProcessPermission.AddChild(HealthCarePermissions.TestProcesses.Edit, L("Permission:Edit"));
+        testProcessPermission.AddChild(HealthCarePermissions.TestProcesses.Delete, L("Permission:Delete"));
+       
+        var workListPermission = myGroup.AddPermission(HealthCarePermissions.WorkLists.Default, L("Permission:WorkLists"));
+        workListPermission.AddChild(HealthCarePermissions.WorkLists.Create, L("Permission:Create"));
+        workListPermission.AddChild(HealthCarePermissions.WorkLists.Edit, L("Permission:Edit"));
+        workListPermission.AddChild(HealthCarePermissions.WorkLists.Delete, L("Permission:Delete"));
+
+=======
         #region Radiology
 
         var radiologyExaminationGroupPermission = myGroup.AddPermission(HealthCarePermissions.RadiologyExaminationGroups.Default, L("Permission:RadiologyExaminationGroups"));
@@ -96,6 +122,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         radiologyExaminationDocumentPermission.AddChild(HealthCarePermissions.RadiologyExaminationDocuments.Delete, L("Permission:Delete"));
 
         #endregion
+>>>>>>> development
     }
 
     private static LocalizableString L(string name)
@@ -143,6 +170,14 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Districts.Delete, L("Permission:Delete"));
     }
 
+<<<<<<< HEAD
+    private void SetTestPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.Tests.Default, L("Permission:Tests"));
+        permission.AddChild(HealthCarePermissions.Tests.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Tests.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Tests.Delete, L("Permission:Delete"));
+=======
     private void SetExaminationsPermissions(PermissionGroupDefinition group)
     {
         var examinations =
@@ -150,5 +185,37 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         examinations.AddChild(HealthCarePermissions.Examinations.Create, L("Permission:Create"));
         examinations.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
         examinations.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
+>>>>>>> development
     }
+
+    private void SetTestTypePermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.TestTypes.Default, L("Permission:TestTypes"));
+        permission.AddChild(HealthCarePermissions.TestTypes.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.TestTypes.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.TestTypes.Delete, L("Permission:Delete"));
+    }
+
+    private void SetTestGroupPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.TestGroups.Default, L("Permission:TestGroups"));
+        permission.AddChild(HealthCarePermissions.TestGroups.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.TestGroups.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.TestGroups.Delete, L("Permission:Delete"));
+    }
+    private void SetTestProcessPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.TestProcesses.Default, L("Permission:TestProcesses"));
+        permission.AddChild(HealthCarePermissions.TestProcesses.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.TestProcesses.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.TestProcesses.Delete, L("Permission:Delete"));
+    }
+    private void SetWorkListPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.WorkLists.Default, L("Permission:WorkLists"));
+        permission.AddChild(HealthCarePermissions.WorkLists.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.WorkLists.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.WorkLists.Delete, L("Permission:Delete"));
+    }
+
 }

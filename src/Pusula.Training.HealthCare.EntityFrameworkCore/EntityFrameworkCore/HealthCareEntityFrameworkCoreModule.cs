@@ -5,6 +5,19 @@ using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
+using Pusula.Training.HealthCare.Departments;
+using Pusula.Training.HealthCare.Districts;
+using Pusula.Training.HealthCare.Doctors;
+using Pusula.Training.HealthCare.Hospitals;
+using Pusula.Training.HealthCare.Notifications;
+using Pusula.Training.HealthCare.Patients;
+using Pusula.Training.HealthCare.Protocols;
+using Pusula.Training.HealthCare.Titles;
+using Pusula.Training.HealthCare.Tests;
+using Pusula.Training.HealthCare.TestGroups;
+using Pusula.Training.HealthCare.TestTypes;
+using Pusula.Training.HealthCare.TestProcesses;
+using Pusula.Training.HealthCare.WorkLists;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -16,6 +29,8 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+<<<<<<< HEAD
+=======
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Departments;
@@ -31,6 +46,7 @@ using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.RadiologyExaminations;
+>>>>>>> development
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -50,7 +66,6 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        // https://www.npgsql.org/efcore/release-notes/6.0.html#opting-out-of-the-new-timestamp-mapping-logic
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         HealthCareEfCoreEntityExtensionMappings.Configure();
@@ -58,19 +73,24 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+<<<<<<< HEAD
+        context.Services.AddAbpDbContext<HealthCareDbContext>(options =>
+        {
+          
+            options.AddDefaultRepositories(includeAllEntities: true);
+=======
         context.Services.AddAbpDbContext<HealthCareDbContext>(
             options =>
             {
                 /* Remove "includeAllEntities: true" to create
                  * default repositories only for aggregate roots */
                 options.AddDefaultRepositories(true);
+>>>>>>> development
 
             options.AddRepository<Patient, EfCorePatientRepository>();
             options.AddRepository<Protocol, EfCoreProtocolRepository>();
             options.AddRepository<Department, EfCoreDepartmentRepository>();
             options.AddRepository<Appointment, EfCoreAppointmentRepository>();
-            options.AddRepository<Hospital, EfCoreHospitalRepository>();
-            options.AddRepository<Notification, EfCoreNotificationRepository>();
             options.AddRepository<Hospital, EfCoreHospitalRepository>();
             options.AddRepository<Notification, EfCoreNotificationRepository>();
             options.AddRepository<Country, EfCoreCountryRepository>();
@@ -79,10 +99,20 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Address, EfCoreAddressRepository>();
             options.AddRepository<Doctor, EfCoreDoctorRepository>();
             options.AddRepository<Title, EfCoreTitleRepository>();
+<<<<<<< HEAD
+
+            
+            options.AddRepository<Test, EfCoreTestRepository>();
+            options.AddRepository<TestType, EfCoreTestTypeRepository>();
+            options.AddRepository<TestGroup, EfCoreTestGroupRepository>();
+            options.AddRepository<TestProcess, EfCoreTestProcessRepository>();
+            options.AddRepository<WorkList, EfCoreWorkListRepository>();
+=======
             options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
             options.AddRepository<RadiologyExamination, EfCoreRadiologyExaminationRepository>();
             options.AddRepository<RadiologyExaminationProcedure, EfCoreRadiologyExaminationProcedureRepository>();
             options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+>>>>>>> development
         });
                 options.AddRepository<Patient, EfCorePatientRepository>();
                 options.AddRepository<Protocol, EfCoreProtocolRepository>();
@@ -106,6 +136,13 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
             }
         );
 
+<<<<<<< HEAD
+        Configure<AbpDbContextOptions>(options =>
+        {
+            
+            options.UseNpgsql();
+        });
+=======
         Configure<AbpDbContextOptions>(
             options =>
             {
@@ -114,5 +151,6 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.UseNpgsql();
             }
         );
+>>>>>>> development
     }
 }

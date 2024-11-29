@@ -69,4 +69,10 @@
         </None>
     </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Components\Pages\Tests.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>

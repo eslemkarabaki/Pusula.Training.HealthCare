@@ -124,6 +124,46 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
+<<<<<<< HEAD
+    public static class Tests
+    {
+        public const string Default = GroupName + ".Tests";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class TestTypes
+    {
+        public const string Default = GroupName + ".TestTypes";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class TestGroups
+    {
+        public const string Default = GroupName + ".TestGroups";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+    public static class TestProcesses
+    {
+        public const string Default = GroupName + ".TestProcesses";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+    public static class WorkLists
+    {
+        public const string Default = GroupName + ".WorkLists";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+}
+=======
     #region Radiology
     public static class RadiologyExaminationGroups
     {
@@ -159,3 +199,4 @@ public static class HealthCarePermissions
 
     #endregion
 }
+>>>>>>> development
