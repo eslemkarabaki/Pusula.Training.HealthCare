@@ -36,10 +36,10 @@ namespace Pusula.Training.HealthCare.Configurations
             b.Property(x => x.ImagingResults).HasColumnName(nameof(Examination.ImagingResults)).IsRequired(false)
                 .HasMaxLength(ExaminationConsts.ImagingResultsNumberMaxLength);
 
-            b.HasOne<Patient>().WithMany().IsRequired().HasForeignKey(e => e.PatientId)
-                .OnDelete(DeleteBehavior.NoAction);
-            b.HasOne<Doctor>().WithMany().IsRequired().HasForeignKey(e => e.DoctorId)
-                .OnDelete(DeleteBehavior.NoAction);
+            //b.HasOne<Patient>().WithMany().IsRequired().HasForeignKey(e => e.PatientId)
+            //    .OnDelete(DeleteBehavior.NoAction);
+            //b.HasOne<Doctor>().WithMany().IsRequired().HasForeignKey(e => e.DoctorId)
+            //    .OnDelete(DeleteBehavior.NoAction);
 
         }
     }

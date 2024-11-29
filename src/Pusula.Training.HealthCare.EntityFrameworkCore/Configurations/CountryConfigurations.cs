@@ -13,7 +13,9 @@ public class CountryConfigurations : IEntityTypeConfiguration<Country>
         b.ConfigureByConvention();
         b.Property(x => x.Name).HasColumnName(nameof(Country.Name)).IsRequired()
          .HasMaxLength(CountryConsts.NameMaxLength);
-        b.Property(x => x.Abbreviation).HasColumnName(nameof(Country.Abbreviation)).IsRequired()
-         .HasMaxLength(CountryConsts.AbbreviationMaxLength);
+        b.Property(x => x.Iso).HasColumnName(nameof(Country.Iso)).IsRequired()
+         .HasMaxLength(CountryConsts.IsoMaxLength);
+        b.Property(x => x.PhoneCode).HasColumnName(nameof(Country.PhoneCode)).IsRequired()
+         .HasMaxLength(CountryConsts.PhoneCodeMaxLength);
     }
 }

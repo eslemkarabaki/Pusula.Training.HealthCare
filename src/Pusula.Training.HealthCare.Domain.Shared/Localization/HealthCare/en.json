@@ -21,6 +21,8 @@
     "LastName": "Last Name",
     "BirthDate": "Birth Date",
     "IdentityNumber": "Identity Number",
+    "PassportNumber": "Passport Number",
+    "IdentityOrPassportNumber": "Identity / Passport Number",
     "EmailAddress": "Email Address",
     "MobilePhoneNumber": "Mobile Phone Number",
     "HomePhoneNumber": "Home Phone Number",
@@ -118,6 +120,7 @@
     "Menu:Countries": "Countries",
     "Menu:Cities": "Cities",
     "Menu:Districts": "Districts",
+<<<<<<< HEAD
     "Tests": "Tests",
     "NewTest": "New Test",
     "Menu:Tests": "Tests",
@@ -143,5 +146,17 @@
     "Menu:TestGroups": "TestGroups",
     "TestGroup": "TestGroup",
     "Permission:TestGroups": "TestGroups"
+=======
+    "IsForeign": "Foreigner",
+    "Address": "Address",
+    "AddressTitle": "Address Title",
+    "Placeholder:AddressTitle": "Enter address title",
+    "Placeholder:Address:Country": "Select country",
+    "Placeholder:Address:City": "Select city",
+    "Placeholder:Address:District": "Select district",
+    "AddressLine": "Address",
+    "Placeholder:AddressLine": "Enter address",
+    "PleaseAddAddressMessage": "The address list is empty."
+>>>>>>> development
   }
 }

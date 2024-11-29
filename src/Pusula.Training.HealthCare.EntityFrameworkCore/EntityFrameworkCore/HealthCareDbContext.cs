@@ -4,25 +4,19 @@ using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.Examinations;
-using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.Examinations; 
 using Pusula.Training.HealthCare.Districts;
-using Pusula.Training.HealthCare.Doctors;
-using Pusula.Training.HealthCare.HospitalDepartments;
+using Pusula.Training.HealthCare.Doctors; 
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
-using Pusula.Training.HealthCare.Protocols;
-using System.Numerics;
-using System.Reflection;
-using Pusula.Training.HealthCare.Configurations;
+using Pusula.Training.HealthCare.Protocols;  
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.EntityFrameworkCore;
-using Volo.Abp.EntityFrameworkCore.Modeling;
+using Volo.Abp.EntityFrameworkCore; 
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -30,14 +24,29 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.TenantManagement.EntityFrameworkCore; 
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminations;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using System.Reflection;
+using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.AppointmentTypes;
 using Npgsql.Replication.PgOutput.Messages;
+<<<<<<< HEAD
 using Pusula.Training.HealthCare.TestGroups;
 using Pusula.Training.HealthCare.Tests;
 using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.TestProcesses;
 using Pusula.Training.HealthCare.WorkLists;
 
+=======
+using Pusula.Training.HealthCare.AppDefaults;
+using Pusula.Training.HealthCare.PatientNotes;
+using Pusula.Training.HealthCare.PatientTypes;
+>>>>>>> development
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -53,6 +62,8 @@ public class HealthCareDbContext :
     public DbSet<Department> Departments { get; set; } = null!;
     public DbSet<Protocol> Protocols { get; set; } = null!;
     public DbSet<Patient> Patients { get; set; } = null!;
+    public DbSet<PatientType> PatientTypes { get; set; } = null!;
+    public DbSet<PatientNote> PatientNotes { get; set; } = null!;
     public DbSet<Hospital> Hospitals { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<Doctor> Doctors { get; set; } = null!;
@@ -62,15 +73,35 @@ public class HealthCareDbContext :
     public DbSet<District> Districts { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Appointment> Appointments { get; set; } = null!;
+<<<<<<< HEAD
     
+=======
+    public DbSet<AppointmentReport> AppointmentReports { get; set; } = null!;
+    public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
+    //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
+>>>>>>> development
+    public DbSet<Examination> Examinations { get; set; } = null!;
+    public DbSet<AppDefault> AppDefaults { get; set; } = null!;
+    public DbSet<Appointment> Appointments { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;
 
+<<<<<<< HEAD
     public DbSet<TestGroup> TestGroups { get; set; } = null!;
     public DbSet<Test> Tests { get; set; } = null!;
     public DbSet<TestType> TestTypes { get; set; } = null!;
     public DbSet<TestProcess> TestProcesses { get; set; } = null!;
     public DbSet<WorkList> WorkLists { get; set; } = null!;
 
+=======
+    #region Radiology
+
+    public DbSet<RadiologyExaminationGroup> RadiologyExaminationGroups { get; set; } = null!;
+    public DbSet<RadiologyExamination> RadiologyExaminations { get; set; } = null!;
+    public DbSet<RadiologyExaminationProcedure> RadiologyExaminationProcedures { get; set; } = null!;
+    public DbSet<RadiologyExaminationDocument> RadiologyExaminationDocuments { get; set; } = null!;
+
+    #endregion
+>>>>>>> development
 
     #region Entities from the modules
 
@@ -120,10 +151,9 @@ public class HealthCareDbContext :
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
 
-
         /* Configure your own tables/entities inside here */
         if (builder.IsHostDatabase())
-        {
+        { 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }

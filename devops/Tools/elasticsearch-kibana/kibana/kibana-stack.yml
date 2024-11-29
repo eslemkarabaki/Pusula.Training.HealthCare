@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  kibana:
+    image: kibana:8.15.0
+    container_name: c_kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_MONITORING_ENABLED=true
+      - XPACK_MONITORING_COLLECTION_ENABLED=true
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=1q2w3e*
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - frontend
+    deploy:
+      restart_policy:
+        condition: on-failure     
+      placement:
+        constraints: [node.hostname == team3-node2]
+
+networks:
+  frontend:
+    external: true

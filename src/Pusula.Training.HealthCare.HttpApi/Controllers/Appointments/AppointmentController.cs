@@ -26,17 +26,11 @@ namespace Pusula.Training.HealthCare.Controllers.Appointments
             _appointmentsAppService = appointmentsAppService;
         }
 
-        [HttpGet]
-        public virtual Task<PagedResultDto<AppointmentWithNavigationPropertiesDto>> GetListAsync(GetAppointmentsInput input)
+        [HttpGet("all")]
+        public virtual Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
         {
             return _appointmentsAppService.GetListAsync(input);
-        }
-
-        //[HttpGet]
-        //public virtual Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
-        //{
-        //    return _appointmentsAppService.GetListAsync(input);
-        //}
+        }        
 
         [HttpGet]
         [Route("with-navigation-properties/{id}")]
@@ -54,9 +48,9 @@ namespace Pusula.Training.HealthCare.Controllers.Appointments
 
         [HttpGet]
         [Route("hospital-lookup")]
-        public virtual Task<PagedResultDto<LookupDto<Guid>>> GetHospitalLookupAsync(LookupRequestDto input)
+        public virtual Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input)
         {
-            return _appointmentsAppService.GetHospitalLookupAsync(input);
+            return _appointmentsAppService.GetAppointmentTypeLookupAsync(input);
         }
 
         [HttpGet]
@@ -125,6 +119,13 @@ namespace Pusula.Training.HealthCare.Controllers.Appointments
         public virtual Task DeleteAllAsync(GetAppointmentsInput input)
         {
             return _appointmentsAppService.DeleteAllAsync(input);
+        }
+
+        [HttpGet]
+        [Route("list-doctor-appointment/{id}")]
+        public Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id)
+        {
+            return _appointmentsAppService.GetListAppointmentsAsync(id);
         }
     }
 }

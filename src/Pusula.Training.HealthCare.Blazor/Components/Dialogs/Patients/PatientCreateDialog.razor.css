@@ -1,0 +1,9 @@
+::deep .e-card-header, ::deep .e-card-content, ::deep .e-card-actions {
+    padding: 6px;
+}
+::deep .e-card{
+    cursor: pointer;
+}
+::deep .e-card.selected{
+    border-color: #0d6efd;
+}

@@ -21,6 +21,14 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+    
+    public static class PatientTypes
+    {
+        public const string Default = GroupName + ".PatientTypes";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
 
     public static class Countries
     {
@@ -68,8 +76,24 @@ public static class HealthCarePermissions
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
-    }    
-    
+    }
+
+    public static class AppointmentReports
+    {
+        public const string Default = GroupName + ".AppointmentReports";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class AppointmentTypes
+    {
+        public const string Default = GroupName + ".AppointmentTypes";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
     public static class Hospitals
     {
         public const string Default = GroupName + ".Hospitals";
@@ -100,6 +124,7 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
+<<<<<<< HEAD
     public static class Tests
     {
         public const string Default = GroupName + ".Tests";
@@ -138,3 +163,40 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 }
+=======
+    #region Radiology
+    public static class RadiologyExaminationGroups
+    {
+        public const string Default = GroupName + ".RadiologyExaminationGroups";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminations
+    {
+        public const string Default = GroupName + ".RadiologyExaminations";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminationProcedures
+    {
+        public const string Default = GroupName + ".RadiologyExaminationProcedures";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminationDocuments
+    {
+        public const string Default = GroupName + ".RadiologyExaminationDocuments";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    #endregion
+}
+>>>>>>> development

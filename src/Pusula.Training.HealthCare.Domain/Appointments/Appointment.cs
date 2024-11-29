@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -11,49 +10,56 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Appointments
 {
-
     public class Appointment : FullAuditedAggregateRoot<Guid>
     {
-        [JetBrains.Annotations.NotNull]
-        public virtual DateTime AppointmentDate { get; set; }
-        [JetBrains.Annotations.NotNull]
-        public virtual EnumStatus Status { get; set; }
+        [NotNull]
+        public virtual DateTime StartTime { get;  set; }
+        [NotNull]
+        public virtual DateTime EndTime { get;  set; }
+        [NotNull]
+        public virtual EnumStatus Status { get;  set; }
 
         [CanBeNull]
-        public virtual string? Notes { get; set; }
+        public virtual string? Note { get; set; }        
 
-        public virtual Guid HospitalId { get; set; }
+        public virtual Guid AppointmentTypeId { get; set; }
         public virtual Guid DepartmentId { get; set; }
         public virtual Guid DoctorId { get; set; }
         public virtual Guid PatientId { get; set; }
 
         protected Appointment()
         {
-            AppointmentDate = DateTime.Now;
-            Notes = string.Empty;
+            StartTime = DateTime.Now;
+            EndTime = DateTime.Now;
+            Note = string.Empty;
         }
 
-        public Appointment(Guid id, Guid hospitalId, 
+        public Appointment(Guid id, Guid appointmentTypeId, 
             Guid departmentId, Guid doctorId, 
-            Guid patientId, DateTime appointmentDate, 
-            string notes, EnumStatus status = default)
+            Guid patientId, DateTime startTime,
+            DateTime endTime, string note,
+            EnumStatus status = default)
         {
-            Check.NotNullOrWhiteSpace(hospitalId.ToString(), nameof(hospitalId));
+            Check.NotNullOrWhiteSpace(appointmentTypeId.ToString(), nameof(appointmentTypeId));
             Check.NotNullOrWhiteSpace(departmentId.ToString(), nameof(departmentId));
             Check.NotNullOrWhiteSpace(doctorId.ToString(), nameof(doctorId));
             Check.NotNullOrWhiteSpace(patientId.ToString(), nameof(patientId));
-            Check.NotNull(appointmentDate, nameof(appointmentDate));
+            Check.NotNull(startTime, nameof(startTime));
+            Check.NotNull(endTime, nameof(endTime));
             Check.Range((int)status, nameof(status), 1, 5);
-            Check.NotNullOrWhiteSpace(notes, nameof(notes));
+            Check.Length(note, nameof(note), AppointmentConsts.NoteMaxLength);
+                       
 
             Id = id;
-            HospitalId = hospitalId;
+            AppointmentTypeId = appointmentTypeId;
             DepartmentId = departmentId;
             DoctorId = doctorId;
             PatientId = patientId;
-            AppointmentDate = appointmentDate;
+            StartTime = startTime;
+            EndTime = endTime;
+            Note = note;
             Status = status;
-            Notes = notes;
+           
         }
 
     }

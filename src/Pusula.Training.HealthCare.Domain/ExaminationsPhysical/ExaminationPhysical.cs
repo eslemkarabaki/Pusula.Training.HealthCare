@@ -8,8 +8,8 @@ namespace Pusula.Training.HealthCare.Examinations
     public class ExaminationPhysical : FullAuditedAggregateRoot<Guid>
     {
         public virtual string IdentityNumber { get; set; }
-        public Guid ExaminationId { get; set; }
         [NotNull]
+        public Guid ExaminationId { get; set; }
         public virtual int Weight { get; set; } // Kilo
         public virtual int Height { get; set; } //Boy
         public virtual int Faver { get; set; } // Ateş

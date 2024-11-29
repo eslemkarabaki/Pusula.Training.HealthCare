@@ -9,6 +9,7 @@ namespace Pusula.Training.HealthCare.Countries;
 public interface ICountryAppService : IApplicationService
 {
     Task<CountryDto> GetAsync(Guid id);
+    Task<CountryDto> GetCurrentAsync();
 
     Task<List<CountryDto>> GetListAsync();
     Task<PagedResultDto<CountryDto>> GetListAsync(GetCountriesInput input);

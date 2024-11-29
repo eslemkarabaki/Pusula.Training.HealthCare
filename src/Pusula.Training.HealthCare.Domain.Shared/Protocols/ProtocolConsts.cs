@@ -1,15 +1,11 @@
-namespace Pusula.Training.HealthCare.Protocols
+namespace Pusula.Training.HealthCare.Protocols;
+
+public static class ProtocolConsts
 {
-    public static class ProtocolConsts
-    {
-        private const string DefaultSorting = "{0}Type asc";
+    public const int DescriptionMaxLength = 512;
 
-        public static string GetDefaultSorting(bool withEntityName)
-        {
-            return string.Format(DefaultSorting, withEntityName ? "Protocol." : string.Empty);
-        }
+    private const string DefaultSorting = "{0}ProtocolTypeId asc";
 
-        public const int TypeMinLength = 1;
-        public const int TypeMaxLength = 10;
-    }
+    public static string GetDefaultSorting(bool withEntityName) =>
+        string.Format(DefaultSorting, withEntityName ? "Protocol." : string.Empty);
 }

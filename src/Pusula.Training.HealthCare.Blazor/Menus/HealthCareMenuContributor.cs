@@ -52,15 +52,6 @@ public class HealthCareMenuContributor : IMenuContributor
 
         context.Menu.AddItem(
             new ApplicationMenuItem(
-                HealthCareMenus.Protocols,
-                l["Menu:Protocols"],
-                "/protocols",
-                "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Protocols.Default)
-        );
-
-        context.Menu.AddItem(
-            new ApplicationMenuItem(
                 HealthCareMenus.Departments,
                 l["Menu:Departments"],
                 "/departments",
@@ -76,6 +67,15 @@ public class HealthCareMenuContributor : IMenuContributor
                 url: "/hospitals",
                 icon: "fa fa-file-alt",
                 requiredPermissionName: HealthCarePermissions.Hospitals.Default)
+        );
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Appointments,
+                l["Menu:Appointments"],
+                url: "/appointments",
+                icon: "fa fa-calendar-check",
+                requiredPermissionName: HealthCarePermissions.Appointments.Default)
         );
 
         context.Menu.AddItem(

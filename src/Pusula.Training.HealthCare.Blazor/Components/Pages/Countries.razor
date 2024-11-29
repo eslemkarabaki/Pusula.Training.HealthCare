@@ -1,278 +1,69 @@
 @page "/countries"
 
 @attribute [Authorize(HealthCarePermissions.Countries.Default)]
-@using Pusula.Training.HealthCare.Countries
-@using Pusula.Training.HealthCare.Localization
-@using Volo.Abp.AspNetCore.Components.Messages
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
-
 @using Pusula.Training.HealthCare.Permissions
-@using Volo.Abp.AspNetCore.Components.Web
+@using Pusula.Training.HealthCare.Countries
 @using Volo.Abp.Http.Client
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Navigations
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Countries
+@using SortDirection = Syncfusion.Blazor.Grids.SortDirection
 @inherits HealthCareComponentBase
 @inject ICountryAppService CountryAppService
-
-@inject IUiMessageService UiMessageService
-@inject AbpBlazorMessageLocalizerHelper<HealthCareResource> LH
+@inject SfDialogService DialogService
 @inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
 @inject NavigationManager NavigationManager
 
-
-@* ************************* PAGE HEADER ************************* *@
-<PageHeader Title="@L["Countries"]" BreadcrumbItems="BreadcrumbItems" Toolbar="Toolbar"/>
-
-@* ************************* SEARCH ************************* *@
-<Card>
-    <CardBody>
-        <Form id="CountrySearchForm" class="mb-3">
-            <Addons>
-                <Addon AddonType="AddonType.Body">
-                    <TextEdit @bind-Text="@Filter.FilterText"
-                              Autofocus="true"
-                              Placeholder="@L["Search"]">
-                    </TextEdit>
-                </Addon>
-                <Addon AddonType="AddonType.End">
-                    <SubmitButton Form="CountrySearchForm" Clicked="GetCountriesAsync">
-                        <Icon Name="IconName.Search" Class="me-1"></Icon>@L["Search"]
-                    </SubmitButton>
-                </Addon>
-            </Addons>
-        </Form>
-
-        <Row Class="mt-3 mb-3">
-            <div class="col-md-12">
-                <a href="javascript:;" class="text-decoration-none" @onclick="() => ShowAdvancedFilters = !ShowAdvancedFilters">@L["SeeAdvancedFilters"]</a>
-            </div>
-        </Row>
-
-        <div style="display: @(!ShowAdvancedFilters ? "none" : "block")">
-            <Row>
-                <Column ColumnSize="ColumnSize.Is3">
-                    <Field>
-                        <FieldLabel>@L["Name"]</FieldLabel>
-                        <TextEdit Text="@Filter.Name" TextChanged="@OnNameChangedAsync"/>
-                    </Field>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is3">
-                    <Field>
-                        <FieldLabel>@L["Abbreviation"]</FieldLabel>
-                        <TextEdit Text="@Filter.Abbreviation" TextChanged="@OnAbbreviationChangedAsync"/>
-                    </Field>
-                </Column>
-            </Row>
-        </div>
-    </CardBody>
-</Card>
+<PageHeader Title="" BreadcrumbItems="BreadcrumbItems"/>
 
 @* ************************* DATA GRID ************************* *@
-<Card>
-    <CardBody>
-        @if (SelectedCountries.Any())
-        {
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <p class="lead mb-0">
-                    @if (AllCountriesSelected)
-                    {
-                        @L["AllItemsAreSelected", TotalCount]
-                    }
-                    else
-                    {
-                        if (SelectedCountries.Count > 1)
-                        {
-                            @L["NumberOfItemsOnThisPageAreSelected", SelectedCountries.Count]
-                        }
-                        else
-                        {
-                            @L["OneItemOnThisPageIsSelected"]
-                        }
-                    }
-                </p>
-
-                <div class="d-flex align-items-center gap-1">
-                    @if (AllCountriesSelected)
-                    {
-                        <Button Clicked="ClearSelection" Size="Size.Small" Color="Color.Secondary" Outline>@L["ClearSelection"]</Button>
-                    }
-                    else
-                    {
-                        <Button Clicked="SelectAllItems" Size="Size.Small" Color="Color.Secondary" Outline>@L["SelectAllItems", TotalCount]</Button>
-                    }
-
-                    <Button Color="Color.Danger" Size="Size.Small" Clicked="DeleteSelectedCountriesAsync">
-                        <Icon Name="@IconName.Delete"/> @L["Delete"]
-                    </Button>
-                </div>
-            </div>
-
-            <hr class="my-1 mx-0"/>
-        }
-        <DataGrid TItem="CountryDto"
-                  Data="CountryList"
-                  SelectionMode="DataGridSelectionMode.Multiple"
-                  SelectedRows="SelectedCountries"
-                  RowSelectable="@((args) => CanDeleteCountry)"
-                  SelectedRowsChanged="SelectedCountryRowsChanged"
-                  ReadData="OnDataGridReadAsync"
-                  TotalItems="TotalCount"
-                  ShowPager="true"
-                  Responsive="true"
-                  PageSize="PageSize">
-            <LoadingTemplate>
-                <Row Class="w-100 align-items-center" Style="height: 150px;">
-                    <Column>
-                        <RadarSpinner/>
-                    </Column>
-                </Row>
-            </LoadingTemplate>
-            <EmptyTemplate>
-                <Row Class="w-100 align-items-center" Style="height: 150px;">
-                    <Column>
-                        <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">@L["NoDataAvailable"]</Heading>
-                    </Column>
-                </Row>
-            </EmptyTemplate>
-            <DataGridColumns>
-
-                @if (CanDeleteCountry && CountryList.Any())
-                {
-                    <DataGridMultiSelectColumn TItem="CountryDto" DisplayOrder="-1" Width="30px"></DataGridMultiSelectColumn>
-                }
-
-                <DataGridEntityActionsColumn TItem="CountryDto" @ref="@EntityActionsColumn">
-                    <DisplayTemplate>
-                        <EntityActions TItem="CountryDto" EntityActionsColumn="@EntityActionsColumn">
-                            <EntityAction TItem="CountryDto"
-                                          Visible="@CanEditCountry"
-                                          Clicked="async () => await OpenEditCountryModalAsync(context)"
-                                          Text="@L["Edit"]">
-                            </EntityAction>
-                            <EntityAction TItem="CountryDto"
-                                          Visible="@CanDeleteCountry"
-                                          Clicked="async () => await DeleteCountryAsync(context)"
-                                          ConfirmationMessage="@(() => L["DeleteConfirmationMessage"])"
-                                          Text="@L["Delete"]">
-                            </EntityAction>
-                        </EntityActions>
-                    </DisplayTemplate>
-                </DataGridEntityActionsColumn>
-
-                <DataGridColumn TItem="CountryDto"
-                                Field="Name"
-                                Caption="@L["Name"]">
-                </DataGridColumn>
-
-                <DataGridColumn TItem="CountryDto"
-                                Field="Abbreviation"
-                                Caption="@L["Abbreviation"]">
-                </DataGridColumn>
-
-            </DataGridColumns>
-
-        </DataGrid>
-    </CardBody>
-</Card>
+<SfGrid @ref="SfGrid" TValue="CountryDto" DataSource="@CountryList" AllowPaging="true"
+        AllowSelection EnableHover AllowSorting AllowFiltering>
+    <SfToolbar>
+        <ToolbarItems>
+            <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreateCountryDialogAsync" Text="@L["Add"]"
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewCountry"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedCountriesAsync"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
+                         TooltipText="@L["Delete"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
+        </ToolbarItems>
+    </SfToolbar>
+    <GridEvents TValue="CountryDto"
+                RowSelected="@SelectedCountryRowChangedAsync"
+                RowDeselected="@SelectedCountryRowChangedAsync"/>
+    <GridPageSettings PageSize="10"/>
+    <GridSelectionSettings CheckboxOnly PersistSelection/>
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="@nameof(CountryDto.Name)"></GridSortColumn>
+            <GridSortColumn Field="@nameof(CountryDto.Iso)"></GridSortColumn>
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Field="@nameof(CountryDto.Name)" HeaderText="@L["Country"]"/>
+        <GridColumn Field="@nameof(CountryDto.Iso)" HeaderText="@L["Iso"]"/>
+        <GridColumn Field="@nameof(CountryDto.PhoneCode)" HeaderText="@L["PhoneCode"]"/>
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton
+                    OnClick="@(() => OpenEditCountryModalAsync(context as CountryDto))"
+                    CssClass="e-flat"
+                    IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteCountryAsync(context as CountryDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
 
 @* ************************* CREATE MODAL ************************* *@
-<Modal @ref="CreateCountryModal" Closing="@CreateCountryModal.CancelClosingModalWhenFocusLost">
-    <ModalContent Size="ModalSize.Large" Centered>
-        <Form id="CreateCountryForm">
-            <ModalHeader>
-                <ModalTitle>@L["NewCountry"]</ModalTitle>
-                <CloseButton Clicked="CloseCreateCountryModalAsync"/>
-            </ModalHeader>
-            <ModalBody>
-                <Validations @ref="@NewCountryValidations"
-                             Mode="ValidationMode.Auto"
-                             Model="@NewCountry"
-                             ValidateOnLoad="false">
-                    <div class="row gy-1 gx-3">
-
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field ColumnSize="ColumnSize.Is6">
-                                <FieldLabel>@L["Name"] *</FieldLabel>
-                                <TextEdit @bind-Text="@NewCountry.Name" MaxLength="CountryConsts.NameMaxLength">
-                                    <Feedback>
-                                        <ValidationError/>
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field ColumnSize="ColumnSize.Is6">
-                                <FieldLabel>@L["Abbreviation"] *</FieldLabel>
-                                <TextEdit @bind-Text="@NewCountry.Abbreviation" MaxLength="CountryConsts.AbbreviationMaxLength">
-                                    <Feedback>
-                                        <ValidationError/>
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-
-                    </div>
-                </Validations>
-            </ModalBody>
-            <ModalFooter>
-                <Button Color="Color.Secondary"
-                        Clicked="CloseCreateCountryModalAsync">
-                    @L["Cancel"]
-                </Button>
-                <SubmitButton Form="CreateCountryForm" Clicked="CreateCountryAsync"/>
-            </ModalFooter>
-        </Form>
-    </ModalContent>
-</Modal>
-
-@* ************************* EDIT MODAL ************************* *@
-<Modal @ref="EditCountryModal" Closing="@EditCountryModal.CancelClosingModalWhenFocusLost">
-    <ModalContent Centered Size="ModalSize.Large">
-        <Form id="EditCountryForm">
-            <ModalHeader>
-                <ModalTitle>@L["UpdateCountry"]</ModalTitle>
-                <CloseButton Clicked="CloseEditCountryModalAsync"/>
-            </ModalHeader>
-            <ModalBody>
-                <Validations @ref="@EditingCountryValidations"
-                             Mode="ValidationMode.Auto"
-                             Model="@EditingCountry"
-                             ValidateOnLoad="false">
-
-                    <div class="row gy-1 gx-3">
-
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field ColumnSize="ColumnSize.Is6">
-                                <FieldLabel>@L["Name"] *</FieldLabel>
-                                <TextEdit @bind-Text="@EditingCountry.Name" MaxLength="CountryConsts.NameMaxLength">
-                                    <Feedback>
-                                        <ValidationError/>
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field ColumnSize="ColumnSize.Is6">
-                                <FieldLabel>@L["Abbreviation"] *</FieldLabel>
-                                <TextEdit @bind-Text="@EditingCountry.Abbreviation" MaxLength="CountryConsts.AbbreviationMaxLength">
-                                    <Feedback>
-                                        <ValidationError/>
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-
-                    </div>
-
-                </Validations>
-            </ModalBody>
-            <ModalFooter>
-                <Button Color="Color.Secondary"
-                        Clicked="CloseEditCountryModalAsync">
-                    @L["Cancel"]
-                </Button>
-                <SubmitButton Form="EditCountryForm" Clicked="UpdateCountryAsync"/>
-            </ModalFooter>
-        </Form>
-    </ModalContent>
-</Modal>
+<CountryCreateDialog @ref="@CreateCountryDialog" OnValidSaveAsync="@CreateCountryAsync"></CountryCreateDialog>
+@* ************************* UPDATE MODAL ************************* *@
+<CountryUpdateDialog @ref="@UpdateCountryDialog" OnValidSaveAsync="@UpdateCountryAsync"></CountryUpdateDialog>

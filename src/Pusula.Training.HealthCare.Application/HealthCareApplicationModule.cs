@@ -21,23 +21,25 @@ using Volo.Abp.BackgroundWorkers;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Pusula.Training.HealthCare.Workers;
+using Volo.Abp.FluentValidation;
 
 namespace Pusula.Training.HealthCare;
 
 [DependsOn(
-              typeof(HealthCareDomainModule),
-              typeof(AbpAccountApplicationModule),
-              typeof(HealthCareApplicationContractsModule),
-              typeof(AbpIdentityApplicationModule),
-              typeof(AbpPermissionManagementApplicationModule),
-              typeof(AbpTenantManagementApplicationModule),
-              typeof(AbpFeatureManagementApplicationModule),
-              typeof(AbpSettingManagementApplicationModule),
-              typeof(AbpCachingStackExchangeRedisModule),
-              typeof(AbpBackgroundJobsRabbitMqModule),
-              typeof(AbpEventBusRabbitMqModule),
-              typeof(AbpBackgroundWorkersModule)
-          )]
+    typeof(HealthCareDomainModule),
+    typeof(AbpAccountApplicationModule),
+    typeof(HealthCareApplicationContractsModule),
+    typeof(AbpIdentityApplicationModule),
+    typeof(AbpPermissionManagementApplicationModule),
+    typeof(AbpTenantManagementApplicationModule),
+    typeof(AbpFeatureManagementApplicationModule),
+    typeof(AbpSettingManagementApplicationModule),
+    typeof(AbpCachingStackExchangeRedisModule),
+    typeof(AbpBackgroundJobsRabbitMqModule),
+    typeof(AbpEventBusRabbitMqModule),
+    typeof(AbpBackgroundWorkersModule),
+    typeof(AbpFluentValidationModule)
+)]
 public class HealthCareApplicationModule : AbpModule
 {
     public override async Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
@@ -48,7 +50,7 @@ public class HealthCareApplicationModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        var configuration = context.Services.GetConfiguration();
+        var configuration = context.Services.GetConfiguration();    
 
         Configure<AbpDistributedCacheOptions>(options => { options.KeyPrefix = "PTH:"; });
 
@@ -70,7 +72,7 @@ public class HealthCareApplicationModule : AbpModule
                .PersistKeysToStackExchangeRedis(redis, "PTH-Protection-Keys");
 
         context.Services.AddSingleton<IDistributedLockProvider>(_ =>
-                                                                    new RedisDistributedSynchronizationProvider(redis
-                                                                        .GetDatabase()));
+            new RedisDistributedSynchronizationProvider(redis
+                .GetDatabase()));
     }
 }

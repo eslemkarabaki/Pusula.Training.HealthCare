@@ -1,50 +1,29 @@
-using Blazorise;
-using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Authorization;
-using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
-using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
-using Volo.Abp.BlazoriseUI.Components;
+using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Countries;
+using Pusula.Training.HealthCare.Countries;
+using Syncfusion.Blazor.Grids;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
 public partial class Countries
 {
+    private SfGrid<CountryDto> SfGrid { get; set; } = null!;
+
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
-    protected PageToolbar Toolbar { get; } = new();
-    protected bool ShowAdvancedFilters { get; set; }
 
-    private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
-    private int CurrentPage { get; set; } = 1;
-    private string CurrentSorting { get; set; } = string.Empty;
-    private int TotalCount { get; set; }
+    private List<CountryDto> CountryList { get; set; } = [];
 
-    private IReadOnlyList<CountryDto> CountryList { get; set; } = [];
-    private GetCountriesInput Filter { get; set; }
-
-    private DataGridEntityActionsColumn<CountryDto> EntityActionsColumn { get; set; } = new();
-
-    private List<CountryDto> SelectedCountries { get; set; } = [];
     private bool AllCountriesSelected { get; set; }
-
-    public Countries()
-    {
-        Filter = new GetCountriesInput
-        {
-            MaxResultCount = PageSize,
-            SkipCount = (CurrentPage - 1) * PageSize,
-            Sorting = CurrentSorting
-        };
-    }
 
     protected override async Task OnInitializedAsync()
     {
         await SetPermissionsAsync();
+        await GetCountriesAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -52,137 +31,51 @@ public partial class Countries
         if (firstRender)
         {
             await SetBreadcrumbItemsAsync();
-            await SetToolbarItemsAsync();
             await InvokeAsync(StateHasChanged);
         }
     }
 
     protected virtual ValueTask SetBreadcrumbItemsAsync()
     {
-        BreadcrumbItems.Add(new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["Countries"]));
+        BreadcrumbItems.Add(new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["Patients"]));
         return ValueTask.CompletedTask;
     }
-
-    protected virtual ValueTask SetToolbarItemsAsync()
-    {
-        // Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
-
-        Toolbar.AddButton(L["NewCountry"], OpenCreateCountryModalAsync, IconName.Add,
-            requiredPolicyName: HealthCarePermissions.Countries.Create);
-
-        return ValueTask.CompletedTask;
-    }
-
 
     private async Task GetCountriesAsync()
     {
-        Filter.MaxResultCount = PageSize;
-        Filter.SkipCount = (CurrentPage - 1) * PageSize;
-        Filter.Sorting = CurrentSorting;
-
-        var result = await CountryAppService.GetListAsync(Filter);
-        CountryList = result.Items;
-        TotalCount = (int)result.TotalCount;
-
+        CountryList = await CountryAppService.GetListAsync();
         await ClearSelection();
     }
 
-    protected virtual async Task SearchAsync()
-    {
-        CurrentPage = 1;
-        await GetCountriesAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    // private async Task DownloadAsExcelAsync()
-    // {
-    //     var token = (await CountriesAppService.GetDownloadTokenAsync()).Token;
-    //     var remoteService =
-    //         await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("HealthCare") ??
-    //         await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
-    //     var culture = CultureInfo.CurrentUICulture.Name ?? CultureInfo.CurrentCulture.Name;
-    //
-    //     NavigationManager.NavigateTo(
-    //         $"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/countrys/as-excel-file?DownloadToken={token}{Filter.ToQueryParameterString(culture)}",
-    //         true);
-    // }
-
 #region DataGrid
-
-    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<CountryDto> e)
-    {
-        CurrentSorting = e.Columns
-                          .Where(c => c.SortDirection != SortDirection.Default)
-                          .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
-                          .JoinAsString(",");
-        CurrentPage = e.Page;
-        await GetCountriesAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-
-    private Task SelectAllItems()
-    {
-        AllCountriesSelected = true;
-
-        return Task.CompletedTask;
-    }
 
     private Task ClearSelection()
     {
         AllCountriesSelected = false;
-        SelectedCountries.Clear();
+        SfGrid.SelectedRecords.Clear();
 
         return Task.CompletedTask;
     }
 
-    private Task SelectedCountryRowsChanged()
+    private Task SelectedCountryRowChangedAsync()
     {
-        AllCountriesSelected = CountryList.Count < PageSize
-            ? SelectedCountries.Count == CountryList.Count
-            : SelectedCountries.Count == PageSize;
-
+        AllCountriesSelected = SfGrid.SelectedRecords.Count == CountryList.Count;
         return Task.CompletedTask;
     }
 
 #endregion
 
-
 #region Create
 
-    private CountryCreateDto NewCountry { get; set; } = new();
-    private Validations NewCountryValidations { get; set; } = new();
-    private Modal CreateCountryModal { get; set; } = new();
+    private CountryCreateDialog CreateCountryDialog { get; set; } = null!;
+    private async Task OpenCreateCountryDialogAsync() => await CreateCountryDialog.ShowAsync();
 
-    protected string SelectedCreateTab = "country-create-tab";
-
-    private async Task OpenCreateCountryModalAsync()
-    {
-        NewCountry = new CountryCreateDto();
-        SelectedCreateTab = "country-create-tab";
-
-        await NewCountryValidations.ClearAll();
-        await CreateCountryModal.Show();
-    }
-
-    private async Task CloseCreateCountryModalAsync()
-    {
-        NewCountry = new CountryCreateDto();
-        await CreateCountryModal.Hide();
-    }
-
-    private async Task CreateCountryAsync()
+    private async Task CreateCountryAsync(CountryCreateDto patient)
     {
         try
         {
-            if (await NewCountryValidations.ValidateAll() == false)
-            {
-                return;
-            }
-
-            await CountryAppService.CreateAsync(NewCountry);
+            await CountryAppService.CreateAsync(patient);
             await GetCountriesAsync();
-            await CloseCreateCountryModalAsync();
         }
         catch (Exception ex)
         {
@@ -194,43 +87,21 @@ public partial class Countries
 
 #region Update
 
-    private CountryUpdateDto EditingCountry { get; set; } = new();
-    private Validations EditingCountryValidations { get; set; } = new();
+    private CountryUpdateDialog UpdateCountryDialog { get; set; } = null!;
     private Guid EditingCountryId { get; set; }
-    private Modal EditCountryModal { get; set; } = new();
-
-    protected string SelectedEditTab = "country-edit-tab";
 
     private async Task OpenEditCountryModalAsync(CountryDto input)
     {
-        SelectedEditTab = "country-edit-tab";
-
-        var country = await CountryAppService.GetAsync(input.Id);
-
-        EditingCountryId = country.Id;
-        EditingCountry = ObjectMapper.Map<CountryDto, CountryUpdateDto>(country);
-
-        await EditingCountryValidations.ClearAll();
-        await EditCountryModal.Show();
+        EditingCountryId = input.Id;
+        await UpdateCountryDialog.ShowAsync(EditingCountryId);
     }
 
-    private async Task CloseEditCountryModalAsync()
-    {
-        await EditCountryModal.Hide();
-    }
-
-    private async Task UpdateCountryAsync()
+    private async Task UpdateCountryAsync(CountryUpdateDto dto)
     {
         try
         {
-            if (await EditingCountryValidations.ValidateAll() == false)
-            {
-                return;
-            }
-
-            await CountryAppService.UpdateAsync(EditingCountryId, EditingCountry);
+            await CountryAppService.UpdateAsync(EditingCountryId, dto);
             await GetCountriesAsync();
-            await EditCountryModal.Hide();
         }
         catch (Exception ex)
         {
@@ -244,50 +115,28 @@ public partial class Countries
 
     private async Task DeleteCountryAsync(CountryDto input)
     {
-        await CountryAppService.DeleteAsync(input.Id);
-        await GetCountriesAsync();
+        var isConfirm = await DialogService.ConfirmAsync("Are you sure you want to delete these item?", "Delete Item");
+        if (isConfirm)
+        {
+            await CountryAppService.DeleteAsync(input.Id);
+            await GetCountriesAsync();
+        }
     }
 
     private async Task DeleteSelectedCountriesAsync()
     {
-        var message = AllCountriesSelected
-            ? L["DeleteAllRecords"].Value
-            : L["DeleteSelectedRecords", SelectedCountries.Count].Value;
+        var message = AllCountriesSelected ?
+            L["DeleteAllRecords"].Value :
+            L["DeleteSelectedRecords", SfGrid.SelectedRecords.Count].Value;
+        var isConfirm = await DialogService.ConfirmAsync(message, "Delete Item");
 
-        if (!await UiMessageService.Confirm(message))
+        if (!isConfirm)
         {
             return;
         }
 
-        if (AllCountriesSelected)
-        {
-            await CountryAppService.DeleteAllAsync(Filter);
-        }
-        else
-        {
-            await CountryAppService.DeleteByIdsAsync(SelectedCountries.Select(x => x.Id).ToList());
-        }
-
-        SelectedCountries.Clear();
-        AllCountriesSelected = false;
-
+        await CountryAppService.DeleteByIdsAsync(SfGrid.SelectedRecords.Select(x => x.Id).ToList());
         await GetCountriesAsync();
-    }
-
-#endregion
-
-#region Manual Binding Events
-
-    protected virtual async Task OnNameChangedAsync(string? name)
-    {
-        Filter.Name = name;
-        await SearchAsync();
-    }
-
-    protected virtual async Task OnAbbreviationChangedAsync(string? abbreviation)
-    {
-        Filter.Abbreviation = abbreviation;
-        await SearchAsync();
     }
 
 #endregion
