@@ -27,14 +27,14 @@ public class EfCoreDistrictRepository(IDbContextProvider<HealthCareDbContext> db
         return await ApplyFilter(await GetQueryForDistrictWithCityAsync(), filterText, name, cityId)
                      .OrderBy(e => sorting.IsNullOrWhiteSpace() ? DistrictConsts.GetDefaultSorting(false) : sorting)
                      .PageBy(skipCount, maxResultCount)
-                     .ToListAsync(cancellationToken);
+                     .ToListAsync(GetCancellationToken(cancellationToken));
     }
 
     public async Task<long> GetCountAsync(string? filterText = null, string? name = null, Guid? cityId = null,
                                           CancellationToken cancellationToken = default)
     {
         return await ApplyFilter(await GetQueryableAsync(), filterText, name, cityId)
-            .LongCountAsync(cancellationToken);
+            .LongCountAsync(GetCancellationToken(cancellationToken));
     }
 
     public async Task DeleteAllAsync(string? filterText = null, string? name = null, Guid? cityId = null,

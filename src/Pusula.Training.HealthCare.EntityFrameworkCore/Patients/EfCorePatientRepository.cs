@@ -20,14 +20,14 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         CancellationToken cancellationToken = default
     ) =>
         await (await GetQueryForNavigationPropertiesAsync())
-            .FirstOrDefaultAsync(e => e.Patient.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(e => e.Patient.Id == id, GetCancellationToken(cancellationToken));
 
     public async Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
         int patientNo,
         CancellationToken cancellationToken = default
     ) =>
         await (await GetQueryForNavigationPropertiesAsync())
-            .FirstOrDefaultAsync(e => e.Patient.No == patientNo, cancellationToken);
+            .FirstOrDefaultAsync(e => e.Patient.No == patientNo, GetCancellationToken(cancellationToken));
 
     public virtual async Task<List<Patient>> GetListAsync(
         string? filterText = null,
@@ -68,7 +68,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
               )
               .OrderBy(GetSorting(sorting, false))
               .PageBy(skipCount, maxResultCount)
-              .ToListAsync(cancellationToken);
+              .ToListAsync(GetCancellationToken(cancellationToken));
 
     public async Task<List<PatientWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         string? filterText = null,
@@ -109,7 +109,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
               )
               .OrderBy(GetSorting(sorting, true))
               .PageBy(skipCount, maxResultCount)
-              .ToListAsync(cancellationToken);
+              .ToListAsync(GetCancellationToken(cancellationToken));
 
     public virtual async Task<long> GetCountAsync(
         string? filterText = null,
@@ -154,7 +154,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     )
     {
         var query = (await GetQueryableAsync()).WhereIf(id.HasValue, e => e.Id != id);
-        return await query.AnyAsync(e => e.IdentityNumber == identityNumber, cancellationToken);
+        return await query.AnyAsync(e => e.IdentityNumber == identityNumber, GetCancellationToken(cancellationToken));
     }
 
     public virtual async Task<bool> PassportNumberExistsAsync(
@@ -164,7 +164,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     )
     {
         var query = (await GetQueryableAsync()).WhereIf(id.HasValue, e => e.Id != id);
-        return await query.AnyAsync(e => e.PassportNumber == passportNumber, cancellationToken);
+        return await query.AnyAsync(e => e.PassportNumber == passportNumber, GetCancellationToken(cancellationToken));
     }
 
     protected virtual async Task<IQueryable<PatientWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()

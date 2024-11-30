@@ -27,7 +27,7 @@ public class EfCoreCountryRepository(IDbContextProvider<HealthCareDbContext> dbC
         return await ApplyFilter(await GetQueryableAsync(), filterText, name, iso, phoneCode)
                      .OrderBy(e => sorting.IsNullOrWhiteSpace() ? CountryConsts.GetDefaultSorting(false) : sorting)
                      .PageBy(skipCount, maxResultCount)
-                     .ToListAsync(cancellationToken);
+                     .ToListAsync(GetCancellationToken(cancellationToken));
     }
 
     public async Task<long> GetCountAsync(string? filterText = null, string? name = null, string? iso = null,
@@ -35,7 +35,7 @@ public class EfCoreCountryRepository(IDbContextProvider<HealthCareDbContext> dbC
                                           CancellationToken cancellationToken = default)
     {
         return await ApplyFilter(await GetQueryableAsync(), filterText, name, iso, phoneCode)
-            .LongCountAsync(cancellationToken);
+            .LongCountAsync(GetCancellationToken(cancellationToken));
     }
 
     public async Task DeleteAllAsync(string? filterText = null, string? name = null, string? iso = null,

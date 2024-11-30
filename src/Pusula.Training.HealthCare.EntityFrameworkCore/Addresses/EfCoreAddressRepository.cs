@@ -28,7 +28,7 @@ public class EfCoreAddressRepository(IDbContextProvider<HealthCareDbContext> dbC
         await ApplyFilter(await GetQueryForNavigationPropertiesAsync(), patientId)
               .OrderBy(string.IsNullOrWhiteSpace(sorting) ? AddressConsts.GetDefaultSorting(true) : sorting)
               .PageBy(skipCount, maxResultCount)
-              .ToListAsync(cancellationToken);
+              .ToListAsync(GetCancellationToken(cancellationToken));
 
     protected virtual async Task<IQueryable<AddressWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()
     {
