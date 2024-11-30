@@ -4,7 +4,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Protocols;
 
-public sealed class Protocol : FullAuditedAggregateRoot<Guid>
+public sealed class Protocol : FullAuditedAggregateRoot<Guid>, IProtocol
 {
     public Guid PatientId { get; private set; }
     public Guid DoctorId { get; private set; }

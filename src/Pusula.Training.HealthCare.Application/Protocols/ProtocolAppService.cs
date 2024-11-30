@@ -20,8 +20,8 @@ namespace Pusula.Training.HealthCare.Protocols;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(HealthCarePermissions.Protocols.Default)]
-public class ProtocolsAppService(IProtocolRepository protocolRepository, ProtocolManager protocolManager)
-    : HealthCareAppService, IProtocolsAppService
+public class ProtocolAppService(IProtocolRepository protocolRepository, ProtocolManager protocolManager)
+    : HealthCareAppService, IProtocolAppService
 {
     [Authorize(HealthCarePermissions.Protocols.Delete)]
     public virtual async Task DeleteAsync(Guid id) => await protocolRepository.DeleteAsync(id);
@@ -33,6 +33,13 @@ public class ProtocolsAppService(IProtocolRepository protocolRepository, Protoco
             input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.Description, input.Status
         );
 
+        return ObjectMapper.Map<Protocol, ProtocolDto>(protocol);
+    }
+
+    [Authorize(HealthCarePermissions.Protocols.Edit)]
+    public async Task<ProtocolDto> UpdateAsync(Guid id, ProtocolUpdateDto input)
+    {
+        var protocol = await protocolManager.UpdateAsync(id, input.Description, input.Status);
         return ObjectMapper.Map<Protocol, ProtocolDto>(protocol);
     }
 
