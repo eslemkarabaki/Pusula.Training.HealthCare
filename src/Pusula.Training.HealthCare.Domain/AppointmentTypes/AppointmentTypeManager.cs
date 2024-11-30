@@ -1,9 +1,5 @@
 ﻿using JetBrains.Annotations;
-using Pusula.Training.HealthCare.Protocols;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Data;
@@ -31,11 +27,9 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
             Guid id, string name,
             [CanBeNull] string? concurrencyStamp = null)
         {
-            Check.Length(name, nameof(name), AppointmentTypeConsts.NameMaxLength, AppointmentTypeConsts.NameMinLength);
-
             var appointmentType = await appointmentTypeRepository.GetAsync(id);
 
-            appointmentType.Name = name;
+            appointmentType.SetName(name);
 
             appointmentType.SetConcurrencyStampIfNotNull(concurrencyStamp);
             return await appointmentTypeRepository.UpdateAsync(appointmentType);

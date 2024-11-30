@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.EntityFrameworkCore;
-using Pusula.Training.HealthCare.Patients;
 using System;
 using System.Collections.Generic;
 using System.Linq;

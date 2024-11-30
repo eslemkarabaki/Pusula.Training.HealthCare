@@ -13,19 +13,17 @@ namespace Pusula.Training.HealthCare.Appointments
     public class Appointment : FullAuditedAggregateRoot<Guid>
     {
         [NotNull]
-        public virtual DateTime StartTime { get;  set; }
+        public virtual DateTime StartTime { get; private  set; }
         [NotNull]
-        public virtual DateTime EndTime { get;  set; }
+        public virtual DateTime EndTime { get; private set; }
         [NotNull]
-        public virtual EnumStatus Status { get;  set; }
-
+        public virtual EnumStatus Status { get; private set; }
         [CanBeNull]
-        public virtual string? Note { get; set; }        
-
-        public virtual Guid AppointmentTypeId { get; set; }
-        public virtual Guid DepartmentId { get; set; }
-        public virtual Guid DoctorId { get; set; }
-        public virtual Guid PatientId { get; set; }
+        public virtual string? Note { get; private set; }     
+        public virtual Guid AppointmentTypeId { get; private set; }
+        public virtual Guid DepartmentId { get; private set; }
+        public virtual Guid DoctorId { get; private set; }
+        public virtual Guid PatientId { get; private set; }
 
         protected Appointment()
         {
@@ -40,29 +38,25 @@ namespace Pusula.Training.HealthCare.Appointments
             DateTime endTime, string note,
             EnumStatus status = default)
         {
-            Check.NotNullOrWhiteSpace(appointmentTypeId.ToString(), nameof(appointmentTypeId));
-            Check.NotNullOrWhiteSpace(departmentId.ToString(), nameof(departmentId));
-            Check.NotNullOrWhiteSpace(doctorId.ToString(), nameof(doctorId));
-            Check.NotNullOrWhiteSpace(patientId.ToString(), nameof(patientId));
-            Check.NotNull(startTime, nameof(startTime));
-            Check.NotNull(endTime, nameof(endTime));
-            Check.Range((int)status, nameof(status), 1, 5);
-            Check.Length(note, nameof(note), AppointmentConsts.NoteMaxLength);
-                       
-
-            Id = id;
-            AppointmentTypeId = appointmentTypeId;
-            DepartmentId = departmentId;
-            DoctorId = doctorId;
-            PatientId = patientId;
-            StartTime = startTime;
-            EndTime = endTime;
-            Note = note;
-            Status = status;
+            SetAppointmentTypeId(appointmentTypeId);
+            SetDepartmentId(departmentId);
+            SetDoctorId(doctorId);
+            SetPatientId(patientId);
+            SetStartTime(startTime);
+            SetEndTime(endTime);
+            SetStatus(status);
+            SetNote(note);      
            
         }
+        public void SetAppointmentTypeId(Guid appointmentTypeId) => AppointmentTypeId = Check.NotDefaultOrNull<Guid>(appointmentTypeId, nameof(appointmentTypeId));
+        public void SetDepartmentId(Guid departmentId) => DepartmentId = Check.NotDefaultOrNull<Guid>(departmentId, nameof(departmentId));
+        public void SetDoctorId(Guid doctorId) => DoctorId = Check.NotDefaultOrNull<Guid>(doctorId, nameof(doctorId));
+        public void SetPatientId(Guid patientId) => PatientId = Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId)); 
+        public void SetStartTime(DateTime startTime) => StartTime = Check.NotNull(startTime, nameof(startTime));
+        public void SetEndTime(DateTime endTime) => EndTime = Check.NotNull(endTime,nameof(endTime));
+        public void SetStatus(EnumStatus status) => Status = status;
+        public void SetNote(string note) => Note = Check.Length(note, nameof(note), AppointmentConsts.NoteMaxLength);
 
     }
 
 }
-
