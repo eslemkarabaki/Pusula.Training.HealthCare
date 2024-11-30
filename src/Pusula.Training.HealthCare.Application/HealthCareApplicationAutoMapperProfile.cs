@@ -23,6 +23,7 @@ using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.PatientTypes;
+using Pusula.Training.HealthCare.Insurances;
 
 namespace Pusula.Training.HealthCare;
 
@@ -99,7 +100,10 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AppointmentReportWithNavigationProperties, AppointmentReportWithNavigationPropertiesDto>();
 
         CreateMap<AppointmentType, AppointmentTypeDto>();
-        CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();       
+        CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();
+
+        CreateMap<Insurance, InsuranceDto>();
+        CreateMap<InsuranceDto, InsuranceUpdateDto>();
 
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
