@@ -10,25 +10,24 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(HealthCarePermissions.GroupName);
+        var myGroup = context.AddGroup(GroupName);
 
-        myGroup.AddPermission(HealthCarePermissions.Dashboard.Host, L("Permission:Dashboard"), MultiTenancySides.Host);
-        myGroup.AddPermission(HealthCarePermissions.Dashboard.Tenant, L("Permission:Dashboard"), MultiTenancySides.Tenant);
+        myGroup.AddPermission(Dashboard.Host, L("Permission:Dashboard"), MultiTenancySides.Host);
+        myGroup.AddPermission(Dashboard.Tenant, L("Permission:Dashboard"), MultiTenancySides.Tenant);
 
         //Define your own permissions here. Example:
         //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1")); 
 
         SetPatientPermissions(myGroup);
-        SetCountryPermissions(myGroup); 
+        SetCountryPermissions(myGroup);
         SetCityPermissions(myGroup);
         SetDistrictPermissions(myGroup);
         SetExaminationsPermissions(myGroup);
         SetPatientTypePermissions(myGroup);
-        
-        var protocolPermission = myGroup.AddPermission(HealthCarePermissions.Protocols.Default, L("Permission:Protocols"));
-        protocolPermission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
-        protocolPermission.AddChild(HealthCarePermissions.Protocols.Edit, L("Permission:Edit"));
-        protocolPermission.AddChild(HealthCarePermissions.Protocols.Delete, L("Permission:Delete"));
+        SetProtocolsPermissions(myGroup);
+        SetPatientProtocolsPermissions(myGroup);
+        SetProtocolTypesPermissions(myGroup);
+        SetInsurancesPermissions(myGroup);
 
         var appointmentPermission =
             myGroup.AddPermission(HealthCarePermissions.Appointments.Default, L("Permission:Appointments"));
@@ -36,22 +35,30 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Edit, L("Permission:Edit"));
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Delete, L("Permission:Delete"));
 
-        var appointmentReportPermission = myGroup.AddPermission(HealthCarePermissions.AppointmentReports.Default, L("Permission:AppointmentReports"));
+        var appointmentReportPermission = myGroup.AddPermission(
+            HealthCarePermissions.AppointmentReports.Default, L("Permission:AppointmentReports")
+        );
         appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Create, L("Permission:Create"));
         appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Edit, L("Permission:Edit"));
         appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Delete, L("Permission:Delete"));
 
-        var appointmentTypePermission = myGroup.AddPermission(HealthCarePermissions.AppointmentTypes.Default, L("Permission:AppointmentTypes"));
+        var appointmentTypePermission = myGroup.AddPermission(
+            HealthCarePermissions.AppointmentTypes.Default, L("Permission:AppointmentTypes")
+        );
         appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Create, L("Permission:Create"));
         appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Edit, L("Permission:Edit"));
         appointmentTypePermission.AddChild(HealthCarePermissions.AppointmentTypes.Delete, L("Permission:Delete"));
 
-        var departmentPermission = myGroup.AddPermission(HealthCarePermissions.Departments.Default, L("Permission:Departments"));
+        var departmentPermission = myGroup.AddPermission(
+            HealthCarePermissions.Departments.Default, L("Permission:Departments")
+        );
         departmentPermission.AddChild(HealthCarePermissions.Departments.Create, L("Permission:Create"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Edit, L("Permission:Edit"));
         departmentPermission.AddChild(HealthCarePermissions.Departments.Delete, L("Permission:Delete"));
 
-        var hospitalPermission = myGroup.AddPermission(HealthCarePermissions.Hospitals.Default, L("Permission:Hospitals"));
+        var hospitalPermission = myGroup.AddPermission(
+            HealthCarePermissions.Hospitals.Default, L("Permission:Hospitals")
+        );
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Create, L("Permission:Create"));
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Edit, L("Permission:Edit"));
         hospitalPermission.AddChild(HealthCarePermissions.Hospitals.Delete, L("Permission:Delete"));
@@ -65,13 +72,9 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         titlePermission.AddChild(HealthCarePermissions.Titles.Create, L("Permission:Create"));
         titlePermission.AddChild(HealthCarePermissions.Titles.Edit, L("Permission:Edit"));
         titlePermission.AddChild(HealthCarePermissions.Titles.Delete, L("Permission:Delete"));
-
     }
 
-    private static LocalizableString L(string name)
-    {
-        return LocalizableString.Create<HealthCareResource>(name);
-    }
+    private static LocalizableString L(string name) => LocalizableString.Create<HealthCareResource>(name);
 
     private void SetPatientPermissions(PermissionGroupDefinition group)
     {
@@ -80,7 +83,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Patients.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Patients.Delete, L("Permission:Delete"));
     }
-    
+
     private void SetPatientTypePermissions(PermissionGroupDefinition group)
     {
         var permission = group.AddPermission(HealthCarePermissions.PatientTypes.Default, L("Permission:PatientTypes"));
@@ -115,9 +118,51 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
 
     private void SetExaminationsPermissions(PermissionGroupDefinition group)
     {
-        var examinations = group.AddPermission(HealthCarePermissions.Examinations.Default, L("Permission:Examinations"));
+        var examinations = group.AddPermission(
+            HealthCarePermissions.Examinations.Default, L("Permission:Examinations")
+        );
         examinations.AddChild(HealthCarePermissions.Examinations.Create, L("Permission:Create"));
         examinations.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
         examinations.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
+    }
+
+    private void SetProtocolsPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.Protocols.Default, L("Permission:Protocols")
+        );
+        permission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Protocols.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Protocols.Delete, L("Permission:Delete"));
+    }
+
+    private void SetPatientProtocolsPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            PatientProtocols.Default, L("Permission:PatientProtocols")
+        );
+        permission.AddChild(PatientProtocols.Create, L("Permission:Create"));
+        permission.AddChild(PatientProtocols.Edit, L("Permission:Edit"));
+        permission.AddChild(PatientProtocols.Delete, L("Permission:Delete"));
+    }
+
+    private void SetProtocolTypesPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.ProtocolTypes.Default, L("Permission:ProtocolTypes")
+        );
+        permission.AddChild(HealthCarePermissions.ProtocolTypes.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.ProtocolTypes.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.ProtocolTypes.Delete, L("Permission:Delete"));
+    }
+
+    private void SetInsurancesPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            Insurances.Default, L("Permission:Insurances")
+        );
+        permission.AddChild(Insurances.Create, L("Permission:Create"));
+        permission.AddChild(Insurances.Edit, L("Permission:Edit"));
+        permission.AddChild(Insurances.Delete, L("Permission:Delete"));
     }
 }

@@ -1,5 +1,3 @@
-using Blazorise;
-using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Authorization;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Permissions;
@@ -9,22 +7,16 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Blazorise.DeepCloner;
-using Blazorise.Extensions;
 using Microsoft.AspNetCore.Components.Forms;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients;
+using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Protocols;
 using Pusula.Training.HealthCare.Blazor.Extensions;
-using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
-using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.PatientTypes;
 using Syncfusion.Blazor.Grids;
-using Syncfusion.Blazor.Notifications;
-using Volo.Abp.Application.Dtos;
-using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
-using Volo.Abp.BlazoriseUI.Components;
-using SortDirection = Blazorise.SortDirection;
+using Syncfusion.Blazor.SplitButtons;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientRegistrations.Management;
 
 public partial class Patients
 {
@@ -41,7 +33,7 @@ public partial class Patients
 
     private IReadOnlyList<PatientWithNavigationPropertiesDto> PatientList { get; set; } = [];
     private GetPatientsInput Filter { get; set; }
-    private GetPatientsInput LastFilter { get; set; }
+    private GetPatientsInput LastFilter { get; set; } = new();
     private GetPatientsInputValidator FilterValidator { get; set; } = null!;
     private EditContext FilterContext { get; set; }
 
@@ -124,6 +116,33 @@ public partial class Patients
         );
     }
 
+    private async Task DropdownItemSelectedAsync(MenuEventArgs args, PatientDto patient)
+    {
+        if (args.Item.Text == L["AddProtocol"])
+        {
+            await OpenCreateProtocolDialogAsync(patient);
+        } else if (args.Item.Text == L["Edit"])
+        {
+            await OpenEditPatientModalAsync(patient.Id);
+        } else if (args.Item.Text == L["Delete"])
+        {
+            await DeletePatientAsync(patient.Id);
+        }
+    }
+
+#region Protocol
+
+    private ProtocolCreateDialog CreateProtocolDialog { get; set; } = null!;
+
+    private async Task OpenCreateProtocolDialogAsync(PatientDto dto) => await CreateProtocolDialog.ShowAsync(dto);
+
+    private async Task OpenUpdateProtocolDialogAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+#endregion
+
 #region DataGrid
 
     private Task ClearSelection()
@@ -171,9 +190,9 @@ public partial class Patients
     private Guid EditingPatientId { get; set; }
     private PatientUpdateDialog UpdatePatientDialog { get; set; } = null!;
 
-    private async Task OpenEditPatientModalAsync(PatientDto input)
+    private async Task OpenEditPatientModalAsync(Guid id)
     {
-        EditingPatientId = input.Id;
+        EditingPatientId = id;
         await UpdatePatientDialog.ShowAsync(EditingPatientId);
     }
 
@@ -194,12 +213,12 @@ public partial class Patients
 
 #region Delete
 
-    private async Task DeletePatientAsync(PatientDto input)
+    private async Task DeletePatientAsync(Guid id)
     {
         var isConfirm = await DialogService.ConfirmAsync("Are you sure you want to delete these item?", "Delete Item");
         if (isConfirm)
         {
-            await PatientAppService.DeleteAsync(input.Id);
+            await PatientAppService.DeleteAsync(id);
             await GetPatientsAsync();
         }
     }
