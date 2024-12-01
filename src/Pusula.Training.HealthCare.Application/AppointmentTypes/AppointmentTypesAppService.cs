@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using MiniExcelLibs;
+using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
 using System;
@@ -34,6 +35,11 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
                 TotalCount = totalCount,
                 Items = ObjectMapper.Map<List<AppointmentType>, List<AppointmentTypeDto>>(items)
             };
+        }
+
+        public async Task<List<AppointmentTypeDto>> GetListAsync()
+        {
+            return ObjectMapper.Map<List<AppointmentType>, List<AppointmentTypeDto>>(await appointmentTypeRepository.GetListAsync());
         }
         #endregion
 
