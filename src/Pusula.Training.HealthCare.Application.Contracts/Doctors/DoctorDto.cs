@@ -7,7 +7,7 @@ namespace Pusula.Training.HealthCare.Doctors
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public string FullName => $"{FirstName} {LastName}";
+        public string FullName { get; set; } = null!;
         public string WorkingHours { get; set; } = null!;
         public Guid TitleId { get; set; }
         public Guid DepartmentId { get; set; }
