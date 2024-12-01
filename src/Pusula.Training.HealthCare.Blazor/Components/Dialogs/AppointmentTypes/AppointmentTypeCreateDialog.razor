@@ -1,0 +1,64 @@
+﻿@using Pusula.Training.HealthCare.AppointmentTypes
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inherits HealthCareComponentBase
+
+<SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogTemplates>
+        <Header>@L["NewAppointmentType"]</Header>
+        <Content>
+            <SfDataForm ID="NewTypeForm"
+                        EditContext="@NewTypeEditContext"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                              <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <SfTextBox @bind-Value="@NewType.Name"
+                                   Placeholder="@L["Name"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                       
+                    </div>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+    [Parameter] public EventCallback<AppointmentTypeCreateDto> OnValidSaveAsync { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private EditContext NewTypeEditContext { get; set; } = null!;
+
+    private AppointmentTypeCreateDto NewType { get; set; } = new();
+
+    private async Task OnSaveClickAsync(EditContext context)
+    {
+        await OnValidSaveAsync.InvokeAsync(NewType);
+        await HideAsync();
+    }
+
+    public async Task ShowAsync()
+    {
+        NewTypeEditContext = new EditContext(NewType);
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        NewType = new AppointmentTypeCreateDto();
+        await Dialog.HideAsync();
+    }
+
+}

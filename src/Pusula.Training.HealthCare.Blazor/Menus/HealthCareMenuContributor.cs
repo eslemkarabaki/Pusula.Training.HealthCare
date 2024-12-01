@@ -77,10 +77,18 @@ public class HealthCareMenuContributor : IMenuContributor
 
         )
             .AddItem(new ApplicationMenuItem(
+                HealthCareMenus.AppointmentTypes,
+                                l["Appointment Definition"],
+                                "/appointment-type",
+                                "fa-solid fa-font", 
+                                requiredPermissionName: HealthCarePermissions.AppointmentTypes.Default)
+            )
+
+            .AddItem(new ApplicationMenuItem(
                 HealthCareMenus.Transactions,
                 l["Transactions"],
                 "/appointments",
-                "fa fa-calendar-check",
+                "fa-solid fa-pen-to-square", 
                 requiredPermissionName: HealthCarePermissions.Appointments.Default)
             )
             );

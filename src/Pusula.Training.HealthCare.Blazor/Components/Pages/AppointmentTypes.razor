@@ -1,0 +1,117 @@
+﻿@page "/appointment-type"
+
+@attribute [Authorize(HealthCarePermissions.AppointmentTypes.Default)]
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.AppointmentTypes
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.AppointmentTypes
+@using Volo.Abp.Http.Client
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Navigations
+@using SortDirection = Syncfusion.Blazor.Grids.SortDirection
+
+@inherits HealthCareComponentBase
+@inject IAppointmentTypesAppService AppointmentTypeAppService
+@inject SfDialogService DialogService
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+<PageHeader Title="Randevu Türü" BreadcrumbItems="BreadcrumbItems" />
+@* ************************* DATA GRID ************************* *@
+<div class="appointment-type-page">
+<SfGrid @ref="SfGrid" TValue="AppointmentTypeDto" DataSource="@TypeList" AllowPaging="true"
+        AllowSelection EnableHover AllowSorting AllowFiltering>
+    <SfToolbar>
+        <ToolbarItems>
+            <ToolbarItem Type="@ItemType.Button" OnClick="OpenAppointmentTypeCreateDialogAsync" Text="@L["Add"]"
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewAppointment Type"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedTypesAsync"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
+                         TooltipText="@L["Delete"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
+        </ToolbarItems>
+    </SfToolbar>
+    <GridEvents TValue="AppointmentTypeDto"
+                RowSelected="@SelectedTypeRowChangedAsync"
+                RowDeselected="@SelectedTypeRowChangedAsync" />
+    <GridPageSettings PageSize="10" />
+    <GridSelectionSettings CheckboxOnly PersistSelection />
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="@nameof(AppointmentTypeDto.Name)"></GridSortColumn>
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Field="@nameof(AppointmentTypeDto.Name)" HeaderText="@L["Appointment Type Name"]" />
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton OnClick="@(() => OpenEditTypeModalAsync(context as AppointmentTypeDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteTypeAsync(context as AppointmentTypeDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+</div>
+@* ************************* CREATE MODAL ************************* *@
+<AppointmentTypeCreateDialog @ref="@CreateAppointmentTypeDialog" OnValidSaveAsync="@CreateTypeAsync"></AppointmentTypeCreateDialog>
+
+@* ************************* UPDATE MODAL ************************* *@
+<AppointmentTypeUpdateDialog @ref="@UpdateAppointmentTypeDialog" OnValidSaveAsync="@UpdateTypeAsync"></AppointmentTypeUpdateDialog>
+
+<style>
+    body {
+        background-color: #e3f2fd; 
+        color: #0d47a1; 
+    }
+
+    .e-grid .e-row {
+        background-color: #ffffff;
+    }
+
+        .e-grid .e-row:hover {
+            background-color: #90caf9; 
+        }
+
+    .e-button {
+        background-color: #1e88e5; 
+        border: none;
+        color: white;
+    }
+        .e-button:hover {
+            background-color: #1565c0; 
+        }
+
+    .e-dialog .e-dlg-header {
+        background-color: #2196f3; 
+        color: white;
+        font-weight: bold;
+    }
+
+    .e-dialog .e-dlg-content {
+        background-color: #e3f2fd; 
+        color: #0d47a1; 
+    }    
+    .e-tooltip {
+        background-color: #1565c0;
+        color: white;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .page-header {
+        background-color: #42a5f5; 
+        color: white;
+        padding: 10px;
+        font-size: 24px;
+        border-radius: 5px;
+    }
+
+
+</style>

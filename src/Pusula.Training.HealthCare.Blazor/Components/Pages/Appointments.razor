@@ -47,14 +47,7 @@
             <DropDownListEvents TItem="DepartmentDto" TValue="Guid" ValueChange="DepartmentSelect" />
             <DropDownListFieldSettings Text="Name" Value="Id" />
             </SfDropDownList>
-    </div>
-        @* <div class="col-md-12">
-            <label class="example-label">Departman Seçin</label>
-            <SfAutoComplete TValue="Guid" TItem="DepartmentDto" @bind-Value="@SelectedDepartmentId" @ref="@refAutoComplateDepartment">
-                <AutoCompleteFieldSettings Value="Id" Text="Name" />
-                <AutoCompleteEvents TItem="DepartmentDto" TValue="Guid" Filtering="GetDepartmentFilter"></AutoCompleteEvents>
-            </SfAutoComplete>
-        </div> *@
+    </div>        
     <br />
     <div class="col-md-12">
         <label class="example-label">Doktor Seçin</label>
@@ -76,7 +69,7 @@
 
 <div class="col-lg-9 control-section">
     @if(valueSelected) {
-            <SfSchedule MinDate="@DateTime.Now" TValue="AppointmentDto" Width="100%" Height="650px"   ShowQuickInfo=false @bind-SelectedDate="@CurrentDate" @bind-CurrentView="@CurrentView" StartHour="09:00" EndHour="23:59" ShowWeekend=false>
+            <SfSchedule MinDate="@DateTime.Now" TValue="AppointmentDto" Width="100%" Height="650px"   ShowQuickInfo=false @bind-SelectedDate="@CurrentDate" @bind-CurrentView="@CurrentView" StartHour="09:00" EndHour="18:00" ShowWeekend=false>
                 <ScheduleEvents  TValue="AppointmentDto" OnActionBegin="OnActionBegin" EventRendered="OnEventRendered">
                    
                 </ScheduleEvents>
@@ -172,9 +165,8 @@
 
 <style>
    
-    /* Departman ve Doktor Seçilen Bölümün Rengi (Mavi Tonları) */
     .col-lg-3 {
-        background: linear-gradient(135deg, #7FC8FF 0%, #4E90FF 100%); /* Mavi tonları */
+        background: linear-gradient(135deg, #7FC8FF 0%, #4E90FF 100%); 
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -187,22 +179,19 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    /* Label Görünümü */
     .example-label {
         font-weight: bold;
         font-size: 14px;
-        color: #555; /* Daha yumuşak ton */
+        color: #555; 
         margin-bottom: 5px;
         display: block;
     }
 
-    /* DropDownList - Mavi Çerçeve */
     .sf-dropdownlist {
-        border: 1px solid #4E90FF; /* Mavi çerçeve */
+        border: 1px solid #4E90FF; 
         border-radius: 6px;
     }
 
-    /* Buton Tarzı */
     .submit-btn SfButton {
         background-color: #4CAF50;
         color: #ffffff;
@@ -217,14 +206,12 @@
             background-color: #45a049;
         }
 
-    /* Tarih Picker'lar */
     .sf-datetimepicker {
         border: 1px solid #ddd;
         border-radius: 6px;
         padding: 5px;
     }
 
-    /* Slotlar İçin */
     .e-disable-slot {
         pointer-events: none;
         background-color: #f5f5f5;
@@ -237,7 +224,6 @@
         pointer-events: none;
     }
 
-    /* Program Şablonları */
     .block-events .e-work-cells {
         background-color: #fdfdff;
         border: 1px solid #e3e3e3;
@@ -249,7 +235,6 @@
             border-color: #007bff;
         }
 
-    /* Randevu Statüsü */
     .schedule-template div {
         background: #007bff;
         color: #fff;
@@ -258,7 +243,6 @@
         display: inline-block;
     }
 
-    /* Tablo Stil */
     .custom-event-editor td {
         padding: 10px;
     }
@@ -268,7 +252,6 @@
         color: #333;
     }
 
-    /* Header Tarzı */
     .PageHeader {
         background: linear-gradient(90deg, #FF9A9E 0%, #FAD0C4 100%);
         color: white;

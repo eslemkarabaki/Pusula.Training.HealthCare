@@ -205,19 +205,43 @@ public class HealthCareDataSeederContributor(
     }
 
     // Department
+    //private async Task<List<Guid>> SeedDepartmentsAsync()
+    //{
+    //    var faker = new Faker<Department>("tr")
+    //        .CustomInstantiator(
+    //            f => new Department(
+    //                guidGenerator.Create(),
+    //                f.Company.CompanyName(),
+    //                f.Random.Words(3),
+    //                f.Random.Number(5, 60)
+    //            )
+    //        );
+
+    //    return await SeedEntitiesAsync(faker.Generate(25), e => departmentRepository.InsertManyAsync(e, true));
+    //}
+
     private async Task<List<Guid>> SeedDepartmentsAsync()
     {
-        var faker = new Faker<Department>("tr")
-            .CustomInstantiator(
-                f => new Department(
-                    guidGenerator.Create(),
-                    f.Company.CompanyName(),
-                    f.Random.Words(3),
-                    f.Random.Number(5, 60)
-                )
-            );
+        List<Department> departments =
+        [
+            new Department(guidGenerator.Create(), "Acil Servis", "Acil durumlar için hızlı müdahale ve tedavi hizmeti.", 15),
+            new Department(guidGenerator.Create(), "Kardiyoloji", "Kalp ve damar hastalıklarının tanı ve tedavisi.", 30),
+            new Department(guidGenerator.Create(), "Nöroloji", "Sinir sistemi hastalıklarının tanı ve tedavisi.", 30),
+            new Department(guidGenerator.Create(), "Ortopedi", "Kas ve iskelet sistemi hastalıklarının tedavisi.", 20),
+            new Department(guidGenerator.Create(), "Dahiliye", "İç hastalıklarının teşhis ve tedavisi.", 30),
+            new Department(guidGenerator.Create(), "Pediatri", "Çocuk sağlığı ve hastalıklarının teşhis ve tedavisi.", 20),
+            new Department(guidGenerator.Create(), "Göz Hastalıkları", "Gözle ilgili hastalıkların tanı ve tedavisi.", 15),
+            new Department(guidGenerator.Create(), "Kulak Burun Boğaz (KBB)", "Kulak, burun ve boğaz hastalıklarının tedavisi.", 15),
+            new Department(guidGenerator.Create(), "Kadın Hastalıkları ve Doğum", "Kadın sağlığı ve doğumla ilgili hastalıkların tanı ve tedavisi.", 30),
+            new Department(guidGenerator.Create(), "Üroloji", "İdrar yolları ve üreme organlarının hastalıklarının tedavisi.", 30),
+            new Department(guidGenerator.Create(), "Dermatoloji", "Cilt hastalıklarının tanı ve tedavisi.", 15),
+            new Department(guidGenerator.Create(), "Onkoloji", "Kanser hastalıklarının teşhis ve tedavisi.", 30),
+            new Department(guidGenerator.Create(), "Psikiyatri", "Ruh sağlığı ve psikolojik hastalıkların tedavisi.", 45),
+            new Department(guidGenerator.Create(), "Fizik Tedavi ve Rehabilitasyon", "Fiziksel hareket kabiliyetini artırmaya yönelik tedavi.", 60),
+            new Department(guidGenerator.Create(), "Endokrinoloji ve Metabolizma Hastalıkları", "Hormon ve metabolizma hastalıklarının tanı ve tedavisi.", 30)
+        ];
+        return await SeedEntitiesAsync(departments, e => departmentRepository.InsertManyAsync(e, true));
 
-        return await SeedEntitiesAsync(faker.Generate(25), e => departmentRepository.InsertManyAsync(e, true));
     }
 
     // Hospital
@@ -270,11 +294,17 @@ public class HealthCareDataSeederContributor(
     {
         List<AppointmentType> appointmentTypes =
         [
-            new AppointmentType(guidGenerator.Create(),"Kardiyoloji"),
-            new AppointmentType(guidGenerator.Create(),"Muayene"),
-            new AppointmentType(guidGenerator.Create(),"Chech-up"),
-            new AppointmentType(guidGenerator.Create(),"Radyoloji"),
-            new AppointmentType(guidGenerator.Create(),"Aşı")
+            new AppointmentType(guidGenerator.Create(),"Genel Muayene"),
+            new AppointmentType(guidGenerator.Create(),"Uzman Görüşü"),
+            new AppointmentType(guidGenerator.Create(),"Acil Durum"),
+            new AppointmentType(guidGenerator.Create(),"Takip Randevusu"),
+            new AppointmentType(guidGenerator.Create(),"Laboratuvar Testi"),
+            new AppointmentType(guidGenerator.Create(),"Rutin Kontrol"),
+            new AppointmentType(guidGenerator.Create(),"Psikolojik Danışmanlık"),
+            new AppointmentType(guidGenerator.Create(),"Psikolojik Danışmanlık"),
+            new AppointmentType(guidGenerator.Create(),"Fizik Tedavi"),
+            new AppointmentType(guidGenerator.Create(),"Aşı Randevusu"),
+            new AppointmentType(guidGenerator.Create(),"Göz Muayenesi")
         ];
 
         await SeedEntitiesAsync(appointmentTypes, e => appointmentTypeRepository.InsertManyAsync(e, true));
