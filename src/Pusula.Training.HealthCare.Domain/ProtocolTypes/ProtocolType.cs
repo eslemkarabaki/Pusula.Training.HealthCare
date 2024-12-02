@@ -1,10 +1,11 @@
 using System;
 using Volo.Abp;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.ProtocolTypes;
 
-public class ProtocolType : AuditedEntity<Guid>
+public class ProtocolType : AuditedAggregateRoot<Guid>
 {
     public string Name { get; private set; }
 
