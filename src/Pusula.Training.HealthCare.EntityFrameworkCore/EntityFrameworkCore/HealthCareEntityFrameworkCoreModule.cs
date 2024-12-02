@@ -32,6 +32,11 @@ using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.ProtocolTypes;
+using Pusula.Training.HealthCare.TestGroups;
+using Pusula.Training.HealthCare.TestProcesses;
+using Pusula.Training.HealthCare.Tests;
+using Pusula.Training.HealthCare.TestTypes;
+using Pusula.Training.HealthCare.WorkLists;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 

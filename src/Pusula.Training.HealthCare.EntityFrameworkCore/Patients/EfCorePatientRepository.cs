@@ -153,10 +153,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         var dbContext = await GetDbContextAsync();
         return
             from patient in dbContext
-                            .Patients.Include(
-                                e => e.Addresses
-                                      .Where(a => a.PatientId == e.Id)
-                            )
+                            .Patients.Include(e => e.Addresses)
                             .ThenInclude(e => e.District)
                             .ThenInclude(e => e.City)
                             .ThenInclude(e => e.Country)
