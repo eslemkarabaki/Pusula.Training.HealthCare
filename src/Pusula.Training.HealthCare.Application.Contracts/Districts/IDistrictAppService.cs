@@ -12,9 +12,9 @@ public interface IDistrictAppService : IApplicationService
     Task<DistrictDto> GetAsync(Guid id);
     Task<CityDto> GetCityAsync(Guid districtId);
 
-    Task<List<DistrictDto>> GetListAsync();
-    Task<List<DistrictDto>> GetListAsync(Guid cityId);
-    Task<PagedResultDto<DistrictDto>> GetListAsync(GetDistrictsInput input);
+    Task<List<DistrictDto>> GetListWithDetailsAsync();
+    Task<List<DistrictDto>> GetListWithDetailsAsync(Guid cityId);
+    Task<PagedResultDto<DistrictDto>> GetListWithDetailsAsync(GetDistrictsInput input);
 
     Task<DistrictDto> CreateAsync(DistrictCreateDto input);
 

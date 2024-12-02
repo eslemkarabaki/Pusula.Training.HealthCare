@@ -128,7 +128,7 @@
                   Responsive="true"
                   PageSize="PageSize"
                   Groupable="@(!Filter.CityId.HasValue)"
-                  GroupBy="@(e => e.City)">
+                  GroupBy="@(e => e.City.Name)">
             <LoadingTemplate>
                 <Row Class="w-100 align-items-center" Style="height: 150px;">
                     <Column>

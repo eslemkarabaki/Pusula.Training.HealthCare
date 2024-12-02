@@ -57,11 +57,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<CountryDto, CountryUpdateDto>();
 
         CreateMap<City, CityDto>();
-        CreateMap<CityWithCountry, CityDto>();
         CreateMap<CityDto, CityUpdateDto>();
 
         CreateMap<District, DistrictDto>();
-        CreateMap<DistrictWithCity, DistrictDto>();
         CreateMap<DistrictDto, DistrictUpdateDto>();
 
         CreateMap<Protocol, ProtocolDto>();

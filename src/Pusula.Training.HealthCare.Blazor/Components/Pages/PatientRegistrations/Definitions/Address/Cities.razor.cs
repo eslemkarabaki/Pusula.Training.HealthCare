@@ -83,7 +83,7 @@ public partial class Cities
         Filter.SkipCount = (CurrentPage - 1) * PageSize;
         Filter.Sorting = CurrentSorting;
 
-        var result = await CityAppService.GetListAsync(Filter);
+        var result = await CityAppService.GetListWithDetailsAsync(Filter);
         CityList = result.Items;
         TotalCount = (int)result.TotalCount;
 

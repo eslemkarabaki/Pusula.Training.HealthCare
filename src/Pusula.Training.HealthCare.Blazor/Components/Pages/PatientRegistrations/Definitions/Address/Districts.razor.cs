@@ -45,7 +45,7 @@ public partial class Districts
     protected override async Task OnInitializedAsync()
     {
         await SetPermissionsAsync();
-        CityList = await CityAppService.GetListAsync();
+        CityList = await CityAppService.GetListWithDetailsAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -82,7 +82,7 @@ public partial class Districts
         Filter.SkipCount = (CurrentPage - 1) * PageSize;
         Filter.Sorting = CurrentSorting;
 
-        var result = await DistrictAppService.GetListAsync(Filter);
+        var result = await DistrictAppService.GetListWithDetailsAsync(Filter);
         DistrictList = result.Items;
         TotalCount = (int)result.TotalCount;
 
