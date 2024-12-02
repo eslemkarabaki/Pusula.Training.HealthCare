@@ -1,0 +1,10 @@
+@using Pusula.Training.HealthCare.Protocols
+
+<span class="protocol-status" progress="@Status">
+    @Status
+</span>
+
+@code{
+
+    [Parameter] public EnumProtocolStatus Status { get; set; }
+}
