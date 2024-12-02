@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Pusula.Training.HealthCare.Addresses;
+using Pusula.Training.HealthCare.GlobalExceptions;
 using Pusula.Training.HealthCare.PatientTypes;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -25,6 +26,7 @@ public class PatientAppService(
     IPatientRepository patientRepository,
     IAddressRepository addressRepository,
     PatientManager patientManager,
+    IPatientRules patientRules,
     IDistributedCache<PatientDownloadTokenCacheItem, string> downloadTokenCache,
     IDistributedEventBus distributedEventBus
 ) : HealthCareAppService, IPatientAppService
@@ -121,6 +123,22 @@ public class PatientAppService(
     [Authorize(HealthCarePermissions.Patients.Create)]
     public virtual async Task<PatientDto> CreateAsync(PatientCreateDto input)
     {
+        GlobalException
+            .ThrowIf(
+                input.PassportNumber.IsNullOrWhiteSpace() && input.IdentityNumber.IsNullOrWhiteSpace(),
+                L["IdentityOrPassportNumberRequired"]
+            );
+        GlobalException
+            .ThrowIf(
+                await patientRules.IdentityNumberExistsAsync(input.IdentityNumber),
+                L["IdentityNumberAlreadyExists"]
+            );
+        GlobalException
+            .ThrowIf(
+                await patientRules.PassportNumberExistsAsync(input.PassportNumber),
+                L["IdentityNumberAlreadyExists"]
+            );
+
         var patient = await patientManager.CreateAsync(
             input.CountryId, input.PatientTypeId, input.FirstName, input.LastName, input.BirthDate,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumberCode,
@@ -214,12 +232,6 @@ public class PatientAppService(
 
         return new Shared.DownloadTokenResultDto { Token = token };
     }
-
-    public async Task<bool> PassportNumberExistsAsync(string passportNumber, Guid? exludePatientId = null) =>
-        await patientRepository.PassportNumberExistsAsync(exludePatientId, passportNumber);
-
-    public async Task<bool> IdentityNumberExistsAsync(string identityNumber, Guid? exludePatientId = null) =>
-        await patientRepository.IdentityNumberExistsAsync(exludePatientId, identityNumber);
 
 #endregion
 }

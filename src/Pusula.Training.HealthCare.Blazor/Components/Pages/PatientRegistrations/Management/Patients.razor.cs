@@ -24,7 +24,7 @@ public partial class Patients
 
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
 
-    private int PageSize => 100;
+    private int PageSize => 50;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; } = string.Empty;
     private int TotalCount { get; set; }
@@ -136,10 +136,7 @@ public partial class Patients
 
     private async Task OpenCreateProtocolDialogAsync(PatientDto dto) => await CreateProtocolDialog.ShowAsync(dto);
 
-    private async Task OpenUpdateProtocolDialogAsync()
-    {
-        await Task.CompletedTask;
-    }
+    private async Task OpenUpdateProtocolDialogAsync() => await Task.CompletedTask;
 
 #endregion
 
@@ -169,19 +166,6 @@ public partial class Patients
     private PatientCreateDialog CreatePatientDialog { get; set; } = null!;
 
     private async Task OpenCreatePatientDialogAsync() => await CreatePatientDialog.ShowAsync();
-
-    private async Task CreatePatientAsync(PatientCreateDto patient)
-    {
-        try
-        {
-            await PatientAppService.CreateAsync(patient);
-            await GetPatientsAsync();
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
-    }
 
 #endregion
 

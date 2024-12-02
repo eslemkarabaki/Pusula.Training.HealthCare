@@ -68,22 +68,16 @@
                                         </div>
 
                                         <div class="col-4">
-                                            <label
-                                                class="e-form-label">@(IsForeigner ? L["PassportNumber"] : L["IdentityNumber"])</label>
                                             @if (IsForeigner)
                                             {
+                                                <label class="e-form-label">@L["PassportNumber"]</label>
                                                 <SfTextBox @bind-Value="@NewPatient.PassportNumber"
-                                                           Placeholder="@L["PassportNumber"]"
-                                                           OnChange="@PassportNumberChangedAsync"></SfTextBox>
+                                                           Placeholder="@L["PassportNumber"]"></SfTextBox>
                                             } else
                                             {
+                                                <label class="e-form-label">@L["IdentityNumber"]</label>
                                                 <SfTextBox @bind-Value="@NewPatient.IdentityNumber"
-                                                           Placeholder="@L["IdentityNumber"]"
-                                                           OnChange="@IdentityNumberChangedAsync"></SfTextBox>
-                                            }
-                                            @if (IdentityOrPassportExist)
-                                            {
-                                                <div class="validation-message">Already exist</div>
+                                                           Placeholder="@L["IdentityNumber"]"></SfTextBox>
                                             }
                                         </div>
                                         <div class="col-4">
@@ -348,8 +342,7 @@
                 <FormButtons>
                     <SfButton type="button" CssClass="e-outline"
                               OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
-                    <SfButton type="submit" IsPrimary
-                              Disabled="@(Checking || IdentityOrPassportExist)">@L["Save"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
                 </FormButtons>
             </SfDataForm>
 
@@ -362,7 +355,7 @@
 
     [Parameter] public IEnumerable<CountryDto> CountryList { get; set; } = [];
     [Parameter] public IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
-    [Parameter] public EventCallback<PatientCreateDto> OnValidSaveAsync { get; set; }
+    [Parameter] public EventCallback<PatientCreateDto> PatientCreatedAsync { get; set; }
 
     private SfDialog Dialog { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> PatientCountryListAutoComplete { get; set; } = null!;
@@ -387,8 +380,6 @@
     private CountryDto CurrentCountry { get; set; } = new();
 
     private bool AddressEditingMode { get; set; }
-    private bool Checking { get; set; }
-    private bool IdentityOrPassportExist { get; set; }
 
     private bool IsForeigner
     {
@@ -501,25 +492,19 @@
         await CancelAddressEditingAsync();
     }
 
-    private async Task PassportNumberChangedAsync()
-    {
-        Checking = true;
-        IdentityOrPassportExist = await PatientAppService.PassportNumberExistsAsync(NewPatient.PassportNumber!);
-        Checking = false;
-    }
-
-    private async Task IdentityNumberChangedAsync()
-    {
-        Checking = true;
-        IdentityOrPassportExist = await PatientAppService.IdentityNumberExistsAsync(NewPatient.IdentityNumber!);
-        Checking = false;
-    }
-
     private async Task OnSaveClickAsync(EditContext context)
     {
-        ObjectMapper.Map(Addresses.Select(e => e.Address), NewPatient.Addresses);
-        await OnValidSaveAsync.InvokeAsync(NewPatient);
-        await HideAsync();
+        try
+        {
+            ObjectMapper.Map(Addresses, NewPatient.Addresses);
+            await PatientAppService.CreateAsync(NewPatient);
+            await PatientCreatedAsync.InvokeAsync();
+            await HideAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     public async Task ShowAsync()
@@ -547,7 +532,7 @@
         SelectedAddressCountryId = countryId;
         SelectedAddressCityId = Guid.Empty;
         NewAddress.DistrictId = Guid.Empty;
-        CityList = await CityAppService.GetListAsync(countryId);
+        CityList = await CityAppService.GetListWithDetailsAsync(countryId);
         DistrictList = [];
     }
 
@@ -555,7 +540,7 @@
     {
         SelectedAddressCityId = cityId;
         NewAddress.DistrictId = Guid.Empty;
-        DistrictList = await DistrictAppService.GetListAsync(cityId);
+        DistrictList = await DistrictAppService.GetListWithDetailsAsync(cityId);
     }
 
     private void SetDefaultValuesForDialog()

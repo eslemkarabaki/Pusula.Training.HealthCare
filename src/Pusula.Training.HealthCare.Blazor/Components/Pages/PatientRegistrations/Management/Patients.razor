@@ -193,7 +193,7 @@
 
 @* ************************* CREATE MODAL ************************* *@
 <PatientCreateDialog @ref="CreatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
-                     OnValidSaveAsync="CreatePatientAsync"/>
+                     PatientCreatedAsync="GetPatientsAsync"/>
 
 @* ************************* UPDATE MODAL ************************* *@
 <PatientUpdateDialog @ref="UpdatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
@@ -201,8 +201,6 @@
 
 @* ************************* CREATE PROTOCOL MODAL ************************* *@
 <ProtocolCreateDialog @ref="CreateProtocolDialog"></ProtocolCreateDialog>
-
-
 
 @* ************************* UPDATE PROTOCOL MODAL ************************* *@
 

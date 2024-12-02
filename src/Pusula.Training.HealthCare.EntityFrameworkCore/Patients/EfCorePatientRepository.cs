@@ -147,26 +147,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
             )
             .LongCountAsync(GetCancellationToken(cancellationToken));
 
-    public virtual async Task<bool> IdentityNumberExistsAsync(
-        Guid? id,
-        string identityNumber,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var query = (await GetQueryableAsync()).WhereIf(id.HasValue, e => e.Id != id);
-        return await query.AnyAsync(e => e.IdentityNumber == identityNumber, GetCancellationToken(cancellationToken));
-    }
-
-    public virtual async Task<bool> PassportNumberExistsAsync(
-        Guid? id,
-        string passportNumber,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var query = (await GetQueryableAsync()).WhereIf(id.HasValue, e => e.Id != id);
-        return await query.AnyAsync(e => e.PassportNumber == passportNumber, GetCancellationToken(cancellationToken));
-    }
-
+    // todo:benchmark
     protected virtual async Task<IQueryable<PatientWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()
     {
         var dbContext = await GetDbContextAsync();

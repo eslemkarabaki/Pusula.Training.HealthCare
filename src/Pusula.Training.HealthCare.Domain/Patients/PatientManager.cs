@@ -34,8 +34,6 @@ public class PatientManager(
         IEnumerable<Address> addresses
     )
     {
-        await CheckIdentityAndPassportNumberAsync(identityNumber, passportNumber);
-
         var patient = new Patient(
             GuidGenerator.Create(),
             countryId,
@@ -79,8 +77,6 @@ public class PatientManager(
         string? concurrencyStamp = null
     )
     {
-        await CheckIdentityAndPassportNumberAsync(identityNumber, passportNumber, id);
-
         var patient = await patientRepository.GetAsync(id);
         patient.SetName(firstName, lastName);
         patient.SetBirthDate(birthDate);
@@ -100,41 +96,5 @@ public class PatientManager(
         await addressManager.SetAddressesAsync(patient.Id, addresses);
         patient.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await patientRepository.UpdateAsync(patient);
-    }
-
-    private async Task CheckIdentityAndPassportNumberAsync(
-        string? identityNumber,
-        string? passportNumber,
-        Guid? excludeId = null
-    )
-    {
-        if (identityNumber.IsNullOrWhiteSpace() && passportNumber.IsNullOrWhiteSpace())
-        {
-            throw new Exception("Identity number or passport number is required."); //todo: custom exception
-        }
-
-        if (!identityNumber.IsNullOrWhiteSpace())
-        {
-            await CheckIdentityNumberNotExistAsync(excludeId, identityNumber);
-        } else
-        {
-            await CheckPassportNumberNotExistAsync(excludeId, passportNumber!);
-        }
-    }
-
-    private async Task CheckIdentityNumberNotExistAsync(Guid? excludeId, string identityNumber)
-    {
-        if (await patientRepository.IdentityNumberExistsAsync(excludeId, identityNumber))
-        {
-            throw new Exception("Identity number already exists."); //todo: custom exception
-        }
-    }
-
-    private async Task CheckPassportNumberNotExistAsync(Guid? excludeId, string passportNumber)
-    {
-        if (await patientRepository.PassportNumberExistsAsync(excludeId, passportNumber))
-        {
-            throw new Exception("Passport number already exists."); //todo: custom exception
-        }
     }
 }

@@ -19,7 +19,6 @@ namespace Pusula.Training.HealthCare.Controllers.Patients;
 [Route("api/app/patients")]
 public class PatientController(IPatientAppService patientAppService) : HealthCareController, IPatientAppService
 {
-
     [HttpGet("get/all")]
     public virtual Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input) =>
         patientAppService.GetListAsync(input);
@@ -29,8 +28,7 @@ public class PatientController(IPatientAppService patientAppService) : HealthCar
         GetPatientsInput input
     ) =>
         patientAppService.GetListWithNavigationPropertiesAsync(input);
-    
-    
+
     [HttpGet("get/by-identity-or-passport/{number}")]
     public virtual Task<PatientDto> GetAsync(string number) => patientAppService.GetAsync(number);
 
@@ -44,11 +42,10 @@ public class PatientController(IPatientAppService patientAppService) : HealthCar
     [HttpGet("get/with-navigation-properties/{id:guid}")]
     public virtual Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) =>
         patientAppService.GetWithNavigationPropertiesAsync(id);
-    
-    [HttpGet("get/with-navigation-properties/{patientNo:int}")]
-     public virtual Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(int patientNo) =>
-        patientAppService.GetWithNavigationPropertiesAsync(patientNo);
 
+    [HttpGet("get/with-navigation-properties/{patientNo:int}")]
+    public virtual Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(int patientNo) =>
+        patientAppService.GetWithNavigationPropertiesAsync(patientNo);
 
     [HttpPost]
     public virtual Task<PatientDto> CreateAsync(PatientCreateDto input) => patientAppService.CreateAsync(input);
@@ -70,16 +67,6 @@ public class PatientController(IPatientAppService patientAppService) : HealthCar
     [HttpGet]
     [Route("download-token")]
     public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync() => patientAppService.GetDownloadTokenAsync();
-
-    [HttpGet("passport-exist/{passportNumber}")]
-    public async Task<bool>
-        PassportNumberExistsAsync(string passportNumber, [FromQuery] Guid? exludePatientId = null) =>
-        await patientAppService.PassportNumberExistsAsync(passportNumber);
-
-    [HttpGet("identity-exist/{passportNumber}")]
-    public async Task<bool>
-        IdentityNumberExistsAsync(string identityNumber, [FromQuery] Guid? exludePatientId = null) =>
-        await patientAppService.IdentityNumberExistsAsync(identityNumber);
 
     [HttpDelete]
     [Route("")]

@@ -95,16 +95,4 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
         CancellationToken cancellationToken = default
     );
-
-    Task<bool> IdentityNumberExistsAsync(
-        Guid? id,
-        string identityNumber,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<bool> PassportNumberExistsAsync(
-        Guid? id,
-        string passportNumber,
-        CancellationToken cancellationToken = default
-    );
 }
