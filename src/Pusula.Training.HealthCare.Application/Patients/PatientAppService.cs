@@ -144,7 +144,7 @@ public class PatientAppService(
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumberCode,
             input.MobilePhoneNumber, input.HomePhoneNumberCode, input.HomePhoneNumber, input.Gender, input.BloodType,
             input.MaritalStatus,
-            ObjectMapper.Map<IEnumerable<AddressCreateDto>, IEnumerable<Address>>(input.Addresses)
+            ObjectMapper.Map<ICollection<AddressCreateDto>, ICollection<Address>>(input.Addresses)
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
@@ -160,7 +160,7 @@ public class PatientAppService(
             id, input.CountryId, input.PatientTypeId, input.FirstName, input.LastName, input.BirthDate,
             input.EmailAddress, input.MobilePhoneNumberCode, input.MobilePhoneNumber, input.HomePhoneNumberCode,
             input.HomePhoneNumber, input.Gender, input.BloodType,
-            input.MaritalStatus, ObjectMapper.Map<IEnumerable<AddressUpdateDto>, IEnumerable<Address>>(input.Addresses),
+            input.MaritalStatus, ObjectMapper.Map<ICollection<AddressUpdateDto>, ICollection<Address>>(input.Addresses),
             input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);
