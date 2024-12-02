@@ -63,8 +63,6 @@ public class PatientManager(
         string firstName,
         string lastName,
         DateTime birthDate,
-        string? identityNumber,
-        string? passportNumber,
         string emailAddress,
         string mobilePhoneNumberCode,
         string mobilePhoneNumber,
@@ -80,8 +78,6 @@ public class PatientManager(
         var patient = await patientRepository.GetAsync(id);
         patient.SetName(firstName, lastName);
         patient.SetBirthDate(birthDate);
-        patient.SetIdentityNumber(identityNumber);
-        patient.SetPassportNumber(passportNumber);
         patient.SetEmailAddress(emailAddress);
         patient.SetMobilePhoneNumber(mobilePhoneNumber);
         patient.SetMobilePhoneNumberCode(mobilePhoneNumberCode);

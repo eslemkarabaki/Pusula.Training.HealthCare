@@ -158,8 +158,8 @@ public class PatientAppService(
     {
         var patient = await patientManager.UpdateAsync(
             id, input.CountryId, input.PatientTypeId, input.FirstName, input.LastName, input.BirthDate,
-            input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumberCode,
-            input.MobilePhoneNumber, input.HomePhoneNumberCode, input.HomePhoneNumber, input.Gender, input.BloodType,
+            input.EmailAddress, input.MobilePhoneNumberCode, input.MobilePhoneNumber, input.HomePhoneNumberCode,
+            input.HomePhoneNumber, input.Gender, input.BloodType,
             input.MaritalStatus, ObjectMapper.Map<IEnumerable<AddressUpdateDto>, IEnumerable<Address>>(input.Addresses),
             input.ConcurrencyStamp
         );
