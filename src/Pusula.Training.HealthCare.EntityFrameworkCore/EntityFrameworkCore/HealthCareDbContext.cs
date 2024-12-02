@@ -5,24 +5,19 @@ using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Examinations;
-using Pusula.Training.HealthCare.Examinations;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
-using Pusula.Training.HealthCare.HospitalDepartments;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
-using System.Numerics;
 using System.Reflection;
-using Pusula.Training.HealthCare.Configurations;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EntityFrameworkCore;
-using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -33,10 +28,10 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
-using Npgsql.Replication.PgOutput.Messages;
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
+using ProtocolType = Pusula.Training.HealthCare.ProtocolTypes.ProtocolType;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -64,9 +59,12 @@ public class HealthCareDbContext :
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Appointment> Appointments { get; set; } = null!;
     public DbSet<AppointmentReport> AppointmentReports { get; set; } = null!;
+
     public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
+
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;
+    public DbSet<ProtocolType> ProtocolTypes { get; set; } = null!;
     public DbSet<AppDefault> AppDefaults { get; set; } = null!;
 
 #region Entities from the modules

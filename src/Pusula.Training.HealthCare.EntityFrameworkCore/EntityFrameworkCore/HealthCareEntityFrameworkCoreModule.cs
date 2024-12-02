@@ -28,6 +28,7 @@ using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.ProtocolTypes;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -81,6 +82,7 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<AppDefault, EfCoreAppDefaultRepository>();
                 options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
                 options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
+                options.AddRepository<ProtocolType, EfCoreProtocolTypeRepository>();
             }
         );
 

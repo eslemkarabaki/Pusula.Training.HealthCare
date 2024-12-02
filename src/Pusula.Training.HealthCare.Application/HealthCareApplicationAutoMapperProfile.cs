@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.HospitalDepartments;
 using Pusula.Training.HealthCare.Hospitals;
-using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Shared;
@@ -17,10 +15,9 @@ using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Examinations;
-using Pusula.Training.HealthCare.Examinations;
-using Pusula.Training.HealthCare.AppointmentTypes;
-using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.Extensions;
 using Pusula.Training.HealthCare.PatientTypes;
+using Pusula.Training.HealthCare.ProtocolTypes;
 
 namespace Pusula.Training.HealthCare;
 
@@ -66,6 +63,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Protocol, ProtocolExcelDto>();
         CreateMap<ProtocolDto, ProtocolUpdateDto>();
         CreateMap<ProtocolWithNavigationProperties, ProtocolWithNavigationPropertiesDto>();
+
+        CreateMap<ProtocolType, ProtocolTypeDto>();
 
         CreateMap<Department, DepartmentDto>();
         CreateMap<Department, DepartmentExcelDto>();
