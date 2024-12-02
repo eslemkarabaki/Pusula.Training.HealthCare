@@ -23,6 +23,12 @@ services:
       placement:
         constraints: [node.role==manager]
 
+      labels:
+        -  "traefik.enable=true"
+        -  "traefik.http.routers.testadmin.rule=Host('team3-pusula-healthcare.pusulayazilim.com.tr')"
+        -  "traefik.http.services.testadmin.loadbalancer.server.port=80"
+        -  "traefik.http.services.testadmin.loadbalancer.sticky.cookie=true"
+        -  "traefik.http.services.testadmin.loadbalancer.sticky.cookie.name=testadmin_session"
 networks:
   frontend:
     external: true
