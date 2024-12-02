@@ -73,14 +73,15 @@
 </div>
 
 @* ************************* DATA GRID ************************* *@
-<SfGrid @ref="SfGrid" TValue="PatientWithNavigationPropertiesDto" DataSource="@PatientList" AllowPaging="true"
-        AllowSelection EnableHover AllowSorting>
+<SfGrid @ref="SfGrid" TValue="PatientWithNavigationPropertiesDto" Height="600px" DataSource="@PatientList"
+        AllowSelection="@CanDeletePatient" EnableHover EnableVirtualMaskRow EnableStickyHeader>
     <SfToolbar>
         <ToolbarItems>
             <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreatePatientDialogAsync" Text="@L["Add"]"
-                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewPatient"]"></ToolbarItem>
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewPatient"]"
+                         Disabled="@(!CanCreatePatient)"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedPatientsAsync"
-                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0 || !CanDeletePatient)"
                          Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
                          TooltipText="@L["Delete"]"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
@@ -92,14 +93,13 @@
     <GridEvents TValue="PatientWithNavigationPropertiesDto"
                 RowSelected="@SelectedPatientRowChangedAsync"
                 RowDeselected="@SelectedPatientRowChangedAsync"/>
-    <GridPageSettings PageSize="10"/>
     <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridColumns>
-        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Type="ColumnType.CheckBox" Width="30" Visible="@CanDeletePatient"></GridColumn>
         <GridColumn HeaderText="@L["Patient"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     <div class="fw-500">
                         @dto.Patient.FullName
                     </div>
@@ -120,7 +120,7 @@
         <GridColumn HeaderText="@L["IdentityOrPassportNumber"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     @(dto.Patient.IdentityNumber ?? dto.Patient.PassportNumber)
                     if (dto.Patient.IdentityNumber.IsNullOrWhiteSpace())
                     {
@@ -133,7 +133,7 @@
         <GridColumn HeaderText="@L["BirthDate"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     <div class="d-flex gap-1">
                         <span>@dto.Patient.BirthDate.ToString("dd.MM.yyyy")</span>
                         <span class="fs-12p">(@dto.Patient.Age.Item1 @dto.Patient.Age.Item2)</span>
@@ -144,7 +144,7 @@
         <GridColumn HeaderText="@L["EmailAddress"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     <div>
                         @dto.Patient.EmailAddress
                     </div>
@@ -154,7 +154,7 @@
         <GridColumn HeaderText="@L["MobilePhoneNumber"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     <div>
                         +@dto.Patient.MobilePhoneNumberCode @dto.Patient.MobilePhoneNumber
                     </div>
@@ -164,7 +164,7 @@
         <GridColumn TextAlign="TextAlign.Right">
             <Template>
                 @{
-                    var patient = (context as PatientWithNavigationPropertiesDto).Patient;
+                    var patient = (context as PatientWithNavigationPropertiesDto)!.Patient;
                 }
                 <div class="d-flex justify-content-end gap-1">
                     <SfTooltip Position="Position.BottomCenter" Content="@L["Detail"]">
@@ -174,15 +174,19 @@
                             IconCss="e-icons fas fa-external-link-alt"></SfButton>
                     </SfTooltip>
 
-                    @* ULTRA ÖNEMLİ HATIRLATMA 
-                    buraya her baktığında bu componenti yapan developerın kulaklarını çınlat *@
                     <SfDropDownButton IconCss="fas fa-ellipsis-h" CssClass="e-caret-hide e-flat"
                                       IconPosition="SplitButtonIconPosition.Top">
                         <DropDownButtonEvents ItemSelected="@((args) => DropdownItemSelectedAsync(args, patient))"/>
                         <DropDownMenuItems>
                             <DropDownMenuItem Text="@L["AddProtocol"]" IconCss="e-icons fas fa-file-medical"/>
-                            <DropDownMenuItem Text="@L["Edit"]" IconCss="e-icons far fa-edit"/>
-                            <DropDownMenuItem Text="@L["Delete"]" IconCss="e-icons far fa-trash-alt"/>
+                            @if (CanEditPatient)
+                            {
+                                <DropDownMenuItem Text="@L["Edit"]" IconCss="e-icons far fa-edit"/>
+                            }
+                            @if (CanDeletePatient)
+                            {
+                                <DropDownMenuItem Text="@L["Delete"]" IconCss="e-icons far fa-trash-alt"/>
+                            }
                         </DropDownMenuItems>
                     </SfDropDownButton>
                 </div>
