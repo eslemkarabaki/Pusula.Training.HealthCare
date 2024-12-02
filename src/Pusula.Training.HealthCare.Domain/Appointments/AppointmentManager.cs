@@ -45,26 +45,17 @@ namespace Pusula.Training.HealthCare.Appointments
             DateTime startTime, DateTime endTime,
             EnumStatus status, string? note = null, 
             [CanBeNull] string? concurrencyStamp = null)
-        {
-            Check.NotNullOrWhiteSpace(appointmentTypeId.ToString(), nameof(appointmentTypeId));
-            Check.NotNullOrWhiteSpace(departmentId.ToString(), nameof(departmentId));
-            Check.NotNullOrWhiteSpace(doctorId.ToString(), nameof(doctorId));
-            Check.NotNullOrWhiteSpace(patientId.ToString(), nameof(patientId));
-            Check.NotNull(startTime, nameof(startTime));
-            Check.NotNull(endTime, nameof(endTime));
-            Check.Range((int)status, nameof(status), 1, 5);
-            Check.Length(note, nameof(note), AppointmentConsts.NoteMaxLength);
-
+        {           
             var appointment = await appointmentRepository.GetAsync(id);
 
-            appointment.AppointmentTypeId = appointmentTypeId;
-            appointment.DepartmentId = departmentId;
-            appointment.DoctorId = doctorId;
-            appointment.PatientId = patientId;
-            appointment.StartTime = startTime;
-            appointment.EndTime = endTime;
-            appointment.Status = status;
-            appointment.Note = note;            
+            appointment.SetAppointmentTypeId(appointmentTypeId);
+            appointment.SetDepartmentId(departmentId);
+            appointment.SetDoctorId(doctorId);
+            appointment.SetPatientId(patientId);
+            appointment.SetStartTime(startTime);
+            appointment.SetEndTime(endTime);
+            appointment.SetStatus(status);
+            appointment.SetNote(note);           
 
             appointment.SetConcurrencyStampIfNotNull(concurrencyStamp);
             return await appointmentRepository.UpdateAsync(appointment);

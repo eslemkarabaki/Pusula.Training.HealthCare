@@ -2,12 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.Appointments;
-using Pusula.Training.HealthCare.Hospitals;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace Pusula.Training.HealthCare.Configurations

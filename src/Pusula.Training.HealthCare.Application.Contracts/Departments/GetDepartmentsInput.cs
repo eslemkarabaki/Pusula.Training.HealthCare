@@ -10,7 +10,5 @@ public class GetDepartmentsInput : PagedAndSortedResultRequestDto
     public string? Description { get; set; }
     public int? Duration { get; set; }
 
-    public GetDepartmentsInput()
-    {
-    }
+    
 }

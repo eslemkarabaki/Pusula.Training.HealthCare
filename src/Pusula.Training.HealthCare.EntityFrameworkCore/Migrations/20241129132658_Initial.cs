@@ -500,6 +500,36 @@ namespace Pusula.Training.HealthCare.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AppExamination",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    IdentityNumber = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: false),
+                    VisitDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Notes = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    ChronicDiseases = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Allergies = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Medications = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    Diagnosis = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    Prescription = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    ImagingResults = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
+                    PatientId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppExamination", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AppHospitals",
                 columns: table => new
                 {
@@ -574,6 +604,25 @@ namespace Pusula.Training.HealthCare.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AppProtocolTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppRadiologyExaminationGroups",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppRadiologyExaminationGroups", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -655,6 +704,49 @@ namespace Pusula.Training.HealthCare.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OpenIddictScopes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TestGroups",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Code = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TestTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -987,6 +1079,32 @@ namespace Pusula.Training.HealthCare.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AppRadiologyExaminations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    ExaminationCode = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppRadiologyExaminations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppRadiologyExaminations_AppRadiologyExaminationGroups_Grou~",
+                        column: x => x.GroupId,
+                        principalTable: "AppRadiologyExaminationGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AppDoctors",
                 columns: table => new
                 {
@@ -1057,6 +1175,43 @@ namespace Pusula.Training.HealthCare.Migrations
                         column: x => x.ApplicationId,
                         principalTable: "OpenIddictApplications",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Code = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestGroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestTypeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tests_TestGroups_TestGroupId",
+                        column: x => x.TestGroupId,
+                        principalTable: "TestGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tests_TestTypes_TestTypeId",
+                        column: x => x.TestTypeId,
+                        principalTable: "TestTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1183,47 +1338,6 @@ namespace Pusula.Training.HealthCare.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppExamination",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    IdentityNumber = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: false),
-                    VisitDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Notes = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    ChronicDiseases = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Allergies = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Medications = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    Diagnosis = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    Prescription = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    ImagingResults = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
-                    PatientId = table.Column<Guid>(type: "uuid", nullable: false),
-                    DoctorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppExamination", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AppExamination_AppDoctors_DoctorId",
-                        column: x => x.DoctorId,
-                        principalTable: "AppDoctors",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AppExamination_AppPatients_PatientId",
-                        column: x => x.PatientId,
-                        principalTable: "AppPatients",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AppProtocols",
                 columns: table => new
                 {
@@ -1313,6 +1427,93 @@ namespace Pusula.Training.HealthCare.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TestProcesses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PatientId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DoctorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Result = table.Column<string>(type: "text", nullable: false),
+                    ResultDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DepartmentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestProcesses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TestProcesses_AppDoctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "AppDoctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TestProcesses_AppPatients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "AppPatients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TestProcesses_Tests_TestId",
+                        column: x => x.TestId,
+                        principalTable: "Tests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkLists",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PatientId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DoctorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ScheduledDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkLists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WorkLists_AppDoctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "AppDoctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WorkLists_AppPatients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "AppPatients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WorkLists_Tests_TestId",
+                        column: x => x.TestId,
+                        principalTable: "Tests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AppAddresses",
                 columns: table => new
                 {
@@ -1368,6 +1569,73 @@ namespace Pusula.Training.HealthCare.Migrations
                         column: x => x.AppointmentId,
                         principalTable: "AppAppointments",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppRadiologyExaminationProcedures",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Result = table.Column<string>(type: "text", nullable: false),
+                    ResultDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DoctorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProtocolId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RadiologyExaminationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppRadiologyExaminationProcedures", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppRadiologyExaminationProcedures_AppDoctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "AppDoctors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AppRadiologyExaminationProcedures_AppProtocols_ProtocolId",
+                        column: x => x.ProtocolId,
+                        principalTable: "AppProtocols",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AppRadiologyExaminationProcedures_AppRadiologyExaminations_~",
+                        column: x => x.RadiologyExaminationId,
+                        principalTable: "AppRadiologyExaminations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppRadiologyExaminationDocuments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DocumentName = table.Column<string>(type: "text", nullable: false),
+                    DocumentPath = table.Column<string>(type: "text", nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    RadiologyExaminationProcedureId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "text", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppRadiologyExaminationDocuments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppRadiologyExaminationDocuments_AppRadiologyExaminationPro~",
+                        column: x => x.RadiologyExaminationProcedureId,
+                        principalTable: "AppRadiologyExaminationProcedures",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -1645,16 +1913,6 @@ namespace Pusula.Training.HealthCare.Migrations
                 column: "TitleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppExamination_DoctorId",
-                table: "AppExamination",
-                column: "DoctorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppExamination_PatientId",
-                table: "AppExamination",
-                column: "PatientId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AppHospitalDepartments_DepartmentId",
                 table: "AppHospitalDepartments",
                 column: "DepartmentId");
@@ -1705,6 +1963,46 @@ namespace Pusula.Training.HealthCare.Migrations
                 column: "ProtocolTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AppRadiologyExaminationDocuments_Id",
+                table: "AppRadiologyExaminationDocuments",
+                column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRadiologyExaminationDocuments_RadiologyExaminationProced~",
+                table: "AppRadiologyExaminationDocuments",
+                column: "RadiologyExaminationProcedureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRadiologyExaminationGroups_Id",
+                table: "AppRadiologyExaminationGroups",
+                column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRadiologyExaminationProcedures_DoctorId",
+                table: "AppRadiologyExaminationProcedures",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRadiologyExaminationProcedures_Id",
+                table: "AppRadiologyExaminationProcedures",
+                column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRadiologyExaminationProcedures_ProtocolId",
+                table: "AppRadiologyExaminationProcedures",
+                column: "ProtocolId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRadiologyExaminationProcedures_RadiologyExaminationId",
+                table: "AppRadiologyExaminationProcedures",
+                column: "RadiologyExaminationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRadiologyExaminations_GroupId",
+                table: "AppRadiologyExaminations",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OpenIddictApplications_ClientId",
                 table: "OpenIddictApplications",
                 column: "ClientId");
@@ -1733,6 +2031,46 @@ namespace Pusula.Training.HealthCare.Migrations
                 name: "IX_OpenIddictTokens_ReferenceId",
                 table: "OpenIddictTokens",
                 column: "ReferenceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestProcesses_DoctorId",
+                table: "TestProcesses",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestProcesses_PatientId",
+                table: "TestProcesses",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestProcesses_TestId",
+                table: "TestProcesses",
+                column: "TestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tests_TestGroupId",
+                table: "Tests",
+                column: "TestGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tests_TestTypeId",
+                table: "Tests",
+                column: "TestTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkLists_DoctorId",
+                table: "WorkLists",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkLists_PatientId",
+                table: "WorkLists",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkLists_TestId",
+                table: "WorkLists",
+                column: "TestId");
         }
 
         /// <inheritdoc />
@@ -1832,13 +2170,19 @@ namespace Pusula.Training.HealthCare.Migrations
                 name: "AppPatientNotes");
 
             migrationBuilder.DropTable(
-                name: "AppProtocols");
+                name: "AppRadiologyExaminationDocuments");
 
             migrationBuilder.DropTable(
                 name: "OpenIddictScopes");
 
             migrationBuilder.DropTable(
                 name: "OpenIddictTokens");
+
+            migrationBuilder.DropTable(
+                name: "TestProcesses");
+
+            migrationBuilder.DropTable(
+                name: "WorkLists");
 
             migrationBuilder.DropTable(
                 name: "AbpEntityChanges");
@@ -1862,10 +2206,13 @@ namespace Pusula.Training.HealthCare.Migrations
                 name: "AppAppointments");
 
             migrationBuilder.DropTable(
-                name: "AppProtocolTypes");
+                name: "AppRadiologyExaminationProcedures");
 
             migrationBuilder.DropTable(
                 name: "OpenIddictAuthorizations");
+
+            migrationBuilder.DropTable(
+                name: "Tests");
 
             migrationBuilder.DropTable(
                 name: "AbpAuditLogs");
@@ -1877,13 +2224,31 @@ namespace Pusula.Training.HealthCare.Migrations
                 name: "AppAppointmentTypes");
 
             migrationBuilder.DropTable(
+                name: "AppProtocols");
+
+            migrationBuilder.DropTable(
+                name: "AppRadiologyExaminations");
+
+            migrationBuilder.DropTable(
+                name: "OpenIddictApplications");
+
+            migrationBuilder.DropTable(
+                name: "TestGroups");
+
+            migrationBuilder.DropTable(
+                name: "TestTypes");
+
+            migrationBuilder.DropTable(
                 name: "AppDoctors");
 
             migrationBuilder.DropTable(
                 name: "AppPatients");
 
             migrationBuilder.DropTable(
-                name: "OpenIddictApplications");
+                name: "AppProtocolTypes");
+
+            migrationBuilder.DropTable(
+                name: "AppRadiologyExaminationGroups");
 
             migrationBuilder.DropTable(
                 name: "AppDepartments");

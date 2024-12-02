@@ -15,9 +15,17 @@ using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.Tests;
+using Pusula.Training.HealthCare.TestTypes;
+using Pusula.Training.HealthCare.TestGroups;
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminations;
+using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.Extensions;
 using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.ProtocolTypes;
+using Pusula.Training.HealthCare.Insurances;
 
 namespace Pusula.Training.HealthCare;
 
@@ -90,6 +98,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AppointmentType, AppointmentTypeDto>();
         CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();
 
+        CreateMap<Insurance, InsuranceDto>();
+        CreateMap<InsuranceDto, InsuranceUpdateDto>();
+
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
         CreateMap<HospitalDto, HospitalUpdateDto>();
@@ -110,10 +121,45 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<TitleDto, TitleUpdateDto>();
         CreateMap<Title, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
+        CreateMap<Test, TestDto>();
+        CreateMap<Test, TestExcelDto>();
+        CreateMap<TestDto, TestUpdateDto>();
+        CreateMap<Test, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<TestType, TestTypeDto>();
+        CreateMap<TestType, TestTypeExcelDto>();
+        CreateMap<TestTypeDto, TestTypeUpdateDto>();
+        CreateMap<TestType, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        
+        CreateMap<TestGroup, TestGroupDto>();
+        CreateMap<TestGroup, TestGroupExcelDto>();
+        CreateMap<TestGroupDto, TestGroupUpdateDto>();
+        CreateMap<TestGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
+        #region Radiology
 
-        //Burası önemli
+        CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
+        CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupExcelDto>();
+        CreateMap<RadiologyExaminationGroupDto, RadiologyExaminationGroupUpdateDto>();
+        CreateMap<RadiologyExaminationGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<RadiologyExamination, RadiologyExaminationDto>();
+        CreateMap<RadiologyExamination, RadiologyExaminationExcelDto>();
+        CreateMap<RadiologyExaminationDto, RadiologyExaminationUpdateDto>();
+        CreateMap<RadiologyExamination, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<RadiologyExaminationProcedure, RadiologyExaminationProcedureDto>();
+        CreateMap<RadiologyExaminationProcedure, RadiologyExaminationProcedureExcelDto>();
+        CreateMap<RadiologyExaminationProcedureDto, RadiologyExaminationProcedureUpdateDto>();
+        CreateMap<RadiologyExaminationProcedure, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Result));
+
+        CreateMap<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>(); 
+        CreateMap<RadiologyExaminationDocumentDto, RadiologyExaminationDocumentUpdateDto>();
+        CreateMap<RadiologyExaminationDocument, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DocumentName));
+
+        #endregion 
     }
 }

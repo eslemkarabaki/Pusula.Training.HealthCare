@@ -1,11 +1,6 @@
 ﻿using JetBrains.Annotations;
-using Pusula.Training.HealthCare.AppointmentTypes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Services;
@@ -37,18 +32,13 @@ namespace Pusula.Training.HealthCare.AppointmentReports
             Guid id, Guid appointmentId, DateTime reportDate,
             string? priorityNotes = null, string? doctorNotes = null,
             [CanBeNull] string? concurrencyStamp=null)
-        {
-            Check.NotNullOrWhiteSpace(appointmentId.ToString(), nameof(appointmentId));
-            Check.NotNull(reportDate, nameof(reportDate));
-            Check.Length(priorityNotes, nameof(priorityNotes), AppointmentReportConsts.PriorityNotesMaxLength, AppointmentReportConsts.PriorityNotesMinLength);
-            Check.Length(doctorNotes, nameof(doctorNotes), AppointmentReportConsts.DoctorNotesMaxLength, AppointmentReportConsts.DoctorNotesMinLength);
+        {           
 
             var appointmentReport = await appointmentReportRepository.GetAsync(id);
-
-            appointmentReport.AppointmentId = appointmentId;
-            appointmentReport.ReportDate = reportDate;
-            appointmentReport.PriorityNotes = priorityNotes;
-            appointmentReport.DoctorNotes = doctorNotes;
+            appointmentReport.SetAppointmentId(appointmentId);
+            appointmentReport.SetReportDate(reportDate);
+            appointmentReport.SetPriorityNotes(priorityNotes);
+            appointmentReport.SetDoctorNotes(doctorNotes);
 
             appointmentReport.SetConcurrencyStampIfNotNull(concurrencyStamp);
             return await appointmentReportRepository.UpdateAsync(appointmentReport);

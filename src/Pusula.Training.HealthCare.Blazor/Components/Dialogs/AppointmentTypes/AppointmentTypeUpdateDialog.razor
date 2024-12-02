@@ -1,0 +1,68 @@
+﻿@using Pusula.Training.HealthCare.AppointmentTypes
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inherits HealthCareComponentBase
+
+@inject IAppointmentTypesAppService AppointmentTypeAppService
+
+<SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogTemplates>
+        <Header>@L["NewAppointmentType"]</Header>
+        <Content>
+            <SfDataForm ID="NewTypeForm"
+                        EditContext="@EditingTypeEditContext"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                
+                <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <SfTextBox @bind-Value="@EditingType.Name"
+                                   Placeholder="@L["Name"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    </div>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+   [Parameter] public EventCallback<AppointmentTypeUpdateDto> OnValidSaveAsync { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private EditContext EditingTypeEditContext { get; set; } = null!;
+
+    private AppointmentTypeUpdateDto EditingType { get; set; } = new();
+
+    private async Task OnSaveClickAsync(EditContext context)
+    {
+        await OnValidSaveAsync.InvokeAsync(EditingType);
+        await HideAsync();
+    }
+
+    public async Task ShowAsync(Guid countryId)
+    {
+        var country = await AppointmentTypeAppService.GetAsync(countryId);
+        ObjectMapper.Map(country, EditingType);
+        EditingTypeEditContext = new EditContext(EditingType);
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        EditingType = new AppointmentTypeUpdateDto();
+        await Dialog.HideAsync();
+    }
+
+}

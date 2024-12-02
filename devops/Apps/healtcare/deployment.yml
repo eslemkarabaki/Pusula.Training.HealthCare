@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  healtcare-blazor:
+    image: registry.gitlab.com/berkmkaracayir/pusula:${imageTag}
+    ports: 
+      - "9005:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - TZ=Europe/Istanbul
+      - ASPNETCORE_HTTP_PORTS=80
+    depends_on:
+      - db-migrator
+    networks:
+      - frontend
+    deploy:
+      replicas: 4
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role==manager]
+
+networks:
+  frontend:
+    external: true

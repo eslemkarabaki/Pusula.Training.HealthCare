@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <Import Project="..\..\common.props"/>
+    <Import Project="..\..\common.props" />
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -14,50 +14,50 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blazored.FluentValidation" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4"/>
-        <PackageReference Include="Blazorise.Bootstrap5" Version="1.5.2"/>
-        <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.5.2"/>
+        <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4" />
+        <PackageReference Include="Blazorise.Bootstrap5" Version="1.5.2" />
+        <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.5.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Serilog.AspNetCore" Version="8.0.0"/>
-        <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0"/>
-        <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0"/>
-        <PackageReference Include="Syncfusion.Blazor" Version="27.2.3"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
+        <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
+        <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />
+        <PackageReference Include="Syncfusion.Blazor" Version="27.2.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme" Version="3.2.0"/>
-        <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="3.2.0"/>
+        <PackageReference Include="Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme" Version="3.2.0" />
+        <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="3.2.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Pusula.Training.HealthCare.Application\Pusula.Training.HealthCare.Application.csproj"/>
-        <ProjectReference Include="..\Pusula.Training.HealthCare.HttpApi\Pusula.Training.HealthCare.HttpApi.csproj"/>
-        <ProjectReference Include="..\Pusula.Training.HealthCare.EntityFrameworkCore\Pusula.Training.HealthCare.EntityFrameworkCore.csproj"/>
-        <PackageReference Include="Volo.Abp.Autofac" Version="8.3.1"/>
-        <PackageReference Include="Volo.Abp.Swashbuckle" Version="8.3.1"/>
-        <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="8.3.1"/>
-        <PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="8.3.1"/>
-        <PackageReference Include="Volo.Abp.Identity.Blazor.Server" Version="8.3.1"/>
-        <PackageReference Include="Volo.Abp.TenantManagement.Blazor.Server" Version="8.3.1"/>
-        <PackageReference Include="Volo.Abp.SettingManagement.Blazor.Server" Version="8.3.1"/>
+        <ProjectReference Include="..\Pusula.Training.HealthCare.Application\Pusula.Training.HealthCare.Application.csproj" />
+        <ProjectReference Include="..\Pusula.Training.HealthCare.HttpApi\Pusula.Training.HealthCare.HttpApi.csproj" />
+        <ProjectReference Include="..\Pusula.Training.HealthCare.EntityFrameworkCore\Pusula.Training.HealthCare.EntityFrameworkCore.csproj" />
+        <PackageReference Include="Volo.Abp.Autofac" Version="8.3.1" />
+        <PackageReference Include="Volo.Abp.Swashbuckle" Version="8.3.1" />
+        <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="8.3.1" />
+        <PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="8.3.1" />
+        <PackageReference Include="Volo.Abp.Identity.Blazor.Server" Version="8.3.1" />
+        <PackageReference Include="Volo.Abp.TenantManagement.Blazor.Server" Version="8.3.1" />
+        <PackageReference Include="Volo.Abp.SettingManagement.Blazor.Server" Version="8.3.1" />
     </ItemGroup>
 
     <ItemGroup Condition="Exists('./openiddict.pfx')">
-        <None Remove="openiddict.pfx"/>
+        <None Remove="openiddict.pfx" />
         <EmbeddedResource Include="openiddict.pfx">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="Logs\**"/>
-        <Content Remove="Logs\**"/>
-        <EmbeddedResource Remove="Logs\**"/>
-        <None Remove="Logs\**"/>
+        <Compile Remove="Logs\**" />
+        <Content Remove="Logs\**" />
+        <EmbeddedResource Remove="Logs\**" />
+        <None Remove="Logs\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -68,5 +68,11 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Components\Pages\Tests.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
 
 </Project>

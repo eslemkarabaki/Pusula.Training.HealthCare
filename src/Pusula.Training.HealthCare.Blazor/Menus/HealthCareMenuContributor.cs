@@ -58,32 +58,34 @@ public class HealthCareMenuContributor : IMenuContributor
             new ApplicationMenuItem(
                 HealthCareMenus.Hospitals,
                 l["Menu:Hospitals"],
-                "/hospitals",
-                "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Hospitals.Default
-            )
+                url: "/hospitals",
+                icon: "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Hospitals.Default)
         );
 
         context.Menu.AddItem(
             new ApplicationMenuItem(
                 HealthCareMenus.Appointments,
                 l["Menu:Appointments"],
+                icon: "fa fa-calendar-check"
+
+        )
+            .AddItem(new ApplicationMenuItem(
+                HealthCareMenus.AppointmentTypes,
+                                l["Appointment Definition"],
+                                "/appointment-type",
+                                "fa-solid fa-font", 
+                                requiredPermissionName: HealthCarePermissions.AppointmentTypes.Default)
+            )
+
+            .AddItem(new ApplicationMenuItem(
+                HealthCareMenus.Transactions,
+                l["Transactions"],
                 "/appointments",
-                "fa fa-calendar-check",
-                requiredPermissionName: HealthCarePermissions.Appointments.Default
+                "fa-solid fa-pen-to-square", 
+                requiredPermissionName: HealthCarePermissions.Appointments.Default)
             )
-        );
-
-        context.Menu.AddItem(
-            new ApplicationMenuItem(
-                HealthCareMenus.Examinations,
-                l["Menu:Examinations"],
-                "/examinations",
-                "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Examinations.Default
-            )
-        );
-
+            );
         return Task.CompletedTask;
     }
 
