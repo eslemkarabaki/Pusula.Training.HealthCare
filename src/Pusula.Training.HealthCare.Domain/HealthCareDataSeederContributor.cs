@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
-using Bogus.DataSets;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.AppointmentTypes;
@@ -15,6 +14,7 @@ using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.PatientTypes;
+using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
@@ -38,6 +38,7 @@ public class HealthCareDataSeederContributor(
     ITitleRepository titleRepository,
     IDoctorRepository doctorRepository,
     IAppointmentTypeRepository appointmentTypeRepository,
+    IProtocolTypeRepository protocolTypeRepository,
     IGuidGenerator guidGenerator
 )
     : IDataSeedContributor, ITransientDependency
@@ -73,6 +74,10 @@ public class HealthCareDataSeederContributor(
             await SeedAppointmentTypesAsync();
         }
 
+        if (!await protocolTypeRepository.AnyAsync())
+        {
+            await SeedProtocolTypesAsync();
+        }
     }
 
     // Country
@@ -265,6 +270,20 @@ public class HealthCareDataSeederContributor(
         ];
        
         await SeedEntitiesAsync(appointmentTypes, e => appointmentTypeRepository.InsertManyAsync(e, true));
+    }
+
+    // Protocol types
+    private async Task SeedProtocolTypesAsync()
+    {
+        List<ProtocolType> protocolTypes =
+        [
+            new(guidGenerator.Create(), "Test"),
+            new(guidGenerator.Create(), "Test2"),
+            new(guidGenerator.Create(), "Test3"),
+            new(guidGenerator.Create(), "Test4"),
+            new(guidGenerator.Create(), "Test5")
+        ];
+        await SeedEntitiesAsync(protocolTypes,e => protocolTypeRepository.InsertManyAsync(e,true));
     }
     
     // Generic Entities
