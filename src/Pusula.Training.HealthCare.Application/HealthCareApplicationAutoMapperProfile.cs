@@ -33,11 +33,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<PatientDto, PatientUpdateDto>();
         CreateMap<PatientWithNavigationProperties, PatientUpdateDto>()
             .IncludeMembers(e => e.Patient)
-            .ForMember(e => e.Addresses, opt => opt.MapFrom(e => e.Addresses))
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<PatientWithNavigationPropertiesDto, PatientUpdateDto>()
             .IncludeMembers(e => e.Patient)
-            .ForMember(e => e.Addresses, opt => opt.MapFrom(e => e.Addresses))
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>();
 
@@ -54,13 +52,6 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Address, AddressUpdateDto>().ReverseMap();
         CreateMap<AddressDto, AddressUpdateDto>().ReverseMap();
         CreateMap<AddressDto, AddressCreateDto>().ReverseMap();
-        CreateMap<AddressWithNavigationProperties, AddressWithNavigationPropertiesDto>();
-        CreateMap<AddressWithNavigationPropertiesDto, AddressUpdateDto>()
-            .IncludeMembers(e => e.Address)
-            .ForAllMembers(opt => opt.Ignore());
-        CreateMap<AddressWithNavigationProperties, AddressUpdateDto>()
-            .IncludeMembers(e => e.Address)
-            .ForAllMembers(opt => opt.Ignore());
 
         CreateMap<Country, CountryDto>();
         CreateMap<CountryDto, CountryUpdateDto>();
