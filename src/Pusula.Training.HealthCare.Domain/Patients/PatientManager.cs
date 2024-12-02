@@ -31,7 +31,7 @@ public class PatientManager(
         EnumGender gender,
         EnumBloodType bloodType,
         EnumMaritalStatus maritalStatus,
-        IEnumerable<Address> addresses
+        ICollection<Address> addresses
     )
     {
         var patient = new Patient(
@@ -71,7 +71,7 @@ public class PatientManager(
         EnumGender gender,
         EnumBloodType bloodType,
         EnumMaritalStatus maritalStatus,
-        IEnumerable<Address> addresses,
+        ICollection<Address> addresses,
         string? concurrencyStamp = null
     )
     {

@@ -24,6 +24,6 @@ public class PatientUpdateDto : IHasConcurrencyStamp
     public Guid CountryId { get; set; }
     public Guid PatientTypeId { get; set; }
 
-    public List<AddressUpdateDto> Addresses { get; set; } = [];
+    public ICollection<AddressUpdateDto> Addresses { get; set; } = [];
     public string ConcurrencyStamp { get; set; } = null!;
 }

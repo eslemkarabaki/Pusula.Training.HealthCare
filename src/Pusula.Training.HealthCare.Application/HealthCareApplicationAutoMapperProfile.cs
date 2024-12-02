@@ -62,13 +62,13 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AddressDto, AddressUpdateDto>().ReverseMap();
         CreateMap<AddressDto, AddressCreateDto>().ReverseMap();
 
-        CreateMap<Country, CountryDto>();
+        CreateMap<Country, CountryDto>().ReverseMap();
         CreateMap<CountryDto, CountryUpdateDto>();
 
-        CreateMap<City, CityDto>();
+        CreateMap<City, CityDto>().ReverseMap();
         CreateMap<CityDto, CityUpdateDto>();
 
-        CreateMap<District, DistrictDto>();
+        CreateMap<District, DistrictDto>().ReverseMap();
         CreateMap<DistrictDto, DistrictUpdateDto>();
 
         CreateMap<Protocol, ProtocolDto>();

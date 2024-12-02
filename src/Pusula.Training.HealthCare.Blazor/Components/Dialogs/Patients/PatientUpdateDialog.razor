@@ -13,6 +13,7 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Notifications
+@using Blazorise.DeepCloner
 @using Blazored.FluentValidation
 
 @inherits HealthCareComponentBase
@@ -308,7 +309,7 @@
                                             <div class="col-4">
                                                 <p class="mb-6p fs-12p fw-700 color-grey-500">@L["Addresses"]</p>
                                                 <div class="d-flex flex-column gap-1">
-                                                    @foreach (var address in Addresses)
+                                                    @foreach (var address in EditingPatient.Addresses)
                                                     {
                                                         <SfCard ID="@address.Id.ToString("N")"
                                                                 CssClass="@(EditingAddressId == address.Id ? "selected" : string.Empty)"
@@ -328,7 +329,7 @@
                                                         </SfCard>
                                                     }
                                                 </div>
-                                                @if (Addresses.Count == 0)
+                                                @if (EditingPatient.Addresses.Count == 0)
                                                 {
                                                     <SfMessage>There is no address added for this patient.
                                                     </SfMessage> // todo
@@ -376,7 +377,6 @@
 
     private AddressUpdateDto EditingAddress { get; set; } = new();
     private Guid EditingAddressId { get; set; }
-    private List<AddressDto> Addresses { get; set; } = [];
 
     private AddressUpdateDtoValidator EditingAddressValidator { get; set; } = null!;
 
@@ -400,12 +400,14 @@
         SfAutoComplete<Guid, TDto> autoComplete,
         IEnumerable<TDto> dataSource,
         FilteringEventArgs args
-    ) =>
+    )
+    {
+        args.PreventDefaultAction = true;
         await autoComplete.FilterAsync(dataSource, GetDefaultAutoCompleteQuery(args));
+    }
 
     private Query GetDefaultAutoCompleteQuery(FilteringEventArgs args)
     {
-        args.PreventDefaultAction = true;
         var query = new Query().Where(
             new WhereFilter
             {
@@ -417,47 +419,30 @@
         );
         return !string.IsNullOrEmpty(args.Text) ? query : new Query();
     }
-
+    
     private async Task AddAddressAsync(EditContext context)
     {
-        Addresses.Add(
-            new AddressDto()
-            {
-                Id = Guid.NewGuid(),
-                PatientId = EditingPatientId,
-                AddressTitle = EditingAddress.AddressTitle,
-                AddressLine = EditingAddress.AddressLine,
-                DistrictId = EditingAddress.DistrictId,
-                District = DistrictList.First(e => e.Id == EditingAddress.DistrictId)
-            }
-        );
+        EditingPatient.Addresses.Add(EditingAddress);
         SetDefaultsForAddress();
         await Task.CompletedTask;
     }
 
-    private async Task EditAddressAsync(AddressDto dto)
+    private async Task EditAddressAsync(AddressUpdateDto dto)
     {
         if (EditingAddressId == dto.Id) return;
 
         await AddressCountryIdChangedAsync(dto.District.City.Country.Id);
         await AddressCityIdChangedAsync(dto.District.City.Id);
         EditingAddressId = dto.Id;
-        EditingAddress = new AddressUpdateDto()
-        {
-            Id = dto.Id,
-            PatientId = dto.PatientId,
-            DistrictId = dto.District.Id,
-            AddressTitle = dto.AddressTitle,
-            AddressLine = dto.AddressLine
-        };
+        EditingAddress = dto.DeepClone();
         EditingAddressEditContext = new EditContext(EditingAddress);
         AddressEditingMode = true;
         await Task.CompletedTask;
     }
 
-    private async Task RemoveAddressAsync(AddressDto dto)
+    private async Task RemoveAddressAsync(AddressUpdateDto dto)
     {
-        Addresses.Remove(dto);
+        EditingPatient.Addresses.Remove(dto);
         await Task.CompletedTask;
     }
 
@@ -471,16 +456,16 @@
 
     private async Task SaveAddressEditingAsync()
     {
-        var address = Addresses.First(e => e.Id == EditingAddressId);
-        address.AddressLine = EditingAddress.AddressLine;
+        var address = EditingPatient.Addresses.First(e => e.Id == EditingAddressId);
+        address.AddressLine= EditingAddress.AddressLine;
         address.AddressTitle = EditingAddress.AddressTitle;
-        address.District = DistrictList.First(e => e.Id == EditingAddress.DistrictId);
+        address.DistrictId = EditingAddress.DistrictId;
+        address.District = DistrictList.First(e=>e.Id == EditingAddress.DistrictId);
         await CancelAddressEditingAsync();
     }
 
     private async Task OnSaveClickAsync(EditContext context)
     {
-        ObjectMapper.Map(Addresses, EditingPatient.Addresses);
         await OnValidSaveAsync.InvokeAsync(EditingPatient);
         await HideAsync();
     }
@@ -489,17 +474,14 @@
     {
         var patient = await PatientAppService.GetWithNavigationPropertiesAsync(patientId);
         ObjectMapper.Map(patient.Patient, EditingPatient);
-        ObjectMapper.Map(patient.Patient.Addresses, EditingPatient.Addresses);
         EditingPatientId = patientId;
         EditingPatientEditContext = new EditContext(EditingPatient);
-        Addresses = await PatientAppService.GetPatientAddressesWithDetailsAsync(patientId);
         SetDefaultsForAddress();
         await Dialog.ShowAsync();
     }
 
     public async Task HideAsync()
     {
-        Addresses = [];
         SetDefaultValuesForDialog();
         await Dialog.HideAsync();
     }
