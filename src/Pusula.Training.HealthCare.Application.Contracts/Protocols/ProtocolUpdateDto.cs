@@ -6,11 +6,8 @@ namespace Pusula.Training.HealthCare.Protocols;
 
 public class ProtocolUpdateDto : IHasConcurrencyStamp
 {
-    public string Type { get; set; } = null!;
-    public DateTime StartTime { get; set; }
-    public string? EndTime { get; set; }
-    public Guid PatientId { get; set; }
-    public Guid DepartmentId { get; set; }
+    public EnumProtocolStatus Status { get; set; } = EnumProtocolStatus.InProgress;
+    public string? Description { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;
 }

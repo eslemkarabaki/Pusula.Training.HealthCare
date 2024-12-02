@@ -6,11 +6,12 @@ using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Examinations; 
 using Pusula.Training.HealthCare.Districts;
-using Pusula.Training.HealthCare.Doctors; 
+using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
-using Pusula.Training.HealthCare.Protocols;  
+using Pusula.Training.HealthCare.Protocols;
+using System.Reflection;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -44,6 +45,7 @@ using Pusula.Training.HealthCare.WorkLists;
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
+using ProtocolType = Pusula.Training.HealthCare.ProtocolTypes.ProtocolType;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -74,6 +76,7 @@ public class HealthCareDbContext :
     public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;
+    public DbSet<ProtocolType> ProtocolTypes { get; set; } = null!;
     public DbSet<AppDefault> AppDefaults { get; set; } = null!;
     public DbSet<TestGroup> TestGroups { get; set; } = null!;
     public DbSet<Test> Tests { get; set; } = null!;
@@ -90,7 +93,7 @@ public class HealthCareDbContext :
 
     #endregion
 
-    #region Entities from the modules
+#region Entities from the modules
 
     /* Notice: We only implemented IIdentityDbContext and ITenantManagementDbContext
      * and replaced them for this DbContext. This allows you to perform JOIN
@@ -118,7 +121,7 @@ public class HealthCareDbContext :
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<TenantConnectionString> TenantConnectionStrings { get; set; }
 
-    #endregion
+#endregion
 
     public HealthCareDbContext(DbContextOptions<HealthCareDbContext> options)
         : base(options)
@@ -140,7 +143,7 @@ public class HealthCareDbContext :
 
         /* Configure your own tables/entities inside here */
         if (builder.IsHostDatabase())
-        { 
+        {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }

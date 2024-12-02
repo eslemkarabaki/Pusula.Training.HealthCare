@@ -8,7 +8,7 @@ using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Countries;
 using Pusula.Training.HealthCare.Countries;
 using Syncfusion.Blazor.Grids;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientRegistrations.Definitions.Address;
 
 public partial class Countries
 {

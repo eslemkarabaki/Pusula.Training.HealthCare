@@ -7,10 +7,10 @@ public static class PatientConsts
     public static string GetDefaultSorting(bool withEntityName) =>
         string.Format(DefaultSorting, withEntityName ? "Patient." : string.Empty);
 
-    public const int FirstNameMaxLength = 128;
-    public const int LastNameMaxLength = 128;
-    public const int IdentityNumberMaxLength = 11;
-    public const int PassportNumberMaxLength = 12;
-    public const int EmailAddressMaxLength = 128;
-    public const int PhoneNumberMaxLength = 32;
+    public const int FirstNameMaxLength = 64;
+    public const int LastNameMaxLength = 64;
+    public const int IdentityNumberMaxLength = 16;
+    public const int PassportNumberMaxLength = 16;
+    public const int EmailAddressMaxLength = 64;
+    public const int PhoneNumberMaxLength = 16;
 }

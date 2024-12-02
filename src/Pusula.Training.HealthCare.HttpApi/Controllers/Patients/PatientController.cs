@@ -17,31 +17,35 @@ namespace Pusula.Training.HealthCare.Controllers.Patients;
 [Area("app")]
 [ControllerName("Patient")]
 [Route("api/app/patients")]
-public class IPatientController(IPatientAppService patientAppService) : HealthCareController, IPatientAppService
+public class PatientController(IPatientAppService patientAppService) : HealthCareController, IPatientAppService
 {
-    [HttpGet("all")]
+    [HttpGet("get/all")]
     public virtual Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input) =>
         patientAppService.GetListAsync(input);
 
-    [HttpGet("with-identity-or-pasport/{number}")]
-    public virtual Task<PatientDto> GetAsync(string number) => patientAppService.GetAsync(number);
-
-    [HttpGet("all/navigation-properties")]
-    public Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetNavigationPropertiesListAsync(
+    [HttpGet("get/all/with-navigation-properties")]
+    public Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
         GetPatientsInput input
     ) =>
-        patientAppService.GetNavigationPropertiesListAsync(input);
+        patientAppService.GetListWithNavigationPropertiesAsync(input);
 
-    [HttpGet("address/{id}")]
-    public Task<List<AddressWithNavigationPropertiesDto>> GetAddressNavigationPropertiesListAsync(Guid patientId) =>
-        patientAppService.GetAddressNavigationPropertiesListAsync(patientId);
+    [HttpGet("get/by-identity-or-passport/{number}")]
+    public virtual Task<PatientDto> GetAsync(string number) => patientAppService.GetAsync(number);
 
-    [HttpGet("{id}")]
+    [HttpGet("get/patient-addresses-with-details/{patientId:guid}")]
+    public Task<List<AddressDto>> GetPatientAddressesWithDetailsAsync(Guid patientId) =>
+        patientAppService.GetPatientAddressesWithDetailsAsync(patientId);
+
+    [HttpGet("get/{id:guid}")]
     public virtual Task<PatientDto> GetAsync(Guid id) => patientAppService.GetAsync(id);
 
-    [HttpGet("{id}/navigation-properties")]
-    public virtual Task<PatientWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id) =>
-        patientAppService.GetNavigationPropertiesAsync(id);
+    [HttpGet("get/with-navigation-properties/{id:guid}")]
+    public virtual Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) =>
+        patientAppService.GetWithNavigationPropertiesAsync(id);
+
+    [HttpGet("get/with-navigation-properties/{patientNo:int}")]
+    public virtual Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(int patientNo) =>
+        patientAppService.GetWithNavigationPropertiesAsync(patientNo);
 
     [HttpPost]
     public virtual Task<PatientDto> CreateAsync(PatientCreateDto input) => patientAppService.CreateAsync(input);
@@ -63,16 +67,6 @@ public class IPatientController(IPatientAppService patientAppService) : HealthCa
     [HttpGet]
     [Route("download-token")]
     public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync() => patientAppService.GetDownloadTokenAsync();
-
-    [HttpGet("passport-exist/{passportNumber}")]
-    public async Task<bool>
-        PassportNumberExistsAsync(string passportNumber, [FromQuery] Guid? exludePatientId = null) =>
-        await patientAppService.PassportNumberExistsAsync(passportNumber);
-
-    [HttpGet("identity-exist/{passportNumber}")]
-    public async Task<bool>
-        IdentityNumberExistsAsync(string identityNumber, [FromQuery] Guid? exludePatientId = null) =>
-        await patientAppService.IdentityNumberExistsAsync(identityNumber);
 
     [HttpDelete]
     [Route("")]

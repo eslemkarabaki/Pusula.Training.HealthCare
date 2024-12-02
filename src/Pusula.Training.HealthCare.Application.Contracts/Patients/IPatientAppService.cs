@@ -13,11 +13,16 @@ public interface IPatientAppService : IApplicationService
 {
     Task<PatientDto> GetAsync(string number);
     Task<PatientDto> GetAsync(Guid id);
-    Task<PatientWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id);
+    Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id);
+    Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(int patientNo);
 
     Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input);
-    Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetNavigationPropertiesListAsync(GetPatientsInput input);
-    Task<List<AddressWithNavigationPropertiesDto>> GetAddressNavigationPropertiesListAsync(Guid patientId);
+
+    Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
+        GetPatientsInput input
+    );
+
+    Task<List<AddressDto>> GetPatientAddressesWithDetailsAsync(Guid patientId);
 
     Task DeleteAsync(Guid id);
 
@@ -31,7 +36,4 @@ public interface IPatientAppService : IApplicationService
     Task DeleteAllAsync(GetPatientsInput input);
 
     Task<DownloadTokenResultDto> GetDownloadTokenAsync();
-
-    Task<bool> PassportNumberExistsAsync(string passportNumber, Guid? excludePatientId = null);
-    Task<bool> IdentityNumberExistsAsync(string identityNumber, Guid? excludePatientId = null);
 }

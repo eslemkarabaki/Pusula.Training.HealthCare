@@ -154,6 +154,14 @@
     "Placeholder:Address:District": "Select district",
     "AddressLine": "Address",
     "Placeholder:AddressLine": "Enter address",
-    "PleaseAddAddressMessage": "The address list is empty."
+    "PleaseAddAddressMessage": "The address list is empty.",
+    "Menu:PatientRegistration": "Patient Registration",
+    "Menu:Definitions": "Definitions",
+    "Menu:ProtocolTypes": "Protocol Types",
+    "Menu:Insurances": "Insurances",
+    "Menu:Address": "Address",
+    "Menu:Management": "Management",
+    "Menu:Reports": "Reports",
+    "Menu:PatientProtocols": "Patient Protocols"
   }
 }

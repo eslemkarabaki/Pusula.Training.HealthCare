@@ -50,8 +50,8 @@ namespace Pusula.Training.HealthCare.Doctors
 
         public virtual async Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input)
         {
-            var totalCount = await _doctorRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId);
-            var items = await _doctorRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await _doctorRepository.GetCountAsync(input.FilterText, input.FirstName, input.LastName,input.FullName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId);
+            var items = await _doctorRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName,input.FullName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<DoctorDto>
             {
@@ -108,7 +108,7 @@ namespace Pusula.Training.HealthCare.Doctors
                 throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             }
 
-            var items = await _doctorRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId);
+            var items = await _doctorRepository.GetListAsync(input.FilterText, input.FirstName, input.LastName,input.FullName,input.WorkingHours,input.TitleId, input.DepartmentId,input.HospitalId);
 
             var memoryStream = new MemoryStream();
             await memoryStream.SaveAsAsync(ObjectMapper.Map<List<Doctor>, List<DoctorExcelDto>>(items));
@@ -134,7 +134,7 @@ namespace Pusula.Training.HealthCare.Doctors
         [Authorize(HealthCarePermissions.Doctors.Delete)]
         public virtual async Task DeleteAllAsync(GetDoctorsInput input)
         {
-            await _doctorRepository.DeleteAllAsync(input.FilterText, input.FirstName, input.LastName, input.WorkingHours, input.TitleId, input.DepartmentId);
+            await _doctorRepository.DeleteAllAsync(input.FilterText, input.FirstName, input.LastName,input.FullName, input.WorkingHours, input.TitleId, input.DepartmentId);
         }
 
 

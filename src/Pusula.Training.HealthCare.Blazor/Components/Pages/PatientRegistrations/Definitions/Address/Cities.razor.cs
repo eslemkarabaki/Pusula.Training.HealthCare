@@ -13,7 +13,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
 using Volo.Abp.BlazoriseUI.Components;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientRegistrations.Definitions.Address;
 
 public partial class Cities
 {
@@ -35,15 +35,13 @@ public partial class Cities
     private List<CityDto> SelectedCities { get; set; } = [];
     private bool AllCitiesSelected { get; set; }
 
-    public Cities()
-    {
+    public Cities() =>
         Filter = new GetCitiesInput
         {
             MaxResultCount = PageSize,
             SkipCount = (CurrentPage - 1) * PageSize,
             Sorting = CurrentSorting
         };
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,12 +69,13 @@ public partial class Cities
     {
         // Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
 
-        Toolbar.AddButton(L["NewCity"], OpenCreateCityModalAsync, IconName.Add,
-            requiredPolicyName: HealthCarePermissions.Cities.Create);
+        Toolbar.AddButton(
+            L["NewCity"], OpenCreateCityModalAsync, IconName.Add,
+            requiredPolicyName: HealthCarePermissions.Cities.Create
+        );
 
         return ValueTask.CompletedTask;
     }
-
 
     private async Task GetCitiesAsync()
     {
@@ -84,7 +83,7 @@ public partial class Cities
         Filter.SkipCount = (CurrentPage - 1) * PageSize;
         Filter.Sorting = CurrentSorting;
 
-        var result = await CityAppService.GetListAsync(Filter);
+        var result = await CityAppService.GetListWithDetailsAsync(Filter);
         CityList = result.Items;
         TotalCount = (int)result.TotalCount;
 
@@ -115,15 +114,15 @@ public partial class Cities
 
     private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<CityDto> e)
     {
-        CurrentSorting = e.Columns
-                          .Where(c => c.SortDirection != SortDirection.Default)
-                          .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
-                          .JoinAsString(",");
+        CurrentSorting = e
+                         .Columns
+                         .Where(c => c.SortDirection != SortDirection.Default)
+                         .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
+                         .JoinAsString(",");
         CurrentPage = e.Page;
         await GetCitiesAsync();
         await InvokeAsync(StateHasChanged);
     }
-
 
     private Task SelectAllItems()
     {
@@ -142,15 +141,14 @@ public partial class Cities
 
     private Task SelectedCityRowsChanged()
     {
-        AllCitiesSelected = CityList.Count < PageSize
-            ? SelectedCities.Count == CityList.Count
-            : SelectedCities.Count == PageSize;
+        AllCitiesSelected = CityList.Count < PageSize ?
+            SelectedCities.Count == CityList.Count :
+            SelectedCities.Count == PageSize;
 
         return Task.CompletedTask;
     }
 
 #endregion
-
 
 #region Create
 
@@ -218,10 +216,7 @@ public partial class Cities
         await EditCityModal.Show();
     }
 
-    private async Task CloseEditCityModalAsync()
-    {
-        await EditCityModal.Hide();
-    }
+    private async Task CloseEditCityModalAsync() => await EditCityModal.Hide();
 
     private async Task UpdateCityAsync()
     {
@@ -254,9 +249,9 @@ public partial class Cities
 
     private async Task DeleteSelectedCitiesAsync()
     {
-        var message = AllCitiesSelected
-            ? L["DeleteAllRecords"].Value
-            : L["DeleteSelectedRecords", SelectedCities.Count].Value;
+        var message = AllCitiesSelected ?
+            L["DeleteAllRecords"].Value :
+            L["DeleteSelectedRecords", SelectedCities.Count].Value;
 
         if (!await UiMessageService.Confirm(message))
         {
@@ -266,8 +261,7 @@ public partial class Cities
         if (AllCitiesSelected)
         {
             await CityAppService.DeleteAllAsync(Filter);
-        }
-        else
+        } else
         {
             await CityAppService.DeleteByIdsAsync(SelectedCities.Select(x => x.Id).ToList());
         }

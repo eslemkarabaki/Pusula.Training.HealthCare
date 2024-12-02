@@ -1,4 +1,4 @@
-@page "/cities"
+@page "/prm/definitions/cities"
 
 @attribute [Authorize(HealthCarePermissions.Cities.Default)]
 @using Pusula.Training.HealthCare.Cities
@@ -44,7 +44,8 @@
 
         <Row Class="mt-3 mb-3">
             <div class="col-md-12">
-                <a href="javascript:;" class="text-decoration-none" @onclick="() => ShowAdvancedFilters = !ShowAdvancedFilters">@L["SeeAdvancedFilters"]</a>
+                <a href="javascript:;" class="text-decoration-none"
+                   @onclick="() => ShowAdvancedFilters = !ShowAdvancedFilters">@L["SeeAdvancedFilters"]</a>
             </div>
         </Row>
 
@@ -59,7 +60,8 @@
                 <Column ColumnSize="ColumnSize.Is3">
                     <Field>
                         <FieldLabel>@L["Country"]</FieldLabel>
-                        <Select TValue="Guid?" SelectedValue="@Filter.CountryId" SelectedValueChanged="@OnCountryIdChangedAsync">
+                        <Select TValue="Guid?" SelectedValue="@Filter.CountryId"
+                                SelectedValueChanged="@OnCountryIdChangedAsync">
                             <SelectItem></SelectItem>
                             @foreach (var country in CountryList)
                             {
@@ -83,14 +85,12 @@
                     @if (AllCitiesSelected)
                     {
                         @L["AllItemsAreSelected", TotalCount]
-                    }
-                    else
+                    } else
                     {
                         if (SelectedCities.Count > 1)
                         {
                             @L["NumberOfItemsOnThisPageAreSelected", SelectedCities.Count]
-                        }
-                        else
+                        } else
                         {
                             @L["OneItemOnThisPageIsSelected"]
                         }
@@ -100,11 +100,12 @@
                 <div class="d-flex align-items-center gap-1">
                     @if (AllCitiesSelected)
                     {
-                        <Button Clicked="ClearSelection" Size="Size.Small" Color="Color.Secondary" Outline>@L["ClearSelection"]</Button>
-                    }
-                    else
+                        <Button Clicked="ClearSelection" Size="Size.Small" Color="Color.Secondary"
+                                Outline>@L["ClearSelection"]</Button>
+                    } else
                     {
-                        <Button Clicked="SelectAllItems" Size="Size.Small" Color="Color.Secondary" Outline>@L["SelectAllItems", TotalCount]</Button>
+                        <Button Clicked="SelectAllItems" Size="Size.Small" Color="Color.Secondary"
+                                Outline>@L["SelectAllItems", TotalCount]</Button>
                     }
 
                     <Button Color="Color.Danger" Size="Size.Small" Clicked="DeleteSelectedCitiesAsync">
@@ -127,7 +128,7 @@
                   Responsive="true"
                   PageSize="PageSize"
                   Groupable="@(!Filter.CountryId.HasValue)"
-                  GroupBy="@(e => e.Country)">
+                  GroupBy="@(e => e.Country.Name)">
             <LoadingTemplate>
                 <Row Class="w-100 align-items-center" Style="height: 150px;">
                     <Column>
@@ -138,7 +139,8 @@
             <EmptyTemplate>
                 <Row Class="w-100 align-items-center" Style="height: 150px;">
                     <Column>
-                        <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">@L["NoDataAvailable"]</Heading>
+                        <Heading Size="HeadingSize.Is4"
+                                 TextAlignment="TextAlignment.Center">@L["NoDataAvailable"]</Heading>
                     </Column>
                 </Row>
             </EmptyTemplate>
@@ -146,7 +148,8 @@
 
                 @if (CanDeleteCity && CityList.Any())
                 {
-                    <DataGridMultiSelectColumn TItem="CityDto" DisplayOrder="-1" Width="30px"></DataGridMultiSelectColumn>
+                    <DataGridMultiSelectColumn TItem="CityDto" DisplayOrder="-1"
+                                               Width="30px"></DataGridMultiSelectColumn>
                 }
 
                 <DataGridEntityActionsColumn TItem="CityDto" @ref="@EntityActionsColumn">

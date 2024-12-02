@@ -14,9 +14,17 @@ public class DistrictConfigurations : IEntityTypeConfiguration<District>
         b.ConfigureByConvention();
         b.HasIndex(e => e.CityId);
 
-        b.Property(e => e.Name).HasColumnName(nameof(District.Name)).IsRequired()
-         .HasMaxLength(DistrictConsts.NameMaxLength);
+        b
+            .Property(e => e.Name)
+            .HasColumnName(nameof(District.Name))
+            .IsRequired()
+            .HasMaxLength(DistrictConsts.NameMaxLength);
 
-        b.HasOne<City>().WithMany().IsRequired().HasForeignKey(e => e.CityId).OnDelete(DeleteBehavior.NoAction);
+        b
+            .HasOne(e => e.City)
+            .WithMany()
+            .IsRequired(false)
+            .HasForeignKey(e => e.CityId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -12,7 +12,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
 using Volo.Abp.BlazoriseUI.Components;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientRegistrations.Definitions.Address;
 
 public partial class Districts
 {
@@ -34,20 +34,18 @@ public partial class Districts
     private List<DistrictDto> SelectedDistricts { get; set; } = [];
     private bool AllDistrictsSelected { get; set; }
 
-    public Districts()
-    {
+    public Districts() =>
         Filter = new GetDistrictsInput
         {
             MaxResultCount = PageSize,
             SkipCount = (CurrentPage - 1) * PageSize,
             Sorting = CurrentSorting
         };
-    }
 
     protected override async Task OnInitializedAsync()
     {
         await SetPermissionsAsync();
-        CityList = await CityAppService.GetListAsync();
+        CityList = await CityAppService.GetListWithDetailsAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -70,12 +68,13 @@ public partial class Districts
     {
         // Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
 
-        Toolbar.AddButton(L["NewDistrict"], OpenCreateDistrictModalAsync, IconName.Add,
-            requiredPolicyName: HealthCarePermissions.Districts.Create);
+        Toolbar.AddButton(
+            L["NewDistrict"], OpenCreateDistrictModalAsync, IconName.Add,
+            requiredPolicyName: HealthCarePermissions.Districts.Create
+        );
 
         return ValueTask.CompletedTask;
     }
-
 
     private async Task GetDistrictsAsync()
     {
@@ -83,7 +82,7 @@ public partial class Districts
         Filter.SkipCount = (CurrentPage - 1) * PageSize;
         Filter.Sorting = CurrentSorting;
 
-        var result = await DistrictAppService.GetListAsync(Filter);
+        var result = await DistrictAppService.GetListWithDetailsAsync(Filter);
         DistrictList = result.Items;
         TotalCount = (int)result.TotalCount;
 
@@ -114,15 +113,15 @@ public partial class Districts
 
     private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<DistrictDto> e)
     {
-        CurrentSorting = e.Columns
-                          .Where(c => c.SortDirection != SortDirection.Default)
-                          .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
-                          .JoinAsString(",");
+        CurrentSorting = e
+                         .Columns
+                         .Where(c => c.SortDirection != SortDirection.Default)
+                         .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
+                         .JoinAsString(",");
         CurrentPage = e.Page;
         await GetDistrictsAsync();
         await InvokeAsync(StateHasChanged);
     }
-
 
     private Task SelectAllItems()
     {
@@ -141,15 +140,14 @@ public partial class Districts
 
     private Task SelectedDistrictRowsChanged()
     {
-        AllDistrictsSelected = DistrictList.Count < PageSize
-            ? SelectedDistricts.Count == DistrictList.Count
-            : SelectedDistricts.Count == PageSize;
+        AllDistrictsSelected = DistrictList.Count < PageSize ?
+            SelectedDistricts.Count == DistrictList.Count :
+            SelectedDistricts.Count == PageSize;
 
         return Task.CompletedTask;
     }
 
 #endregion
-
 
 #region Create
 
@@ -217,10 +215,7 @@ public partial class Districts
         await EditDistrictModal.Show();
     }
 
-    private async Task CloseEditDistrictModalAsync()
-    {
-        await EditDistrictModal.Hide();
-    }
+    private async Task CloseEditDistrictModalAsync() => await EditDistrictModal.Hide();
 
     private async Task UpdateDistrictAsync()
     {
@@ -253,9 +248,9 @@ public partial class Districts
 
     private async Task DeleteSelectedDistrictsAsync()
     {
-        var message = AllDistrictsSelected
-            ? L["DeleteAllRecords"].Value
-            : L["DeleteSelectedRecords", SelectedDistricts.Count].Value;
+        var message = AllDistrictsSelected ?
+            L["DeleteAllRecords"].Value :
+            L["DeleteSelectedRecords", SelectedDistricts.Count].Value;
 
         if (!await UiMessageService.Confirm(message))
         {
@@ -265,8 +260,7 @@ public partial class Districts
         if (AllDistrictsSelected)
         {
             await DistrictAppService.DeleteAllAsync(Filter);
-        }
-        else
+        } else
         {
             await DistrictAppService.DeleteByIdsAsync(SelectedDistricts.Select(x => x.Id).ToList());
         }

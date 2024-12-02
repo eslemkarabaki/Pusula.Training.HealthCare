@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Pusula.Training.HealthCare.Addresses;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
@@ -10,7 +11,7 @@ public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IPat
     public int No { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
-    public string FullName => $"{FirstName} {LastName}";
+    public string FullName { get; set; } = null!;
     public DateTime BirthDate { get; set; }
 
     public Tuple<int, string> Age => CalculateAge();
@@ -29,6 +30,8 @@ public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IPat
 
     public Guid CountryId { get; set; }
     public Guid PatientTypeId { get; set; }
+
+    public IEnumerable<AddressDto> Addresses { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;
 

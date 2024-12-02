@@ -18,6 +18,7 @@ using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.PatientTypes;
+using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
@@ -41,11 +42,13 @@ public class HealthCareDataSeederContributor(
     ITitleRepository titleRepository,
     IDoctorRepository doctorRepository,
     IAppointmentTypeRepository appointmentTypeRepository,
+    IProtocolTypeRepository protocolTypeRepository,
     IRadiologyExaminationGroupRepository radiologyExaminationGroupRepository,
     IRadiologyExaminationRepository radiologyExaminationRepository,
     IRadiologyExaminationProcedureRepository radiologyExaminationProcedureRepository,
     IGuidGenerator guidGenerator
-) : IDataSeedContributor, ITransientDependency
+)
+    : IDataSeedContributor, ITransientDependency
 {
     public async Task SeedAsync(DataSeedContext context)
     {
@@ -75,10 +78,10 @@ public class HealthCareDataSeederContributor(
 
         if (!await doctorRepository.AnyAsync())
         {
-            var departments = await SeedDepartmentsAsync();
-            var hospital = await SeedHospitalsAsync();
-            var titles = await SeedTitlesAsync();
-            await SeedDoctorsAsync(departments, hospital, titles);
+           var departments= await SeedDepartmentsAsync();
+           var hospital=  await SeedHospitalsAsync();
+           var titles= await SeedTitlesAsync();
+           await SeedDoctorsAsync(departments, hospital, titles);
         }
 
         if (!await appointmentTypeRepository.AnyAsync())
@@ -86,6 +89,10 @@ public class HealthCareDataSeederContributor(
             await SeedAppointmentTypesAsync();
         }
 
+        if (!await protocolTypeRepository.AnyAsync())
+        {
+            await SeedProtocolTypesAsync();
+        }
     }
 
     // Country
@@ -265,13 +272,13 @@ public class HealthCareDataSeederContributor(
             new(guidGenerator.Create(), "Dr.")
         ];
 
-        return await SeedEntitiesAsync(titles, e => titleRepository.InsertManyAsync(e, true));
+       return await SeedEntitiesAsync(titles, e => titleRepository.InsertManyAsync(e, true));
     }
-
+    
     // Doctor
-    private async Task SeedDoctorsAsync(List<Guid> departmentsId, Hospital hospital, List<Guid> titleId)
+    private async Task SeedDoctorsAsync(List<Guid> departmentsId,Hospital hospital,List<Guid> titleId)
     {
-
+        
         var faker = new Faker<Doctor>("tr")
             .CustomInstantiator(
                 f =>
@@ -348,6 +355,21 @@ public class HealthCareDataSeederContributor(
     //}
 
 
+
+    // Protocol types
+    private async Task SeedProtocolTypesAsync()
+    {
+        List<ProtocolType> protocolTypes =
+        [
+            new(guidGenerator.Create(), "Test"),
+            new(guidGenerator.Create(), "Test2"),
+            new(guidGenerator.Create(), "Test3"),
+            new(guidGenerator.Create(), "Test4"),
+            new(guidGenerator.Create(), "Test5")
+        ];
+        await SeedEntitiesAsync(protocolTypes,e => protocolTypeRepository.InsertManyAsync(e,true));
+    }
+    
     // Generic Entities
     private async Task<List<Guid>> SeedEntitiesAsync<T>(IEnumerable<T> entities,
                                                     Func<IEnumerable<T>, Task> insertFunction)

@@ -16,6 +16,7 @@ public class PatientConfigurations : IEntityTypeConfiguration<Patient>
         b.HasIndex(
             e => new
             {
+                e.No,
                 e.FirstName,
                 e.LastName,
                 e.IdentityNumber,
@@ -34,6 +35,9 @@ public class PatientConfigurations : IEntityTypeConfiguration<Patient>
             .HasColumnName(nameof(Patient.LastName))
             .IsRequired()
             .HasMaxLength(PatientConsts.LastNameMaxLength);
+
+        b.Property(e => e.FullName).HasColumnName(nameof(Patient.FullName));
+
         b.Property(x => x.BirthDate).HasColumnName(nameof(Patient.BirthDate));
         b
             .Property(x => x.IdentityNumber)
@@ -64,6 +68,12 @@ public class PatientConfigurations : IEntityTypeConfiguration<Patient>
         b.Property(x => x.BloodType).HasColumnName(nameof(Patient.BloodType)).IsRequired();
         b.Property(x => x.MaritalStatus).HasColumnName(nameof(Patient.MaritalStatus)).IsRequired();
 
+        b
+            .HasMany(e => e.Addresses)
+            .WithOne()
+            .IsRequired(false)
+            .HasForeignKey(e => e.PatientId)
+            .OnDelete(DeleteBehavior.NoAction);
         b
             .HasOne<Country>()
             .WithMany()

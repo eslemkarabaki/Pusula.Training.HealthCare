@@ -24,21 +24,26 @@ public class ProtocolConfigurations : IEntityTypeConfiguration<Protocol>
         b.Property(x => x.StartTime).HasColumnName(nameof(Protocol.StartTime)).IsRequired();
         b.Property(x => x.EndTime).HasColumnName(nameof(Protocol.EndTime)).IsRequired(false);
 
-        b.HasOne<Patient>().WithMany().IsRequired().HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.NoAction);
         b
-            .HasOne<Department>()
+            .HasOne(e => e.Patient)
+            .WithMany()
+            .IsRequired()
+            .HasForeignKey(x => x.PatientId)
+            .OnDelete(DeleteBehavior.NoAction);
+        b
+            .HasOne(e => e.Department)
             .WithMany()
             .IsRequired()
             .HasForeignKey(x => x.DepartmentId)
             .OnDelete(DeleteBehavior.NoAction);
         b
-            .HasOne<Doctor>()
+            .HasOne(e => e.Doctor)
             .WithMany()
             .IsRequired()
             .HasForeignKey(x => x.DoctorId)
             .OnDelete(DeleteBehavior.NoAction);
         b
-            .HasOne<ProtocolType>()
+            .HasOne(e => e.ProtocolType)
             .WithMany()
             .IsRequired()
             .HasForeignKey(x => x.ProtocolTypeId)

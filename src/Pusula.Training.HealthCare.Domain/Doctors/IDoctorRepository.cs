@@ -12,16 +12,19 @@ public interface IDoctorRepository : IRepository<Doctor, Guid>
         string? filterText = null,
         string? firstName = null,
         string? lastName = null,
+        string? fullname = null,
         string? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     Task<List<Doctor>> GetListAsync(
         string? filterText = null,
         string? firstName = null,
         string? lastName = null,
+        string? fullname = null,
         string? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
@@ -29,15 +32,18 @@ public interface IDoctorRepository : IRepository<Doctor, Guid>
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     Task<long> GetCountAsync(
         string? filterText = null,
         string? firstName = null,
         string? lastName = null,
+        string? fullname = null,
         string? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

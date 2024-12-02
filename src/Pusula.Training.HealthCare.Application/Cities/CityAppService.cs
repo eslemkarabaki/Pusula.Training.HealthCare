@@ -15,13 +15,11 @@ namespace Pusula.Training.HealthCare.Cities;
 public class CityAppService(
     ICityRepository cityRepository,
     ICountryRepository countryRepository,
-    CityManager cityManager)
+    CityManager cityManager
+)
     : HealthCareAppService, ICityAppService
 {
-    public async Task<CityDto> GetAsync(Guid id)
-    {
-        return ObjectMapper.Map<City, CityDto>(await cityRepository.GetAsync(id));
-    }
+    public async Task<CityDto> GetAsync(Guid id) => ObjectMapper.Map<City, CityDto>(await cityRepository.GetAsync(id));
 
     public async Task<CountryDto> GetCountryAsync(Guid cityId)
     {
@@ -29,26 +27,26 @@ public class CityAppService(
         return ObjectMapper.Map<Country, CountryDto>(await countryRepository.GetAsync(e => e.Id == city.CountryId));
     }
 
-    public async Task<List<CityDto>> GetListAsync()
-    {
-        return ObjectMapper.Map<List<CityWithCountry>, List<CityDto>>(
-            await cityRepository.GetListAsync());
-    }
+    public async Task<List<CityDto>> GetListWithDetailsAsync() =>
+        ObjectMapper.Map<List<City>, List<CityDto>>(
+            await cityRepository.GetListWithDetailsAsync()
+        );
 
-    public async Task<List<CityDto>> GetListAsync(Guid countryId)
-    {
-        return ObjectMapper.Map<List<City>, List<CityDto>>(
-            await cityRepository.GetListAsync(e => e.CountryId == countryId));
-    }
+    public async Task<List<CityDto>> GetListWithDetailsAsync(Guid countryId) =>
+        ObjectMapper.Map<List<City>, List<CityDto>>(
+            await cityRepository.GetListWithDetailsAsync(countryId: countryId)
+        );
 
-    public async Task<PagedResultDto<CityDto>> GetListAsync(GetCitiesInput input)
+    public async Task<PagedResultDto<CityDto>> GetListWithDetailsAsync(GetCitiesInput input)
     {
-        var items = await cityRepository.GetListAsync(input.FilterText, input.Name, input.CountryId, input.Sorting,
-            input.MaxResultCount, input.SkipCount);
+        var items = await cityRepository.GetListWithDetailsAsync(
+            input.FilterText, input.Name, input.CountryId, input.Sorting,
+            input.MaxResultCount, input.SkipCount
+        );
 
         var count = await cityRepository.GetCountAsync(input.FilterText, input.Name, input.CountryId);
 
-        return new PagedResultDto<CityDto>(count, ObjectMapper.Map<List<CityWithCountry>, List<CityDto>>(items));
+        return new PagedResultDto<CityDto>(count, ObjectMapper.Map<List<City>, List<CityDto>>(items));
     }
 
     public async Task<CityDto> CreateAsync(CityCreateDto input)
@@ -63,18 +61,10 @@ public class CityAppService(
         return ObjectMapper.Map<City, CityDto>(city);
     }
 
-    public async Task DeleteAsync(Guid id)
-    {
-        await cityRepository.DeleteAsync(id);
-    }
+    public async Task DeleteAsync(Guid id) => await cityRepository.DeleteAsync(id);
 
-    public async Task DeleteByIdsAsync(List<Guid> patientIds)
-    {
-        await cityRepository.DeleteManyAsync(patientIds);
-    }
+    public async Task DeleteByIdsAsync(List<Guid> patientIds) => await cityRepository.DeleteManyAsync(patientIds);
 
-    public async Task DeleteAllAsync(GetCitiesInput input)
-    {
+    public async Task DeleteAllAsync(GetCitiesInput input) =>
         await cityRepository.DeleteAllAsync(input.FilterText, input.Name, input.CountryId);
-    }
 }

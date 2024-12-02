@@ -1,4 +1,4 @@
-@page "/patients"
+@page "/prm/management/patients"
 
 @attribute [Authorize(HealthCarePermissions.Patients.Default)]
 @using Pusula.Training.HealthCare.Patients
@@ -13,8 +13,11 @@
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.DataForm
 @using Syncfusion.Blazor.Navigations
-@using Syncfusion.Blazor.Notifications
 @using Blazored.FluentValidation
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Protocols
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients
+@using Position = Syncfusion.Blazor.Popups.Position
+@using Syncfusion.Blazor.SplitButtons
 @inherits HealthCareComponentBase
 @inject IPatientAppService PatientAppService
 @inject IPatientTypeAppService PatientTypeAppService
@@ -36,7 +39,8 @@
         </FormValidator>
         <FormTemplate>
             <div class="p-2">
-                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search:Patient"]" Type="InputType.Search" CssClass="mb-2"/>
+                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search:Patient"]" Type="InputType.Search"
+                           CssClass="mb-2"/>
                 <a href="javascript:;" class="text-decoration-none"
                    @onclick="@(() => ShowAdvancedFilters = !ShowAdvancedFilters)">
                     @L["SeeAdvancedFilters"] <SfIcon
@@ -50,11 +54,9 @@
                 <div class="d-flex gap-2 p-2 align-items-end">
                     <SfNumericTextBox @bind-Value="@Filter.No" ShowSpinButton="false"
                                       FloatLabelType="FloatLabelType.Always"
-                                      Placeholder="@L["No"]"/>
-                    <SfTextBox @bind-Value="@Filter.FirstName" FloatLabelType="FloatLabelType.Always"
-                               Placeholder="@L["FirstName"]"/>
-                    <SfTextBox @bind-Value="@Filter.LastName" FloatLabelType="FloatLabelType.Always"
-                               Placeholder="@L["LastName"]"/>
+                                      Placeholder="@L["No"]" Min="0"/>
+                    <SfTextBox @bind-Value="@Filter.FullName" FloatLabelType="FloatLabelType.Always"
+                               Placeholder="@L["Name"]"/>
                     <SfTextBox @bind-Value="@Filter.IdentityNumber" FloatLabelType="FloatLabelType.Always"
                                Placeholder="@L["IdentityNumber"]" Type="InputType.Number"/>
                     <SfTextBox @bind-Value="@Filter.PassportNumber" FloatLabelType="FloatLabelType.Always"
@@ -71,14 +73,15 @@
 </div>
 
 @* ************************* DATA GRID ************************* *@
-<SfGrid @ref="SfGrid" TValue="PatientWithNavigationPropertiesDto" DataSource="@PatientList" AllowPaging="true"
-        AllowSelection EnableHover AllowSorting Height="570">
+<SfGrid @ref="SfGrid" TValue="PatientWithNavigationPropertiesDto" Height="600px" DataSource="@PatientList"
+        AllowSelection="@CanDeletePatient" EnableHover EnableVirtualMaskRow EnableStickyHeader>
     <SfToolbar>
         <ToolbarItems>
             <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreatePatientDialogAsync" Text="@L["Add"]"
-                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewPatient"]"></ToolbarItem>
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewPatient"]"
+                         Disabled="@(!CanCreatePatient)"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedPatientsAsync"
-                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0 || !CanDeletePatient)"
                          Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
                          TooltipText="@L["Delete"]"></ToolbarItem>
             <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
@@ -90,20 +93,18 @@
     <GridEvents TValue="PatientWithNavigationPropertiesDto"
                 RowSelected="@SelectedPatientRowChangedAsync"
                 RowDeselected="@SelectedPatientRowChangedAsync"/>
-    <GridPageSettings PageSize="10"/>
     <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridColumns>
-        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Type="ColumnType.CheckBox" Width="30" Visible="@CanDeletePatient"></GridColumn>
         <GridColumn HeaderText="@L["Patient"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     <div class="fw-500">
                         @dto.Patient.FullName
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <SfIcon
-                            IconCss="@($"fs-18p fas {(dto.Patient.Gender == EnumGender.Male ? "fa-mars color-blue-500" : "fa-venus color-pink-500")}")"></SfIcon>
+                        <PatientGenderIcon Gender="@dto.Patient.Gender"/>
                         <div>
                             <span>Hasta No:</span>
                             <span>@dto.Patient.No</span>
@@ -119,7 +120,7 @@
         <GridColumn HeaderText="@L["IdentityOrPassportNumber"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     @(dto.Patient.IdentityNumber ?? dto.Patient.PassportNumber)
                     if (dto.Patient.IdentityNumber.IsNullOrWhiteSpace())
                     {
@@ -132,9 +133,9 @@
         <GridColumn HeaderText="@L["BirthDate"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     <div class="d-flex gap-1">
-                        <span>@dto.Patient.BirthDate.ToString("MM.dd.yyyy")</span>
+                        <span>@dto.Patient.BirthDate.ToString("dd.MM.yyyy")</span>
                         <span class="fs-12p">(@dto.Patient.Age.Item1 @dto.Patient.Age.Item2)</span>
                     </div>
                 }
@@ -143,7 +144,7 @@
         <GridColumn HeaderText="@L["EmailAddress"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     <div>
                         @dto.Patient.EmailAddress
                     </div>
@@ -153,7 +154,7 @@
         <GridColumn HeaderText="@L["MobilePhoneNumber"]">
             <Template>
                 @{
-                    var dto = context as PatientWithNavigationPropertiesDto;
+                    var dto = (context as PatientWithNavigationPropertiesDto)!;
                     <div>
                         +@dto.Patient.MobilePhoneNumberCode @dto.Patient.MobilePhoneNumber
                     </div>
@@ -162,13 +163,33 @@
         </GridColumn>
         <GridColumn TextAlign="TextAlign.Right">
             <Template>
-                <SfButton
-                    OnClick="@(() => OpenEditPatientModalAsync((context as PatientWithNavigationPropertiesDto).Patient))"
-                    CssClass="e-flat"
-                    IconCss="e-icons e-edit"></SfButton>
-                <SfButton OnClick="@(() => DeletePatientAsync((context as PatientWithNavigationPropertiesDto).Patient))"
-                          CssClass="e-flat"
-                          IconCss="e-icons e-trash"></SfButton>
+                @{
+                    var patient = (context as PatientWithNavigationPropertiesDto)!.Patient;
+                }
+                <div class="d-flex justify-content-end gap-1">
+                    <SfTooltip Position="Position.BottomCenter" Content="@L["Detail"]">
+                        <SfButton
+                            OnClick="@(() => NavigationManager.NavigateTo($"prm/management/patient-detail/{patient.No}"))"
+                            CssClass="e-flat"
+                            IconCss="e-icons fas fa-external-link-alt"></SfButton>
+                    </SfTooltip>
+
+                    <SfDropDownButton IconCss="fas fa-ellipsis-h" CssClass="e-caret-hide e-flat"
+                                      IconPosition="SplitButtonIconPosition.Top">
+                        <DropDownButtonEvents ItemSelected="@((args) => DropdownItemSelectedAsync(args, patient))"/>
+                        <DropDownMenuItems>
+                            <DropDownMenuItem Text="@L["AddProtocol"]" IconCss="e-icons fas fa-file-medical"/>
+                            @if (CanEditPatient)
+                            {
+                                <DropDownMenuItem Text="@L["Edit"]" IconCss="e-icons far fa-edit"/>
+                            }
+                            @if (CanDeletePatient)
+                            {
+                                <DropDownMenuItem Text="@L["Delete"]" IconCss="e-icons far fa-trash-alt"/>
+                            }
+                        </DropDownMenuItems>
+                    </SfDropDownButton>
+                </div>
             </Template>
         </GridColumn>
     </GridColumns>
@@ -176,23 +197,24 @@
 
 @* ************************* CREATE MODAL ************************* *@
 <PatientCreateDialog @ref="CreatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
-                     OnValidSaveAsync="CreatePatientAsync"/>
+                     PatientCreatedAsync="GetPatientsAsync"/>
 
 @* ************************* UPDATE MODAL ************************* *@
 <PatientUpdateDialog @ref="UpdatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
                      OnValidSaveAsync="UpdatePatientAsync"/>
 
-@* ************************* SEARCH ERROR TOAST ************************* *@
-<SfToast @ref="FilterToast" CssClass="e-toast-danger" Timeout="3000">
-    <ToastPosition X="Right" Y="Top"></ToastPosition>
-    <ToastTemplates>
-        <Template>
-            <div class="d-flex align-items-center gap-2 py-1 px-2">
-                <div class="fs-24p">
-                    <SfIcon IconCss="e-icons e-error fas fa-exclamation"/>
-                </div>
-                All values are empty.
-            </div>
-        </Template>
-    </ToastTemplates>
-</SfToast>
+@* ************************* CREATE PROTOCOL MODAL ************************* *@
+<ProtocolCreateDialog @ref="CreateProtocolDialog"></ProtocolCreateDialog>
+
+@* ************************* UPDATE PROTOCOL MODAL ************************* *@
+
+
+<style>
+    .e-btn.e-top-icon-btn {
+        padding: 4px 11px !important;
+    }
+
+    .e-btn-icon.e-icon-top {
+        padding-bottom: 0 !important;
+    }
+</style>
