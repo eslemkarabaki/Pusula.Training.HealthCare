@@ -13,6 +13,8 @@
 
 @inject IPatientAppService PatientAppService
 @inject IDoctorAppService DoctorAppService
+@inject IProtocolTypeAppService ProtocolTypeAppService
+@inject IProtocolAppService ProtocolAppService
 @inject IDepartmentsAppService DepartmentsAppService
 
 <SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
@@ -31,7 +33,7 @@
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
                         <div>
-                            <SfTextBox Value="@Patient?.FullName" Readonly Placeholder="@L["Patient"]"
+                            <SfTextBox Value="@PatientName" Readonly Placeholder="@L["Patient"]"
                                        FloatLabelType="@FloatLabelType.Always"></SfTextBox>
                         </div>
                         <div>
@@ -59,7 +61,7 @@
                             </SfAutoComplete>
                         </div>
                         <div>
-                            <label class="e-form-label">@L["Address:District"]</label>
+                            <label class="e-form-label">@L["ProtocolType"]</label>
                             <SfDropDownList @bind-Value="@ProtocolCreate.ProtocolTypeId" TValue="Guid"
                                             TItem="ProtocolTypeDto" Placeholder="@L["ProtocolType"]"
                                             DataSource="@ProtocolTypeList" AllowFiltering EnableVirtualization
@@ -81,18 +83,18 @@
 </SfDialog>
 
 @code {
-    [Parameter] public EventCallback<ProtocolCreateDto> OnValidSaveAsync { get; set; }
+    [Parameter] public EventCallback<ProtocolCreateDto> ProtocolCreatedAsync { get; set; }
     private SfDialog Dialog { get; set; } = null!;
     private EditContext EditContext { get; set; }
     private ProtocolCreateDto ProtocolCreate { get; set; } = new();
     private ProtocolCreateDtoValidator ProtocolCreateValidator { get; set; } = null!;
-    private PatientDto? Patient { get; set; }
+    private string? PatientName { get; set; }
 
     private IEnumerable<ProtocolTypeDto> ProtocolTypeList { get; set; } = [];
 
     public ProtocolCreateDialog() => EditContext = new EditContext(ProtocolCreate);
 
-    // protected override async Task OnInitializedAsync() => ProtocolTypeList=await ProtocolAppService
+    protected override async Task OnInitializedAsync() => ProtocolTypeList = await ProtocolTypeAppService.GetListAsync();
 
 #region Patient
 
@@ -145,10 +147,11 @@
 
 #endregion
 
-    public async Task ShowAsync(PatientDto dto)
+    public async Task ShowAsync(PatientDto patient)
     {
-        Patient = dto;
         SetDefaultValuesForDialog();
+        PatientName = patient.FullName;
+        ProtocolCreate.PatientId = patient.Id;
         await Dialog.ShowAsync();
     }
 
@@ -160,8 +163,16 @@
 
     private async Task OnValidSubmitAsync(EditContext context)
     {
-        await OnValidSaveAsync.InvokeAsync(ProtocolCreate);
-        await HideAsync();
+        try
+        {
+            await ProtocolAppService.CreateAsync(ProtocolCreate);
+            await ProtocolCreatedAsync.InvokeAsync();
+            await HideAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     private void SetDefaultValuesForDialog()
