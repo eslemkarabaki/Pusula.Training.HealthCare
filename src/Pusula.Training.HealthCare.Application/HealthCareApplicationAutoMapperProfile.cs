@@ -25,7 +25,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 {
     public HealthCareApplicationAutoMapperProfile()
     {
-        CreateMap<Patient, PatientDto>();
+        CreateMap<Patient, PatientDto>()
+            .ForMember(e => e.IdentityNumber, o => o.MapFrom(p => p.IdentityNumber.Censor('*', 3)))
+            .ForMember(e => e.PassportNumber, o => o.MapFrom(p => p.PassportNumber.Censor('*', 3)));
         CreateMap<Patient, PatientUpdateDto>();
         CreateMap<PatientDto, PatientUpdateDto>();
         CreateMap<PatientWithNavigationProperties, PatientUpdateDto>()
@@ -36,7 +38,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>();
 
-        CreateMap<Patient, PatientExcelDto>();
+        CreateMap<Patient, PatientExcelDto>()
+            .ForMember(e => e.IdentityNumber, o => o.MapFrom(p => p.IdentityNumber.Censor('*', 3)))
+            .ForMember(e => e.PassportNumber, o => o.MapFrom(p => p.PassportNumber.Censor('*', 3)));
         CreateMap<PatientWithNavigationProperties, PatientExcelDto>()
             .IncludeMembers(e => e.Patient)
             .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country.Name))
