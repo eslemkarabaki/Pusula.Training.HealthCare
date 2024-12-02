@@ -170,9 +170,15 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     protected virtual async Task<IQueryable<PatientWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()
     {
         var dbContext = await GetDbContextAsync();
-
-        var patients =
-            from patient in dbContext.Patients
+        return
+            from patient in dbContext
+                            .Patients.Include(
+                                e => e.Addresses
+                                      .Where(a => a.PatientId == e.Id)
+                            )
+                            .ThenInclude(e => e.District)
+                            .ThenInclude(e => e.City)
+                            .ThenInclude(e => e.Country)
             join country in dbContext.Countries
                 on patient.CountryId equals country.Id
                 into countries
@@ -181,42 +187,12 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 on patient.PatientTypeId equals patientType.Id
                 into patientTypes
             from patientType in patientTypes.DefaultIfEmpty()
-            select new
+            select new PatientWithNavigationProperties
             {
-                patient,
-                country,
-                patientType
-            };
-
-        var addresses = (
-            from address in dbContext.Addresses
-            where patients.Select(e => e.patient.Id).Contains(address.PatientId)
-            join district in dbContext.Districts
-                on address.DistrictId equals district.Id into districts
-            from district in districts.DefaultIfEmpty()
-            join city in dbContext.Cities
-                on district.CityId equals city.Id into cities
-            from city in cities.DefaultIfEmpty()
-            join country in dbContext.Countries
-                on city.CountryId equals country.Id into countries
-            from country in countries.DefaultIfEmpty()
-            select new AddressWithNavigationProperties()
-            {
-                Address = address,
-                District = district,
+                Patient = patient,
                 Country = country,
-                City = city
-            }).AsEnumerable();
-
-        return patients.Select(
-            p => new PatientWithNavigationProperties()
-            {
-                Patient = p.patient,
-                Country = p.country,
-                PatientType = p.patientType,
-                Addresses = addresses.Where(a => a.Address.PatientId == p.patient.Id).ToList()
-            }
-        );
+                PatientType = patientType
+            };
     }
 
 #region Delete

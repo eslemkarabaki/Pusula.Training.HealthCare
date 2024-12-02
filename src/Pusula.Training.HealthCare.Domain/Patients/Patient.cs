@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Countries;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -26,6 +28,8 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
     public Guid CountryId { get; private set; }
     public Guid PatientTypeId { get; private set; }
 
+    public ICollection<Address> Addresses { get; set; }
+
     protected Patient()
     {
         FirstName = string.Empty;
@@ -34,6 +38,7 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
         EmailAddress = string.Empty;
         MobilePhoneNumber = string.Empty;
         MobilePhoneNumberCode = string.Empty;
+        Addresses = [];
     }
 
     public Patient(
@@ -57,7 +62,7 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
     {
         SetCountryId(countryId);
         SetPatientTypeId(patientTypeId);
-        SetName(firstName,lastName);
+        SetName(firstName, lastName);
         SetBirthDate(birthDate);
         SetIdentityNumber(identityNumber);
         SetPassportNumber(passportNumber);

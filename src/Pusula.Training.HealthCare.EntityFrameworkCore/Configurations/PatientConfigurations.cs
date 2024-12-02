@@ -69,6 +69,12 @@ public class PatientConfigurations : IEntityTypeConfiguration<Patient>
         b.Property(x => x.MaritalStatus).HasColumnName(nameof(Patient.MaritalStatus)).IsRequired();
 
         b
+            .HasMany(e => e.Addresses)
+            .WithOne()
+            .IsRequired(false)
+            .HasForeignKey(e => e.PatientId)
+            .OnDelete(DeleteBehavior.NoAction);
+        b
             .HasOne<Country>()
             .WithMany()
             .IsRequired()

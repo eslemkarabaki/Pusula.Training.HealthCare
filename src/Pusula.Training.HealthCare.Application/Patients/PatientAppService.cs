@@ -108,10 +108,10 @@ public class PatientAppService(
         };
     }
 
-    public async Task<List<AddressWithNavigationPropertiesDto>>
-        GetAddressListWithNavigationPropertiesAsync(Guid patientId) =>
-        ObjectMapper.Map<List<AddressWithNavigationProperties>, List<AddressWithNavigationPropertiesDto>>(
-            await addressRepository.GetListWithNavigationPropertiesAsync(patientId)
+    public async Task<List<AddressDto>>
+        GetPatientAddressesWithDetailsAsync(Guid patientId) =>
+        ObjectMapper.Map<List<Address>, List<AddressDto>>(
+            await addressRepository.GetListWithDetailsAsync(patientId)
         );
 
 #endregion

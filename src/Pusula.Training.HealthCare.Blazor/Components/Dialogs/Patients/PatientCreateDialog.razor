@@ -314,14 +314,14 @@
                                                 <div class="d-flex flex-column gap-1">
                                                     @foreach (var address in Addresses)
                                                     {
-                                                        <SfCard ID="@address.Address.Id.ToString("N")"
-                                                                CssClass="@(EditingAddressId == address.Address.Id ? "selected" : string.Empty)"
+                                                        <SfCard ID="@address.Id.ToString("N")"
+                                                                CssClass="@(EditingAddressId == address.Id ? "selected" : string.Empty)"
                                                                 @onclick="@(() => EditAddressAsync(address))">
                                                             <CardContent>
                                                                 <div class="d-flex align-items-start">
                                                                     <div class="flex-fill">
-                                                                        <h6 class="m-0">@address.Address.AddressTitle</h6>
-                                                                        <p class="m-0">@address.Address.AddressLine @address.District.Name @(address.City.Name)/@(address.Country.Name)</p>
+                                                                        <h6 class="m-0">@address.AddressTitle</h6>
+                                                                        <p class="m-0">@address.AddressLine @address.District.Name @(address.District.City.Name)/@(address.District.City.Country.Name)</p>
                                                                     </div>
                                                                     <SfButton type="button"
                                                                               IconCss="e-icons far fa-trash-alt e-danger"
@@ -380,7 +380,7 @@
 
     private AddressCreateDto NewAddress { get; set; } = new();
     private Guid EditingAddressId { get; set; }
-    private List<AddressWithNavigationPropertiesDto> Addresses { get; set; } = [];
+    private List<AddressDto> Addresses { get; set; } = [];
 
     private AddressCreateDtoValidator NewAddressValidator { get; set; } = null!;
 
@@ -444,17 +444,12 @@
     private async Task AddAddressAsync(EditContext context)
     {
         Addresses.Add(
-            new AddressWithNavigationPropertiesDto()
+            new AddressDto()
             {
-                Address = new AddressDto()
-                {
-                    Id = Guid.NewGuid(),
-                    AddressTitle = NewAddress.AddressTitle,
-                    AddressLine = NewAddress.AddressLine,
-                    DistrictId = NewAddress.DistrictId
-                },
-                Country = CountryList.First(e => e.Id == SelectedAddressCountryId),
-                City = CityList.First(e => e.Id == SelectedAddressCityId),
+                Id = Guid.NewGuid(),
+                AddressTitle = NewAddress.AddressTitle,
+                AddressLine = NewAddress.AddressLine,
+                DistrictId = NewAddress.DistrictId,
                 District = DistrictList.First(e => e.Id == NewAddress.DistrictId)
             }
         );
@@ -462,28 +457,28 @@
         await Task.CompletedTask;
     }
 
-    private async Task EditAddressAsync(AddressWithNavigationPropertiesDto dto)
+    private async Task EditAddressAsync(AddressDto dto)
     {
-        if (EditingAddressId == dto.Address.Id)
+        if (EditingAddressId == dto.Id)
         {
             return;
         }
 
-        await AddressCountryIdChangedAsync(dto.Country.Id);
-        await AddressCityIdChangedAsync(dto.City.Id);
-        EditingAddressId = dto.Address.Id;
+        await AddressCountryIdChangedAsync(dto.District.City.Country.Id);
+        await AddressCityIdChangedAsync(dto.District.City.Id);
+        EditingAddressId = dto.Id;
         NewAddress = new AddressCreateDto()
         {
             DistrictId = dto.District.Id,
-            AddressTitle = dto.Address.AddressTitle,
-            AddressLine = dto.Address.AddressLine
+            AddressTitle = dto.AddressTitle,
+            AddressLine = dto.AddressLine
         };
         NewAddressEditContext = new EditContext(NewAddress);
         AddressEditingMode = true;
         await Task.CompletedTask;
     }
 
-    private async Task RemoveAddressAsync(AddressWithNavigationPropertiesDto dto)
+    private async Task RemoveAddressAsync(AddressDto dto)
     {
         Addresses.Remove(dto);
         await Task.CompletedTask;
@@ -499,11 +494,9 @@
 
     private async Task SaveAddressEditingAsync()
     {
-        var address = Addresses.Find(e => e.Address.Id == EditingAddressId);
-        address.Address.AddressLine = NewAddress.AddressLine;
-        address.Address.AddressTitle = NewAddress.AddressTitle;
-        address.Country = CountryList.First(e => e.Id == SelectedAddressCountryId);
-        address.City = CityList.First(e => e.Id == SelectedAddressCityId);
+        var address = Addresses.Find(e => e.Id == EditingAddressId);
+        address.AddressLine = NewAddress.AddressLine;
+        address.AddressTitle = NewAddress.AddressTitle;
         address.District = DistrictList.First(e => e.Id == NewAddress.DistrictId);
         await CancelAddressEditingAsync();
     }

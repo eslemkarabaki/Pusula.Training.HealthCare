@@ -34,9 +34,9 @@ public class PatientController(IPatientAppService patientAppService) : HealthCar
     [HttpGet("get/by-identity-or-passport/{number}")]
     public virtual Task<PatientDto> GetAsync(string number) => patientAppService.GetAsync(number);
 
-    [HttpGet("get/address-list/with-navigation-properties/{id}")]
-    public Task<List<AddressWithNavigationPropertiesDto>> GetAddressListWithNavigationPropertiesAsync(Guid patientId) =>
-        patientAppService.GetAddressListWithNavigationPropertiesAsync(patientId);
+    [HttpGet("get/patient-addresses-with-details/{patientId:guid}")]
+    public Task<List<AddressDto>> GetPatientAddressesWithDetailsAsync(Guid patientId) =>
+        patientAppService.GetPatientAddressesWithDetailsAsync(patientId);
 
     [HttpGet("get/{id:guid}")]
     public virtual Task<PatientDto> GetAsync(Guid id) => patientAppService.GetAsync(id);

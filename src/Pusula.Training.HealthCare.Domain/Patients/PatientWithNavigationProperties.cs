@@ -10,5 +10,4 @@ public class PatientWithNavigationProperties
     public Patient Patient { get; set; }
     public Country Country { get; set; }
     public PatientType PatientType { get; set; }
-    public IEnumerable<AddressWithNavigationProperties> Addresses { get; set; }
 }

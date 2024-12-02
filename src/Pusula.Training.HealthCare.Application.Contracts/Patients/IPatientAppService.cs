@@ -17,8 +17,12 @@ public interface IPatientAppService : IApplicationService
     Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(int patientNo);
 
     Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input);
-    Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(GetPatientsInput input);
-    Task<List<AddressWithNavigationPropertiesDto>> GetAddressListWithNavigationPropertiesAsync(Guid patientId);
+
+    Task<PagedResultDto<PatientWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
+        GetPatientsInput input
+    );
+
+    Task<List<AddressDto>> GetPatientAddressesWithDetailsAsync(Guid patientId);
 
     Task DeleteAsync(Guid id);
 

@@ -1,4 +1,5 @@
 using System;
+using Pusula.Training.HealthCare.Districts;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -8,6 +9,7 @@ public sealed class Address : AuditedEntity<Guid>, IAddress
 {
     public Guid PatientId { get; private set; }
     public Guid DistrictId { get; private set; }
+    public District District { get; set; }
     public string AddressTitle { get; private set; }
     public string AddressLine { get; private set; }
 
