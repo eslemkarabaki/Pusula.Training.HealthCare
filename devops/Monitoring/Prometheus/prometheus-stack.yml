@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    user: root
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - frontend
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure 
+      placement:
+        constraints: [node.hostname == team3-node1]
+
+networks:
+  frontend:
+    external: true
+
+volumes:
+  prometheus-data:
