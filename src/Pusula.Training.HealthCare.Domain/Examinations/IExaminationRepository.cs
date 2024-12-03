@@ -7,14 +7,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
-
 namespace Pusula.Training.HealthCare.Examinations;
-
 public interface IExaminationRepository : IRepository<Examination, Guid>
 {
     Task DeleteAllAsync(
     CancellationToken cancellationToken = default);
-
     Task<List<Examination>> GetListAsync(
         string? filterText = null,
         string? notes = null,
@@ -32,7 +29,6 @@ public interface IExaminationRepository : IRepository<Examination, Guid>
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
         CancellationToken cancellationToken = default);
-
     Task<long> GetCountAsync(
         string? filterText = null,
        string? notes = null,

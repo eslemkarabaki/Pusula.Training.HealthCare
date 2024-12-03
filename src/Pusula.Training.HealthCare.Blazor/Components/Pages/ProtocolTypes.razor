@@ -1,0 +1,61 @@
+﻿@page "/protocoltypes"
+@using Pusula.Training.HealthCare.ProtocolTypes
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DataForm
+@using System.ComponentModel.DataAnnotations
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@inherits HealthCareComponentBase
+@inject SfDialogService DialogService
+
+<div class="custom-header">
+    <SfButton CssClass="e-primary" @onclick="OpenCreateDialog">New Protocol Type</SfButton>
+    <SfButton CssClass="e-flat" @onclick="RefreshProtocolTypes">Refresh List</SfButton>
+</div>
+
+<SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" Visible="@IsDialogVisible"  Header="Create Protocol Type">
+    <DialogTemplates>
+        <Content>
+            <SfTextBox @bind-Value="ProtocolTypeModel.Name" Placeholder="Enter protocol type name" Label="Name" TValue="string"></SfTextBox>
+        </Content>
+        <FooterTemplate>
+            <div class="dialog-footer">
+                <SfButton CssClass="e-primary" OnClick="HandleCreate">Create</SfButton>
+                <SfButton OnClick="CloseDialog">Cancel</SfButton>
+            </div>
+        </FooterTemplate>
+    </DialogTemplates>
+</SfDialog>
+<SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" Visible="@OpenUptadeDialog" Header="Create Protocol Type">
+    <DialogTemplates>
+        <Content>
+            <EditForm Model="@EditingProtocolType" OnValidSubmit="HandleUptade">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <SfTextBox @bind-Value="EditingProtocolType.Name" Placeholder="Enter protocol type name" Label="Name" TValue="string"></SfTextBox>
+                <div class="d-flex gap-2 mt-2 align-items-end">
+                <SfButton CssClass="e-primary" type="submit">Uptade</SfButton>
+                <SfButton OnClick="CloseUptadeDialog" type="button">Cancel</SfButton>
+                </div>
+            </EditForm>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+<SfGrid DataSource="@ProtocolTypeList" TValue="ProtocolTypeDto">
+    <GridColumns>
+        <GridColumn Field="@nameof(ProtocolTypeDto.Name)" HeaderText="Name" Width="150"></GridColumn>
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton
+                    OnClick="@(() => OpenEditProtocolTypeModalAsync((context as ProtocolTypeDto)))"
+                    CssClass="e-flat"
+                    IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteProtocolTypeAsync((context as ProtocolTypeDto)))"
+                          CssClass="e-flat"
+                IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+

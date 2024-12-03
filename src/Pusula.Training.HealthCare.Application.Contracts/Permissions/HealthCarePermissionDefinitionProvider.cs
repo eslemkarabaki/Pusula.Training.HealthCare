@@ -19,12 +19,13 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         //myGroup.AddPermission(HealthCarePermissions.MyPermission1, L("Permission:MyPermission1")); 
 
         SetPatientPermissions(myGroup);
-        SetCountryPermissions(myGroup); 
+        SetCountryPermissions(myGroup);
         SetCityPermissions(myGroup);
         SetDistrictPermissions(myGroup);
         SetExaminationsPermissions(myGroup);
         SetPatientTypePermissions(myGroup);
-        
+        SetProtocolTypePermissions(myGroup);
+
         var protocolPermission = myGroup.AddPermission(HealthCarePermissions.Protocols.Default, L("Permission:Protocols"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Create, L("Permission:Create"));
         protocolPermission.AddChild(HealthCarePermissions.Protocols.Edit, L("Permission:Edit"));
@@ -119,5 +120,12 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         examinations.AddChild(HealthCarePermissions.Examinations.Create, L("Permission:Create"));
         examinations.AddChild(HealthCarePermissions.Examinations.Edit, L("Permission:Edit"));
         examinations.AddChild(HealthCarePermissions.Examinations.Delete, L("Permission:Delete"));
+    }
+    private void SetProtocolTypePermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(HealthCarePermissions.ProtocolTypes.Default, L("Permission:ProtocolTypes"));
+        permission.AddChild(HealthCarePermissions.ProtocolTypes.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.ProtocolTypes.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.ProtocolTypes.Delete, L("Permission:Delete"));
     }
 }

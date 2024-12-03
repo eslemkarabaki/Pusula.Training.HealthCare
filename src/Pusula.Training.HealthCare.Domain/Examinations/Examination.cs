@@ -2,7 +2,6 @@
 using System;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
-
 namespace Pusula.Training.HealthCare.Examinations
 {
     public class Examination : FullAuditedAggregateRoot<Guid>
@@ -17,10 +16,8 @@ namespace Pusula.Training.HealthCare.Examinations
         public string Diagnosis { get; set; } 
         public string Prescription  { get; set; }
         public string ImagingResults { get; set; }
-  
         public Guid PatientId { get; set; }    
         //public Guid DoctorId { get; set; }
-
         protected Examination()
         {
             IdentityNumber = string.Empty;
@@ -32,10 +29,8 @@ namespace Pusula.Training.HealthCare.Examinations
             Prescription = string.Empty;
             ImagingResults = string.Empty;
         }
-
         public Examination(Guid patientId, Guid doctorId, string? identityNumber, string? notes, DateTime visitDate, string? chronicDiseases, string? allergies, string? medications, string? diagnosis, string? prescription, string? imagingResults)
         {
-
             Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
             Check.NotDefaultOrNull<Guid>(doctorId, nameof(doctorId));
             Check.NotNull(identityNumber, nameof(identityNumber));
@@ -54,9 +49,6 @@ namespace Pusula.Training.HealthCare.Examinations
             Check.Length(prescription, nameof(prescription), ExaminationConsts.PrescriptionNumberMaxLength, 0);
             Check.NotNull(imagingResults, nameof(imagingResults));
             Check.Length(imagingResults, nameof(imagingResults), ExaminationConsts.ImagingResultsNumberMaxLength, 0);
-            
-
-
             PatientId = patientId;
             //DoctorId = doctorId;
             Notes = notes;
@@ -69,6 +61,5 @@ namespace Pusula.Training.HealthCare.Examinations
             Prescription = prescription;
             ImagingResults = imagingResults;
         }
-
     }
 }

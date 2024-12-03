@@ -5,14 +5,12 @@ using Volo.Abp.Domain.Services;
 using Volo.Abp;
 using Pusula.Training.HealthCare.Examinations;
 using Volo.Abp.Data;
-
 public class ExaminationManager(IExaminationRepository examinationRepository) : DomainService
 {
     public virtual async Task<Examination> CreateAsync(Guid doctorId, Guid patientId, string notes, string chronicDiseases,
         DateTime visitDate,
         string identityNumber,
         string allergies, string medications, string diagnosis, string prescription, string? imagingResults = null)
-        
     {
         Check.NotDefaultOrNull<Guid>(doctorId, nameof(doctorId));
         Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
@@ -23,12 +21,10 @@ public class ExaminationManager(IExaminationRepository examinationRepository) : 
         Check.NotNullOrWhiteSpace(medications, nameof(medications), ExaminationConsts.MedicationsNumberMaxLength);
         Check.NotNullOrWhiteSpace(diagnosis, nameof(diagnosis), ExaminationConsts.MedicationsNumberMaxLength);
         Check.NotNullOrWhiteSpace(prescription, nameof(prescription), ExaminationConsts.MedicationsNumberMaxLength);
-
         if (!string.IsNullOrWhiteSpace(imagingResults))
         {
             Check.Length(imagingResults, nameof(imagingResults), ExaminationConsts.ImagingResultsNumberMaxLength);
         }
-
         var examination = new Examination(  
            identityNumber:identityNumber,
            patientId:patientId,
@@ -42,17 +38,14 @@ public class ExaminationManager(IExaminationRepository examinationRepository) : 
            prescription:prescription,
            imagingResults: imagingResults
         );
-
         return await examinationRepository.InsertAsync(examination,autoSave:true);
     }
-
     public virtual async Task<Examination> UpdateAsync(
         Guid id,
         Guid doctorId, Guid patientId, string chronicDiseases, string allergies, string medications, string diagnosis, string prescription,
         DateTime visitDate,
         string identityNumber,
         string notes,string imagingResults,
-
         [CanBeNull] string? concurrencyStamp = null
     )
     {
@@ -66,14 +59,11 @@ public class ExaminationManager(IExaminationRepository examinationRepository) : 
         Check.NotNullOrWhiteSpace(medications, nameof(medications), ExaminationConsts.MedicationsNumberMaxLength);
         Check.NotNullOrWhiteSpace(diagnosis, nameof(diagnosis), ExaminationConsts.MedicationsNumberMaxLength);
         Check.NotNullOrWhiteSpace(prescription, nameof(prescription), ExaminationConsts.MedicationsNumberMaxLength);
-
         if (!string.IsNullOrWhiteSpace(imagingResults))
         {
             Check.Length(imagingResults, nameof(imagingResults), ExaminationConsts.ImagingResultsNumberMaxLength);
         }
-
         var examination = await examinationRepository.GetAsync(id);
-
         //examination.DoctorId = doctorId;
         examination.PatientId = patientId;
         examination.Notes = notes;
@@ -84,7 +74,6 @@ public class ExaminationManager(IExaminationRepository examinationRepository) : 
         examination.Diagnosis = diagnosis;
         examination.Prescription = prescription;
         examination.ImagingResults = imagingResults;
-
         //examination.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await examinationRepository.UpdateAsync(examination, autoSave:true);
     }

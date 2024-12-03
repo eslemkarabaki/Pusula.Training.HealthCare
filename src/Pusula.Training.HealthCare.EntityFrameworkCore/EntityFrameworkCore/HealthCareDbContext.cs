@@ -37,6 +37,7 @@ using Npgsql.Replication.PgOutput.Messages;
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
+using Pusula.Training.HealthCare.ProtocolTypes;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -68,8 +69,9 @@ public class HealthCareDbContext :
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;
     public DbSet<AppDefault> AppDefaults { get; set; } = null!;
+    public DbSet<ProtocolType> ProtocolTypes { get; set; } = null!;
 
-#region Entities from the modules
+    #region Entities from the modules
 
     /* Notice: We only implemented IIdentityDbContext and ITenantManagementDbContext
      * and replaced them for this DbContext. This allows you to perform JOIN

@@ -21,6 +21,8 @@ using Pusula.Training.HealthCare.Examinations;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.PatientTypes;
+using System.Net.Sockets;
+using Pusula.Training.HealthCare.ProtocolTypes;
 
 namespace Pusula.Training.HealthCare;
 
@@ -49,6 +51,12 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForAllMembers(opt => opt.Ignore());
 
         CreateMap<PatientType, PatientTypeDto>();
+        CreateMap<ProtocolTypes.ProtocolType, ProtocolTypeDto>();
+        CreateMap<ProtocolTypeDto, ProtocolTypeUpdateDto>();
+
+
+
+        
 
         CreateMap<Address, AddressDto>().ReverseMap();
         CreateMap<AddressCreateDto, Address>();

@@ -81,6 +81,7 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<AppDefault, EfCoreAppDefaultRepository>();
                 options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
                 options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
+
             }
         );
 

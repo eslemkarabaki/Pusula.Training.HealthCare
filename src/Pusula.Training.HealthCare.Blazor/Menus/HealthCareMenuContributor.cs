@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Pusula.Training.HealthCare.Localization;
 using Pusula.Training.HealthCare.MultiTenancy;
 using Pusula.Training.HealthCare.Permissions;
+using Pusula.Training.HealthCare.ProtocolTypes;
 using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
+
 
 namespace Pusula.Training.HealthCare.Blazor.Menus;
 
@@ -41,14 +43,7 @@ public class HealthCareMenuContributor : IMenuContributor
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
 
-        context.Menu.AddItem(
-            new ApplicationMenuItem(
-                HealthCareMenus.Patients,
-                l["Menu:Patients"],
-                "/patients",
-                "fas fa-hospital-user",
-                requiredPermissionName: HealthCarePermissions.Patients.Default)
-        );
+     
 
         context.Menu.AddItem(
             new ApplicationMenuItem(

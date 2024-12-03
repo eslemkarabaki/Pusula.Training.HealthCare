@@ -6,10 +6,10 @@ namespace Pusula.Training.HealthCare.ExaminationDiagnoses;
 
 public sealed class ExaminationDiagnosis : FullAuditedAggregateRoot<Guid>
 {
-    public Guid ExaminationId { get; set; }
-    public Guid DiagnosisId { get; set; }
-    public string Explanation { get; set; }
-    public string Type { get; set; }
+    public Guid ExaminationId { get; private set; }
+    public Guid DiagnosisId { get; private set; }
+    public string Explanation { get; private set; }
+    public string Type { get; private set; }
 
     private ExaminationDiagnosis()
     {
