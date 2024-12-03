@@ -293,11 +293,4 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Insurances.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Insurances.Delete, L("Permission:Delete"));
     }
-    private void SetProtocolTypePermissions(PermissionGroupDefinition group)
-    {
-        var permission = group.AddPermission(HealthCarePermissions.ProtocolTypes.Default, L("Permission:ProtocolTypes"));
-        permission.AddChild(HealthCarePermissions.ProtocolTypes.Create, L("Permission:Create"));
-        permission.AddChild(HealthCarePermissions.ProtocolTypes.Edit, L("Permission:Edit"));
-        permission.AddChild(HealthCarePermissions.ProtocolTypes.Delete, L("Permission:Delete"));
-    }
 }

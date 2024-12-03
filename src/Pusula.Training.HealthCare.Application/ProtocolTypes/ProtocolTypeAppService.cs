@@ -24,23 +24,21 @@ public class ProtocolTypeAppService : ApplicationService, IProtocolTypeAppServic
 
     public async Task<PagedResultDto<ProtocolTypeDto>> GetListAsync(GetProtocolTypeInput input)
     {
-        var queryable = await _protocolTypeRepository.GetQueryableAsync();
-
-        // Sýralama iþlemi
-        if (!string.IsNullOrEmpty(input.Sorting))
-        {
-            queryable = queryable.OrderBy(input.Sorting); // Sorting parametresine göre sýralama yapýyoruz
-        }
 
         // Sayfalama iþlemi
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-        var items = await AsyncExecuter.ToListAsync(queryable.Skip(input.SkipCount).Take(input.MaxResultCount));
+        var totalCount = await _protocolTypeRepository.GetCountAsync(input.Name);
+        var items = await _protocolTypeRepository.GetListAsync(input.Name,input.Sorting, input.MaxResultCount, input.SkipCount);
 
         return new PagedResultDto<ProtocolTypeDto>(
             totalCount,
             ObjectMapper.Map<List<ProtocolType>, List<ProtocolTypeDto>>(items)
         );
 }
+    public async Task<List<ProtocolTypeDto>> GetListAsync()
+    {
+        return
+        ObjectMapper.Map<List<ProtocolType>, List<ProtocolTypeDto>>(await _protocolTypeRepository.GetListAsync());
+    }
 
     public async Task<ProtocolTypeDto> GetAsync(Guid id)
     {

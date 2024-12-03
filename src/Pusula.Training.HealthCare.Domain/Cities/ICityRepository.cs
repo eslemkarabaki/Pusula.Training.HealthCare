@@ -20,7 +20,7 @@ public interface ICityRepository : IRepository<City, Guid>
 
     Task<List<City>> GetListWithDetailsAsync(
         string? filterText = null,
-        string? name = null,
+        string? name = null, 
         Guid? countryId = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
