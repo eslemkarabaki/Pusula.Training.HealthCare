@@ -12,6 +12,7 @@ public interface IProtocolTypeAppService : IApplicationService
 {
         // Listeleme (sayfalama destekli)
         Task<PagedResultDto<ProtocolTypeDto>> GetListAsync(GetProtocolTypeInput input);
+        Task<List<ProtocolTypeDto>> GetListAsync();
 
         // ID ile alma
         Task<ProtocolTypeDto> GetAsync(Guid id);

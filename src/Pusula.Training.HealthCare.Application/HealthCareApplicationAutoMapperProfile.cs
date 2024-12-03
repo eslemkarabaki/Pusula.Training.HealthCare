@@ -83,9 +83,6 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Protocol, ProtocolExcelDto>();
         CreateMap<ProtocolDto, ProtocolUpdateDto>();
         CreateMap<ProtocolWithNavigationProperties, ProtocolWithNavigationPropertiesDto>();
-
-        CreateMap<ProtocolType, ProtocolTypeDto>();
-
         CreateMap<Department, DepartmentDto>();
         CreateMap<Department, DepartmentExcelDto>();
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
