@@ -13,6 +13,5 @@ public class ProtocolType : AuditedAggregateRoot<Guid>
 
     public ProtocolType(Guid id, string name) : base(id) => SetName(name);
 
-    public void SetName(string name) =>
-        Name = Check.NotNullOrWhiteSpace(name, nameof(name), ProtocolTypeConsts.NameMaxLength);
+    public void SetName(string name) => Name = Check.NotNullOrWhiteSpace(name, nameof(name), ProtocolTypeConsts.NameMaxLength);
 }

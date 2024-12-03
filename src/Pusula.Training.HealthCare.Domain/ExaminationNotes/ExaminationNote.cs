@@ -6,9 +6,9 @@ namespace Pusula.Training.HealthCare.ExaminationNotes;
 
 public sealed class ExaminationNote : FullAuditedAggregateRoot<Guid>
 {
-    public Guid ExaminationId { get; set; }
-    public Guid DoctorId { get; set; }
-    public string Note { get; set; }
+    public Guid ExaminationId { get; private set; }
+    public Guid DoctorId { get; private set; }
+    public string Note { get; private set; }
 
 
     private ExaminationNote()

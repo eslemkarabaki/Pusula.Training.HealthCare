@@ -4,10 +4,12 @@ using Microsoft.Extensions.Localization;
 using Pusula.Training.HealthCare.Localization;
 using Pusula.Training.HealthCare.MultiTenancy;
 using Pusula.Training.HealthCare.Permissions;
+using Pusula.Training.HealthCare.ProtocolTypes;
 using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
+
 
 namespace Pusula.Training.HealthCare.Blazor.Menus;
 

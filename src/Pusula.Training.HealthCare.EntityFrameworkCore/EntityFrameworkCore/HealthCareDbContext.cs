@@ -93,7 +93,7 @@ public class HealthCareDbContext :
 
     #endregion
 
-#region Entities from the modules
+    #region Entities from the modules
 
     /* Notice: We only implemented IIdentityDbContext and ITenantManagementDbContext
      * and replaced them for this DbContext. This allows you to perform JOIN

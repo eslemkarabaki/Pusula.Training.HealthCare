@@ -24,6 +24,8 @@ using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.Extensions;
 using Pusula.Training.HealthCare.PatientTypes;
+using System.Net.Sockets;
+using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Insurances;
 
@@ -55,6 +57,12 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType.Name));
 
         CreateMap<PatientType, PatientTypeDto>();
+        CreateMap<ProtocolTypes.ProtocolType, ProtocolTypeDto>();
+        CreateMap<ProtocolTypeDto, ProtocolTypeUpdateDto>();
+
+
+
+        
 
         CreateMap<Address, AddressDto>().ReverseMap();
         CreateMap<AddressCreateDto, Address>();
