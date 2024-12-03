@@ -21,7 +21,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
         Guid? doctorId = null,
         Guid? departmentId = null,
         Guid? protocolTypeId = null,
-        EnumProtocolStatus? status = null,
+        EnumProtocolStatus status = EnumProtocolStatus.None,
         DateTime? startTime = null,
         DateTime? endTime = null,
         string? sorting = null,
@@ -43,7 +43,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
         Guid? doctorId = null,
         Guid? departmentId = null,
         Guid? protocolTypeId = null,
-        EnumProtocolStatus? status = null,
+        EnumProtocolStatus status = EnumProtocolStatus.None,
         DateTime? startTime = null,
         DateTime? endTime = null,
         string? sorting = null,
@@ -66,7 +66,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
         Guid? doctorId = null,
         Guid? departmentId = null,
         Guid? protocolTypeId = null,
-        EnumProtocolStatus? status = null,
+        EnumProtocolStatus status = EnumProtocolStatus.None,
         DateTime? startTime = null,
         DateTime? endTime = null,
         CancellationToken cancellationToken = default
@@ -85,7 +85,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
         Guid? doctorId = null,
         Guid? departmentId = null,
         Guid? protocolTypeId = null,
-        EnumProtocolStatus? status = null,
+        EnumProtocolStatus status = EnumProtocolStatus.None,
         DateTime? startTime = null,
         DateTime? endTime = null
     ) =>
@@ -94,7 +94,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
             .WhereIf(doctorId.HasValue, e => e.DoctorId == doctorId!.Value)
             .WhereIf(departmentId.HasValue, e => e.DepartmentId == departmentId!.Value)
             .WhereIf(protocolTypeId.HasValue, e => e.ProtocolTypeId == protocolTypeId!.Value)
-            .WhereIf(status.HasValue, e => e.Status == status!.Value)
+            .WhereIf(status != EnumProtocolStatus.None, e => e.Status == status)
             .WhereIf(startTime.HasValue, e => e.StartTime >= startTime!.Value)
             .WhereIf(endTime.HasValue, e => !e.EndTime.HasValue || e.EndTime <= endTime!.Value);
 
