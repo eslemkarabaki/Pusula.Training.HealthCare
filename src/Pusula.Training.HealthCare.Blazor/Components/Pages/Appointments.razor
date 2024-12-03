@@ -4,10 +4,13 @@
 
 @using Pusula.Training.HealthCare.Appointments
 @using Pusula.Training.HealthCare.AppointmentTypes
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients
 @using Pusula.Training.HealthCare.Departments
 @using Pusula.Training.HealthCare.Doctors
 @using Pusula.Training.HealthCare.Localization
 @using Pusula.Training.HealthCare.Patients
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Lists
 @using Syncfusion.Blazor.Schedule
 @using Syncfusion.Blazor.Navigations
 @using Pusula.Training.HealthCare.Permissions
@@ -56,31 +59,37 @@
             <DropDownListFieldSettings Text="FullName" Value="Id" />
         </SfDropDownList>
     </div>
-    <br />
+        <br />
+
         <div class="col-md-12">
-            
+            <label class="example-label">Hasta Ekleme İşlemleri</label>
+            <br />
+            <div class="submit-btn">
+                <SfButton type="submit" IsPrimary CssClass="e-outline" @onclick="OpenCreatePatientDialogAsync">Hasta Ekle</SfButton>
+            </div>
         </div>
-        <div class="submit-btn">
-        <SfButton type="submit" IsPrimary CssClass="e-outline" @onclick="NavigateToPage">Hasta Ekle</SfButton>
+        <br />
+
+        <div class="col-md-12">
+        @if(LastPatient != null) {
+            <SfCard>
+
+                <CardBody>
+                    @LastPatient.FullName
+                </CardBody>
+            </SfCard>
+        }
     </div>
-
-</div>
-
+</div>         
 
 <div class="col-lg-9 control-section">
     @if(valueSelected) {
-            <SfSchedule MinDate="@DateTime.Now" TValue="AppointmentDto" Width="100%" Height="650px"   ShowQuickInfo=false @bind-SelectedDate="@CurrentDate" @bind-CurrentView="@CurrentView" StartHour="09:00" EndHour="18:00" ShowWeekend=false>
-                <ScheduleEvents  TValue="AppointmentDto" OnActionBegin="OnActionBegin" EventRendered="OnEventRendered">
-                   
-                </ScheduleEvents>
-        
-                <ScheduleTimeScale Enable="@GridLine" Interval="@IntervalValue" SlotCount="@SlotValue"></ScheduleTimeScale>
+            <SfSchedule MinDate="@MinDate" TValue="AppointmentDto" Width="100%" Height="650px" ShowQuickInfo="false" @bind-SelectedDate="@CurrentDate" @bind-CurrentView="@CurrentView" StartHour="09:00" EndHour="18:00" ShowWeekend="false">
+                <ScheduleEvents TValue="AppointmentDto" OnActionBegin="OnActionBegin" EventRendered="OnEventRendered" />
 
-                <ScheduleEventSettings  DataSource="@AppointmentLists">
-                    <Template>
-                        <div>@((context as AppointmentDto).Status)</div>
-                    </Template>
-                </ScheduleEventSettings>
+                <ScheduleTimeScale Enable="@GridLine" Interval="@IntervalValue" SlotCount=1></ScheduleTimeScale>
+
+                <ScheduleEventSettings DataSource="@AppointmentLists" />                  
 
         <ScheduleTemplates Context="Schedule">
             
@@ -94,9 +103,9 @@
                     <div>Randevu Güncelle</div>
                 }
             </EditorHeaderTemplate>
-            <EditorTemplate>              
-                <EditForm EditContext="AppointmentContext">
-                    <DataAnnotationsValidator ></DataAnnotationsValidator>
+            <EditorTemplate>
+                        <EditForm EditContext="@AppointmentContext">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
                             <table class="custom-event-editor" width="100%" cellpadding="5">
 
                                 <tbody>
@@ -129,6 +138,10 @@
                                         </td>
                                     </tr>
                                     <tr>
+                                    @{
+                                        AppointmentCreateDto.StartTime = (Schedule as AppointmentDto).StartTime;
+                                        AppointmentCreateDto.EndTime = (Schedule as AppointmentDto).EndTime;
+                                    }
                                         <td class="e-textlabel">Başlangıç Saati</td>
                                         <td colspan="4">
                                             <SfDateTimePicker @bind-Value="@AppointmentCreateDto.StartTime" Step="15"></SfDateTimePicker>
@@ -148,20 +161,23 @@
                                     </tr>
                                 </tbody>
                             </table>
-                </EditForm>
-                
+                        </EditForm>
             </EditorTemplate>
-        </ScheduleTemplates>
-        <ScheduleViews>
+        </ScheduleTemplates> 
+         <ScheduleViews>
             <ScheduleView Option="View.Day"></ScheduleView>
              <ScheduleView Option="View.Week"></ScheduleView>
             <ScheduleView Option="View.Month"></ScheduleView>
             <ScheduleView Option="View.Agenda"></ScheduleView>
         </ScheduleViews>
-    </SfSchedule>
+    </SfSchedule> 
     }
 </div>
 </div>
+
+@* ************************* CREATE MODAL ************************* *@
+<PatientCreateDialog @ref="@CreatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
+                     PatientCreatedAsync="CreatePatientAsync" />
 
 <style>
    

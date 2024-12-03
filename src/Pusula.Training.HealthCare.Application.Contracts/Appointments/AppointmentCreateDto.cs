@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pusula.Training.HealthCare.DataAnnotations;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Pusula.Training.HealthCare.Appointments
@@ -14,12 +15,19 @@ namespace Pusula.Training.HealthCare.Appointments
         [StringLength(AppointmentConsts.NoteMaxLength, MinimumLength =3)]
         public string Notes { get; set; } = null!;
         [Required]
+        [NotEmptyGuid]
         public Guid AppointmentTypeId { get; set; }
         [Required]
+        [NotEmptyGuid]
+
         public Guid DepartmentId { get; set; }
         [Required]
+        [NotEmptyGuid]
+
         public Guid DoctorId { get; set; }
         [Required]
+        [NotEmptyGuid]
+
         public Guid PatientId { get; set; }
     }
 }

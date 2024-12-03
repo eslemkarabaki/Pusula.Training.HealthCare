@@ -20,15 +20,7 @@ namespace Pusula.Training.HealthCare.Appointments
             Guid doctorId, Guid patientId, 
             DateTime startTime, DateTime endTime,
             EnumStatus status, string? note = null)
-        {
-            Check.NotNullOrWhiteSpace(appointmentTypeId.ToString(), nameof(appointmentTypeId));
-            Check.NotNullOrWhiteSpace(departmentId.ToString(), nameof(departmentId));
-            Check.NotNullOrWhiteSpace(doctorId.ToString(), nameof(doctorId));
-            Check.NotNullOrWhiteSpace(patientId.ToString(), nameof(patientId));
-            Check.NotNull(startTime, nameof(startTime));
-            Check.NotNull(endTime, nameof(endTime));
-            Check.Range((int)status, nameof(status), 1, 5);
-            Check.Length(note, nameof(note), AppointmentConsts.NoteMaxLength);
+        {           
 
             var appointment = new Appointment(
                 GuidGenerator.Create(),

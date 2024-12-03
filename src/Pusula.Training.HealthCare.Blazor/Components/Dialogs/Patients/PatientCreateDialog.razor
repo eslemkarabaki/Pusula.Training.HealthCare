@@ -355,7 +355,7 @@
 
     [Parameter] public IEnumerable<CountryDto> CountryList { get; set; } = [];
     [Parameter] public IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
-    [Parameter] public EventCallback<PatientCreateDto> PatientCreatedAsync { get; set; }
+    [Parameter] public EventCallback<PatientDto> PatientCreatedAsync { get; set; }
 
     private SfDialog Dialog { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> PatientCountryListAutoComplete { get; set; } = null!;
@@ -497,8 +497,8 @@
         try
         {
             ObjectMapper.Map(Addresses, NewPatient.Addresses);
-            await PatientAppService.CreateAsync(NewPatient);
-            await PatientCreatedAsync.InvokeAsync();
+            var patient = await PatientAppService.CreateAsync(NewPatient);
+            await PatientCreatedAsync.InvokeAsync(patient);
             await HideAsync();
         }
         catch (Exception ex)
