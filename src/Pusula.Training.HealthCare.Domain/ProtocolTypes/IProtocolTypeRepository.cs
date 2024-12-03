@@ -7,8 +7,8 @@ using Volo.Abp.Domain.Repositories;
 
 namespace Pusula.Training.HealthCare.ProtocolTypes
 {
-    public interface IProtocolTypeRepository : IRepository<ProtocolType, Guid>
-    {
+public interface IProtocolTypeRepository : IRepository<ProtocolType, Guid>
+{
         Task<ProtocolType> FindByNameAsync(string name);
         Task<List<ProtocolType>> GetAllAsync();
     }

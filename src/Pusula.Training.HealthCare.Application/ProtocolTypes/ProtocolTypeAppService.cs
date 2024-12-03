@@ -40,7 +40,7 @@ public class ProtocolTypeAppService : ApplicationService, IProtocolTypeAppServic
             totalCount,
             ObjectMapper.Map<List<ProtocolType>, List<ProtocolTypeDto>>(items)
         );
-    }
+}
 
     public async Task<ProtocolTypeDto> GetAsync(Guid id)
     {

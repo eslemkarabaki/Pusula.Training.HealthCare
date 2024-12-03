@@ -25,6 +25,20 @@ public class ProtocolManager(IProtocolRepository protocolRepository) : DomainSer
         return await protocolRepository.InsertAsync(protocol);
     }
 
+    public virtual async Task<Protocol> UpdateAsync(
+        Guid id,
+        string? description,
+        EnumProtocolStatus status,
+        string? concurrencyStamp = null
+    )
+    {
+        var protocol = await protocolRepository.GetAsync(id);
+        protocol.SetDescription(description);
+        protocol.SetStatus(status);
+        protocol.SetConcurrencyStampIfNotNull(concurrencyStamp);
+        return await protocolRepository.UpdateAsync(protocol);
+    }
+
     public virtual async Task<Protocol> UpdateDescriptionAsync(
         Guid id,
         string? description,

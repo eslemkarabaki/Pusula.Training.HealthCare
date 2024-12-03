@@ -6,8 +6,26 @@ public class HealthCareMenus
     public const string Home = Prefix + ".Home";
 
     //Add your menu items here...
-    public const string Patients = Prefix + ".Patients";
-    public const string ProtocolTypes = Prefix + ".ProtocolTypes";
+
+#region PatientRegistration
+
+    public const string PatientRegistration = Prefix + ".PatientRegistration";
+
+    // definition
+    public const string PatientRegistrationDefinitions = PatientRegistration + ".Definitions";
+    public const string ProtocolTypes = PatientRegistrationDefinitions + ".ProtocolTypes";
+    public const string Insurances = PatientRegistrationDefinitions + ".Insurances";
+
+    // management
+    public const string PatientRegistrationManagement = PatientRegistration + ".Management";
+    public const string Patients = PatientRegistrationManagement + ".Patients";
+
+    // reports
+    public const string PatientRegistrationReports = PatientRegistration + ".Reports";
+    public const string PatientProtocols = PatientRegistrationReports + ".PatientProtocols";
+
+#endregion
+
     public const string Departments = Prefix + ".Departments";
     public const string Locations = Prefix + ".Locations";
     public const string Countries = Locations + ".Countries";
@@ -16,5 +34,7 @@ public class HealthCareMenus
     public const string Hospitals = Prefix + ".Hospitals";
     public const string Examinations = Prefix + ".Examinations";
     public const string Appointments = Prefix + ".Appointments";
+    public const string Transactions = Appointments + ".Transactions";
+    public const string AppointmentTypes = Appointments + ".AppointmentTypes";
 
 }

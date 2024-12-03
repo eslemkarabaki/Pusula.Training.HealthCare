@@ -13,9 +13,8 @@ public class Doctor : FullAuditedAggregateRoot<Guid>
     [NotNull] public virtual string FirstName { get; set; }
 
     [NotNull] public virtual string LastName { get; set; }
-
+    public virtual string FullName { get; init; }
     [NotNull] public virtual string WorkingHours { get; set; }
-
 
     public virtual Guid TitleId { get; set; }
     public virtual Guid DepartmentId { get; set; }
@@ -26,10 +25,18 @@ public class Doctor : FullAuditedAggregateRoot<Guid>
         FirstName = string.Empty;
         LastName = string.Empty;
         WorkingHours = string.Empty;
+        FullName=string.Empty;
     }
 
-    public Doctor(Guid id, string firstName, string lastName, string workingHours, Guid titleId, Guid departmentId,
-                  Guid hospitalId)
+    public Doctor(
+        Guid id,
+        string firstName,
+        string lastName,
+        string workingHours,
+        Guid titleId,
+        Guid departmentId,
+        Guid hospitalId
+    )
     {
         Id = id;
         Check.NotNull(firstName, nameof(firstName));
@@ -41,6 +48,7 @@ public class Doctor : FullAuditedAggregateRoot<Guid>
 
         FirstName = firstName;
         LastName = lastName;
+        FullName = $"{FirstName} {LastName}";
         WorkingHours = workingHours;
         TitleId = titleId;
         DepartmentId = departmentId;

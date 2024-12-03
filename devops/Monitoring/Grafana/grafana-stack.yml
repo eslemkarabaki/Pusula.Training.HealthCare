@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    user: root
+    volumes:
+      - grafanadata:/var/lib/grafana
+    networks:
+      - frontend
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure 
+      placement:
+        constraints: [node.hostname == team3-node1]
+
+networks:
+  frontend:
+    external: true
+
+volumes:
+  grafanadata:

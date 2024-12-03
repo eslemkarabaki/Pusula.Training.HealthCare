@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using MiniExcelLibs;
-using Pusula.Training.HealthCare.Departments;
+using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -38,36 +36,31 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
                 Items = ObjectMapper.Map<List<AppointmentType>, List<AppointmentTypeDto>>(items)
             };
         }
-        #endregion
 
-        #region Get 
-        public virtual async Task<AppointmentTypeDto> GetAsync(Guid id)
-        {
-            return ObjectMapper.Map<AppointmentType, AppointmentTypeDto>(await appointmentTypeRepository.GetAsync(id));
-        }
-        #endregion
-
-        public virtual async Task<List<AppointmentTypeDto>> GetListAppointmentTypesAsync()
+        public async Task<List<AppointmentTypeDto>> GetListAsync()
         {
             return ObjectMapper.Map<List<AppointmentType>, List<AppointmentTypeDto>>(await appointmentTypeRepository.GetListAsync());
         }
+        #endregion
 
+        #region Get 
+        public virtual async Task<AppointmentTypeDto> GetAsync(Guid id) => ObjectMapper.Map<AppointmentType, AppointmentTypeDto>(await appointmentTypeRepository.GetAsync(id));
+        
+        #endregion
+
+        public virtual async Task<List<AppointmentTypeDto>> GetListAppointmentTypesAsync() => ObjectMapper.Map<List<AppointmentType>, List<AppointmentTypeDto>>(await appointmentTypeRepository.GetListAsync());
+      
         #region Delete
         [Authorize(HealthCarePermissions.AppointmentTypes.Delete)]
-        public virtual async Task DeleteAsync(Guid id)
-        {
-            await appointmentTypeRepository.DeleteAsync(id);
-        }
+        public virtual async Task DeleteAsync(Guid id) =>  await appointmentTypeRepository.DeleteAsync(id);
+        
         #endregion
 
         #region Create
         [Authorize(HealthCarePermissions.AppointmentTypes.Create)]
         public virtual async Task<AppointmentTypeDto> CreateAsync(AppointmentTypeCreateDto input)
         {
-
-            var appointmentType = await appointmentTypeManager.CreateAsync(
-            input.Name
-            );
+            var appointmentType = await appointmentTypeManager.CreateAsync(input.Name);
 
             return ObjectMapper.Map<AppointmentType, AppointmentTypeDto>(appointmentType);
         }
@@ -78,10 +71,7 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
         public virtual async Task<AppointmentTypeDto> UpdateAsync(Guid id, AppointmentTypeUpdateDto input)
         {
             var appointmentType = await appointmentTypeRepository.GetAsync(id);
-            await appointmentTypeManager.UpdateAsync(
-            id,
-            input.Name
-            );
+            await appointmentTypeManager.UpdateAsync(id, input.Name);
 
             return ObjectMapper.Map<AppointmentType, AppointmentTypeDto>(appointmentType);
         }
@@ -109,18 +99,12 @@ namespace Pusula.Training.HealthCare.AppointmentTypes
 
         #region DeleteById
         [Authorize(HealthCarePermissions.AppointmentTypes.Delete)]
-        public virtual async Task DeleteByIdsAsync(List<Guid> appointmentTypeIds)
-        {
-            await appointmentTypeRepository.DeleteManyAsync(appointmentTypeIds);
-        }
+        public virtual async Task DeleteByIdsAsync(List<Guid> appointmentTypeIds) => await appointmentTypeRepository.DeleteManyAsync(appointmentTypeIds);
         #endregion
 
         #region DeleteAll
         [Authorize(HealthCarePermissions.AppointmentTypes.Delete)]
-        public virtual async Task DeleteAllAsync(GetAppointmentTypesInput input)
-        {
-            await appointmentTypeRepository.DeleteAllAsync(input.FilterText, input.Name);
-        }
+        public virtual async Task DeleteAllAsync(GetAppointmentTypesInput input) =>  await appointmentTypeRepository.DeleteAllAsync(input.FilterText, input.Name);
         #endregion
 
         #region GetDownloadToken

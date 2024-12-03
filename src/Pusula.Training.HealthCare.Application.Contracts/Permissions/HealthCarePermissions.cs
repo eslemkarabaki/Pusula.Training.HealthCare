@@ -14,6 +14,8 @@ public static class HealthCarePermissions
     //Add your own permission names. Example:
     //public const string MyPermission1 = GroupName + ".MyPermission1";
 
+#region PatientRegistration
+
     public static class Patients
     {
         public const string Default = GroupName + ".Patients";
@@ -21,7 +23,23 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
-    
+
+    public static class Protocols
+    {
+        public const string Default = GroupName + ".Protocols";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class PatientProtocols
+    {
+        public const string Default = GroupName + ".PatientProtocols";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
     public static class PatientTypes
     {
         public const string Default = GroupName + ".PatientTypes";
@@ -61,13 +79,23 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-    public static class Protocols
+    public static class ProtocolTypes
     {
-        public const string Default = GroupName + ".Protocols";
+        public const string Default = GroupName + ".ProtocolTypes";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class Insurances
+    {
+        public const string Default = GroupName + ".Insurances";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+#endregion
 
     public static class Departments
     {
@@ -116,6 +144,7 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
     public static class Titles
     {
         public const string Default = GroupName + ".Titles";
@@ -123,6 +152,7 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
     public static class Examinations
     {
         public const string Default = GroupName + ".Examinations";
@@ -130,4 +160,78 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class Tests
+    {
+        public const string Default = GroupName + ".Tests";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class TestTypes
+    {
+        public const string Default = GroupName + ".TestTypes";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class TestGroups
+    {
+        public const string Default = GroupName + ".TestGroups";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+    public static class TestProcesses
+    {
+        public const string Default = GroupName + ".TestProcesses";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+    public static class WorkLists
+    {
+        public const string Default = GroupName + ".WorkLists";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+    #region Radiology
+    public static class RadiologyExaminationGroups
+    {
+        public const string Default = GroupName + ".RadiologyExaminationGroups";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminations
+    {
+        public const string Default = GroupName + ".RadiologyExaminations";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminationProcedures
+    {
+        public const string Default = GroupName + ".RadiologyExaminationProcedures";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyExaminationDocuments
+    {
+        public const string Default = GroupName + ".RadiologyExaminationDocuments";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    #endregion
 }
+

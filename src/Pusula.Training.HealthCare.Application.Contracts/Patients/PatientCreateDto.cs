@@ -26,5 +26,5 @@ public class PatientCreateDto
     public Guid CountryId { get; set; }
     public Guid PatientTypeId { get; set; }
 
-    public List<AddressCreateDto> Addresses { get; set; } = [];
+    public ICollection<AddressCreateDto> Addresses { get; set; } = [];
 }

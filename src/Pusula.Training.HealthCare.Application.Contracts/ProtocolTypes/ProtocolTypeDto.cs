@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
-namespace Pusula.Training.HealthCare.ProtocolTypes
+namespace Pusula.Training.HealthCare.ProtocolTypes;
+
+public class ProtocolTypeDto : AuditedEntityDto<Guid>
 {
-    public class ProtocolTypeDto
-    {
-        public Guid Id { get;  set; }
-        public virtual string? Name { get;  set; }
-    }
+    public string Name { get; set; } = null!;
 }

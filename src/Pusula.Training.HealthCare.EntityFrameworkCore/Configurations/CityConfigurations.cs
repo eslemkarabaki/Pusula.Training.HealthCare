@@ -14,10 +14,17 @@ public class CityConfigurations : IEntityTypeConfiguration<City>
         b.ConfigureByConvention();
         b.HasIndex(e => e.CountryId);
 
-        b.Property(e => e.Name).HasColumnName(nameof(City.Name)).IsRequired()
-         .HasMaxLength(CityConsts.NameMaxLength);
+        b
+            .Property(e => e.Name)
+            .HasColumnName(nameof(City.Name))
+            .IsRequired()
+            .HasMaxLength(CityConsts.NameMaxLength);
 
-        b.HasOne<Country>().WithMany().IsRequired().HasForeignKey(e => e.CountryId)
-         .OnDelete(DeleteBehavior.NoAction);
+        b
+            .HasOne(e => e.Country)
+            .WithMany()
+            .IsRequired(false)
+            .HasForeignKey(e => e.CountryId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

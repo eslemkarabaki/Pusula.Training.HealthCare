@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.HospitalDepartments;
 using Pusula.Training.HealthCare.Hospitals;
-using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Shared;
@@ -17,12 +15,19 @@ using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Examinations;
-using Pusula.Training.HealthCare.Examinations;
-using Pusula.Training.HealthCare.AppointmentTypes;
-using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.Tests;
+using Pusula.Training.HealthCare.TestTypes;
+using Pusula.Training.HealthCare.TestGroups;
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminations;
+using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using Pusula.Training.HealthCare.Extensions;
 using Pusula.Training.HealthCare.PatientTypes;
 using System.Net.Sockets;
 using Pusula.Training.HealthCare.ProtocolTypes;
+using Pusula.Training.HealthCare.ProtocolTypes;
+using Pusula.Training.HealthCare.Insurances;
 
 namespace Pusula.Training.HealthCare;
 
@@ -30,25 +35,26 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 {
     public HealthCareApplicationAutoMapperProfile()
     {
-        CreateMap<Patient, PatientDto>();
+        CreateMap<Patient, PatientDto>()
+            .ForMember(e => e.IdentityNumber, o => o.MapFrom(p => p.IdentityNumber.Censor('*', 3)))
+            .ForMember(e => e.PassportNumber, o => o.MapFrom(p => p.PassportNumber.Censor('*', 3)));
         CreateMap<Patient, PatientUpdateDto>();
         CreateMap<PatientDto, PatientUpdateDto>();
         CreateMap<PatientWithNavigationProperties, PatientUpdateDto>()
             .IncludeMembers(e => e.Patient)
-            .ForMember(e => e.Addresses, opt => opt.MapFrom(e => e.Addresses))
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<PatientWithNavigationPropertiesDto, PatientUpdateDto>()
             .IncludeMembers(e => e.Patient)
-            .ForMember(e => e.Addresses, opt => opt.MapFrom(e => e.Addresses))
             .ForAllMembers(opt => opt.Ignore());
         CreateMap<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>();
 
-        CreateMap<Patient, PatientExcelDto>();
+        CreateMap<Patient, PatientExcelDto>()
+            .ForMember(e => e.IdentityNumber, o => o.MapFrom(p => p.IdentityNumber.Censor('*', 3)))
+            .ForMember(e => e.PassportNumber, o => o.MapFrom(p => p.PassportNumber.Censor('*', 3)));
         CreateMap<PatientWithNavigationProperties, PatientExcelDto>()
             .IncludeMembers(e => e.Patient)
             .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country.Name))
-            .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType.Name))
-            .ForAllMembers(opt => opt.Ignore());
+            .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType.Name));
 
         CreateMap<PatientType, PatientTypeDto>();
         CreateMap<ProtocolTypes.ProtocolType, ProtocolTypeDto>();
@@ -63,29 +69,22 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Address, AddressUpdateDto>().ReverseMap();
         CreateMap<AddressDto, AddressUpdateDto>().ReverseMap();
         CreateMap<AddressDto, AddressCreateDto>().ReverseMap();
-        CreateMap<AddressWithNavigationProperties, AddressWithNavigationPropertiesDto>();
-        CreateMap<AddressWithNavigationPropertiesDto, AddressUpdateDto>()
-            .IncludeMembers(e => e.Address)
-            .ForAllMembers(opt => opt.Ignore());
-        CreateMap<AddressWithNavigationProperties, AddressUpdateDto>()
-            .IncludeMembers(e => e.Address)
-            .ForAllMembers(opt => opt.Ignore());
 
-        CreateMap<Country, CountryDto>();
+        CreateMap<Country, CountryDto>().ReverseMap();
         CreateMap<CountryDto, CountryUpdateDto>();
 
-        CreateMap<City, CityDto>();
-        CreateMap<CityWithCountry, CityDto>();
+        CreateMap<City, CityDto>().ReverseMap();
         CreateMap<CityDto, CityUpdateDto>();
 
-        CreateMap<District, DistrictDto>();
-        CreateMap<DistrictWithCity, DistrictDto>();
+        CreateMap<District, DistrictDto>().ReverseMap();
         CreateMap<DistrictDto, DistrictUpdateDto>();
 
         CreateMap<Protocol, ProtocolDto>();
         CreateMap<Protocol, ProtocolExcelDto>();
         CreateMap<ProtocolDto, ProtocolUpdateDto>();
         CreateMap<ProtocolWithNavigationProperties, ProtocolWithNavigationPropertiesDto>();
+
+        CreateMap<ProtocolType, ProtocolTypeDto>();
 
         CreateMap<Department, DepartmentDto>();
         CreateMap<Department, DepartmentExcelDto>();
@@ -105,7 +104,10 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AppointmentReportWithNavigationProperties, AppointmentReportWithNavigationPropertiesDto>();
 
         CreateMap<AppointmentType, AppointmentTypeDto>();
-        CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();       
+        CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();
+
+        CreateMap<Insurance, InsuranceDto>();
+        CreateMap<InsuranceDto, InsuranceUpdateDto>();
 
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
@@ -114,6 +116,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Hospital, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
         CreateMap<Examination, ExaminationDto>();
         CreateMap<Examination, ExaminationExcelDto>();
+        CreateMap<ExaminationDto, ExaminationUpdateDto>();
 
         CreateMap<Doctor, DoctorDto>();
         CreateMap<Doctor, DoctorExcelDto>();
@@ -126,13 +129,45 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<TitleDto, TitleUpdateDto>();
         CreateMap<Title, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
+        CreateMap<Test, TestDto>();
+        CreateMap<Test, TestExcelDto>();
+        CreateMap<TestDto, TestUpdateDto>();
+        CreateMap<Test, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<TestType, TestTypeDto>();
+        CreateMap<TestType, TestTypeExcelDto>();
+        CreateMap<TestTypeDto, TestTypeUpdateDto>();
+        CreateMap<TestType, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        
+        CreateMap<TestGroup, TestGroupDto>();
+        CreateMap<TestGroup, TestGroupExcelDto>();
+        CreateMap<TestGroupDto, TestGroupUpdateDto>();
+        CreateMap<TestGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
+        #region Radiology
 
+        CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
+        CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupExcelDto>();
+        CreateMap<RadiologyExaminationGroupDto, RadiologyExaminationGroupUpdateDto>();
+        CreateMap<RadiologyExaminationGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
-        //Burası önemli
+        CreateMap<RadiologyExamination, RadiologyExaminationDto>();
+        CreateMap<RadiologyExamination, RadiologyExaminationExcelDto>();
+        CreateMap<RadiologyExaminationDto, RadiologyExaminationUpdateDto>();
+        CreateMap<RadiologyExamination, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
+        CreateMap<RadiologyExaminationProcedure, RadiologyExaminationProcedureDto>();
+        CreateMap<RadiologyExaminationProcedure, RadiologyExaminationProcedureExcelDto>();
+        CreateMap<RadiologyExaminationProcedureDto, RadiologyExaminationProcedureUpdateDto>();
+        CreateMap<RadiologyExaminationProcedure, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Result));
 
+        CreateMap<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>(); 
+        CreateMap<RadiologyExaminationDocumentDto, RadiologyExaminationDocumentUpdateDto>();
+        CreateMap<RadiologyExaminationDocument, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DocumentName));
+
+        #endregion 
     }
 }

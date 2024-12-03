@@ -22,12 +22,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />
-        <PackageReference Include="Syncfusion.Blazor" Version="27.2.4" />
-		<PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.0" />
+        <PackageReference Include="Syncfusion.Blazor" Version="27.2.3" />
     </ItemGroup>
 
     <ItemGroup>
@@ -71,8 +69,10 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Components\Dialogs\ProtocolTypes\" />
-    </ItemGroup>
+  <ItemGroup>
+    <Content Update="Components\Pages\Tests.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
 
 </Project>

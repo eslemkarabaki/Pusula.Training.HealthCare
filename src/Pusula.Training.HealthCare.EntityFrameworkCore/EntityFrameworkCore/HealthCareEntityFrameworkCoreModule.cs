@@ -28,6 +28,15 @@ using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.AppointmentReports;
+using Pusula.Training.HealthCare.RadiologyExaminationGroups;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using Pusula.Training.HealthCare.RadiologyExaminations;
+using Pusula.Training.HealthCare.ProtocolTypes;
+using Pusula.Training.HealthCare.TestGroups;
+using Pusula.Training.HealthCare.TestProcesses;
+using Pusula.Training.HealthCare.Tests;
+using Pusula.Training.HealthCare.TestTypes;
+using Pusula.Training.HealthCare.WorkLists;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -47,7 +56,6 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        // https://www.npgsql.org/efcore/release-notes/6.0.html#opting-out-of-the-new-timestamp-mapping-logic
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         HealthCareEfCoreEntityExtensionMappings.Configure();
@@ -68,8 +76,6 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<Appointment, EfCoreAppointmentRepository>();
                 options.AddRepository<Hospital, EfCoreHospitalRepository>();
                 options.AddRepository<Notification, EfCoreNotificationRepository>();
-                options.AddRepository<Hospital, EfCoreHospitalRepository>();
-                options.AddRepository<Notification, EfCoreNotificationRepository>();
                 options.AddRepository<Country, EfCoreCountryRepository>();
                 options.AddRepository<City, EfCoreCityRepository>();
                 options.AddRepository<District, EfCoreDistrictRepository>();
@@ -81,10 +87,24 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<AppDefault, EfCoreAppDefaultRepository>();
                 options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
                 options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
-
+                options.AddRepository<ProtocolType, EfCoreProtocolTypeRepository>();
+                options.AddRepository<Test, EfCoreTestRepository>();
+                options.AddRepository<TestType, EfCoreTestTypeRepository>();
+                options.AddRepository<TestGroup, EfCoreTestGroupRepository>();
+                options.AddRepository<TestProcess, EfCoreTestProcessRepository>();
+                options.AddRepository<WorkList, EfCoreWorkListRepository>();
+                options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+                options.AddRepository<RadiologyExamination, EfCoreRadiologyExaminationRepository>();
+                options.AddRepository<RadiologyExaminationProcedure, EfCoreRadiologyExaminationProcedureRepository>();
+                options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
             }
         );
 
+        Configure<AbpDbContextOptions>(options =>
+        {
+
+            options.UseNpgsql();
+        });
         Configure<AbpDbContextOptions>(
             options =>
             {

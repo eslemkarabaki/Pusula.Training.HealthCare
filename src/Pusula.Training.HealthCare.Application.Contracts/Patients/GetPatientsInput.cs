@@ -9,8 +9,7 @@ public class GetPatientsInput : PagedAndSortedResultRequestDto
 {
     public string? FilterText { get; set; }
     public int? No { get; set; }
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
+    public string? FullName { get; set; }
     public DateTime? BirthDateMin { get; set; }
     public DateTime? BirthDateMax { get; set; }
     public string? IdentityNumber { get; set; }
@@ -35,8 +34,7 @@ public class GetPatientsInput : PagedAndSortedResultRequestDto
 
         parameters.Append($"&FilterText={HttpUtility.UrlEncode(FilterText)}");
         parameters.Append($"&No={No}");
-        parameters.Append($"&FirstName={HttpUtility.UrlEncode(FirstName)}");
-        parameters.Append($"&LastName={HttpUtility.UrlEncode(LastName)}");
+        parameters.Append($"&FullName={HttpUtility.UrlEncode(FullName)}");
         parameters.Append($"&BirthDateMin={BirthDateMin?.ToString("O")}");
         parameters.Append($"&BirthDateMax={BirthDateMax?.ToString("O")}");
         parameters.Append($"&IdentityNumber={HttpUtility.UrlEncode(IdentityNumber)}");
@@ -55,8 +53,7 @@ public class GetPatientsInput : PagedAndSortedResultRequestDto
     public bool AreAllPropertiesEmpty() =>
         !No.HasValue &&
         string.IsNullOrEmpty(FilterText) &&
-        string.IsNullOrEmpty(FirstName) &&
-        string.IsNullOrEmpty(LastName) &&
+        string.IsNullOrEmpty(FullName) &&
         !BirthDateMin.HasValue &&
         !BirthDateMax.HasValue &&
         string.IsNullOrEmpty(IdentityNumber) &&

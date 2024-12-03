@@ -9,9 +9,7 @@ using Volo.Abp.EntityFrameworkCore;
 using Pusula.Training.HealthCare.EntityFrameworkCore;
 using System;
 using Pusula.Training.HealthCare.Departments;
-using System.Numerics;
 using Pusula.Training.HealthCare.Patients;
-using System.Reflection;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.AppointmentTypes;
 
@@ -105,7 +103,6 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         Guid? doctorId = null, Guid? patientId = null)
     {
         return query
-               //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Appointment.AppointmentDate!.Contains(filterText!) || e.Appointment.Status!.Contains(filterText!))
                 .WhereIf(startTime.HasValue, e => e.Appointment.StartTime >= startTime!.Value)
                 .WhereIf(endTime.HasValue, e => e.Appointment.EndTime >= endTime!.Value)
                 .WhereIf(!string.IsNullOrWhiteSpace(note), e => e.Appointment.Note!.Contains(note!))
@@ -155,7 +152,6 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     EnumStatus? status = null, string? note = null)
 {
     return query
-        //.WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.DoctorId.ToString().Contains(filterText!))
         .WhereIf(doctorId.HasValue, e=>e.DoctorId==doctorId!.Value)
         .WhereIf(status.HasValue, e => e.Status == status!.Value)
         .WhereIf(startTime.HasValue, e => e.StartTime >= startTime!.Value)

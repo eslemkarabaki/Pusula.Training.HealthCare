@@ -22,6 +22,7 @@ namespace Pusula.Training.HealthCare.Doctors
             string? filterText = null,
             string? firstName = null,
             string? lastName = null,
+            string? fullname = null,
             string? workingHours = null,
             Guid? titleId = null,
             Guid? departmentId = null,
@@ -31,7 +32,7 @@ namespace Pusula.Training.HealthCare.Doctors
             var query = await GetQueryableAsync();
 
             // Apply filters to the query
-            query = ApplyFilter(query, filterText, firstName, lastName, workingHours, titleId, departmentId, hospitalId);
+            query = ApplyFilter(query, filterText, firstName, lastName,fullname, workingHours, titleId, departmentId, hospitalId);
 
             // Select doctor IDs to delete
             var ids = query.Select(x => x.Id);
@@ -44,6 +45,7 @@ namespace Pusula.Training.HealthCare.Doctors
             string? filterText = null,
             string? firstName = null,
             string? lastName = null,
+            string? fullname = null,
             string? workingHours = null,
             Guid? titleId = null,
             Guid? departmentId = null,
@@ -53,7 +55,7 @@ namespace Pusula.Training.HealthCare.Doctors
             int skipCount = 0,
             CancellationToken cancellationToken = default)
         {
-            var query = ApplyFilter((await GetQueryableAsync()), filterText, firstName, lastName, workingHours, titleId, departmentId, hospitalId);
+            var query = ApplyFilter((await GetQueryableAsync()), filterText, firstName, lastName,fullname, workingHours, titleId, departmentId, hospitalId);
 
             // Apply sorting if provided
             query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? DoctorConsts.GetDefaultSorting(false) : sorting);
@@ -66,13 +68,14 @@ namespace Pusula.Training.HealthCare.Doctors
             string? filterText = null,
             string? firstName = null,
             string? lastName = null,
+            string? fullname = null,
             string? workingHours = null,
             Guid? titleId = null,
             Guid? departmentId = null,
             Guid? hospitalId = null,
             CancellationToken cancellationToken = default)
         {
-            var query = ApplyFilter((await GetQueryableAsync()), filterText, firstName, lastName, workingHours, titleId, departmentId, hospitalId);
+            var query = ApplyFilter((await GetQueryableAsync()), filterText, firstName, lastName,fullname, workingHours, titleId, departmentId, hospitalId);
             return await query.LongCountAsync(GetCancellationToken(cancellationToken));
         }
 
@@ -82,6 +85,7 @@ namespace Pusula.Training.HealthCare.Doctors
             string? filterText = null,
             string? firstName = null,
             string? lastName = null,
+            string? fullname = null,
             string? workingHours = null,
             Guid? titleId = null,
             Guid? departmentId = null,
@@ -91,6 +95,7 @@ namespace Pusula.Training.HealthCare.Doctors
                 .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.FirstName.Contains(filterText!) || e.LastName.Contains(filterText!) || e.TitleId.ToString().Contains(filterText!) || e.DepartmentId.ToString().Contains(filterText!) || e.HospitalId.ToString().Contains(filterText!))
                 .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.FirstName.Contains(firstName!))
                 .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.LastName.Contains(lastName!))
+                .WhereIf(!fullname.IsNullOrWhiteSpace(),e=>e.FullName.Contains(fullname!))
                 .WhereIf(!string.IsNullOrWhiteSpace(workingHours), e => e.WorkingHours.Contains(workingHours!))
                 .WhereIf(titleId.HasValue, e => e.TitleId == titleId.Value)
                 .WhereIf(departmentId.HasValue, e => e.DepartmentId == departmentId.Value)

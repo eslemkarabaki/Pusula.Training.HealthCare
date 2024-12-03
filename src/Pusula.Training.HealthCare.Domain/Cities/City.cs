@@ -1,4 +1,5 @@
 using System;
+using Pusula.Training.HealthCare.Countries;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -7,6 +8,7 @@ namespace Pusula.Training.HealthCare.Cities;
 public sealed class City : FullAuditedAggregateRoot<Guid>
 {
     public Guid CountryId { get; private set; }
+    public Country Country { get; set; }
     public string Name { get; private set; }
 
     protected City() => Name = string.Empty;

@@ -11,9 +11,9 @@
 @using Syncfusion.Blazor.Navigations
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Buttons
-@using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Notifications
+@using Blazorise.DeepCloner
 @using Blazored.FluentValidation
 
 @inherits HealthCareComponentBase
@@ -65,24 +65,18 @@
                                         </div>
 
                                         <div class="col-4">
-                                            <label
-                                                class="e-form-label">@(IsForeigner ? L["PassportNumber"] : L["IdentityNumber"])</label>
-                                            @if (IsForeigner)
+                                            @if (EditingPatient.IdentityNumber.IsNullOrWhiteSpace())
                                             {
-                                                <SfTextBox @bind-Value="@EditingPatient.PassportNumber"
-                                                           Placeholder="@L["PassportNumber"]"
-                                                           OnChange="@PassportNumberChangedAsync"
-                                                           OnInput="@(() => IdentityOrPassportNotChecked = true)"></SfTextBox>
+                                                <label
+                                                    class="e-form-label">@L["PassportNumber"]</label>
+                                                <SfTextBox @bind-Value="@EditingPatient.PassportNumber" Enabled="false"
+                                                           Placeholder="@L["PassportNumber"]"></SfTextBox>
                                             } else
                                             {
-                                                <SfTextBox @bind-Value="@EditingPatient.IdentityNumber"
-                                                           Placeholder="@L["IdentityNumber"]"
-                                                           OnChange="@IdentityNumberChangedAsync"
-                                                           OnInput="@(() => IdentityOrPassportNotChecked = true)"></SfTextBox>
-                                            }
-                                            @if (IdentityOrPassportExist)
-                                            {
-                                                <div class="validation-message">Already exist</div>
+                                                <label
+                                                    class="e-form-label">@L["IdentityNumber"]</label>
+                                                <SfTextBox @bind-Value="@EditingPatient.IdentityNumber" Enabled="false"
+                                                           Placeholder="@L["IdentityNumber"]"></SfTextBox>
                                             }
                                         </div>
                                         <div class="col-4">
@@ -304,7 +298,7 @@
                                                             </SfButton>
                                                         } else
                                                         {
-                                                            <SfButton type="submit"  CssClass="e-success">
+                                                            <SfButton type="submit" CssClass="e-success">
                                                                 Add
                                                             </SfButton>
                                                         }
@@ -315,16 +309,16 @@
                                             <div class="col-4">
                                                 <p class="mb-6p fs-12p fw-700 color-grey-500">@L["Addresses"]</p>
                                                 <div class="d-flex flex-column gap-1">
-                                                    @foreach (var address in Addresses)
+                                                    @foreach (var address in EditingPatient.Addresses)
                                                     {
-                                                        <SfCard ID="@address.Address.Id.ToString("N")"
-                                                                CssClass="@(EditingAddressId == address.Address.Id ? "selected" : string.Empty)"
+                                                        <SfCard ID="@address.Id.ToString("N")"
+                                                                CssClass="@(EditingAddressId == address.Id ? "selected" : string.Empty)"
                                                                 @onclick="@(() => EditAddressAsync(address))">
                                                             <CardContent>
                                                                 <div class="d-flex align-items-start">
                                                                     <div class="flex-fill">
-                                                                        <h6 class="m-0">@address.Address.AddressTitle</h6>
-                                                                        <p class="m-0">@address.Address.AddressLine @address.District.Name @(address.City.Name)/@(address.Country.Name)</p>
+                                                                        <h6 class="m-0">@address.AddressTitle</h6>
+                                                                        <p class="m-0">@address.AddressLine @address.District.Name @(address.District.City.Name)/@(address.District.City.Country.Name)</p>
                                                                     </div>
                                                                     <SfButton type="button"
                                                                               IconCss="e-icons far fa-trash-alt e-danger"
@@ -335,7 +329,7 @@
                                                         </SfCard>
                                                     }
                                                 </div>
-                                                @if (Addresses.Count == 0)
+                                                @if (EditingPatient.Addresses.Count == 0)
                                                 {
                                                     <SfMessage>There is no address added for this patient.
                                                     </SfMessage> // todo
@@ -352,8 +346,7 @@
                 <FormButtons>
                     <SfButton type="button" CssClass="e-outline"
                               OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
-                    <SfButton type="submit" IsPrimary
-                              Disabled="@(IdentityOrPassportNotChecked || IdentityOrPassportExist)">@L["Save"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
                 </FormButtons>
             </SfDataForm>
         </Content>
@@ -384,32 +377,12 @@
 
     private AddressUpdateDto EditingAddress { get; set; } = new();
     private Guid EditingAddressId { get; set; }
-    private List<AddressWithNavigationPropertiesDto> Addresses { get; set; } = [];
 
     private AddressUpdateDtoValidator EditingAddressValidator { get; set; } = null!;
 
     private CountryDto CurrentCountry { get; set; } = new();
 
     private bool AddressEditingMode { get; set; }
-    private bool IdentityOrPassportNotChecked { get; set; }
-    private bool IdentityOrPassportExist { get; set; }
-
-    private bool IsForeigner
-    {
-        get
-        {
-            var isForeigner = CurrentCountry.Id != EditingPatient.CountryId;
-            if (isForeigner)
-            {
-                EditingPatient.IdentityNumber = null;
-            } else
-            {
-                EditingPatient.PassportNumber = null;
-            }
-
-            return isForeigner;
-        }
-    }
 
     private IEnumerable<CityDto> CityList { get; set; } = [];
     private IEnumerable<DistrictDto> DistrictList { get; set; } = [];
@@ -427,12 +400,14 @@
         SfAutoComplete<Guid, TDto> autoComplete,
         IEnumerable<TDto> dataSource,
         FilteringEventArgs args
-    ) =>
+    )
+    {
+        args.PreventDefaultAction = true;
         await autoComplete.FilterAsync(dataSource, GetDefaultAutoCompleteQuery(args));
+    }
 
     private Query GetDefaultAutoCompleteQuery(FilteringEventArgs args)
     {
-        args.PreventDefaultAction = true;
         var query = new Query().Where(
             new WhereFilter
             {
@@ -444,52 +419,30 @@
         );
         return !string.IsNullOrEmpty(args.Text) ? query : new Query();
     }
-
+    
     private async Task AddAddressAsync(EditContext context)
     {
-        Addresses.Add(
-            new AddressWithNavigationPropertiesDto()
-            {
-                Address = new AddressDto()
-                {
-                    Id = Guid.NewGuid(),
-                    PatientId = EditingPatientId,
-                    AddressTitle = EditingAddress.AddressTitle,
-                    AddressLine = EditingAddress.AddressLine,
-                    DistrictId = EditingAddress.DistrictId
-                },
-                Country = CountryList.First(e => e.Id == SelectedAddressCountryId),
-                City = CityList.First(e => e.Id == SelectedAddressCityId),
-                District = DistrictList.First(e => e.Id == EditingAddress.DistrictId)
-            }
-        );
+        EditingPatient.Addresses.Add(EditingAddress);
         SetDefaultsForAddress();
         await Task.CompletedTask;
     }
 
-    private async Task EditAddressAsync(AddressWithNavigationPropertiesDto dto)
+    private async Task EditAddressAsync(AddressUpdateDto dto)
     {
-        if (EditingAddressId == dto.Address.Id) return;
+        if (EditingAddressId == dto.Id) return;
 
-        await AddressCountryIdChangedAsync(dto.Country.Id);
-        await AddressCityIdChangedAsync(dto.City.Id);
-        EditingAddressId = dto.Address.Id;
-        EditingAddress = new AddressUpdateDto()
-        {
-            Id = dto.Address.Id,
-            PatientId = dto.Address.PatientId,
-            DistrictId = dto.District.Id,
-            AddressTitle = dto.Address.AddressTitle,
-            AddressLine = dto.Address.AddressLine
-        };
+        await AddressCountryIdChangedAsync(dto.District.City.Country.Id);
+        await AddressCityIdChangedAsync(dto.District.City.Id);
+        EditingAddressId = dto.Id;
+        EditingAddress = dto.DeepClone();
         EditingAddressEditContext = new EditContext(EditingAddress);
         AddressEditingMode = true;
         await Task.CompletedTask;
     }
 
-    private async Task RemoveAddressAsync(AddressWithNavigationPropertiesDto dto)
+    private async Task RemoveAddressAsync(AddressUpdateDto dto)
     {
-        Addresses.Remove(dto);
+        EditingPatient.Addresses.Remove(dto);
         await Task.CompletedTask;
     }
 
@@ -503,61 +456,32 @@
 
     private async Task SaveAddressEditingAsync()
     {
-        var address = Addresses.Find(e => e.Address.Id == EditingAddressId);
-        address.Address.AddressLine = EditingAddress.AddressLine;
-        address.Address.AddressTitle = EditingAddress.AddressTitle;
-        address.Country = CountryList.First(e => e.Id == SelectedAddressCountryId);
-        address.City = CityList.First(e => e.Id == SelectedAddressCityId);
-        address.District = DistrictList.First(e => e.Id == EditingAddress.DistrictId);
+        var address = EditingPatient.Addresses.First(e => e.Id == EditingAddressId);
+        address.AddressLine= EditingAddress.AddressLine;
+        address.AddressTitle = EditingAddress.AddressTitle;
+        address.DistrictId = EditingAddress.DistrictId;
+        address.District = DistrictList.First(e=>e.Id == EditingAddress.DistrictId);
         await CancelAddressEditingAsync();
-    }
-
-    private async Task PassportNumberChangedAsync()
-    {
-        IdentityOrPassportExist = await PatientAppService.PassportNumberExistsAsync(EditingPatient.PassportNumber!, EditingPatientId);
-        IdentityOrPassportNotChecked = false;
-    }
-
-    private async Task IdentityNumberChangedAsync()
-    {
-        IdentityOrPassportExist = await PatientAppService.IdentityNumberExistsAsync(EditingPatient.IdentityNumber!, EditingPatientId);
-        IdentityOrPassportNotChecked = false;
     }
 
     private async Task OnSaveClickAsync(EditContext context)
     {
-        EditingPatient.Addresses = Addresses
-                                   .Select(
-                                       e => new AddressUpdateDto()
-                                       {
-                                           Id = e.Address.Id,
-                                           PatientId = e.Address.PatientId,
-                                           DistrictId = e.Address.DistrictId,
-                                           AddressTitle = e.Address.AddressTitle,
-                                           AddressLine = e.Address.AddressLine
-                                       }
-                                   )
-                                   .ToList();
         await OnValidSaveAsync.InvokeAsync(EditingPatient);
         await HideAsync();
     }
 
     public async Task ShowAsync(Guid patientId)
     {
-        IdentityOrPassportExist = false;
-        var patient = await PatientAppService.GetNavigationPropertiesAsync(patientId);
+        var patient = await PatientAppService.GetWithNavigationPropertiesAsync(patientId);
         ObjectMapper.Map(patient.Patient, EditingPatient);
-        ObjectMapper.Map(patient.Addresses, EditingPatient.Addresses);
         EditingPatientId = patientId;
         EditingPatientEditContext = new EditContext(EditingPatient);
-        Addresses = await PatientAppService.GetAddressNavigationPropertiesListAsync(patientId);
         SetDefaultsForAddress();
         await Dialog.ShowAsync();
     }
 
     public async Task HideAsync()
     {
-        Addresses = [];
         SetDefaultValuesForDialog();
         await Dialog.HideAsync();
     }
@@ -574,7 +498,7 @@
         SelectedAddressCountryId = countryId;
         SelectedAddressCityId = Guid.Empty;
         EditingAddress.DistrictId = Guid.Empty;
-        CityList = await CityAppService.GetListAsync(countryId);
+        CityList = await CityAppService.GetListWithDetailsAsync(countryId);
         DistrictList = [];
     }
 
@@ -582,7 +506,7 @@
     {
         SelectedAddressCityId = cityId;
         EditingAddress.DistrictId = Guid.Empty;
-        DistrictList = await DistrictAppService.GetListAsync(cityId);
+        DistrictList = await DistrictAppService.GetListWithDetailsAsync(cityId);
     }
 
     private void SetDefaultValuesForDialog()

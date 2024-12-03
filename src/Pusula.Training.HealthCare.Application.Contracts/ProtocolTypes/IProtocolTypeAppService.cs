@@ -8,8 +8,8 @@ using Volo.Abp.Application.Services;
 
 namespace Pusula.Training.HealthCare.ProtocolTypes
 {
-    public interface IProtocolTypeAppService : IApplicationService
-    {
+public interface IProtocolTypeAppService : IApplicationService
+{
         // Listeleme (sayfalama destekli)
         Task<PagedResultDto<ProtocolTypeDto>> GetListAsync(GetProtocolTypeInput input);
 
