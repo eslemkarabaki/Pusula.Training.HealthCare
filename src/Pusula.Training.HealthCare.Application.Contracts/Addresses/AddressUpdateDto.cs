@@ -8,7 +8,6 @@ namespace Pusula.Training.HealthCare.Addresses;
 public class AddressUpdateDto
 {
     public Guid Id { get; set; }
-    public Guid PatientId { get; set; }
 
     [Required] [NotEmptyGuid] public Guid DistrictId { get; set; }
     public DistrictDto District { get; set; } = new();
