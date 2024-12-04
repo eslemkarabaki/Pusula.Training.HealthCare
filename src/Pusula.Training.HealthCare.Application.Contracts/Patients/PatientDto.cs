@@ -32,7 +32,7 @@ public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IPat
     public Guid CountryId { get; set; }
     public Guid PatientTypeId { get; set; }
 
-    public IEnumerable<AddressDto> Addresses { get; set; }
+    public ICollection<AddressDto> Addresses { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;
 
