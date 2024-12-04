@@ -65,6 +65,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 requiredPermissionName: HealthCarePermissions.Hospitals.Default)
         );
 
+        #region Appoinments
         context.Menu.AddItem(
             new ApplicationMenuItem(
                 HealthCareMenus.Appointments,
@@ -74,20 +75,26 @@ public class HealthCareMenuContributor : IMenuContributor
         )
             .AddItem(new ApplicationMenuItem(
                 HealthCareMenus.AppointmentTypes,
-                                l["Appointment Definition"],
+                                l["Appointment Type"],
                                 "/appointment-type",
-                                "fa-solid fa-font", 
                                 requiredPermissionName: HealthCarePermissions.AppointmentTypes.Default)
             )
 
             .AddItem(new ApplicationMenuItem(
                 HealthCareMenus.Transactions,
-                l["Transactions"],
+                l["Appointment"],
                 "/appointments",
-                "fa-solid fa-pen-to-square", 
                 requiredPermissionName: HealthCarePermissions.Appointments.Default)
             )
+            .AddItem(new ApplicationMenuItem(
+                HealthCareMenus.Reports,
+                                l["Reports"],
+                                "/appointment-reports",
+                                requiredPermissionName: HealthCarePermissions.AppointmentReports.Default)
+            )
             );
+        #endregion
+
         return Task.CompletedTask;
     }
 

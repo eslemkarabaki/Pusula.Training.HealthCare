@@ -36,5 +36,6 @@ public class HealthCareMenus
     public const string Appointments = Prefix + ".Appointments";
     public const string Transactions = Appointments + ".Transactions";
     public const string AppointmentTypes = Appointments + ".AppointmentTypes";
+    public const string Reports = Appointments + ".Reports";
 
 }
