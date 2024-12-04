@@ -27,6 +27,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetProtocolTypesPermissions(myGroup);
         SetInsurancesPermissions(myGroup);
         SetExaminationsPermissions(myGroup);
+        SetPatientNotesPermissions(myGroup);
 
         var appointmentPermission =
             myGroup.AddPermission(HealthCarePermissions.Appointments.Default, L("Permission:Appointments"));
@@ -292,5 +293,15 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Insurances.Create, L("Permission:Create"));
         permission.AddChild(HealthCarePermissions.Insurances.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Insurances.Delete, L("Permission:Delete"));
+    }
+
+    private void SetPatientNotesPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.PatientNotes.Default, L("Permission:PatientNotes")
+        );
+        permission.AddChild(HealthCarePermissions.PatientNotes.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.PatientNotes.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.PatientNotes.Delete, L("Permission:Delete"));
     }
 }

@@ -3,20 +3,18 @@ using Microsoft.Extensions.Caching.Distributed;
 using MiniExcelLibs;
 using Pusula.Training.HealthCare.Permissions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.GlobalExceptions;
-using Pusula.Training.HealthCare.PatientTypes;
+using Pusula.Training.HealthCare.PatientNotes;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Authorization;
 using Volo.Abp.Caching;
 using Volo.Abp.Content;
 using Volo.Abp.EventBus.Distributed;
-using Volo.Abp.ObjectMapping;
 
 namespace Pusula.Training.HealthCare.Patients;
 
@@ -144,7 +142,8 @@ public class PatientAppService(
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumberCode,
             input.MobilePhoneNumber, input.HomePhoneNumberCode, input.HomePhoneNumber, input.Gender, input.BloodType,
             input.MaritalStatus,
-            ObjectMapper.Map<ICollection<AddressCreateDto>, ICollection<Address>>(input.Addresses)
+            ObjectMapper.Map<ICollection<AddressCreateDto>, ICollection<Address>>(input.Addresses),
+            ObjectMapper.Map<ICollection<PatientNoteCreateDto>, ICollection<PatientNote>>(input.Notes)
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);
     }
@@ -161,6 +160,7 @@ public class PatientAppService(
             input.EmailAddress, input.MobilePhoneNumberCode, input.MobilePhoneNumber, input.HomePhoneNumberCode,
             input.HomePhoneNumber, input.Gender, input.BloodType,
             input.MaritalStatus, ObjectMapper.Map<ICollection<AddressUpdateDto>, ICollection<Address>>(input.Addresses),
+            ObjectMapper.Map<ICollection<PatientNoteUpdateDto>, ICollection<PatientNote>>(input.Notes),
             input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Patient, PatientDto>(patient);

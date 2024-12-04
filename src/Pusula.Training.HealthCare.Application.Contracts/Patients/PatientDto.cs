@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Pusula.Training.HealthCare.Addresses;
+using Pusula.Training.HealthCare.PatientNotes;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 
