@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.PatientTypes;
+using System.Collections.ObjectModel;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
@@ -25,7 +26,9 @@ public partial class Appointments
     private GetPatientsInputValidator PatientsInputValidator { get; set; } = new();
     private SfSchedule<AppointmentDto> refSchedule { get; set; }
     private List<AppointmentDto> AppointmentLists { get; set; } = [];
+
     private AppointmentCreateDto AppointmentCreateDto { get; set; } = new();
+    private AppointmentUpdateDto AppointmentUpdateDto { get; set; } = new();
     private List<DoctorDto> Doctors { get; set; } = [];
     private IReadOnlyList<DepartmentDto> Departments { get; set; } = [];
     private List<AppointmentTypeDto> AppointmentTypes { get; set; } = [];
@@ -38,7 +41,8 @@ public partial class Appointments
     private SfAutoComplete<Guid, PatientDto> refAutoComplatePatient { get; set; }    
     private SfAutoComplete<Guid, DepartmentDto> refAutoComplateDepartment { get; set; }    
     private bool valueSelected => SelectedDepartmentId != Guid.Empty && SelectedDoctorId != Guid.Empty;
-    private EditContext AppointmentContext { get; set; }
+    private EditContext AppointmentCreateContext { get; set; }
+    private EditContext AppointmentUpdateContext { get; set; }
     private View CurrentView { get; set; } = View.Week;    
     private int IntervalValue { get; set; } 
     private bool GridLine { get; set; } = true;
@@ -110,7 +114,8 @@ public partial class Appointments
 
     protected override async Task OnInitializedAsync()
     {
-        AppointmentContext = new EditContext(AppointmentCreateDto);
+        AppointmentCreateContext = new EditContext(AppointmentCreateDto);
+        AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
         Departments = await DepartmentsAppService.GetListDepartmentsAsync();
         AppointmentTypes = await AppointmentTypeAppService.GetListAppointmentTypesAsync();        
         
@@ -131,34 +136,53 @@ public partial class Appointments
         await InvokeAsync(StateHasChanged);
     }
     public async Task OnActionBegin(ActionEventArgs<AppointmentDto> args)
-    {       
-
+    {    
+                  
         if (args.ActionType == Syncfusion.Blazor.Schedule.ActionType.EventCreate) {
-            if(AppointmentContext.Validate())
-            {
+            
                 AppointmentCreateDto.DepartmentId = SelectedDepartmentId;
                 AppointmentCreateDto.DoctorId = SelectedDoctorId;
+            if (AppointmentCreateContext.Validate())
+            {
                 await AppointmentsAppService.CreateAsync(AppointmentCreateDto);
                 AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
                 AppointmentCreateDto = new AppointmentCreateDto();
-                AppointmentContext = new EditContext(AppointmentCreateDto);
-                await InvokeAsync(StateHasChanged);
+                AppointmentCreateContext = new EditContext(AppointmentCreateDto);
             }                                  
             
         }
-
-        else if(args.ActionType == Syncfusion.Blazor.Schedule.ActionType.EventChange)
+        else if (args.ActionType == Syncfusion.Blazor.Schedule.ActionType.EventChange)
         {
-            var x = args.ChangedRecords.First();
-            var input = ObjectMapper.Map<AppointmentDto, AppointmentUpdateDto>(x);
-            input.DepartmentId = SelectedDepartmentId;
-            input.DoctorId = SelectedDoctorId;
-            input.PatientId = SelectedPatientId;           
+            var changedAppointment = args.ChangedRecords.First();
 
-            await AppointmentsAppService.UpdateAsync(x.Id, input);
+            //AppointmentUpdateDto.Id = changedAppointment.Id;
+            AppointmentUpdateDto.AppointmentTypeId = changedAppointment.AppointmentTypeId;
+            AppointmentUpdateDto.DepartmentId = changedAppointment.DepartmentId;
+            AppointmentUpdateDto.DoctorId = changedAppointment.DoctorId;
+            AppointmentUpdateDto.PatientId = changedAppointment.PatientId;
+            AppointmentUpdateDto.StartTime = changedAppointment.StartTime;
+            AppointmentUpdateDto.EndTime = changedAppointment.EndTime;
+            AppointmentUpdateDto.Status = changedAppointment.Status;
+            AppointmentUpdateDto.Notes = changedAppointment.Notes;
+
+            await AppointmentsAppService.UpdateAsync(changedAppointment.Id, AppointmentUpdateDto);
+
             AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
+            AppointmentUpdateDto = new AppointmentUpdateDto();
+            AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
             await InvokeAsync(StateHasChanged);
-        } else if (args.ActionType == ActionType.EventRemove)
+        }
+
+        //else if(args.ActionType == Syncfusion.Blazor.Schedule.ActionType.EventChange)
+        //{
+        //    await AppointmentsAppService.UpdateAsync(args.ChangedRecords.First().Id, AppointmentUpdateDto);
+        //    AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
+        //    AppointmentUpdateDto = new AppointmentUpdateDto();
+        //    AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
+        //    await InvokeAsync(StateHasChanged);
+
+        //} 
+        else if (args.ActionType == ActionType.EventRemove)
         {
             var x = args.DeletedRecords.First();
             await AppointmentsAppService.DeleteAsync(x.Id);

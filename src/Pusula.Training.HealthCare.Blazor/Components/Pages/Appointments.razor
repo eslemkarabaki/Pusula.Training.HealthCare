@@ -84,7 +84,7 @@
 
 <div class="col-lg-9 control-section">
     @if(valueSelected) {
-            <SfSchedule MinDate="@MinDate" TValue="AppointmentDto" Width="100%" Height="650px" ShowQuickInfo="false" @bind-SelectedDate="@CurrentDate" @bind-CurrentView="@CurrentView" StartHour="09:00" EndHour="18:00" ShowWeekend="false">
+            <SfSchedule AllowDragAndDrop="true" MinDate="@MinDate" TValue="AppointmentDto" Width="100%" Height="650px" ShowQuickInfo="false" @bind-SelectedDate="@CurrentDate" @bind-CurrentView="@CurrentView" StartHour="09:00" EndHour="18:00" ShowWeekend="false">
                 <ScheduleEvents TValue="AppointmentDto" OnActionBegin="OnActionBegin" EventRendered="OnEventRendered" />
 
                 <ScheduleTimeScale Enable="@GridLine" Interval="@IntervalValue" SlotCount=1></ScheduleTimeScale>
@@ -104,7 +104,9 @@
                 }
             </EditorHeaderTemplate>
             <EditorTemplate>
-                        <EditForm EditContext="@AppointmentContext">
+                        @if (((Schedule as AppointmentDto).Id) == default)
+                        {
+                            <EditForm EditContext="@AppointmentCreateContext">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
                             <table class="custom-event-editor" width="100%" cellpadding="5">
 
@@ -161,7 +163,78 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </EditForm>
+                            </EditForm>
+                        }
+                        else
+                        {
+                            var dto = (Schedule as AppointmentDto);
+                            AppointmentUpdateDto.StartTime = dto.StartTime;
+                            AppointmentUpdateDto.EndTime = dto.EndTime;
+                            AppointmentUpdateDto.Status = dto.Status;
+                            AppointmentUpdateDto.Notes = dto.Notes;
+                            AppointmentUpdateDto.AppointmentTypeId =dto.AppointmentTypeId;
+                            AppointmentUpdateDto.DepartmentId =dto.DepartmentId;
+                            AppointmentUpdateDto.PatientId=dto.PatientId;
+                            AppointmentUpdateDto.DoctorId = dto.DoctorId;
+                                            
+
+                            <EditForm EditContext="@AppointmentUpdateContext">
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <table class="custom-event-editor" width="100%" cellpadding="5">
+
+                                    <tbody>
+                                        <tr>
+                                            <td class="e-textlabel">Hasta Seçin</td>
+                                            <td colspan="4">
+
+                                                <SfAutoComplete TValue="Guid" TItem="PatientDto" @bind-Value="@AppointmentUpdateDto.PatientId" @ref="@refAutoComplatePatient">
+                                                    <AutoCompleteFieldSettings Value="Id" Text="FullName" />
+                                                    <AutoCompleteEvents TItem="PatientDto" TValue="Guid" Filtering="GetPatientFilter"></AutoCompleteEvents>
+                                                </SfAutoComplete>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="e-textlabel">Randevu Türü</td>
+                                            <td colspan="4">
+
+                                                <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto" DataSource="@AppointmentTypes" Placeholder="Randevu türü seç" @bind-Value="@AppointmentUpdateDto.AppointmentTypeId">
+                                                    <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                                                </SfDropDownList>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="e-textlabel">Statü</td>
+                                            <td class="dropdown" colspan="4">
+                                                <SfDropDownList TValue="EnumStatus" TItem="string" DataSource="@Enum.GetNames(typeof(EnumStatus))" Placeholder="Randevu statüsü seç" @bind-Value="@AppointmentUpdateDto.Status">
+                                                    <DropDownListFieldSettings Text="string" Value="EnumStatus"></DropDownListFieldSettings>
+                                                </SfDropDownList>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            
+                                            <td class="e-textlabel">Başlangıç Saati</td>
+                                            <td colspan="4">
+                                                <SfDateTimePicker @bind-Value="@AppointmentUpdateDto.StartTime" Step="15"></SfDateTimePicker>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="e-textlabel">Bitiş Saati</td>
+                                            <td colspan="4">
+                                                <SfDateTimePicker @bind-Value="@AppointmentUpdateDto.EndTime" Step="15"></SfDateTimePicker>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="e-textlabel">Not</td>
+                                            <td colspan="4">
+                                                <SfTextBox Multiline="true" @bind-Value="@AppointmentUpdateDto.Notes"></SfTextBox>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </EditForm>
+                        }
+
             </EditorTemplate>
         </ScheduleTemplates> 
          <ScheduleViews>
