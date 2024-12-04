@@ -11,6 +11,7 @@ using System.Linq.Dynamic.Core;
 
 namespace Pusula.Training.HealthCare.ProtocolTypes;
 
+[RemoteService(false)]
 public class ProtocolTypeAppService : ApplicationService, IProtocolTypeAppService
 {
     private readonly IProtocolTypeRepository _protocolTypeRepository;
@@ -25,7 +26,7 @@ public class ProtocolTypeAppService : ApplicationService, IProtocolTypeAppServic
     public async Task<PagedResultDto<ProtocolTypeDto>> GetListAsync(GetProtocolTypeInput input)
     {
 
-        // Sayfalama iþlemi
+        // Sayfalama iï¿½lemi
         var totalCount = await _protocolTypeRepository.GetCountAsync(input.Name);
         var items = await _protocolTypeRepository.GetListAsync(input.Name,input.Sorting, input.MaxResultCount, input.SkipCount);
 
