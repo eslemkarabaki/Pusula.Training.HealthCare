@@ -37,8 +37,6 @@ public partial class Patients
     private GetPatientsInputValidator FilterValidator { get; set; } = null!;
     private EditContext FilterContext { get; set; }
 
-    private IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
-    private IEnumerable<CountryDto> CountryList { get; set; } = [];
     private bool AllPatientsSelected { get; set; }
 
     public Patients()
@@ -56,8 +54,6 @@ public partial class Patients
     {
         await SetPermissionsAsync();
         await GetPatientsAsync();
-        CountryList = await CountryAppService.GetListAsync();
-        PatientTypeList = await PatientTypeAppService.GetListAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

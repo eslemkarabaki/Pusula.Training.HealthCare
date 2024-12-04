@@ -3,26 +3,25 @@
 @using Pusula.Training.HealthCare.Cities
 @using Pusula.Training.HealthCare.Countries
 @using Pusula.Training.HealthCare.Districts
+@using Pusula.Training.HealthCare.PatientNotes
 @using Pusula.Training.HealthCare.Patients
 @using Pusula.Training.HealthCare.PatientTypes
-@using Syncfusion.Blazor.Data
-@using Syncfusion.Blazor.DropDowns
-@using Syncfusion.Blazor.Popups
-@using Syncfusion.Blazor.DataForm
-@using Syncfusion.Blazor.Navigations
-@using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Buttons
-@using Syncfusion.Blazor.Calendars
-@using Syncfusion.Blazor.Lists
 @using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Navigations
 @using Syncfusion.Blazor.Notifications
-@using Blazored.FluentValidation
+@using Syncfusion.Blazor.Popups
 
 @inherits HealthCareComponentBase
 
 @inject IPatientAppService PatientAppService
-@inject ICountryAppService CountryAppService
 @inject IAppDefaultAppService AppDefaultAppService
+@inject IPatientTypeAppService PatientTypeAppService
+@inject ICountryAppService CountryAppService
 @inject ICityAppService CityAppService
 @inject IDistrictAppService DistrictAppService
 
@@ -31,13 +30,12 @@
         <Header>@L["NewPatient"]</Header>
         <Content>
             <SfDataForm ID="NewPatientForm"
-                        EditContext="@NewPatientEditContext"
+                        Model="@NewPatient"
                         ButtonsAlignment="FormButtonsAlignment.Right"
                         OnValidSubmit="@OnSaveClickAsync"
-                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                        ValidationDisplayMode="FormValidationDisplay.Inline">
                 <FormValidator>
-                    <FluentValidationValidator
-                        Validator="@NewPatientValidator"></FluentValidationValidator>
+                    <DataAnnotationsValidator/>
                 </FormValidator>
                 <FormTemplate>
                     <SfTab HeaderPlacement="HeaderPosition.Left" LoadOn="ContentLoad.Init" CssClass="e-fill">
@@ -72,12 +70,14 @@
                                             {
                                                 <label class="e-form-label">@L["PassportNumber"]</label>
                                                 <SfTextBox @bind-Value="@NewPatient.PassportNumber"
-                                                           Placeholder="@L["PassportNumber"]"></SfTextBox>
+                                                           Placeholder="@L["PassportNumber"]"
+                                                           Type="InputType.Number"></SfTextBox>
                                             } else
                                             {
                                                 <label class="e-form-label">@L["IdentityNumber"]</label>
                                                 <SfTextBox @bind-Value="@NewPatient.IdentityNumber"
-                                                           Placeholder="@L["IdentityNumber"]"></SfTextBox>
+                                                           Placeholder="@L["IdentityNumber"]"
+                                                           Type="InputType.Number"></SfTextBox>
                                             }
                                         </div>
                                         <div class="col-4">
@@ -118,12 +118,14 @@
                                                 <div class="col-3 gap-1">
                                                     <SfTextBox @bind-Value="@NewPatient.MobilePhoneNumberCode"
                                                                Placeholder="@L["PhoneCode"]"
-                                                               CssClass="border-r-r-0"></SfTextBox>
+                                                               CssClass="border-r-r-0"
+                                                               Type="InputType.Number"></SfTextBox>
                                                 </div>
                                                 <div class="col-9">
                                                     <SfTextBox @bind-Value="@NewPatient.MobilePhoneNumber"
                                                                Placeholder="@L["MobilePhoneNumber"]"
-                                                               Type="InputType.Tel" CssClass="border-r-l-0"></SfTextBox>
+                                                               Type="InputType.Number"
+                                                               CssClass="border-r-l-0"></SfTextBox>
                                                 </div>
                                             </div>
                                         </div>
@@ -133,12 +135,14 @@
                                                 <div class="col-3 gap-1">
                                                     <SfTextBox @bind-Value="@NewPatient.HomePhoneNumberCode"
                                                                Placeholder="@L["PhoneCode"]"
-                                                               CssClass="border-r-r-0"></SfTextBox>
+                                                               CssClass="border-r-r-0"
+                                                               Type="InputType.Number"></SfTextBox>
                                                 </div>
                                                 <div class="col-9">
                                                     <SfTextBox @bind-Value="@NewPatient.HomePhoneNumber"
                                                                Placeholder="@L["HomePhoneNumber"]"
-                                                               Type="InputType.Tel" CssClass="border-r-l-0"></SfTextBox>
+                                                               Type="InputType.Number"
+                                                               CssClass="border-r-l-0"></SfTextBox>
                                                 </div>
                                             </div>
                                         </div>
@@ -192,12 +196,13 @@
                                             <div class="col-8">
                                                 <SfDataForm
                                                     ID="NewAddressForm"
-                                                    EditContext="@NewAddressEditContext"
+                                                    Model="@NewAddress"
                                                     ButtonsAlignment="FormButtonsAlignment.Left"
-                                                    OnValidSubmit="@AddAddressAsync">
+                                                    OnValidSubmit="@AddAddressAsync"
+                                                    ValidationDisplayMode="FormValidationDisplay.Inline"
+                                                >
                                                     <FormValidator>
-                                                        <Blazored.FluentValidation.FluentValidationValidator
-                                                            Validator="@NewAddressValidator"/>
+                                                        <DataAnnotationsValidator/>
                                                     </FormValidator>
                                                     <FormTemplate>
                                                         <div>
@@ -290,7 +295,7 @@
                                                         @if (AddressEditingMode)
                                                         {
                                                             <SfButton type="button" CssClass="e-danger"
-                                                                      OnClick="@CancelAddressEditingAsync">Cancel
+                                                                      OnClick="@SetDefaultsForAddress">Cancel
                                                             </SfButton>
                                                             <SfButton type="button" CssClass="e-success"
                                                                       OnClick="@SaveAddressEditingAsync">Save
@@ -306,10 +311,10 @@
                                             <div class="col-4">
                                                 <p class="mb-6p fs-12p fw-700 color-grey-500">@L["Addresses"]</p>
                                                 <div class="d-flex flex-column gap-1">
-                                                    @foreach (var address in Addresses)
+                                                    @foreach (var address in NewPatient.Addresses)
                                                     {
                                                         <SfCard ID="@address.Id.ToString("N")"
-                                                                CssClass="@(EditingAddressId == address.Id ? "selected" : string.Empty)"
+                                                                CssClass="@(NewAddress.Id == address.Id ? "selected" : string.Empty)"
                                                                 @onclick="@(() => EditAddressAsync(address))">
                                                             <CardContent>
                                                                 <div class="d-flex align-items-start">
@@ -326,9 +331,82 @@
                                                         </SfCard>
                                                     }
                                                 </div>
-                                                @if (Addresses.Count == 0)
+                                                @if (NewPatient.Addresses.Count == 0)
                                                 {
                                                     <SfMessage>There is no address added for this patient.
+                                                    </SfMessage> // todo
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ContentTemplate>
+                            </TabItem>
+                            <TabItem>
+                                <ChildContent>
+                                    <TabHeader Text="@L["Notes"]"></TabHeader>
+                                </ChildContent>
+                                <ContentTemplate>
+                                    <div class="px-3">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <SfDataForm
+                                                    ID="NewNoteForm"
+                                                    Model="NewNote"
+                                                    ButtonsAlignment="FormButtonsAlignment.Left"
+                                                    OnValidSubmit="@AddNoteAsync"
+                                                    ValidationDisplayMode="FormValidationDisplay.Inline"
+                                                >
+                                                    <FormValidator>
+                                                        <DataAnnotationsValidator/>
+                                                    </FormValidator>
+                                                    <FormTemplate>
+                                                        <div>
+                                                            <label
+                                                                class="e-form-label">@L["Note"]</label>
+                                                            <SfTextBox @bind-Value="@NewNote.Note"
+                                                                       Placeholder="@L["Note"]" Multiline/>
+                                                        </div>
+                                                    </FormTemplate>
+                                                    <FormButtons>
+                                                        @if (NoteEditingMode)
+                                                        {
+                                                            <SfButton type="button" CssClass="e-danger"
+                                                                      OnClick="@CancelNoteEditingAsync">Cancel
+                                                            </SfButton>
+                                                            <SfButton type="button" CssClass="e-success"
+                                                                      OnClick="@SaveNoteEditingAsync">Save
+                                                            </SfButton>
+                                                        } else
+                                                        {
+                                                            <SfButton type="submit" CssClass="e-success">Add</SfButton>
+                                                        }
+                                                    </FormButtons>
+                                                </SfDataForm>
+                                            </div>
+
+                                            <div class="col-4">
+                                                <p class="mb-6p fs-12p fw-700 color-grey-500">@L["Notes"]</p>
+                                                <div class="d-flex flex-column gap-1">
+                                                    @foreach (var note in NewPatient.Notes)
+                                                    {
+                                                        <SfCard ID="@note.Id.ToString("N")"
+                                                                CssClass="@(NewNote.Id == note.Id ? "selected" : string.Empty)"
+                                                                @onclick="@(() => EditNoteAsync(note))">
+                                                            <CardContent>
+                                                                <div class="d-flex align-items-start">
+                                                                    <p class="m-0 flex-fill">@note.Note</p>
+                                                                    <SfButton type="button"
+                                                                              IconCss="e-icons far fa-trash-alt e-danger"
+                                                                              CssClass="e-small e-danger e-flat"
+                                                                              OnClick="@(() => RemoveNoteAsync(note))"></SfButton>
+                                                                </div>
+                                                            </CardContent>
+                                                        </SfCard>
+                                                    }
+                                                </div>
+                                                @if (NewPatient.Notes.Count == 0)
+                                                {
+                                                    <SfMessage>There is no note added for this patient.
                                                     </SfMessage> // todo
                                                 }
                                             </div>
@@ -353,8 +431,6 @@
 
 @code {
 
-    [Parameter] public IEnumerable<CountryDto> CountryList { get; set; } = [];
-    [Parameter] public IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
     [Parameter] public EventCallback<PatientDto> PatientCreatedAsync { get; set; }
 
     private SfDialog Dialog { get; set; } = null!;
@@ -363,23 +439,9 @@
     private SfAutoComplete<Guid, CityDto> CityListAutoComplete { get; set; } = null!;
     private SfAutoComplete<Guid, DistrictDto> DistrictListAutoComplete { get; set; } = null!;
 
-    private EditContext NewPatientEditContext { get; set; } = null!;
-
     private PatientCreateDto NewPatient { get; set; } = new();
 
-    private PatientCreateDtoValidator NewPatientValidator { get; set; } = null!;
-
-    private EditContext NewAddressEditContext { get; set; } = null!;
-
-    private AddressCreateDto NewAddress { get; set; } = new();
-    private Guid EditingAddressId { get; set; }
-    private List<AddressDto> Addresses { get; set; } = [];
-
-    private AddressCreateDtoValidator NewAddressValidator { get; set; } = null!;
-
     private CountryDto CurrentCountry { get; set; } = new();
-
-    private bool AddressEditingMode { get; set; }
 
     private bool IsForeigner
     {
@@ -398,6 +460,8 @@
         }
     }
 
+    private IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
+    private IEnumerable<CountryDto> CountryList { get; set; } = [];
     private IEnumerable<CityDto> CityList { get; set; } = [];
     private IEnumerable<DistrictDto> DistrictList { get; set; } = [];
 
@@ -407,6 +471,8 @@
     protected override async Task OnInitializedAsync()
     {
         SetDefaultValuesForDialog();
+        PatientTypeList = await PatientTypeAppService.GetListAsync();
+        CountryList = await CountryAppService.GetListAsync();
         CurrentCountry = await AppDefaultAppService.GetCurrentCountryAsync();
     }
 
@@ -432,71 +498,10 @@
         return !string.IsNullOrEmpty(args.Text) ? query : new Query();
     }
 
-    private async Task AddAddressAsync(EditContext context)
-    {
-        Addresses.Add(
-            new AddressDto()
-            {
-                Id = Guid.NewGuid(),
-                AddressTitle = NewAddress.AddressTitle,
-                AddressLine = NewAddress.AddressLine,
-                DistrictId = NewAddress.DistrictId,
-                District = DistrictList.First(e => e.Id == NewAddress.DistrictId)
-            }
-        );
-        SetDefaultsForAddress();
-        await Task.CompletedTask;
-    }
-
-    private async Task EditAddressAsync(AddressDto dto)
-    {
-        if (EditingAddressId == dto.Id)
-        {
-            return;
-        }
-
-        await AddressCountryIdChangedAsync(dto.District.City.Country.Id);
-        await AddressCityIdChangedAsync(dto.District.City.Id);
-        EditingAddressId = dto.Id;
-        NewAddress = new AddressCreateDto()
-        {
-            DistrictId = dto.District.Id,
-            AddressTitle = dto.AddressTitle,
-            AddressLine = dto.AddressLine
-        };
-        NewAddressEditContext = new EditContext(NewAddress);
-        AddressEditingMode = true;
-        await Task.CompletedTask;
-    }
-
-    private async Task RemoveAddressAsync(AddressDto dto)
-    {
-        Addresses.Remove(dto);
-        await Task.CompletedTask;
-    }
-
-    private async Task CancelAddressEditingAsync()
-    {
-        SetDefaultsForAddress();
-        EditingAddressId = Guid.Empty;
-        AddressEditingMode = false;
-        await Task.CompletedTask;
-    }
-
-    private async Task SaveAddressEditingAsync()
-    {
-        var address = Addresses.Find(e => e.Id == EditingAddressId);
-        address.AddressLine = NewAddress.AddressLine;
-        address.AddressTitle = NewAddress.AddressTitle;
-        address.District = DistrictList.First(e => e.Id == NewAddress.DistrictId);
-        await CancelAddressEditingAsync();
-    }
-
-    private async Task OnSaveClickAsync(EditContext context)
+    private async Task OnSaveClickAsync()
     {
         try
         {
-            ObjectMapper.Map(Addresses, NewPatient.Addresses);
             var patient = await PatientAppService.CreateAsync(NewPatient);
             await PatientCreatedAsync.InvokeAsync(patient);
             await HideAsync();
@@ -515,7 +520,6 @@
 
     public async Task HideAsync()
     {
-        Addresses = [];
         SetDefaultValuesForDialog();
         await Dialog.HideAsync();
     }
@@ -524,6 +528,65 @@
     {
         NewPatient.CountryId = countryId;
         NewPatient.MobilePhoneNumberCode = CountryList.FirstOrDefault(e => e.Id == countryId)?.PhoneCode ?? "1";
+        await Task.CompletedTask;
+    }
+
+    private void SetDefaultValuesForDialog()
+    {
+        SetDefaultsForPatient();
+        SetDefaultsForAddress();
+        SetDefaultsForNote();
+    }
+    
+    private void SetDefaultsForPatient() =>
+        NewPatient = new PatientCreateDto
+        {
+            CountryId = CurrentCountry.Id,
+            MobilePhoneNumberCode = CurrentCountry.PhoneCode
+        };
+    
+#region Address
+
+    private AddressCreateDto NewAddress { get; set; } = new();
+    private bool AddressEditingMode { get; set; }
+
+    private async Task AddAddressAsync()
+    {
+        NewAddress.Id = Guid.NewGuid();
+        NewAddress.District = DistrictList.First(e => e.Id == NewAddress.DistrictId);
+        NewPatient.Addresses.Add(NewAddress);
+        SetDefaultsForAddress();
+        await Task.CompletedTask;
+    }
+
+    private async Task EditAddressAsync(AddressCreateDto dto)
+    {
+        if (NewAddress.Id == dto.Id)
+        {
+            return;
+        }
+
+        await AddressCountryIdChangedAsync(dto.District.City.Country.Id);
+        await AddressCityIdChangedAsync(dto.District.City.Id);
+        ObjectMapper.Map(dto, NewAddress);
+        AddressEditingMode = true;
+        await Task.CompletedTask;
+    }
+
+    private async Task RemoveAddressAsync(AddressCreateDto dto)
+    {
+        NewPatient.Addresses.Remove(dto);
+        await Task.CompletedTask;
+    }
+
+    private async Task SaveAddressEditingAsync()
+    {
+        var address = NewPatient.Addresses.First(e => e.Id == NewAddress.Id);
+        address.AddressLine = NewAddress.AddressLine;
+        address.AddressTitle = NewAddress.AddressTitle;
+        address.DistrictId = NewAddress.DistrictId;
+        address.District = DistrictList.First(e => e.Id == NewAddress.DistrictId);
+        SetDefaultsForAddress();
         await Task.CompletedTask;
     }
 
@@ -543,31 +606,66 @@
         DistrictList = await DistrictAppService.GetListWithDetailsAsync(cityId);
     }
 
-    private void SetDefaultValuesForDialog()
-    {
-        SetDefaultsForPatient();
-        SetDefaultsForAddress();
-    }
-
     private void SetDefaultsForAddress()
     {
+        AddressEditingMode = false;
         NewAddress = new AddressCreateDto();
-        NewAddressEditContext = new EditContext(NewAddress);
         SelectedAddressCountryId = Guid.Empty;
         SelectedAddressCityId = Guid.Empty;
         CityList = [];
         DistrictList = [];
     }
+#endregion
 
-    private void SetDefaultsForPatient()
+#region Note
+
+    private PatientNoteCreateDto NewNote { get; set; } = new();
+    private bool NoteEditingMode { get; set; }
+
+    private async Task AddNoteAsync()
     {
-        NewPatient = new PatientCreateDto
-        {
-            BirthDate = DateTime.Now,
-            CountryId = CurrentCountry.Id,
-            MobilePhoneNumberCode = CurrentCountry.PhoneCode
-        };
-        NewPatientEditContext = new EditContext(NewPatient);
+        NewNote.Id = Guid.NewGuid();
+        NewPatient.Notes.Add(NewNote);
+        SetDefaultsForNote();
+        await Task.CompletedTask;
     }
 
+    private async Task EditNoteAsync(PatientNoteCreateDto dto)
+    {
+        if (NewNote.Id == dto.Id)
+        {
+            return;
+        }
+
+        NewNote.Id = dto.Id;
+        NewNote.Note = dto.Note;
+        NoteEditingMode = true;
+        await Task.CompletedTask;
+    }
+
+    private async Task RemoveNoteAsync(PatientNoteCreateDto dto)
+    {
+        NewPatient.Notes.Remove(dto);
+        await Task.CompletedTask;
+    }
+
+    private async Task CancelNoteEditingAsync()
+    {
+        SetDefaultsForNote();
+        await Task.CompletedTask;
+    }
+
+    private async Task SaveNoteEditingAsync()
+    {
+        var note = NewPatient.Notes.First(e => e.Id == NewNote.Id);
+        note.Note = NewNote.Note;
+        await CancelNoteEditingAsync();
+    }
+
+    private void SetDefaultsForNote()
+    {
+        NoteEditingMode = false;
+        NewNote = new PatientNoteCreateDto();
+    }
+#endregion
 }

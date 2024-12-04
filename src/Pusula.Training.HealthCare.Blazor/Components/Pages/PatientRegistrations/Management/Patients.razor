@@ -196,12 +196,10 @@
 </SfGrid>
 
 @* ************************* CREATE MODAL ************************* *@
-<PatientCreateDialog @ref="CreatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
-                     PatientCreatedAsync="GetPatientsAsync"/>
+<PatientCreateDialog @ref="CreatePatientDialog" PatientCreatedAsync="GetPatientsAsync"/>
 
 @* ************************* UPDATE MODAL ************************* *@
-<PatientUpdateDialog @ref="UpdatePatientDialog" CountryList="@CountryList" PatientTypeList="@PatientTypeList"
-                     OnValidSaveAsync="UpdatePatientAsync"/>
+<PatientUpdateDialog @ref="UpdatePatientDialog" OnValidSaveAsync="UpdatePatientAsync"/>
 
 @* ************************* CREATE PROTOCOL MODAL ************************* *@
 <ProtocolCreateDialog @ref="CreateProtocolDialog"></ProtocolCreateDialog>

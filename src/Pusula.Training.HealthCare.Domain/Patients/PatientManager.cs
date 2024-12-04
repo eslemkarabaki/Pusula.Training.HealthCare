@@ -12,7 +12,8 @@ namespace Pusula.Training.HealthCare.Patients;
 public class PatientManager(
     IPatientRepository patientRepository,
     IPatientNoteRepository patientNoteRepository,
-    AddressManager addressManager
+    AddressManager addressManager,
+    PatientNoteManager patientNoteManager
 ) : DomainService
 {
     public virtual async Task<Patient> CreateAsync(
@@ -31,7 +32,8 @@ public class PatientManager(
         EnumGender gender,
         EnumBloodType bloodType,
         EnumMaritalStatus maritalStatus,
-        ICollection<Address> addresses
+        ICollection<Address> addresses,
+        ICollection<PatientNote> notes
     )
     {
         var patient = new Patient(
@@ -53,6 +55,7 @@ public class PatientManager(
             maritalStatus
         );
         await addressManager.CreateAddressesAsync(patient.Id, addresses);
+        await patientNoteManager.CreateNotesAsync(patient.Id, notes);
         return await patientRepository.InsertAsync(patient);
     }
 
@@ -72,6 +75,7 @@ public class PatientManager(
         EnumBloodType bloodType,
         EnumMaritalStatus maritalStatus,
         ICollection<Address> addresses,
+        ICollection<PatientNote> notes,
         string? concurrencyStamp = null
     )
     {
@@ -90,6 +94,7 @@ public class PatientManager(
         patient.SetPatientTypeId(patientTypeId);
 
         await addressManager.SetAddressesAsync(patient.Id, addresses);
+        await patientNoteManager.SetNotesAsync(patient.Id, notes);
         patient.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await patientRepository.UpdateAsync(patient);
     }

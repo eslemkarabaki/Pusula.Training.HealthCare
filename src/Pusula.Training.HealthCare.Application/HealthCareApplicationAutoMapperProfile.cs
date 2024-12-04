@@ -28,6 +28,7 @@ using System.Net.Sockets;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Insurances;
+using Pusula.Training.HealthCare.PatientNotes;
 
 namespace Pusula.Training.HealthCare;
 
@@ -56,17 +57,21 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country.Name))
             .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType.Name));
 
+        CreateMap<PatientNote, PatientNoteDto>();
+        CreateMap<PatientNoteCreateDto, PatientNote>();
+        CreateMap<PatientNoteUpdateDto, PatientNote>();
+        CreateMap<PatientNoteDto, PatientNoteUpdateDto>();
+        CreateMap<PatientNoteDto, PatientNoteCreateDto>();
+
         CreateMap<PatientType, PatientTypeDto>();
         CreateMap<ProtocolTypes.ProtocolType, ProtocolTypeDto>();
         CreateMap<ProtocolTypeDto, ProtocolTypeUpdateDto>();
 
-
-
-        
-
         CreateMap<Address, AddressDto>().ReverseMap();
         CreateMap<AddressCreateDto, Address>();
+        CreateMap<AddressCreateDto, AddressCreateDto>();
         CreateMap<Address, AddressUpdateDto>().ReverseMap();
+        CreateMap<AddressUpdateDto, AddressUpdateDto>();
         CreateMap<AddressDto, AddressUpdateDto>().ReverseMap();
         CreateMap<AddressDto, AddressCreateDto>().ReverseMap();
 
@@ -135,36 +140,42 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<TestType, TestTypeExcelDto>();
         CreateMap<TestTypeDto, TestTypeUpdateDto>();
         CreateMap<TestType, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
-        
+
         CreateMap<TestGroup, TestGroupDto>();
         CreateMap<TestGroup, TestGroupExcelDto>();
         CreateMap<TestGroupDto, TestGroupUpdateDto>();
-        CreateMap<TestGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<TestGroup, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         //CreateMap<Notification, NotificationDto>();
         //CreateMap<Notification, NotificationExcelDto>();
         //CreateMap<NotificationDto, NotificationUpdateDto>();
-        #region Radiology
+
+#region Radiology
 
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupExcelDto>();
         CreateMap<RadiologyExaminationGroupDto, RadiologyExaminationGroupUpdateDto>();
-        CreateMap<RadiologyExaminationGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<RadiologyExaminationGroup, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<RadiologyExamination, RadiologyExaminationDto>();
         CreateMap<RadiologyExamination, RadiologyExaminationExcelDto>();
         CreateMap<RadiologyExaminationDto, RadiologyExaminationUpdateDto>();
-        CreateMap<RadiologyExamination, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<RadiologyExamination, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<RadiologyExaminationProcedure, RadiologyExaminationProcedureDto>();
         CreateMap<RadiologyExaminationProcedure, RadiologyExaminationProcedureExcelDto>();
         CreateMap<RadiologyExaminationProcedureDto, RadiologyExaminationProcedureUpdateDto>();
-        CreateMap<RadiologyExaminationProcedure, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Result));
+        CreateMap<RadiologyExaminationProcedure, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Result));
 
-        CreateMap<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>(); 
+        CreateMap<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>();
         CreateMap<RadiologyExaminationDocumentDto, RadiologyExaminationDocumentUpdateDto>();
-        CreateMap<RadiologyExaminationDocument, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DocumentName));
+        CreateMap<RadiologyExaminationDocument, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DocumentName));
 
-        #endregion 
+#endregion
     }
 }
