@@ -46,7 +46,9 @@ namespace Pusula.Training.HealthCare.Insurances
 
         #region Delete
         [Authorize(HealthCarePermissions.Insurances.Delete)]
-        public virtual async Task DeleteAsync(Guid id) => await insuranceRepository.DeleteAsync(id);
+
+
+        public virtual async Task DeleteAsync(Guid id) => await insuranceRepository.DeleteAsync(id,autoSave:true);
 
         #endregion
 

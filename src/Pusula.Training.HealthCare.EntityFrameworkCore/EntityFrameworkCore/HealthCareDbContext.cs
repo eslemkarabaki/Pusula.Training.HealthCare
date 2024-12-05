@@ -46,6 +46,7 @@ using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 using ProtocolType = Pusula.Training.HealthCare.ProtocolTypes.ProtocolType;
+using Pusula.Training.HealthCare.Insurances;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -77,6 +78,7 @@ public class HealthCareDbContext :
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;
     public DbSet<ProtocolType> ProtocolTypes { get; set; } = null!;
+    public DbSet<Insurance> Insurances { get; set; } = null!;
     public DbSet<AppDefault> AppDefaults { get; set; } = null!;
     public DbSet<TestGroup> TestGroups { get; set; } = null!;
     public DbSet<Test> Tests { get; set; } = null!;

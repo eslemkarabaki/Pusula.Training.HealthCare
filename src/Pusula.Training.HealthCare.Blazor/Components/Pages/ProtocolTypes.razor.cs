@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Pusula.Training.HealthCare.Patients;
+using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.ProtocolTypes;
-using Syncfusion.Blazor.Data;
-using Syncfusion.Blazor.Popups;
-
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages
 {
     public partial class ProtocolTypes
-
     {
         [Inject]
         public IProtocolTypeAppService ProtocolTypeAppService { get; set; }
@@ -21,11 +16,9 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages
         private bool IsDialogVisible { get; set; } = false;
         private ProtocolTypeDto ProtocolTypeModel { get; set; } = new ProtocolTypeDto();
         private Guid EditingProtocolTypeId { get; set; }
-        private bool OpenUptadeDialog {  get; set; }
-        private bool OpenDeleteDialog { get; set; }
-
-
-
+        private ProtocolTypeUpdateDto EditingProtocolType { get; set; } = new();
+        private bool OpenUpdateDialog { get; set; }
+        private string ErrorMessage { get; set; } = string.Empty;
 
         private int maxResultCount = 10;
         private int skipCount = 0;
@@ -35,74 +28,70 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages
         {
             await RefreshProtocolTypes();
         }
-
         private async Task RefreshProtocolTypes()
         {
             var response = await ProtocolTypeAppService.GetListAsync(new GetProtocolTypeInput());
             ProtocolTypeList = response.Items.ToList();
         }
-
         private void OpenCreateDialog()
         {
-            ProtocolTypeModel = new ProtocolTypeDto(); // Yeni giriş için modeli temizle
+            ProtocolTypeModel = new ProtocolTypeDto();
+            ErrorMessage = string.Empty;
             IsDialogVisible = true;
-        }
-        private void OnVisibleChange(bool visible)
-        {
-            IsDialogVisible = visible;
         }
         private void CloseDialog()
         {
+            ErrorMessage = string.Empty;
             IsDialogVisible = false;
+            StateHasChanged();
         }
-        private void OnNameChange(string value)
-        {
-            ProtocolTypeModel.Name = value;
-        }
-
         private async Task HandleCreate()
         {
-            if (!string.IsNullOrWhiteSpace(ProtocolTypeModel.Name))
+            ErrorMessage = string.Empty;
+            if (string.IsNullOrWhiteSpace(ProtocolTypeModel.Name))
             {
-                await ProtocolTypeAppService.CreateAsync(new ProtocolTypeCreateDto { Name = ProtocolTypeModel.Name });
-                IsDialogVisible = false;
-                await RefreshProtocolTypes();
+                ErrorMessage = "Protocol Type name cannot be empty.";
+                StateHasChanged();
+                return;
             }
+            await ProtocolTypeAppService.CreateAsync(new ProtocolTypeCreateDto { Name = ProtocolTypeModel.Name });
+            IsDialogVisible = false;
+            await RefreshProtocolTypes();
         }
-        private ProtocolTypeUpdateDto EditingProtocolType { get; set; } = new();
         private async Task OpenEditProtocolTypeModalAsync(ProtocolTypeDto input)
         {
-
-            EditingProtocolType = ObjectMapper.Map<ProtocolTypeDto, ProtocolTypeUpdateDto>(await ProtocolTypeAppService.GetAsync(input.Id));
             EditingProtocolTypeId = input.Id;
-            OpenUptadeDialog = true;
+            var protocolType = await ProtocolTypeAppService.GetAsync(input.Id);
+            EditingProtocolType = ObjectMapper.Map<ProtocolTypeDto, ProtocolTypeUpdateDto>(protocolType);
+            OpenUpdateDialog = true;
         }
-        private async Task HandleUptade()
+        private async Task HandleUpdate()
         {
-                await ProtocolTypeAppService.UpdateAsync(EditingProtocolTypeId, EditingProtocolType);
-                OpenUptadeDialog = false;
-                EditingProtocolType = new();
-                await RefreshProtocolTypes();
-            
+            ErrorMessage = string.Empty;
+            if (string.IsNullOrWhiteSpace(EditingProtocolType.Name))
+            {
+                ErrorMessage = "Protocol Type name cannot be empty.";
+                StateHasChanged();
+                return;
+            }
+            await ProtocolTypeAppService.UpdateAsync(EditingProtocolTypeId, EditingProtocolType);
+            OpenUpdateDialog = false;
+            await RefreshProtocolTypes();
         }
-        private void CloseUptadeDialog()
+        private void CloseUpdateDialog()
         {
-            OpenUptadeDialog = false;
+            ErrorMessage = string.Empty;
+            OpenUpdateDialog = false;
+            StateHasChanged();
         }
         private async Task DeleteProtocolTypeAsync(ProtocolTypeDto input)
         {
-
-            bool isConfirm = await DialogService.ConfirmAsync("Are you sure you want to permanently delete these items?", "Delete Multiple Items");
-
+            bool isConfirm = await DialogService.ConfirmAsync("Are you sure you want to permanently delete this item?", "Delete Confirmation");
             if (isConfirm)
-            { 
-
+            {
                 await ProtocolTypeAppService.DeleteAsync(input.Id);
-            IsDialogVisible = false;
-            await RefreshProtocolTypes();
-
+                await RefreshProtocolTypes();
             }
-            
         }
     }
 }

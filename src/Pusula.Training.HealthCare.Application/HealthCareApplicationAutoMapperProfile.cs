@@ -106,6 +106,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Insurance, InsuranceDto>();
         CreateMap<InsuranceDto, InsuranceUpdateDto>();
 
+
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
         CreateMap<HospitalDto, HospitalUpdateDto>();
