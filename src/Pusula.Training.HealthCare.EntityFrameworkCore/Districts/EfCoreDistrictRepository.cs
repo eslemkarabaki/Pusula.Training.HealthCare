@@ -24,7 +24,7 @@ public class EfCoreDistrictRepository(IDbContextProvider<HealthCareDbContext> db
         CancellationToken cancellationToken = default
     ) =>
         await ApplyFilter(await GetQueryableAsync(), filterText, name, cityId)
-              .OrderBy(GetSorting(sorting,false))
+              .OrderBy(GetSorting(sorting, false))
               .PageBy(skipCount, maxResultCount)
               .ToListAsync(GetCancellationToken(cancellationToken));
 
@@ -37,8 +37,8 @@ public class EfCoreDistrictRepository(IDbContextProvider<HealthCareDbContext> db
         int skipCount = 0,
         CancellationToken cancellationToken = default
     ) =>
-        await ApplyFilter(await WithDetailsAsync(e => e.City, e => e.City.Country), filterText, name, cityId)
-              .OrderBy(GetSorting(sorting,false))
+        await ApplyFilter(await WithDetailsAsync(e => e.City.Country), filterText, name, cityId)
+              .OrderBy(GetSorting(sorting, false))
               .PageBy(skipCount, maxResultCount)
               .ToListAsync(GetCancellationToken(cancellationToken));
 
@@ -73,7 +73,7 @@ public class EfCoreDistrictRepository(IDbContextProvider<HealthCareDbContext> db
             .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Name!.Contains(filterText!))
             .WhereIf(!string.IsNullOrWhiteSpace(name), e => e.Name.Contains(name!))
             .WhereIf(cityId.HasValue, e => e.CityId == cityId!.Value);
-    
+
     protected virtual string GetSorting(string? sorting, bool withEntityName) =>
         sorting.IsNullOrWhiteSpace() ?
             DistrictConsts.GetDefaultSorting(withEntityName) :

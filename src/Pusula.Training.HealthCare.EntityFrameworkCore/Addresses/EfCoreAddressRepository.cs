@@ -34,7 +34,7 @@ public class EfCoreAddressRepository(IDbContextProvider<HealthCareDbContext> dbC
         CancellationToken cancellationToken = default
     ) =>
         await ApplyFilter(
-                  await WithDetailsAsync(e => e.District, e => e.District.City, e => e.District.City.Country), patientId
+                  await WithDetailsAsync(e => e.District.City.Country), patientId
               )
               .OrderBy(GetSorting(sorting, false))
               .PageBy(skipCount, maxResultCount)
