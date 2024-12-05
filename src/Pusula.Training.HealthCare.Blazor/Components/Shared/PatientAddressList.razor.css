@@ -1,0 +1,8 @@
+.patient-address-list-item {
+    font-size: 13px;
+    padding: 6px 12px;
+}
+
+.patient-address-list-item:not(:last-child) {
+    border-bottom: 1px solid var(--material-grey-200);
+}

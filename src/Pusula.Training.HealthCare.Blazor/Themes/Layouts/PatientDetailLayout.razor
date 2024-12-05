@@ -1,12 +1,15 @@
 @using Microsoft.Extensions.Localization
 @using Pusula.Training.HealthCare.Localization
 @using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.Permissions
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Popups
+@using Volo.Abp
 @using Position = Syncfusion.Blazor.Popups.Position
-@inherits LayoutComponentBase
+@attribute [Authorize(HealthCarePermissions.Patients.Default)]
 @layout MainLayout
+@inherits LayoutComponentBase
 @inject IPatientAppService PatientAppService
 @inject IStringLocalizer<HealthCareResource> L
 
@@ -19,10 +22,10 @@
                <div class="d-flex gap-1 align-items-center mb-1">
                   <h5 class="mb-0">@Patient.Patient.FullName</h5>
                   <span class="badge text-bg-secondary">@Patient.PatientType.Name</span>
-                  <span>@Patient.Country.Iso</span>
+                  <span class="fs-12p color-grey-700">@Patient.Country.Name</span>
                </div>
 
-               <div class="d-flex gap-1">
+               <div class="d-flex gap-1 align-items-center">
                   <PatientGenderIcon Gender="@Patient.Patient.Gender"/>
                   <div>
                      <span>Hasta No:</span>
@@ -45,44 +48,23 @@
                   </div>
                </div>
             </div>
-            <div class="d-flex flex-column gap-1">
+            <div class="d-flex align-items-center flex-column gap-1">
                <div class="d-flex gap-1">
-                  <SfTooltip Position="Position.BottomCenter" Content="@L["Call"]">
-                     <SfButton CssClass="e-outline" IconCss="fas fa-phone"/>
+                  <SfTooltip Position="Position.BottomCenter" Content="@L["SendMessage"]">
+                     <SfButton CssClass="e-outline" IconCss="far fa-comment" Disabled/>
                   </SfTooltip>
                   <SfTooltip Position="Position.BottomCenter" Content="@L["SendMail"]">
-                     <SfButton CssClass="e-outline" IconCss="far fa-envelope"/>
+                     <SfButton CssClass="e-outline" IconCss="far fa-envelope" Disabled/>
                   </SfTooltip>
-               </div>
-               <div>
-                  <a href="javascript:;" class="text-decoration-none"
-                     @onclick="@(() => ShowAddresses = !ShowAddresses)"
-                     disabled="@(!Patient.Patient.Addresses.Any())">Addresses</a>
-                  @if (ShowAddresses)
-                  {
-                     <div id="AddressesCard"
-                          class="bg-white mt-1 border border-r-4p shadow-sm position-absolute top-100 end-0">
-                        @foreach (var address in Patient.Patient.Addresses)
-                        {
-                           <div class="p-2 border-bottom">
-                              <h6 class="mb-0">@address.AddressTitle</h6>
-                              <p class="mb-0">@address.AddressLine @address.District.Name @(address.District.City.Name)/@(address.District.City.Country.Name)</p>
-                           </div>
-                        }
-                     </div>
-                  }
                </div>
             </div>
          </div>
       </CardContent>
    </SfCard>
-}
 
-@if (PatientNo != default)
-{
-   <div class="bg-white border-r-1r">
+   <div class="bg-white border-r-6p">
       <div class="btn-group">
-         <NavLink class="btn border-r-tl-1r border-r-bl-1r py-1 px-4 text-decoration-none" Match="NavLinkMatch.All"
+         <NavLink class="btn border-r-tl-6p border-r-bl-6p py-1 px-4 text-decoration-none" Match="NavLinkMatch.All"
                   ActiveClass="btn-primary"
                   href="@BaseAddress">Özet
          </NavLink>
@@ -90,23 +72,30 @@
                   ActiveClass="btn-primary"
                   href="@($"{BaseAddress}/appointment")">Randevu
          </NavLink>
-         <NavLink class="btn border-r-tr-1r border-r-br-1r py-1 px-4 text-decoration-none" Match="NavLinkMatch.All"
+         <NavLink class="btn border-r-tr-6p border-r-br-6p py-1 px-4 text-decoration-none" Match="NavLinkMatch.All"
                   ActiveClass="btn-primary"
                   href="@($"{BaseAddress}/file")">Dosyalar
          </NavLink>
       </div>
    </div>
+
+   <div class="py-3">
+      <CascadingValue Value="@Patient">
+         @Body
+      </CascadingValue>
+   </div>
+} else
+{
+   @("Patient not found")
 }
 
-@Body
+
 
 @code{
-
    [CascadingParameter] RouteData RouteData { get; set; } = null!;
    private PatientWithNavigationPropertiesDto? Patient { get; set; }
    private string BaseAddress => $"prm/management/patient-detail/{PatientNo}";
    private int PatientNo { get; set; }
-   private bool ShowAddresses { get; set; }
 
    protected override async Task OnInitializedAsync()
    {
@@ -118,10 +107,3 @@
    }
 
 }
-
-
-<style>
-   #PatientCard.e-card, #PatientCard.e-card .e-card-content {
-      overflow: visible;
-   }
-</style>

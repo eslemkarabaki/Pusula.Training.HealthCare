@@ -16,5 +16,8 @@ public class PatientNoteConfigurations : IEntityTypeConfiguration<PatientNote>
          .HasMaxLength(PatientNoteConsts.NoteMaxLength);
 
         b.HasOne<Patient>().WithMany().IsRequired().HasForeignKey(e => e.PatientId).OnDelete(DeleteBehavior.NoAction);
+        b.HasOne(e=>e.Creator).WithMany().IsRequired().HasForeignKey(e=>e.CreatorId).OnDelete(DeleteBehavior.NoAction);
+        b.HasOne(e=>e.LastModifier).WithMany().IsRequired(false).HasForeignKey(e=>e.LastModifierId).OnDelete(DeleteBehavior.NoAction);
+        b.HasOne(e=>e.Deleter).WithMany().IsRequired(false).HasForeignKey(e=>e.DeleterId).OnDelete(DeleteBehavior.NoAction);
     }
 }
