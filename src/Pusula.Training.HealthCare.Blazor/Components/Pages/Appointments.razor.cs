@@ -16,6 +16,7 @@ using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.PatientTypes;
 using System.Collections.ObjectModel;
+using Syncfusion.Blazor.Popups;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
@@ -24,78 +25,68 @@ public partial class Appointments
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
     private DateTime CurrentDate { get; set; } = DateTime.Today;
     private GetPatientsInputValidator PatientsInputValidator { get; set; } = new();
-    private SfSchedule<AppointmentDto> refSchedule { get; set; }
     private List<AppointmentDto> AppointmentLists { get; set; } = [];
 
-    private AppointmentCreateDto AppointmentCreateDto { get; set; } = new();
-    private AppointmentUpdateDto AppointmentUpdateDto { get; set; } = new();
     private List<DoctorDto> Doctors { get; set; } = [];
     private IReadOnlyList<DepartmentDto> Departments { get; set; } = [];
     private List<AppointmentTypeDto> AppointmentTypes { get; set; } = [];
-    private Guid SelectedPatientId { get; set; }
     private Guid SelectedDepartmentId { get; set; }
     private Guid SelectedDoctorId { get; set; }
-    private string PatientFilter { get; set; } = string.Empty;
-    private string ErrorMessage { get; set; } = string.Empty;
     private IReadOnlyList<PatientDto> Patients { get; set; } = [];
-    private SfAutoComplete<Guid, PatientDto> refAutoComplatePatient { get; set; }    
-    private SfAutoComplete<Guid, DepartmentDto> refAutoComplateDepartment { get; set; }    
+    private SfAutoComplete<Guid, PatientDto> refAutoComplatePatient { get; set; }
+    private SfAutoComplete<Guid, DepartmentDto> refAutoComplateDepartment { get; set; }
     private bool valueSelected => SelectedDepartmentId != Guid.Empty && SelectedDoctorId != Guid.Empty;
-    private EditContext AppointmentCreateContext { get; set; }
-    private EditContext AppointmentUpdateContext { get; set; }
-    private View CurrentView { get; set; } = View.Week;    
-    private int IntervalValue { get; set; } 
+    private View CurrentView { get; set; } = View.Week;
+    private int IntervalValue { get; set; }
     private bool GridLine { get; set; } = true;
-    private PatientCreateDialog CreatePatientDialog { get; set; } = null!;
-    private IEnumerable<CountryDto> CountryList { get; set; } = [];
-    private IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
-    private async Task OpenCreatePatientDialogAsync() => await CreatePatientDialog.ShowAsync();
-    private IReadOnlyList<PatientDto> PatientDetails { get; set; } = [];
-    private PatientDto? LastPatient { get; set; } 
     private DateTime MinDate = DateTime.Now;
-   
-    private async Task CreatePatientAsync(PatientDto patient)
+
+    public Appointments()
     {
-        LastPatient = patient;
-        await Task.CompletedTask;
+        SetDefaultsForCreateDto();
+        SetDefaultsForUpdateDto();
     }
-    
+
     public static class AppointmentHelper
     {
-        public static IDictionary<string, object> ApplyCategoryColor(string color, IDictionary<string, object> attributes)
-        {          
-                if (attributes == null)
-                {
-                    attributes = new Dictionary<string, object>();
-                }
-
-                if (!attributes.ContainsKey("style"))
-                {
-                    attributes["style"] = $"background-color: {color};";
-                }
-                else
-                {
-                    attributes["style"] += $" background-color: {color};";
-                }
-
-                return attributes;
+        public static IDictionary<string, object> ApplyCategoryColor(
+            string color,
+            IDictionary<string, object> attributes
+        )
+        {
+            if (attributes == null)
+            {
+                attributes = new Dictionary<string, object>();
             }
+
+            if (!attributes.ContainsKey("style"))
+            {
+                attributes["style"] = $"background-color: {color};";
+            } else
+            {
+                attributes["style"] += $" background-color: {color};";
+            }
+
+            return attributes;
+        }
     }
+
     public void OnEventRendered(EventRenderedArgs<AppointmentDto> args)
     {
-        string categoryColor = args.Data.Status switch
+        var categoryColor = args.Data.Status switch
         {
-            EnumStatus.Scheduled => "#FFD700", 
-            EnumStatus.Completed => "#32CD32", 
-            EnumStatus.Cancelled => "#FF6347", 
-            EnumStatus.NoShow => "#A9A9A9",    
-            EnumStatus.Rescheduled => "#1E90FF", 
-            _ => "#FFFFFF" 
+            EnumStatus.Scheduled   => "#FFD700",
+            EnumStatus.Completed   => "#32CD32",
+            EnumStatus.Cancelled   => "#FF6347",
+            EnumStatus.NoShow      => "#A9A9A9",
+            EnumStatus.Rescheduled => "#1E90FF",
+            _                      => "#FFFFFF"
         };
 
         var updatedAttributes = AppointmentHelper.ApplyCategoryColor(categoryColor, args.Attributes);
         args.Attributes = updatedAttributes.ToDictionary(entry => entry.Key, entry => entry.Value);
     }
+
     protected async Task GetPatientFilter(FilteringEventArgs args)
     {
         args.PreventDefaultAction = true;
@@ -107,18 +98,15 @@ public partial class Appointments
         }
 
         var patients = await PatientAppService.GetListAsync(filter);
-        Patients = patients.Items;        
-        await refAutoComplatePatient.FilterAsync(Patients);       
+        Patients = patients.Items;
+        await refAutoComplatePatient.FilterAsync(Patients);
         await InvokeAsync(StateHasChanged);
     }
 
     protected override async Task OnInitializedAsync()
     {
-        AppointmentCreateContext = new EditContext(AppointmentCreateDto);
-        AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
         Departments = await DepartmentsAppService.GetListDepartmentsAsync();
-        AppointmentTypes = await AppointmentTypeAppService.GetListAppointmentTypesAsync();        
-        
+        AppointmentTypes = await AppointmentTypeAppService.GetListAppointmentTypesAsync();
     }
 
     protected async Task DepartmentSelect(ChangeEventArgs<Guid, DepartmentDto> args)
@@ -132,63 +120,134 @@ public partial class Appointments
     protected async Task DoctorSelect(ChangeEventArgs<Guid, DoctorDto> args)
     {
         SelectedDoctorId = args.ItemData.Id;
-        AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(args.ItemData.Id);
+        await GetAppointmentsAsync();
         await InvokeAsync(StateHasChanged);
     }
-    public async Task OnActionBegin(ActionEventArgs<AppointmentDto> args)
-    {    
-                  
-        if (args.ActionType == Syncfusion.Blazor.Schedule.ActionType.EventCreate) {
-            
-                AppointmentCreateDto.DepartmentId = SelectedDepartmentId;
-                AppointmentCreateDto.DoctorId = SelectedDoctorId;
+
+    private async Task GetAppointmentsAsync() =>
+        AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
+
+    private void CancelScheduleEvent(CellClickEventArgs args) => args.Cancel = true;
+    private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;
+
+#region Patient Creation
+
+    private PatientCreateDialog CreatePatientDialog { get; set; } = null!;
+
+    private async Task OpenCreatePatientDialogAsync() => await CreatePatientDialog.ShowAsync();
+    private PatientDto? CreatedPatient { get; set; }
+
+    private async Task PatientCreatedAsync(PatientDto createdPatient)
+    {
+        CreatedPatient = createdPatient;
+        AppointmentCreateDto.PatientId = createdPatient.Id;
+        await Task.CompletedTask;
+    }
+
+#endregion
+
+#region Create
+
+    private AppointmentCreateDto AppointmentCreateDto { get; set; }
+    private EditContext AppointmentCreateContext { get; set; }
+    private SfDialog CreateAppointmentDialog { get; set; }
+
+    private async Task OpenCreateAppointmentDialogAsync(CellClickEventArgs args)
+    {
+        SetDefaultsForCreateDto(args);
+        await CreateAppointmentDialog.ShowAsync();
+    }
+
+    private async Task CloseCreateAppointmentDialogAsync()
+    {
+        await CreateAppointmentDialog.HideAsync();
+        SetDefaultsForCreateDto();
+    }
+
+    private async Task CreateAppointmentAsync()
+    {
+        try
+        {
+            AppointmentCreateDto.DepartmentId = SelectedDepartmentId;
+            AppointmentCreateDto.DoctorId = SelectedDoctorId;
             if (AppointmentCreateContext.Validate())
             {
                 await AppointmentsAppService.CreateAsync(AppointmentCreateDto);
-                AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
-                AppointmentCreateDto = new AppointmentCreateDto();
-                AppointmentCreateContext = new EditContext(AppointmentCreateDto);
-            }                                  
-            
+                await GetAppointmentsAsync();
+                await CloseCreateAppointmentDialogAsync();
+            }
         }
-        else if (args.ActionType == Syncfusion.Blazor.Schedule.ActionType.EventChange)
+        catch (Exception ex)
         {
-            var changedAppointment = args.ChangedRecords.First();
-
-            //AppointmentUpdateDto.Id = changedAppointment.Id;
-            AppointmentUpdateDto.AppointmentTypeId = changedAppointment.AppointmentTypeId;
-            AppointmentUpdateDto.DepartmentId = changedAppointment.DepartmentId;
-            AppointmentUpdateDto.DoctorId = changedAppointment.DoctorId;
-            AppointmentUpdateDto.PatientId = changedAppointment.PatientId;
-            AppointmentUpdateDto.StartTime = changedAppointment.StartTime;
-            AppointmentUpdateDto.EndTime = changedAppointment.EndTime;
-            AppointmentUpdateDto.Status = changedAppointment.Status;
-            AppointmentUpdateDto.Notes = changedAppointment.Notes;
-
-            await AppointmentsAppService.UpdateAsync(changedAppointment.Id, AppointmentUpdateDto);
-
-            AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
-            AppointmentUpdateDto = new AppointmentUpdateDto();
-            AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
-            await InvokeAsync(StateHasChanged);
+            await HandleErrorAsync(ex);
         }
+    }
 
-        //else if(args.ActionType == Syncfusion.Blazor.Schedule.ActionType.EventChange)
-        //{
-        //    await AppointmentsAppService.UpdateAsync(args.ChangedRecords.First().Id, AppointmentUpdateDto);
-        //    AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
-        //    AppointmentUpdateDto = new AppointmentUpdateDto();
-        //    AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
-        //    await InvokeAsync(StateHasChanged);
+    private void SetDefaultsForCreateDto(CellClickEventArgs? args = null)
+    {
+        AppointmentCreateDto = new AppointmentCreateDto()
+        {
+            StartTime = args?.StartTime ?? DateTime.Today,
+            EndTime = args?.EndTime ?? DateTime.Today
+        };
+        AppointmentCreateContext = new EditContext(AppointmentCreateDto);
+    }
 
-        //} 
-        else if (args.ActionType == ActionType.EventRemove)
+#endregion
+
+#region Update
+
+    private AppointmentUpdateDto AppointmentUpdateDto { get; set; }
+    private Guid EditingAppointmentId { get; set; }
+    private EditContext AppointmentUpdateContext { get; set; }
+    private SfDialog UpdateAppointmentDialog { get; set; }
+
+    private async Task OpenUpdateAppointmentDialogAsync(EventClickArgs<AppointmentDto> args)
+    {
+        EditingAppointmentId = args.Event.Id;
+        ObjectMapper.Map(args.Event, AppointmentUpdateDto);
+        await UpdateAppointmentDialog.ShowAsync();
+    }
+
+    private async Task CloseUpdateAppointmentDialogAsync()
+    {
+        await UpdateAppointmentDialog.HideAsync();
+        SetDefaultsForUpdateDto();
+    }
+
+    private async Task UpdateAppointmentAsync()
+    {
+        try
+        {
+            if (AppointmentUpdateContext.Validate())
+            {
+                await AppointmentsAppService.UpdateAsync(EditingAppointmentId, AppointmentUpdateDto);
+                await GetAppointmentsAsync();
+                await CloseUpdateAppointmentDialogAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    private void SetDefaultsForUpdateDto()
+    {
+        AppointmentUpdateDto = new AppointmentUpdateDto();
+        AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
+    }
+
+#endregion
+
+    public async Task OnActionBegin(ActionEventArgs<AppointmentDto> args)
+    {
+        if (args.ActionType == ActionType.EventRemove)
         {
             var x = args.DeletedRecords.First();
             await AppointmentsAppService.DeleteAsync(x.Id);
             AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
             await InvokeAsync(StateHasChanged);
         }
-    } 
-
+    }
 }
