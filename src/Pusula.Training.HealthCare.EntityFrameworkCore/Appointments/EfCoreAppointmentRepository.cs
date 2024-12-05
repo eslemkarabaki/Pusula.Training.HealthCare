@@ -104,7 +104,7 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     {
         return query
                 .WhereIf(startTime.HasValue, e => e.Appointment.StartTime >= startTime!.Value)
-                .WhereIf(endTime.HasValue, e => e.Appointment.EndTime >= endTime!.Value)
+                .WhereIf(endTime.HasValue, e => e.Appointment.EndTime <= endTime!.Value)
                 .WhereIf(!string.IsNullOrWhiteSpace(note), e => e.Appointment.Note!.Contains(note!))
                 .WhereIf(status.HasValue, e => e.Appointment.Status == status!.Value) 
                 .WhereIf(appointmentTypeId != null && appointmentTypeId != Guid.Empty, e => e.AppointmentType != null && e.AppointmentType.Id == appointmentTypeId)
@@ -155,7 +155,7 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         .WhereIf(doctorId.HasValue, e=>e.DoctorId==doctorId!.Value)
         .WhereIf(status.HasValue, e => e.Status == status!.Value)
         .WhereIf(startTime.HasValue, e => e.StartTime >= startTime!.Value)
-        .WhereIf(endTime.HasValue, e => e.EndTime >= endTime!.Value)
+        .WhereIf(endTime.HasValue, e => e.EndTime <= endTime!.Value)
         .WhereIf(!string.IsNullOrWhiteSpace(note), e => e.Note!.Contains(note!));
 }
     #endregion
