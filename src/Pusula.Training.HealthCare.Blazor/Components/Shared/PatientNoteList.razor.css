@@ -3,14 +3,18 @@
     align-content: center;
     justify-content: space-between;
     padding: 6px 12px;
+    gap: 4px;
 }
 
 .patient-note-list-item:not(:last-child) {
     border-bottom: 1px solid var(--material-grey-200);
 }
 
-.patient-note-date {
+.patient-note-information {
+    min-width: 92px;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
     font-size: 11px;
     color: var(--material-grey-500);
-    min-width: 92px;
 }

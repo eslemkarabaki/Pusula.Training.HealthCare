@@ -153,9 +153,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         return
             from patient in dbContext
                             .Patients.Include(e => e.Addresses)
-                            .ThenInclude(e => e.District)
-                            .ThenInclude(e => e.City)
-                            .ThenInclude(e => e.Country)
+                            .ThenInclude(e => e.District.City.Country)
             join country in dbContext.Countries
                 on patient.CountryId equals country.Id
                 into countries
@@ -164,7 +162,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 on patient.PatientTypeId equals patientType.Id
                 into patientTypes
             from patientType in patientTypes.DefaultIfEmpty()
-            join patientNote in dbContext.PatientNotes
+            join patientNote in dbContext.PatientNotes.Include(e=>e.Creator)
                 on patient.Id equals patientNote.PatientId
                 into patientNotes
             select new PatientWithNavigationProperties
