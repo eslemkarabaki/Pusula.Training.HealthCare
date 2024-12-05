@@ -7,7 +7,10 @@
         {
             <div class="patient-note-list-item">
                 <span class="fs-13p">@note.Note</span>
-                <span class="patient-note-date">@note.CreationTime.ToString("dd.MM.yyyy hh:mm")</span>
+                <div class="patient-note-information">
+                    <span class="patient-note-creator">@note.CreatorName</span>
+                    <span class="patient-note-date">@note.CreationTime.ToString("dd.MM.yyyy hh:mm")</span>
+                </div>
             </div>
         }
     </div>
