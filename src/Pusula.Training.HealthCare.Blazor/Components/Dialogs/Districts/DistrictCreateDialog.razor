@@ -1,0 +1,71 @@
+﻿@using Pusula.Training.HealthCare.Districts
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Blazored.FluentValidation
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inherits HealthCareComponentBase
+
+
+
+<SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogTemplates>
+        <Header>@L["NewDistrict"]</Header>
+        <Content>
+            <SfDataForm ID="NewDistrictForm"
+                        EditContext="@NewDistrictEditContext"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                <FormValidator>
+                    <FluentValidationValidator Validator="@NewDistrictValidator"></FluentValidationValidator>
+                </FormValidator>
+                <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <SfTextBox @bind-Value="@NewDistrict.Name"
+                                   Placeholder="@L["District"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                    </div>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+    [Parameter] public EventCallback<DistrictCreateDto> OnValidSaveAsync { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private EditContext NewDistrictEditContext { get; set; } = null!;
+
+    private DistrictCreateDto NewDistrict { get; set; } = new();
+
+    private DistrictCreateDtoValidator NewDistrictValidator { get; set; } = null!;
+
+    private async Task OnSaveClickAsync(EditContext context)
+    {
+        await OnValidSaveAsync.InvokeAsync(NewDistrict);
+        await HideAsync();
+    }
+
+    public async Task ShowAsync()
+    {
+        NewDistrictEditContext = new EditContext(NewDistrict);
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        NewDistrict = new DistrictCreateDto();
+        await Dialog.HideAsync();
+    }
+}

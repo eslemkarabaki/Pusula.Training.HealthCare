@@ -1,0 +1,74 @@
+﻿@using Pusula.Training.HealthCare.Cities
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Blazored.FluentValidation
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inherits HealthCareComponentBase
+
+@inject ICityAppService CityAppService
+
+<SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogTemplates>
+        <Header>@L["NewCity"]</Header>
+        <Content>
+            <SfDataForm ID="NewCityForm"
+                        EditContext="@EditingCityEditContext"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                <FormValidator>
+                    <FluentValidationValidator Validator="@EditingCityValidator"></FluentValidationValidator>
+                </FormValidator>
+                <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <SfTextBox @bind-Value="@EditingCity.Name"
+                                   Placeholder="@L["City"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                        
+                    </div>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+    [Parameter] public EventCallback<CityUpdateDto> OnValidSaveAsync { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private EditContext EditingCityEditContext { get; set; } = null!;
+
+    private CityUpdateDto EditingCity { get; set; } = new();
+
+    private CityUpdateDtoValidator EditingCityValidator { get; set; } = null!;
+
+    private async Task OnSaveClickAsync(EditContext context)
+    {
+        await OnValidSaveAsync.InvokeAsync(EditingCity);
+        await HideAsync();
+    }
+
+    public async Task ShowAsync(Guid cityId)
+    {
+        var city = await CityAppService.GetAsync(cityId);
+        ObjectMapper.Map(city, EditingCity);
+        EditingCityEditContext = new EditContext(EditingCity);
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        EditingCity = new CityUpdateDto();
+        await Dialog.HideAsync();
+    }
+
+}
