@@ -34,10 +34,10 @@
             <div class="d-flex gap-2 p-2 align-items-end">
                 <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]" />
 
-                <SfDateRangePicker TValue="DateTime?" @bind-StartDate="@Filter.StartTime"
+                <SfDateRangePicker TValue="DateTime" @bind-StartDate="@Filter.StartTime"
                                    @bind-EndDate="@Filter.EndTime" FullScreen Format="dd.MM.yyyy"
                                    FirstDayOfWeek="@((int)DayOfWeek.Monday)">
-                    <DateRangePickerEvents TValue="DateTime?" ValueChange="@SearchAsync"></DateRangePickerEvents>
+                    <DateRangePickerEvents TValue="DateTime" ValueChange="@SearchAsync"></DateRangePickerEvents>
                     <DateRangePickerPresets>
                         <DateRangePickerPreset Label="@L["Today"]" Start="@Today" End="@Tomorrow" />
                         <DateRangePickerPreset Label="@L["ThisWeek"]" Start="@ThisWeekStart"
@@ -76,16 +76,6 @@
                     <AutoCompleteFieldSettings Text="Name" Value="Id" />
                 </SfAutoComplete>
 
-                <SfAutoComplete @ref="PatientFilterAutoComplete" @bind-Value="@Filter.PatientId"
-                                TValue="Guid?" TItem="PatientDto" Placeholder="@L["Patient"]"
-                                DataSource="@PatientList" AllowFiltering Autofill Highlight
-                                EnableVirtualization ShowClearButton
-                                PopupHeight="300px">
-                    <AutoCompleteEvents TValue="Guid?" TItem="PatientDto" Filtering="@FilterPatientAsync"
-                                        ValueChange="@SearchAsync" />
-                    <AutoCompleteFieldSettings Text="FullName" Value="Id" />
-                </SfAutoComplete>
-
                 <SfDropDownList @bind-Value="@Filter.AppointmentTypeId" TValue="Guid?"
                                 TItem="AppointmentTypeDto" Placeholder="@L["AppointmentType"]"
                                 DataSource="@AppointmentTypeList" AllowFiltering EnableVirtualization
@@ -94,7 +84,14 @@
                                         ValueChange="@SearchAsync"></DropDownListEvents>
                     <DropDownListFieldSettings Text="Name" Value="Id" />
                 </SfDropDownList>
-                
+
+                <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumStatus"
+                                TItem="string" Placeholder="@L["Status"]"
+                                DataSource="@Enum.GetNames(typeof(EnumStatus))" ShowClearButton>
+                    <DropDownListEvents TItem="string" TValue="EnumStatus"
+                                        ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="string" Value="EnumStatus" />
+                </SfDropDownList>
 
                 <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
             </div>
@@ -102,54 +99,54 @@
         <FormButtons></FormButtons>
     </SfDataForm>
 </div>
-
-<SfGrid @ref="SfGrid" TValue="AppointmentDto" Height="600px" DataSource="@AppointmentList"
-         EnableHover EnableVirtualMaskRow EnableStickyHeader>
+ 
+<SfGrid @ref="SfGrid" TValue="AppointmentWithNavigationPropertiesDto" Height="600px" DataSource="@AppointmentList"
+        EnableHover EnableVirtualMaskRow EnableStickyHeader>
     <GridSelectionSettings CheckboxOnly PersistSelection />
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30" ></GridColumn>
-        @* <GridColumn Field="@nameof(AppointmentDto.StartTime)" Format="dd.MM.yyyy hh:mm"></GridColumn> *@
-        @* <GridColumn HeaderText="@L["Status"]">
-        <Template>
-                @{
-                    var dto = (context as AppointmentDto)!;
-                    <ProtocolStatusBadge Status="@dto.Status" />
-                }
-            </Template>
-                </GridColumn>*@
-         @* <GridColumn HeaderText="@L["AppointmentType"]">
-             <Template>
-                @{
-                    var dto = (context as ProtocAppointmentDtoolDto)!;
-                    @(dto.ProtocolType.Name)
-                }
-            </Template> 
-        </GridColumn> *@
-@*         <GridColumn Field="@nameof(AppointmentDto.Description)"></GridColumn>
- *@        @* <GridColumn HeaderText="@L["Patient"]">
-             <Template>
-                @{
-                    var dto = (context as AppointmentDto)!;
-                    @(dto.Patient.FullName)
-                }
-            </Template> 
-        </GridColumn> 
-        <GridColumn HeaderText="@L["Doctor"]">
+        <GridColumn Field="@nameof(AppointmentDto.StartTime)" Format="dd.MM.yyyy hh:mm"></GridColumn>
+        <GridColumn HeaderText="@L["Status"]">
             <Template>
                 @{
                     var dto = (context as AppointmentDto)!;
+                    <AppointmentStatusBadge Status="@dto.Status" />
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["AppointmentType"]">
+            <Template>
+                @{
+                    var dto = (context as AppointmentWithNavigationPropertiesDto)!;
+                    @(dto.AppointmentType.Name)
+                }
+            </Template>
+        </GridColumn>
+        
+        <GridColumn HeaderText="@L["Patient"]">
+            <Template>
+                @{
+                    var dto = (context as AppointmentWithNavigationPropertiesDto)!;
+                    @(dto.Patient.FullName)
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Doctor"]">
+            <Template>
+                @{
+                    var dto = (context as AppointmentWithNavigationPropertiesDto)!;
                     @(dto.Doctor.FullName)
                 }
-            </Template> 
+            </Template>
         </GridColumn>
         <GridColumn HeaderText="@L["Department"]">
-             <Template>
+            <Template>
                 @{
-                    var dto = (context as AppointmentDto)!;
+                    var dto = (context as AppointmentWithNavigationPropertiesDto)!;
                     @(dto.Department.Name)
                 }
-            </Template> 
-        </GridColumn> *@
+            </Template>
+        </GridColumn>
     </GridColumns>
 </SfGrid>
 

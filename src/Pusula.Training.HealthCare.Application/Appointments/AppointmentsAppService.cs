@@ -6,6 +6,7 @@ using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Permissions;
+using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
@@ -38,11 +39,11 @@ public class AppointmentsAppService(
     public virtual async Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
     {
         var totalCount = await appointmentRepository.GetCountAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId
         );
         var items = await appointmentRepository.GetListAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
 
@@ -66,8 +67,14 @@ public class AppointmentsAppService(
     )
     {
         var items = await appointmentRepository.GetListWithNavigationPropertiesAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount
+        );
+
+        var count = await appointmentRepository.GetCountAsync(
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
+            input.DepartmentId, input.DoctorId, input.PatientId
+
         );
 
         return ObjectMapper
@@ -256,7 +263,7 @@ public class AppointmentsAppService(
     [Authorize(HealthCarePermissions.Appointments.Delete)]
     public virtual async Task DeleteAllAsync(GetAppointmentsInput input) =>
         await appointmentRepository.DeleteAllAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId
         );
 
