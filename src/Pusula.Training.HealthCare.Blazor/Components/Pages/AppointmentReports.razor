@@ -34,10 +34,10 @@
             <div class="d-flex gap-2 p-2 align-items-end">
                 <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]" />
 
-                <SfDateRangePicker TValue="DateTime" @bind-StartDate="@Filter.StartTime"
+                <SfDateRangePicker TValue="DateTime?" @bind-StartDate="@Filter.StartTime"
                                    @bind-EndDate="@Filter.EndTime" FullScreen Format="dd.MM.yyyy"
                                    FirstDayOfWeek="@((int)DayOfWeek.Monday)">
-                    <DateRangePickerEvents TValue="DateTime" ValueChange="@SearchAsync"></DateRangePickerEvents>
+                    <DateRangePickerEvents TValue="DateTime?" ValueChange="@SearchAsync"></DateRangePickerEvents>
                     <DateRangePickerPresets>
                         <DateRangePickerPreset Label="@L["Today"]" Start="@Today" End="@Tomorrow" />
                         <DateRangePickerPreset Label="@L["ThisWeek"]" Start="@ThisWeekStart"
@@ -154,13 +154,13 @@
 </SfGrid>
 
 <style>
-    ::deep .e-list-item {
+    .e-list-item {
         padding: 8px !important;
         line-height: normal !important;
         height: auto !important;
     }
 
-    ::deep .e-range-header {
+    .e-range-header {
         display: none !important;
     }
 </style>

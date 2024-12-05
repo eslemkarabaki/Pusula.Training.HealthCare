@@ -57,7 +57,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForMember(e => e.Race, opt => opt.MapFrom(e => e.Country.Name))
             .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType.Name));
 
-        CreateMap<PatientNote, PatientNoteDto>();
+        CreateMap<PatientNote, PatientNoteDto>()
+            .ForMember(e=>e.CreatorName,e=>e.MapFrom(o=>o.Creator!.UserName));
+        
         CreateMap<PatientNoteCreateDto, PatientNote>().ReverseMap();
         CreateMap<PatientNoteUpdateDto, PatientNote>().ReverseMap();
         CreateMap<PatientNoteDto, PatientNoteUpdateDto>();
