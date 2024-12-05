@@ -18,6 +18,7 @@ using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.PatientTypes;
+using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.Data;
@@ -46,27 +47,26 @@ public class HealthCareDataSeederContributor(
     IRadiologyExaminationGroupRepository radiologyExaminationGroupRepository,
     IRadiologyExaminationRepository radiologyExaminationRepository,
     IRadiologyExaminationProcedureRepository radiologyExaminationProcedureRepository,
+    IProtocolRepository protocolRepository,
     IGuidGenerator guidGenerator
 )
     : IDataSeedContributor, ITransientDependency
 {
     public async Task SeedAsync(DataSeedContext context)
     {
-        if (!await patientRepository.AnyAsync())
-        {
-            var countries = await SeedCountriesAsync();
-            var cities = await SeedCitiesAsync(countries);
-            var districts = await SeedDistrictsAsync(cities);
-            var patientTypes = await SeedPatientTypesAsync();
-            var patients = await SeedPatientsAsync(countries, patientTypes);
-            await SeedAddressesAsync(patients, districts);
-            await appDefaultRepository.InsertAsync(
-                new AppDefault(guidGenerator.Create())
-                {
-                    CurrentCountryId = countries.FirstOrDefault(e => e.IsCurrent)?.Id ?? Guid.Empty
-                }
-            );
-        }
+        var countries = await SeedCountriesAsync();
+        var cityIds = await SeedCitiesAsync(countries);
+        var districtIds = await SeedDistrictsAsync(cityIds);
+        var patientTypeIds = await SeedPatientTypesAsync();
+        var patientIds = await SeedPatientsAsync(countries, patientTypeIds);
+        await SeedAddressesAsync(patientIds, districtIds);
+
+        await appDefaultRepository.InsertAsync(
+            new AppDefault(guidGenerator.Create())
+            {
+                CurrentCountryId = countries.FirstOrDefault(e => e.IsCurrent)?.Id ?? Guid.Empty
+            }
+        );
 
         if (await radiologyExaminationGroupRepository.GetCountAsync() == 0)
         {
@@ -75,30 +75,25 @@ public class HealthCareDataSeederContributor(
             //await SeedRadiologyExaminationProcedureAsync(radiologyExaminationGroups);
         }
 
+        var departments = await SeedDepartmentsAsync();
+        var hospital = await SeedHospitalsAsync();
+        var titles = await SeedTitlesAsync();
+        var doctors = await SeedDoctorsAsync(departments, hospital, titles);
 
-        if (!await doctorRepository.AnyAsync())
-        {
-           var departments= await SeedDepartmentsAsync();
-           var hospital=  await SeedHospitalsAsync();
-           var titles= await SeedTitlesAsync();
-           await SeedDoctorsAsync(departments, hospital, titles);
-        }
-
-        if (!await appointmentTypeRepository.AnyAsync())
-        {
-            await SeedAppointmentTypesAsync();
-        }
-
-        if (!await protocolTypeRepository.AnyAsync())
-        {
-            await SeedProtocolTypesAsync();
-        }
+        await SeedAppointmentTypesAsync();
+        var protocolTypeIds = await SeedProtocolTypesAsync();
+        await SeedProtocolsAsync(patientIds, doctors, departments, protocolTypeIds);
     }
 
     // Country
-    private async Task<List<Country>> SeedCountriesAsync()
+    private async Task<IEnumerable<Country>> SeedCountriesAsync()
     {
-        List<Country> countries =
+        if (await countryRepository.AnyAsync())
+        {
+            return await countryRepository.GetListAsync();
+        }
+
+        IEnumerable<Country> countries =
         [
             new(guidGenerator.Create(), "Türkiye", "TR", "90", true),
             new(guidGenerator.Create(), "İngiltere", "UK", "1"),
@@ -112,9 +107,14 @@ public class HealthCareDataSeederContributor(
     }
 
     // City
-    private async Task<List<Guid>> SeedCitiesAsync(List<Country> countries)
+    private async Task<IEnumerable<Guid>> SeedCitiesAsync(IEnumerable<Country> countries)
     {
-        List<City> cities =
+        if (await cityRepository.AnyAsync())
+        {
+            return (await cityRepository.GetListAsync()).Select(e => e.Id);
+        }
+
+        IEnumerable<City> cities =
         [
             new(guidGenerator.Create(), countries.ElementAt(0).Id, "İstanbul"),
             new(guidGenerator.Create(), countries.ElementAt(0).Id, "Ankara"),
@@ -128,27 +128,37 @@ public class HealthCareDataSeederContributor(
     }
 
     // District
-    private async Task<List<Guid>> SeedDistrictsAsync(List<Guid> cities)
+    private async Task<IEnumerable<Guid>> SeedDistrictsAsync(IEnumerable<Guid> cityIds)
     {
-        List<District> districts =
+        if (await districtRepository.AnyAsync())
+        {
+            return (await districtRepository.GetListAsync()).Select(e => e.Id);
+        }
+
+        IEnumerable<District> districts =
         [
-            new(guidGenerator.Create(), cities.ElementAt(0), "Ümraniye"),
-            new(guidGenerator.Create(), cities.ElementAt(0), "Maltepe"),
-            new(guidGenerator.Create(), cities.ElementAt(1), "Çankaya"),
-            new(guidGenerator.Create(), cities.ElementAt(1), "Etimesgut"),
-            new(guidGenerator.Create(), cities.ElementAt(2), "Westminster"),
-            new(guidGenerator.Create(), cities.ElementAt(3), "Charlottenburg-Wilmersdorf"),
-            new(guidGenerator.Create(), cities.ElementAt(4), "Louvre"),
-            new(guidGenerator.Create(), cities.ElementAt(5), "El-Midan")
+            new(guidGenerator.Create(), cityIds.ElementAt(0), "Ümraniye"),
+            new(guidGenerator.Create(), cityIds.ElementAt(0), "Maltepe"),
+            new(guidGenerator.Create(), cityIds.ElementAt(1), "Çankaya"),
+            new(guidGenerator.Create(), cityIds.ElementAt(1), "Etimesgut"),
+            new(guidGenerator.Create(), cityIds.ElementAt(2), "Westminster"),
+            new(guidGenerator.Create(), cityIds.ElementAt(3), "Charlottenburg-Wilmersdorf"),
+            new(guidGenerator.Create(), cityIds.ElementAt(4), "Louvre"),
+            new(guidGenerator.Create(), cityIds.ElementAt(5), "El-Midan")
         ];
 
         return await SeedEntitiesAsync(districts, e => districtRepository.InsertManyAsync(e, true));
     }
 
     // Patient types
-    private async Task<List<Guid>> SeedPatientTypesAsync()
+    private async Task<IEnumerable<Guid>> SeedPatientTypesAsync()
     {
-        List<PatientType> types =
+        if (await patientTypeRepository.AnyAsync())
+        {
+            return (await patientTypeRepository.GetListAsync()).Select(e => e.Id);
+        }
+
+        IEnumerable<PatientType> types =
         [
             new(guidGenerator.Create(), "Normal"),
             new(guidGenerator.Create(), "Yabancı"),
@@ -159,11 +169,16 @@ public class HealthCareDataSeederContributor(
     }
 
     // Patient
-    private async Task<List<Guid>> SeedPatientsAsync(
-        List<Country> countries,
-        List<Guid> patientTypes
+    private async Task<IEnumerable<Guid>> SeedPatientsAsync(
+        IEnumerable<Country> countries,
+        IEnumerable<Guid> patientTypeIds
     )
     {
+        if (await patientRepository.AnyAsync())
+        {
+            return (await patientRepository.GetListAsync(maxResultCount: 100)).Select(e => e.Id);
+        }
+
         var faker = new Faker<Patient>("tr")
             .CustomInstantiator(
                 f =>
@@ -172,7 +187,7 @@ public class HealthCareDataSeederContributor(
                     return new Patient(
                         guidGenerator.Create(),
                         country.Id,
-                        f.PickRandom(patientTypes),
+                        f.PickRandom(patientTypeIds),
                         f.Name.FirstName(),
                         f.Name.LastName(),
                         f.Date.Past(100),
@@ -194,15 +209,15 @@ public class HealthCareDataSeederContributor(
     }
 
     // Address
-    private async Task SeedAddressesAsync(List<Guid> patients, List<Guid> districts)
+    private async Task SeedAddressesAsync(IEnumerable<Guid> patientIds, IEnumerable<Guid> districtIds)
     {
         var faker = new Faker<Address>("tr")
             .CustomInstantiator(
                 f =>
                     new Address(
                         guidGenerator.Create(),
-                        f.PickRandom(patients),
-                        f.PickRandom(districts),
+                        f.PickRandom(patientIds),
+                        f.PickRandom(districtIds),
                         f.Lorem.Word(),
                         f.Address.SecondaryAddress()
                     )
@@ -227,33 +242,53 @@ public class HealthCareDataSeederContributor(
     //    return await SeedEntitiesAsync(faker.Generate(25), e => departmentRepository.InsertManyAsync(e, true));
     //}
 
-    private async Task<List<Guid>> SeedDepartmentsAsync()
+    private async Task<IEnumerable<Guid>> SeedDepartmentsAsync()
     {
-        List<Department> departments =
+        if (await departmentRepository.AnyAsync())
+        {
+            return (await departmentRepository.GetListAsync()).Select(e => e.Id);
+        }
+
+        IEnumerable<Department> departments =
         [
-            new Department(guidGenerator.Create(), "Acil Servis", "Acil durumlar için hızlı müdahale ve tedavi hizmeti.", 15),
-            new Department(guidGenerator.Create(), "Kardiyoloji", "Kalp ve damar hastalıklarının tanı ve tedavisi.", 30),
-            new Department(guidGenerator.Create(), "Nöroloji", "Sinir sistemi hastalıklarının tanı ve tedavisi.", 30),
-            new Department(guidGenerator.Create(), "Ortopedi", "Kas ve iskelet sistemi hastalıklarının tedavisi.", 20),
-            new Department(guidGenerator.Create(), "Dahiliye", "İç hastalıklarının teşhis ve tedavisi.", 30),
-            new Department(guidGenerator.Create(), "Pediatri", "Çocuk sağlığı ve hastalıklarının teşhis ve tedavisi.", 20),
-            new Department(guidGenerator.Create(), "Göz Hastalıkları", "Gözle ilgili hastalıkların tanı ve tedavisi.", 15),
-            new Department(guidGenerator.Create(), "Kulak Burun Boğaz (KBB)", "Kulak, burun ve boğaz hastalıklarının tedavisi.", 15),
-            new Department(guidGenerator.Create(), "Kadın Hastalıkları ve Doğum", "Kadın sağlığı ve doğumla ilgili hastalıkların tanı ve tedavisi.", 30),
-            new Department(guidGenerator.Create(), "Üroloji", "İdrar yolları ve üreme organlarının hastalıklarının tedavisi.", 30),
-            new Department(guidGenerator.Create(), "Dermatoloji", "Cilt hastalıklarının tanı ve tedavisi.", 15),
-            new Department(guidGenerator.Create(), "Onkoloji", "Kanser hastalıklarının teşhis ve tedavisi.", 30),
-            new Department(guidGenerator.Create(), "Psikiyatri", "Ruh sağlığı ve psikolojik hastalıkların tedavisi.", 45),
-            new Department(guidGenerator.Create(), "Fizik Tedavi ve Rehabilitasyon", "Fiziksel hareket kabiliyetini artırmaya yönelik tedavi.", 60),
-            new Department(guidGenerator.Create(), "Endokrinoloji ve Metabolizma Hastalıkları", "Hormon ve metabolizma hastalıklarının tanı ve tedavisi.", 30)
+            new(guidGenerator.Create(), "Acil Servis", "Acil durumlar için hızlı müdahale ve tedavi hizmeti.", 15),
+            new(guidGenerator.Create(), "Kardiyoloji", "Kalp ve damar hastalıklarının tanı ve tedavisi.", 30),
+            new(guidGenerator.Create(), "Nöroloji", "Sinir sistemi hastalıklarının tanı ve tedavisi.", 30),
+            new(guidGenerator.Create(), "Ortopedi", "Kas ve iskelet sistemi hastalıklarının tedavisi.", 20),
+            new(guidGenerator.Create(), "Dahiliye", "İç hastalıklarının teşhis ve tedavisi.", 30),
+            new(guidGenerator.Create(), "Pediatri", "Çocuk sağlığı ve hastalıklarının teşhis ve tedavisi.", 20),
+            new(guidGenerator.Create(), "Göz Hastalıkları", "Gözle ilgili hastalıkların tanı ve tedavisi.", 15),
+            new(
+                guidGenerator.Create(), "Kulak Burun Boğaz (KBB)", "Kulak, burun ve boğaz hastalıklarının tedavisi.", 15
+            ),
+            new(
+                guidGenerator.Create(), "Kadın Hastalıkları ve Doğum",
+                "Kadın sağlığı ve doğumla ilgili hastalıkların tanı ve tedavisi.", 30
+            ),
+            new(guidGenerator.Create(), "Üroloji", "İdrar yolları ve üreme organlarının hastalıklarının tedavisi.", 30),
+            new(guidGenerator.Create(), "Dermatoloji", "Cilt hastalıklarının tanı ve tedavisi.", 15),
+            new(guidGenerator.Create(), "Onkoloji", "Kanser hastalıklarının teşhis ve tedavisi.", 30),
+            new(guidGenerator.Create(), "Psikiyatri", "Ruh sağlığı ve psikolojik hastalıkların tedavisi.", 45),
+            new(
+                guidGenerator.Create(), "Fizik Tedavi ve Rehabilitasyon",
+                "Fiziksel hareket kabiliyetini artırmaya yönelik tedavi.", 60
+            ),
+            new(
+                guidGenerator.Create(), "Endokrinoloji ve Metabolizma Hastalıkları",
+                "Hormon ve metabolizma hastalıklarının tanı ve tedavisi.", 30
+            )
         ];
         return await SeedEntitiesAsync(departments, e => departmentRepository.InsertManyAsync(e, true));
-
     }
 
     // Hospital
     private async Task<Hospital> SeedHospitalsAsync()
     {
+        if (await hospitalRepository.AnyAsync())
+        {
+            return await hospitalRepository.FirstAsync();
+        }
+
         var hospital = new Hospital(
             guidGenerator.Create(),
             "Medical Park",
@@ -264,25 +299,38 @@ public class HealthCareDataSeederContributor(
     }
 
     // Title
-    private async Task<List<Guid>> SeedTitlesAsync()
+    private async Task<IEnumerable<Guid>> SeedTitlesAsync()
     {
-        List<Title> titles =
+        if (await titleRepository.AnyAsync())
+        {
+            return (await titleRepository.GetListAsync()).Select(e => e.Id);
+        }
+
+        IEnumerable<Title> titles =
         [
             new(guidGenerator.Create(), "Prof."),
             new(guidGenerator.Create(), "Dr.")
         ];
 
-       return await SeedEntitiesAsync(titles, e => titleRepository.InsertManyAsync(e, true));
+        return await SeedEntitiesAsync(titles, e => titleRepository.InsertManyAsync(e, true));
     }
-    
+
     // Doctor
-    private async Task SeedDoctorsAsync(List<Guid> departmentsId,Hospital hospital,List<Guid> titleId)
+    private async Task<IEnumerable<Doctor>> SeedDoctorsAsync(
+        IEnumerable<Guid> departmentsId,
+        Hospital hospital,
+        IEnumerable<Guid> titleId
+    )
     {
-        
+        if (await doctorRepository.AnyAsync())
+        {
+            return await doctorRepository.GetListAsync();
+        }
+
         var faker = new Faker<Doctor>("tr")
             .CustomInstantiator(
                 f =>
-                     new Doctor(
+                    new Doctor(
                         guidGenerator.Create(),
                         f.Name.FirstName(),
                         f.Name.LastName(),
@@ -290,53 +338,58 @@ public class HealthCareDataSeederContributor(
                         f.PickRandom(titleId),
                         f.PickRandom(departmentsId),
                         hospital.Id
-                     )
-
+                    )
             );
-        await SeedEntitiesAsync(faker.Generate(100), e => doctorRepository.InsertManyAsync(e, true));
+        var doctors = faker.Generate(100);
+         await SeedEntitiesAsync(doctors, e => doctorRepository.InsertManyAsync(e, true));
+         return doctors;
     }
 
     // Appointment Type
     private async Task SeedAppointmentTypesAsync()
     {
-        List<AppointmentType> appointmentTypes =
+        if (await appointmentTypeRepository.AnyAsync())
+        {
+            return;
+        }
+
+        IEnumerable<AppointmentType> appointmentTypes =
         [
-            new AppointmentType(guidGenerator.Create(),"Genel Muayene"),
-            new AppointmentType(guidGenerator.Create(),"Uzman Görüşü"),
-            new AppointmentType(guidGenerator.Create(),"Acil Durum"),
-            new AppointmentType(guidGenerator.Create(),"Takip Randevusu"),
-            new AppointmentType(guidGenerator.Create(),"Laboratuvar Testi"),
-            new AppointmentType(guidGenerator.Create(),"Rutin Kontrol"),
-            new AppointmentType(guidGenerator.Create(),"Psikolojik Danışmanlık"),
-            new AppointmentType(guidGenerator.Create(),"Psikolojik Danışmanlık"),
-            new AppointmentType(guidGenerator.Create(),"Fizik Tedavi"),
-            new AppointmentType(guidGenerator.Create(),"Aşı Randevusu"),
-            new AppointmentType(guidGenerator.Create(),"Göz Muayenesi")
+            new(guidGenerator.Create(), "Genel Muayene"),
+            new(guidGenerator.Create(), "Uzman Görüşü"),
+            new(guidGenerator.Create(), "Acil Durum"),
+            new(guidGenerator.Create(), "Takip Randevusu"),
+            new(guidGenerator.Create(), "Laboratuvar Testi"),
+            new(guidGenerator.Create(), "Rutin Kontrol"),
+            new(guidGenerator.Create(), "Psikolojik Danışmanlık"),
+            new(guidGenerator.Create(), "Psikolojik Danışmanlık"),
+            new(guidGenerator.Create(), "Fizik Tedavi"),
+            new(guidGenerator.Create(), "Aşı Randevusu"),
+            new(guidGenerator.Create(), "Göz Muayenesi")
         ];
 
         await SeedEntitiesAsync(appointmentTypes, e => appointmentTypeRepository.InsertManyAsync(e, true));
     }
 
-    private async Task<List<Guid>> SeedRadiologyExaminationGroupsAsync()
+    private async Task<IEnumerable<Guid>> SeedRadiologyExaminationGroupsAsync()
     {
         IEnumerable<RadiologyExaminationGroup> groups =
         [
             new(guidGenerator.Create(), "Radyoloji Genel", "Genel radyoloji işlemleri"),
-        new(guidGenerator.Create(), "Manyetik Rezonans (MR)", "Manyetik rezonans görüntüleme işlemleri"),
-        new(guidGenerator.Create(), "Doppler Ultrasonografi", "Kan akışı ve damar incelemeleri")
+            new(guidGenerator.Create(), "Manyetik Rezonans (MR)", "Manyetik rezonans görüntüleme işlemleri"),
+            new(guidGenerator.Create(), "Doppler Ultrasonografi", "Kan akışı ve damar incelemeleri")
         ];
 
         return await SeedEntitiesAsync(groups, e => radiologyExaminationGroupRepository.InsertManyAsync(e, true));
     }
-
 
     private async Task SeedRadiologyExaminationsAsync(IEnumerable<Guid> radiologyExaminationGroups)
     {
         IEnumerable<RadiologyExamination> examinations =
         [
             new(guidGenerator.Create(), "Akciğer Röntgeni", "72081", radiologyExaminationGroups.ElementAt(0)),
-        new(guidGenerator.Create(), "Beyin MR", "70555", radiologyExaminationGroups.ElementAt(1)),
-        new(guidGenerator.Create(), "Karotis Doppler Ultrason", "70552", radiologyExaminationGroups.ElementAt(2))
+            new(guidGenerator.Create(), "Beyin MR", "70555", radiologyExaminationGroups.ElementAt(1)),
+            new(guidGenerator.Create(), "Karotis Doppler Ultrason", "70552", radiologyExaminationGroups.ElementAt(2))
         ];
 
         await SeedEntitiesAsync(examinations, e => radiologyExaminationRepository.InsertManyAsync(e, true));
@@ -354,26 +407,68 @@ public class HealthCareDataSeederContributor(
     //    await SeedEntitiesAsync(procedures, e => radiologyExaminationProcedureRepository.InsertManyAsync(e, true));
     //}
 
-
-
     // Protocol types
-    private async Task SeedProtocolTypesAsync()
+    private async Task<IEnumerable<Guid>> SeedProtocolTypesAsync()
     {
-        List<ProtocolType> protocolTypes =
+        if (await protocolRepository.AnyAsync())
+        {
+            return (await protocolRepository.GetListAsync()).Select(e => e.Id);
+        }
+
+        IEnumerable<ProtocolType> protocolTypes =
         [
-            new(guidGenerator.Create(), "Test"),
-            new(guidGenerator.Create(), "Test2"),
-            new(guidGenerator.Create(), "Test3"),
-            new(guidGenerator.Create(), "Test4"),
-            new(guidGenerator.Create(), "Test5")
+            new(guidGenerator.Create(), "Konsültasyon"),
+            new(guidGenerator.Create(), "Laboratuvar"),
+            new(guidGenerator.Create(), "Radyoloji"),
+            new(guidGenerator.Create(), "Cerrahi İşlem"),
+            new(guidGenerator.Create(), "Diyaliz"),
+            new(guidGenerator.Create(), "Psikiyatri"),
+            new(guidGenerator.Create(), "Yoğun Bakım")
         ];
-        await SeedEntitiesAsync(protocolTypes,e => protocolTypeRepository.InsertManyAsync(e,true));
+        return await SeedEntitiesAsync(protocolTypes, e => protocolTypeRepository.InsertManyAsync(e, true));
     }
-    
+
+    private async Task SeedProtocolsAsync(
+        IEnumerable<Guid> patientIds,
+        IEnumerable<Doctor> doctors,
+        IEnumerable<Guid> departmentIds,
+        IEnumerable<Guid> typeIds
+    )
+    {
+        if (await protocolRepository.AnyAsync())
+        {
+            return;
+        }
+
+        var faker = new Faker<Protocol>("tr")
+            .CustomInstantiator(
+                f =>
+                {
+                    var departmentId = f.PickRandom(departmentIds);
+                    var doctor = f.PickRandom(doctors.Where(e => e.DepartmentId == departmentId));
+                    var protocolStartDate = f.Date.Past(3);
+                    return new Protocol(
+                        guidGenerator.Create(),
+                        f.PickRandom(patientIds),
+                        doctor.Id,
+                        departmentId,
+                        f.PickRandom(typeIds),
+                        null,
+                        f.PickRandomWithout<EnumProtocolStatus>(EnumProtocolStatus.None),
+                        protocolStartDate,
+                        f.Date.Between(protocolStartDate, protocolStartDate.AddMonths(1))
+                    );
+                }
+            );
+        await SeedEntitiesAsync(faker.Generate(500), e => protocolRepository.InsertManyAsync(e, true));
+    }
+
     // Generic Entities
-    private async Task<List<Guid>> SeedEntitiesAsync<T>(IEnumerable<T> entities,
-                                                    Func<IEnumerable<T>, Task> insertFunction)
-    where T : AggregateRoot<Guid>
+    private async Task<IEnumerable<Guid>> SeedEntitiesAsync<T>(
+        IEnumerable<T> entities,
+        Func<IEnumerable<T>, Task> insertFunction
+    )
+        where T : AggregateRoot<Guid>
     {
         await insertFunction(entities);
         return entities.Select(e => e.Id).ToList();

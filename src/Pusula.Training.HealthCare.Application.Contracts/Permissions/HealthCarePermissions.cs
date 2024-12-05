@@ -47,6 +47,15 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class PatientNotes
+    {
+        public const string Default = GroupName + ".PatientNotes";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
     public static class ProtocolTypes
     {
         public const string Default = GroupName + ".ProtocolTypes";
@@ -176,6 +185,7 @@ public static class HealthCarePermissions
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
     }
+
     public static class TestProcesses
     {
         public const string Default = GroupName + ".TestProcesses";
@@ -183,6 +193,7 @@ public static class HealthCarePermissions
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
     }
+
     public static class WorkLists
     {
         public const string Default = GroupName + ".WorkLists";
@@ -191,7 +202,8 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-    #region Radiology
+#region Radiology
+
     public static class RadiologyExaminationGroups
     {
         public const string Default = GroupName + ".RadiologyExaminationGroups";
@@ -224,6 +236,5 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-    #endregion
+#endregion
 }
-

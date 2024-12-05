@@ -6,7 +6,6 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
-using Pusula.Training.HealthCare.Addresses;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -154,9 +153,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         return
             from patient in dbContext
                             .Patients.Include(e => e.Addresses)
-                            .ThenInclude(e => e.District)
-                            .ThenInclude(e => e.City)
-                            .ThenInclude(e => e.Country)
+                            .ThenInclude(e => e.District.City.Country)
             join country in dbContext.Countries
                 on patient.CountryId equals country.Id
                 into countries
@@ -165,11 +162,15 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                 on patient.PatientTypeId equals patientType.Id
                 into patientTypes
             from patientType in patientTypes.DefaultIfEmpty()
+            join patientNote in dbContext.PatientNotes.Include(e=>e.Creator)
+                on patient.Id equals patientNote.PatientId
+                into patientNotes
             select new PatientWithNavigationProperties
             {
                 Patient = patient,
                 Country = country,
-                PatientType = patientType
+                PatientType = patientType,
+                PatientNotes = patientNotes.AsEnumerable()
             };
     }
 
@@ -338,7 +339,7 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
 
 #endregion
 
-    private string GetSorting(string? sorting, bool withEntityName) =>
+    protected virtual string GetSorting(string? sorting, bool withEntityName) =>
         sorting.IsNullOrWhiteSpace() ?
             PatientConsts.GetDefaultSorting(withEntityName) :
             $"{(withEntityName ? "Patient." : string.Empty)}{sorting}";
