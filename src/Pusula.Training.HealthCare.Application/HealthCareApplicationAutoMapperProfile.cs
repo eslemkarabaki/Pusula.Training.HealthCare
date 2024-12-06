@@ -28,6 +28,8 @@ using System.Net.Sockets;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Insurances;
+using Pusula.Training.HealthCare.RadiologyRequests;
+using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Pusula.Training.HealthCare.PatientNotes;
 
 namespace Pusula.Training.HealthCare;
@@ -147,14 +149,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<TestGroup, TestGroupDto>();
         CreateMap<TestGroup, TestGroupExcelDto>();
         CreateMap<TestGroupDto, TestGroupUpdateDto>();
-        CreateMap<TestGroup, LookupDto<Guid>>()
-            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
-
-        //CreateMap<Notification, NotificationDto>();
-        //CreateMap<Notification, NotificationExcelDto>();
-        //CreateMap<NotificationDto, NotificationUpdateDto>();
-
-#region Radiology
+        CreateMap<TestGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+         
+        #region Radiology
 
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupExcelDto>();
@@ -179,6 +176,17 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<RadiologyExaminationDocument, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DocumentName));
 
-#endregion
+        CreateMap<RadiologyRequest, RadiologyRequestDto>();
+        CreateMap<RadiologyRequest, RadiologyRequestExcelDownloadDto>();
+        CreateMap<RadiologyRequestDto, RadiologyRequestUpdateDto>();
+        CreateMap<RadiologyRequestWithNavigationProperties, RadiologyRequestWithNavigationPropertiesDto>();
+
+        CreateMap<RadiologyRequestItem, RadiologyRequestItemDto>();
+        CreateMap<RadiologyRequestItem, RadiologyRequestItemExcelDownloadDto>();
+        CreateMap<RadiologyRequestItemDto, RadiologyRequestItemUpdateDto>();
+        CreateMap<RadiologyRequestItemWithNavigationProperties, RadiologyRequestItemWithNavigationPropertiesDto>();
+
+
+        #endregion 
     }
 }

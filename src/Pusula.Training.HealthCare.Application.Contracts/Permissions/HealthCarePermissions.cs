@@ -236,5 +236,22 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-#endregion
+    public static class RadiologyRequests
+    {
+        public const string Default = GroupName + ".RadiologyRequests";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyRequestItems
+    {
+        public const string Default = GroupName + ".RadiologyRequestItems";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    #endregion
 }
+
