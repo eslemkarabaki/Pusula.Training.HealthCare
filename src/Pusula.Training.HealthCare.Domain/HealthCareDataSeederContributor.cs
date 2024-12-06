@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bogus;
-using Bogus.DataSets;
+using Bogus; 
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.AppointmentTypes;
@@ -14,8 +13,7 @@ using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Patients;
-using Pusula.Training.HealthCare.RadiologyExaminationGroups;
-using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using Pusula.Training.HealthCare.RadiologyExaminationGroups; 
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Protocols;
@@ -27,6 +25,9 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Address = Pusula.Training.HealthCare.Addresses.Address;
+using Pusula.Training.HealthCare.Protocols;
+using Pusula.Training.HealthCare.RadiologyRequests;
+using Pusula.Training.HealthCare.RadioloyRequestItems;
 
 namespace Pusula.Training.HealthCare;
 
@@ -46,6 +47,9 @@ public class HealthCareDataSeederContributor(
     IProtocolTypeRepository protocolTypeRepository,
     IRadiologyExaminationGroupRepository radiologyExaminationGroupRepository,
     IRadiologyExaminationRepository radiologyExaminationRepository,
+    IProtocolRepository protocolRepository,
+    IRadiologyRequestRepository radiologyRequestRepository,
+    IRadiologyRequestItemRepository radiologyRequestItemRepository,
     IRadiologyExaminationProcedureRepository radiologyExaminationProcedureRepository,
     IProtocolRepository protocolRepository,
     IGuidGenerator guidGenerator
@@ -72,7 +76,6 @@ public class HealthCareDataSeederContributor(
         {
             var radiologyExaminationGroups = await SeedRadiologyExaminationGroupsAsync();
             await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
-            //await SeedRadiologyExaminationProcedureAsync(radiologyExaminationGroups);
         }
 
         var departments = await SeedDepartmentsAsync();
@@ -224,7 +227,7 @@ public class HealthCareDataSeederContributor(
             );
 
         await addressRepository.InsertManyAsync(faker.Generate(200), true);
-    }
+    } 
 
     // Department
     //private async Task<List<Guid>> SeedDepartmentsAsync()
@@ -395,17 +398,45 @@ public class HealthCareDataSeederContributor(
         await SeedEntitiesAsync(examinations, e => radiologyExaminationRepository.InsertManyAsync(e, true));
     }
 
-    //private async Task SeedRadiologyExaminationProcedureAsync(IEnumerable<Guid> radiologyExaminationProcedures)
-    //{
-    //    IEnumerable<RadiologyExaminationProcedure> procedures =
-    //    [
-    //        new(guidGenerator.Create(), "Akciğer Röntgeni", DateTime.Now, Guid.NewGuid(), radiologyExaminationProcedures.ElementAt(0), Guid.NewGuid()),
-    //    new(guidGenerator.Create(), "Beyin MR", DateTime.Now, Guid.NewGuid(), radiologyExaminationProcedures.ElementAt(1), Guid.NewGuid()),
-    //    new(guidGenerator.Create(), "Karotis Doppler Ultrason", DateTime.Now, Guid.NewGuid(), radiologyExaminationProcedures.ElementAt(2), Guid.NewGuid())
-    //    ];
+    private async Task<List<Guid>> SeedRadiologyRequestsAsync(List<Guid> protocolIds, List<Guid> departmentIds, List<Guid> doctorIds)
+    {
+        var faker = new Faker<RadiologyRequest>("tr")
+            .CustomInstantiator(
+                f =>
+                    new RadiologyRequest(
+                        guidGenerator.Create(),
+                        f.Date.Recent(30),
+                        f.PickRandom(protocolIds), 
+                        f.PickRandom(departmentIds),
+                        f.PickRandom(doctorIds)
+                    )
+            );
+         
+        var radiologyRequests = faker.Generate(50);
 
-    //    await SeedEntitiesAsync(procedures, e => radiologyExaminationProcedureRepository.InsertManyAsync(e, true));
-    //}
+        return await SeedEntitiesAsync(radiologyRequests, e => radiologyRequestRepository.InsertManyAsync(e, true));
+    }
+
+    private async Task SeedRadiologyRequestItemsAsync(List<Guid> radiologyRequestIds, List<Guid> examinationIds)
+    {
+        var faker = new Faker<RadiologyRequestItem>("tr")
+            .CustomInstantiator(
+                f =>
+                    new RadiologyRequestItem(
+                        guidGenerator.Create(),
+                        f.PickRandom(radiologyRequestIds),
+                        f.PickRandom(examinationIds),
+                        f.Lorem.Sentence(),
+                        f.Date.Recent(10),
+                        f.Random.Enum<RadiologyRequestItemState>()
+                    )
+            );
+         
+        var radiologyRequestItems = faker.Generate(100);
+
+        await SeedEntitiesAsync(radiologyRequestItems, e => radiologyRequestItemRepository.InsertManyAsync(e, true));
+    }
+
 
     // Protocol types
     private async Task<IEnumerable<Guid>> SeedProtocolTypesAsync()
