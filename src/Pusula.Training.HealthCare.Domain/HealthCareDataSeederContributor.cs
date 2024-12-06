@@ -24,10 +24,10 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
-using Address = Pusula.Training.HealthCare.Addresses.Address;
-using Pusula.Training.HealthCare.Protocols;
+using Address = Pusula.Training.HealthCare.Addresses.Address; 
 using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
+using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 
 namespace Pusula.Training.HealthCare;
 
@@ -49,9 +49,7 @@ public class HealthCareDataSeederContributor(
     IRadiologyExaminationRepository radiologyExaminationRepository,
     IProtocolRepository protocolRepository,
     IRadiologyRequestRepository radiologyRequestRepository,
-    IRadiologyRequestItemRepository radiologyRequestItemRepository,
-    IRadiologyExaminationProcedureRepository radiologyExaminationProcedureRepository,
-    IProtocolRepository protocolRepository,
+    IRadiologyRequestItemRepository radiologyRequestItemRepository, 
     IGuidGenerator guidGenerator
 )
     : IDataSeedContributor, ITransientDependency
@@ -396,47 +394,7 @@ public class HealthCareDataSeederContributor(
         ];
 
         await SeedEntitiesAsync(examinations, e => radiologyExaminationRepository.InsertManyAsync(e, true));
-    }
-
-    private async Task<List<Guid>> SeedRadiologyRequestsAsync(List<Guid> protocolIds, List<Guid> departmentIds, List<Guid> doctorIds)
-    {
-        var faker = new Faker<RadiologyRequest>("tr")
-            .CustomInstantiator(
-                f =>
-                    new RadiologyRequest(
-                        guidGenerator.Create(),
-                        f.Date.Recent(30),
-                        f.PickRandom(protocolIds), 
-                        f.PickRandom(departmentIds),
-                        f.PickRandom(doctorIds)
-                    )
-            );
-         
-        var radiologyRequests = faker.Generate(50);
-
-        return await SeedEntitiesAsync(radiologyRequests, e => radiologyRequestRepository.InsertManyAsync(e, true));
-    }
-
-    private async Task SeedRadiologyRequestItemsAsync(List<Guid> radiologyRequestIds, List<Guid> examinationIds)
-    {
-        var faker = new Faker<RadiologyRequestItem>("tr")
-            .CustomInstantiator(
-                f =>
-                    new RadiologyRequestItem(
-                        guidGenerator.Create(),
-                        f.PickRandom(radiologyRequestIds),
-                        f.PickRandom(examinationIds),
-                        f.Lorem.Sentence(),
-                        f.Date.Recent(10),
-                        f.Random.Enum<RadiologyRequestItemState>()
-                    )
-            );
-         
-        var radiologyRequestItems = faker.Generate(100);
-
-        await SeedEntitiesAsync(radiologyRequestItems, e => radiologyRequestItemRepository.InsertManyAsync(e, true));
-    }
-
+    } 
 
     // Protocol types
     private async Task<IEnumerable<Guid>> SeedProtocolTypesAsync()
