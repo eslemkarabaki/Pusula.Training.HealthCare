@@ -46,6 +46,8 @@ using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 using ProtocolType = Pusula.Training.HealthCare.ProtocolTypes.ProtocolType;
+using Pusula.Training.HealthCare.RadiologyRequests;
+using Pusula.Training.HealthCare.RadioloyRequestItems;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -90,6 +92,8 @@ public class HealthCareDbContext :
     public DbSet<RadiologyExamination> RadiologyExaminations { get; set; } = null!;
     public DbSet<RadiologyExaminationProcedure> RadiologyExaminationProcedures { get; set; } = null!;
     public DbSet<RadiologyExaminationDocument> RadiologyExaminationDocuments { get; set; } = null!;
+    public DbSet<RadiologyRequest> RadiologyRequests {  get; set; } = null!;
+    public DbSet<RadiologyRequestItem> RadiologyRequestItems { get; set; } = null!;
 
     #endregion
 

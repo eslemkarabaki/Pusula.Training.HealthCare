@@ -28,6 +28,8 @@ using System.Net.Sockets;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Insurances;
+using Pusula.Training.HealthCare.RadiologyRequests;
+using Pusula.Training.HealthCare.RadioloyRequestItems;
 
 namespace Pusula.Training.HealthCare;
 
@@ -140,10 +142,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<TestGroup, TestGroupExcelDto>();
         CreateMap<TestGroupDto, TestGroupUpdateDto>();
         CreateMap<TestGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
-
-        //CreateMap<Notification, NotificationDto>();
-        //CreateMap<Notification, NotificationExcelDto>();
-        //CreateMap<NotificationDto, NotificationUpdateDto>();
+         
         #region Radiology
 
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
@@ -164,6 +163,17 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>(); 
         CreateMap<RadiologyExaminationDocumentDto, RadiologyExaminationDocumentUpdateDto>();
         CreateMap<RadiologyExaminationDocument, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DocumentName));
+
+        CreateMap<RadiologyRequest, RadiologyRequestDto>();
+        CreateMap<RadiologyRequest, RadiologyRequestExcelDownloadDto>();
+        CreateMap<RadiologyRequestDto, RadiologyRequestUpdateDto>();
+        CreateMap<RadiologyRequestWithNavigationProperties, RadiologyRequestWithNavigationPropertiesDto>();
+
+        CreateMap<RadiologyRequestItem, RadiologyRequestItemDto>();
+        CreateMap<RadiologyRequestItem, RadiologyRequestItemExcelDownloadDto>();
+        CreateMap<RadiologyRequestItemDto, RadiologyRequestItemUpdateDto>();
+        CreateMap<RadiologyRequestItemWithNavigationProperties, RadiologyRequestItemWithNavigationPropertiesDto>();
+
 
         #endregion 
     }
