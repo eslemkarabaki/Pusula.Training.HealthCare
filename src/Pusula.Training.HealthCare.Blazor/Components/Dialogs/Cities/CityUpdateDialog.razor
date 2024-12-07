@@ -1,4 +1,6 @@
 ﻿@using Pusula.Training.HealthCare.Cities
+@using Pusula.Training.HealthCare.Countries
+@using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.DataForm
 @using Blazored.FluentValidation
@@ -8,6 +10,8 @@
 @inherits HealthCareComponentBase
 
 @inject ICityAppService CityAppService
+@inject ICountryAppService CountryAppService
+
 
 <SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
@@ -26,7 +30,15 @@
                         <SfTextBox @bind-Value="@EditingCity.Name"
                                    Placeholder="@L["City"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
                         
-                    </div>
+                   <SfDropDownList TValue="Guid?"
+                                TItem="CountryDto" Placeholder="@L["Country"]"
+                                DataSource="@CountryList" AllowFiltering EnableVirtualization
+                                ShowClearButton PopupHeight="300px">
+                            <DropDownListEvents TItem="CountryDto" TValue="Guid?"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="Name" Value="Id"/>
+                </SfDropDownList>
+
+                               </div>
                 </FormTemplate>
                 <FormButtons>
                     <SfButton type="button" CssClass="e-outline"
@@ -51,6 +63,9 @@
 
     private CityUpdateDtoValidator EditingCityValidator { get; set; } = null!;
 
+    private IReadOnlyList<CountryDto> CountryList { get; set; } = [];
+
+
     private async Task OnSaveClickAsync(EditContext context)
     {
         await OnValidSaveAsync.InvokeAsync(EditingCity);
@@ -69,6 +84,11 @@
     {
         EditingCity = new CityUpdateDto();
         await Dialog.HideAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CountryList = await CountryAppService.GetListAsync();
     }
 
 }

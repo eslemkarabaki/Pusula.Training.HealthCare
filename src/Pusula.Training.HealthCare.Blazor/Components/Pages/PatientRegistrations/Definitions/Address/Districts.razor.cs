@@ -1,51 +1,29 @@
-using Blazorise;
-using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Authorization;
-using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Pusula.Training.HealthCare.Cities;
-using Volo.Abp.Application.Dtos;
-using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
-using Volo.Abp.BlazoriseUI.Components;
+using Syncfusion.Blazor.Grids;
+using Pusula.Training.HealthCare.Districts;
+using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Districts;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientRegistrations.Definitions.Address;
 
 public partial class Districts
 {
+    private SfGrid<DistrictDto> SfGrid { get; set; } = null!;
+
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
-    protected PageToolbar Toolbar { get; } = new();
-    protected bool ShowAdvancedFilters { get; set; }
 
-    private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
-    private int CurrentPage { get; set; } = 1;
-    private string CurrentSorting { get; set; } = string.Empty;
-    private int TotalCount { get; set; }
+    private List<DistrictDto> DistrictList { get; set; } = [];
 
-    private IReadOnlyList<DistrictDto> DistrictList { get; set; } = [];
-    private IReadOnlyList<CityDto> CityList { get; set; } = [];
-    private GetDistrictsInput Filter { get; set; }
-
-    private DataGridEntityActionsColumn<DistrictDto> EntityActionsColumn { get; set; } = new();
-
-    private List<DistrictDto> SelectedDistricts { get; set; } = [];
     private bool AllDistrictsSelected { get; set; }
-
-    public Districts() =>
-        Filter = new GetDistrictsInput
-        {
-            MaxResultCount = PageSize,
-            SkipCount = (CurrentPage - 1) * PageSize,
-            Sorting = CurrentSorting
-        };
 
     protected override async Task OnInitializedAsync()
     {
         await SetPermissionsAsync();
-        CityList = await CityAppService.GetListWithDetailsAsync();
+        await GetDistrictsAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -53,137 +31,51 @@ public partial class Districts
         if (firstRender)
         {
             await SetBreadcrumbItemsAsync();
-            await SetToolbarItemsAsync();
             await InvokeAsync(StateHasChanged);
         }
     }
 
     protected virtual ValueTask SetBreadcrumbItemsAsync()
     {
-        BreadcrumbItems.Add(new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["Districts"]));
-        return ValueTask.CompletedTask;
-    }
-
-    protected virtual ValueTask SetToolbarItemsAsync()
-    {
-        // Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
-
-        Toolbar.AddButton(
-            L["NewDistrict"], OpenCreateDistrictModalAsync, IconName.Add,
-            requiredPolicyName: HealthCarePermissions.Districts.Create
-        );
-
+        BreadcrumbItems.Add(new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["Patients"]));
         return ValueTask.CompletedTask;
     }
 
     private async Task GetDistrictsAsync()
     {
-        Filter.MaxResultCount = PageSize;
-        Filter.SkipCount = (CurrentPage - 1) * PageSize;
-        Filter.Sorting = CurrentSorting;
-
-        var result = await DistrictAppService.GetListWithDetailsAsync(Filter);
-        DistrictList = result.Items;
-        TotalCount = (int)result.TotalCount;
-
+        DistrictList = await DistrictAppService.GetListWithDetailsAsync();
         await ClearSelection();
     }
 
-    protected virtual async Task SearchAsync()
-    {
-        CurrentPage = 1;
-        await GetDistrictsAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    // private async Task DownloadAsExcelAsync()
-    // {
-    //     var token = (await DistrictsAppService.GetDownloadTokenAsync()).Token;
-    //     var remoteService =
-    //         await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("HealthCare") ??
-    //         await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
-    //     var culture = CultureInfo.CurrentUICulture.Name ?? CultureInfo.CurrentCulture.Name;
-    //
-    //     NavigationManager.NavigateTo(
-    //         $"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/countrys/as-excel-file?DownloadToken={token}{Filter.ToQueryParameterString(culture)}",
-    //         true);
-    // }
-
-#region DataGrid
-
-    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<DistrictDto> e)
-    {
-        CurrentSorting = e
-                         .Columns
-                         .Where(c => c.SortDirection != SortDirection.Default)
-                         .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
-                         .JoinAsString(",");
-        CurrentPage = e.Page;
-        await GetDistrictsAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private Task SelectAllItems()
-    {
-        AllDistrictsSelected = true;
-
-        return Task.CompletedTask;
-    }
+    #region DataGrid
 
     private Task ClearSelection()
     {
         AllDistrictsSelected = false;
-        SelectedDistricts.Clear();
+        SfGrid.SelectedRecords.Clear();
 
         return Task.CompletedTask;
     }
 
-    private Task SelectedDistrictRowsChanged()
+    private Task SelectedDistrictRowChangedAsync()
     {
-        AllDistrictsSelected = DistrictList.Count < PageSize ?
-            SelectedDistricts.Count == DistrictList.Count :
-            SelectedDistricts.Count == PageSize;
-
+        AllDistrictsSelected = SfGrid.SelectedRecords.Count == DistrictList.Count;
         return Task.CompletedTask;
     }
 
-#endregion
+    #endregion
 
-#region Create
+    #region Create
 
-    private DistrictCreateDto NewDistrict { get; set; } = new();
-    private Validations NewDistrictValidations { get; set; } = new();
-    private Modal CreateDistrictModal { get; set; } = new();
+    private DistrictCreateDialog CreateDistrictDialog { get; set; } = null!;
+    private async Task OpenCreateDistrictDialogAsync() => await CreateDistrictDialog.ShowAsync();
 
-    protected string SelectedCreateTab = "district-create-tab";
-
-    private async Task OpenCreateDistrictModalAsync()
-    {
-        NewDistrict = new DistrictCreateDto();
-        SelectedCreateTab = "district-create-tab";
-
-        await NewDistrictValidations.ClearAll();
-        await CreateDistrictModal.Show();
-    }
-
-    private async Task CloseCreateDistrictModalAsync()
-    {
-        NewDistrict = new DistrictCreateDto();
-        await CreateDistrictModal.Hide();
-    }
-
-    private async Task CreateDistrictAsync()
+    private async Task CreateDistrictAsync(DistrictCreateDto patient)
     {
         try
         {
-            if (await NewDistrictValidations.ValidateAll() == false)
-            {
-                return;
-            }
-
-            await DistrictAppService.CreateAsync(NewDistrict);
+            await DistrictAppService.CreateAsync(patient);
             await GetDistrictsAsync();
-            await CloseCreateDistrictModalAsync();
         }
         catch (Exception ex)
         {
@@ -191,44 +83,25 @@ public partial class Districts
         }
     }
 
-#endregion
+    #endregion
 
-#region Update
+    #region Update
 
-    private DistrictUpdateDto EditingDistrict { get; set; } = new();
-    private Validations EditingDistrictValidations { get; set; } = new();
+    private DistrictUpdateDialog UpdateDistrictDialog { get; set; } = null!;
     private Guid EditingDistrictId { get; set; }
-    private Modal EditDistrictModal { get; set; } = new();
-
-    protected string SelectedEditTab = "district-edit-tab";
 
     private async Task OpenEditDistrictModalAsync(DistrictDto input)
     {
-        SelectedEditTab = "district-edit-tab";
-
-        var country = await DistrictAppService.GetAsync(input.Id);
-
-        EditingDistrictId = country.Id;
-        EditingDistrict = ObjectMapper.Map<DistrictDto, DistrictUpdateDto>(country);
-
-        await EditingDistrictValidations.ClearAll();
-        await EditDistrictModal.Show();
+        EditingDistrictId = input.Id;
+        await UpdateDistrictDialog.ShowAsync(EditingDistrictId);
     }
 
-    private async Task CloseEditDistrictModalAsync() => await EditDistrictModal.Hide();
-
-    private async Task UpdateDistrictAsync()
+    private async Task UpdateDistrictAsync(DistrictUpdateDto dto)
     {
         try
         {
-            if (await EditingDistrictValidations.ValidateAll() == false)
-            {
-                return;
-            }
-
-            await DistrictAppService.UpdateAsync(EditingDistrictId, EditingDistrict);
+            await DistrictAppService.UpdateAsync(EditingDistrictId, dto);
             await GetDistrictsAsync();
-            await EditDistrictModal.Hide();
         }
         catch (Exception ex)
         {
@@ -236,60 +109,39 @@ public partial class Districts
         }
     }
 
-#endregion
+    #endregion
 
-#region Delete
+    #region Delete
 
     private async Task DeleteDistrictAsync(DistrictDto input)
     {
-        await DistrictAppService.DeleteAsync(input.Id);
-        await GetDistrictsAsync();
+        var isConfirm = await DialogService.ConfirmAsync("Are you sure you want to delete these item?", "Delete Item");
+        if (isConfirm)
+        {
+            await DistrictAppService.DeleteAsync(input.Id);
+            await GetDistrictsAsync();
+        }
     }
 
     private async Task DeleteSelectedDistrictsAsync()
     {
         var message = AllDistrictsSelected ?
             L["DeleteAllRecords"].Value :
-            L["DeleteSelectedRecords", SelectedDistricts.Count].Value;
+            L["DeleteSelectedRecords", SfGrid.SelectedRecords.Count].Value;
+        var isConfirm = await DialogService.ConfirmAsync(message, "Delete Item");
 
-        if (!await UiMessageService.Confirm(message))
+        if (!isConfirm)
         {
             return;
         }
 
-        if (AllDistrictsSelected)
-        {
-            await DistrictAppService.DeleteAllAsync(Filter);
-        } else
-        {
-            await DistrictAppService.DeleteByIdsAsync(SelectedDistricts.Select(x => x.Id).ToList());
-        }
-
-        SelectedDistricts.Clear();
-        AllDistrictsSelected = false;
-
+        await DistrictAppService.DeleteByIdsAsync(SfGrid.SelectedRecords.Select(x => x.Id).ToList());
         await GetDistrictsAsync();
     }
 
-#endregion
+    #endregion
 
-#region Manual Binding Events
-
-    protected virtual async Task OnNameChangedAsync(string? name)
-    {
-        Filter.Name = name;
-        await SearchAsync();
-    }
-
-    protected virtual async Task OnCityIdChangedAsync(Guid? cityId)
-    {
-        Filter.CityId = cityId;
-        await SearchAsync();
-    }
-
-#endregion
-
-#region Permission
+    #region Permission
 
     private bool CanCreateDistrict { get; set; }
     private bool CanEditDistrict { get; set; }
@@ -305,5 +157,6 @@ public partial class Districts
             .IsGrantedAsync(HealthCarePermissions.Districts.Delete);
     }
 
-#endregion
+    #endregion
 }
+

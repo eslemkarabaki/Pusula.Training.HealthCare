@@ -210,9 +210,17 @@ public class AppointmentsAppService(
         return ObjectMapper.Map<Appointment, AppointmentDto>(appointment);
     }
 
-#endregion
+    [Authorize(HealthCarePermissions.Appointments.Edit)]
+    public virtual async Task<AppointmentDto> UpdateDateAsync(Guid id, DateTime startTime, DateTime endTime)
+    {
+        var appointment = await appointmentManager.UpdateDateAsync(id, startTime, endTime);
 
-#region GetListAsExcelFile
+        return ObjectMapper.Map<Appointment, AppointmentDto>(appointment);
+    }
+
+    #endregion
+
+    #region GetListAsExcelFile
 
     [AllowAnonymous]
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(AppointmentExcelDownloadDto input)

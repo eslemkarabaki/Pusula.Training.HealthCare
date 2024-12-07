@@ -105,12 +105,19 @@
     <GridSelectionSettings CheckboxOnly PersistSelection />
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30" ></GridColumn>
-        <GridColumn Field="@nameof(AppointmentDto.StartTime)" Format="dd.MM.yyyy hh:mm"></GridColumn>
+        <GridColumn HeaderText="Start Time">
+            <Template>
+                @{
+                    var dto = (context as AppointmentWithNavigationPropertiesDto)!;
+                    @(dto.Appointment.StartTime)
+                }
+            </Template>
+        </GridColumn>
         <GridColumn HeaderText="@L["Status"]">
             <Template>
                 @{
-                    var dto = (context as AppointmentDto)!;
-                    <AppointmentStatusBadge Status="@dto.Status" />
+                    var dto = (context as AppointmentWithNavigationPropertiesDto)!;
+                    <AppointmentStatusBadge Status="@dto.Appointment.Status" />
                 }
             </Template>
         </GridColumn>

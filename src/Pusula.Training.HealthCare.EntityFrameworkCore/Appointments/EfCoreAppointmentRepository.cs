@@ -105,12 +105,11 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         return query
                 .WhereIf(startTime.HasValue, e => e.Appointment.StartTime >= startTime!.Value)
                 .WhereIf(endTime.HasValue, e => e.Appointment.EndTime <= endTime!.Value)
-                .WhereIf(!string.IsNullOrWhiteSpace(note), e => e.Appointment.Note!.Contains(note!))
-                .WhereIf(status.HasValue, e => e.Appointment.Status == status!.Value) 
-                .WhereIf(appointmentTypeId != null && appointmentTypeId != Guid.Empty, e => e.AppointmentType != null && e.AppointmentType.Id == appointmentTypeId)
-                .WhereIf(departmentId != null && departmentId != Guid.Empty, e => e.Department != null && e.Department.Id == departmentId)
-                .WhereIf(doctorId != null && doctorId != Guid.Empty, e => e.Doctor != null && e.Doctor.Id == doctorId)
-                .WhereIf(patientId != null && patientId != Guid.Empty, e => e.Patient != null && e.Patient.Id == patientId);
+                .WhereIf(status.HasValue && status != 0, e => e.Appointment.Status == status!.Value)
+                .WhereIf(appointmentTypeId.HasValue, e => e.AppointmentType.Id == appointmentTypeId!.Value)
+                .WhereIf(departmentId.HasValue, e => e.Department.Id == departmentId!.Value)
+                .WhereIf(doctorId.HasValue, e => e.Doctor.Id == doctorId!.Value)
+                .WhereIf(patientId.HasValue, e => e.Patient.Id == patientId!.Value);
     }
     #endregion
 

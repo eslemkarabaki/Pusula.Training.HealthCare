@@ -52,6 +52,18 @@ namespace Pusula.Training.HealthCare.Appointments
             appointment.SetConcurrencyStampIfNotNull(concurrencyStamp);
             return await appointmentRepository.UpdateAsync(appointment);
         }
+
+        public virtual async Task<Appointment> UpdateDateAsync(Guid id,            
+            DateTime startTime, DateTime endTime,            
+            [CanBeNull] string? concurrencyStamp = null)
+        {
+            var appointment = await appointmentRepository.GetAsync(id);            
+            appointment.SetStartTime(startTime);
+            appointment.SetEndTime(endTime);
+            
+            appointment.SetConcurrencyStampIfNotNull(concurrencyStamp);
+            return await appointmentRepository.UpdateAsync(appointment);
+        }
         #endregion
     }
 }
