@@ -70,6 +70,11 @@ public class AppointmentController : HealthCareController, IAppointmentsAppServi
     public virtual Task<AppointmentDto> UpdateAsync(Guid id, AppointmentUpdateDto input) =>
         _appointmentsAppService.UpdateAsync(id, input);
 
+    [HttpPut]
+    [Route("date/{id}")]
+    public virtual Task<AppointmentDto> UpdateDateAsync(Guid id, [FromQuery]DateTime startTime, [FromQuery]DateTime endTime) =>
+        _appointmentsAppService.UpdateDateAsync(id,startTime,endTime);
+
     [HttpDelete]
     [Route("{id}")]
     public virtual Task DeleteAsync(Guid id) => _appointmentsAppService.DeleteAsync(id);

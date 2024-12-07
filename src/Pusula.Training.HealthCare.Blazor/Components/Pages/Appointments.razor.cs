@@ -17,6 +17,9 @@ using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.PatientTypes;
 using System.Collections.ObjectModel;
 using Syncfusion.Blazor.Popups;
+using Pusula.Training.HealthCare.Shared;
+using System.Linq.Dynamic.Core;
+using Volo.Abp.Application.Dtos;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
@@ -32,8 +35,8 @@ public partial class Appointments
     private List<AppointmentTypeDto> AppointmentTypes { get; set; } = [];
     private Guid SelectedDepartmentId { get; set; }
     private Guid SelectedDoctorId { get; set; }
-    private IReadOnlyList<PatientDto> Patients { get; set; } = [];
-    private SfAutoComplete<Guid, PatientDto> refAutoComplatePatient { get; set; }
+    private IReadOnlyList<LookupDto<Guid>> Patients { get; set; } = [];
+    private SfAutoComplete<Guid, LookupDto<Guid>> refAutoComplatePatient { get; set; }
     private SfAutoComplete<Guid, DepartmentDto> refAutoComplateDepartment { get; set; }
     private bool valueSelected => SelectedDepartmentId != Guid.Empty && SelectedDoctorId != Guid.Empty;
     private View CurrentView { get; set; } = View.Week;
@@ -90,14 +93,14 @@ public partial class Appointments
     protected async Task GetPatientFilter(FilteringEventArgs args)
     {
         args.PreventDefaultAction = true;
-        var filter = new GetPatientsInput { FilterText = args.Text };
-        var result = await PatientsInputValidator.ValidateAsync(filter);
-        if (!result.IsValid)
-        {
-            return;
-        }
+        var filter = new LookupRequestDto { Filter = args.Text };
+        //var result = await PatientsInputValidator.ValidateAsync(filter);
+        //if (!result.IsValid)
+        //{
+        //    return;
+        //}
 
-        var patients = await PatientAppService.GetListAsync(filter);
+        var patients = await AppointmentsAppService.GetPatientLookupAsync(filter);
         Patients = patients.Items;
         await refAutoComplatePatient.FilterAsync(Patients);
         await InvokeAsync(StateHasChanged);
@@ -207,6 +210,7 @@ public partial class Appointments
         EditingAppointmentId = args.Event.Id;
         ObjectMapper.Map(args.Event, AppointmentUpdateDto);
         await UpdateAppointmentDialog.ShowAsync();
+        
     }
 
     private async Task CloseUpdateAppointmentDialogAsync()
@@ -249,5 +253,12 @@ public partial class Appointments
             AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    public async Task AppointmentDrag(Syncfusion.Blazor.Schedule.DragEventArgs<AppointmentDto> args)
+    {
+        await AppointmentsAppService.UpdateDateAsync(args.Data.Id, args.Data.StartTime, args.Data.EndTime);
+        await GetAppointmentsAsync();
+
     }
 }

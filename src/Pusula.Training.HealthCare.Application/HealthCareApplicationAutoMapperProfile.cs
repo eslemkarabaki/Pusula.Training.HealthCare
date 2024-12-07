@@ -60,7 +60,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 
         CreateMap<PatientNote, PatientNoteDto>()
             .ForMember(e=>e.CreatorName,e=>e.MapFrom(o=>o.Creator!.UserName));
-        
+        CreateMap<Patient, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FullName));
+
         CreateMap<PatientNoteCreateDto, PatientNote>().ReverseMap();
         CreateMap<PatientNoteUpdateDto, PatientNote>().ReverseMap();
         CreateMap<PatientNoteDto, PatientNoteUpdateDto>();
@@ -107,6 +108,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<AppointmentReport, AppointmentReportDto>();
         CreateMap<AppointmentReportDto, AppointmentReportUpdateDto>();
         CreateMap<AppointmentReportWithNavigationProperties, AppointmentReportWithNavigationPropertiesDto>();
+        
 
         CreateMap<AppointmentType, AppointmentTypeDto>();
         CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();

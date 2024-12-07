@@ -1,4 +1,6 @@
 ﻿@using Pusula.Training.HealthCare.Cities
+@using Pusula.Training.HealthCare.Countries
+@using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.DataForm
 @using Blazored.FluentValidation
@@ -7,6 +9,7 @@
 
 @inherits HealthCareComponentBase
 
+@inject ICountryAppService CountryAppService
 
 <SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
@@ -23,7 +26,15 @@
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
                         <SfTextBox @bind-Value="@NewCity.Name"
-                                   Placeholder="@L["City"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>                                   
+                                   Placeholder="@L["City"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>  
+                                   
+                                   <SfDropDownList TValue="Guid" @bind-Value="@NewCity.CountryId"
+                                TItem="CountryDto" Placeholder="@L["Country"]"
+                                DataSource="@CountryList" AllowFiltering EnableVirtualization
+                                ShowClearButton PopupHeight="300px">
+                            <DropDownListEvents TItem="CountryDto" TValue="Guid"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="Name" Value="Id"/>
+                </SfDropDownList>
 
                     </div>
                 </FormTemplate>
@@ -50,6 +61,8 @@
 
     private CityCreateDtoValidator NewCityValidator { get; set; } = null!;
 
+    private IReadOnlyList<CountryDto> CountryList { get; set; } = [];
+
     private async Task OnSaveClickAsync(EditContext context)
     {
         await OnValidSaveAsync.InvokeAsync(NewCity);
@@ -68,5 +81,9 @@
         await Dialog.HideAsync();
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        CountryList = await CountryAppService.GetListAsync();
+    }
     
 }

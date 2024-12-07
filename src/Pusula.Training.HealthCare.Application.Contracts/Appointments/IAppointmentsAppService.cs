@@ -22,6 +22,7 @@ public interface IAppointmentsAppService : IApplicationService
     Task DeleteAsync(Guid id);
     Task<AppointmentDto> CreateAsync(AppointmentCreateDto input);
     Task<AppointmentDto> UpdateAsync(Guid id, AppointmentUpdateDto input);
+    Task<AppointmentDto> UpdateDateAsync(Guid id, DateTime starTime, DateTime endTime);
     Task<IRemoteStreamContent> GetListAsExcelFileAsync(AppointmentExcelDownloadDto input);
     Task DeleteByIdsAsync(List<Guid> appointmentIds);
     Task DeleteAllAsync(GetAppointmentsInput input);

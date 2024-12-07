@@ -66,9 +66,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages
             Filter.SkipCount = (CurrentPage - 1) * PageSize;
             Filter.Sorting = CurrentSorting;
 
-            var result = await AppointmentAppService.GetListWithNavigationPropertiesAsync(Filter);
-            //AppointmentList = result.Items;
-            //TotalCount = (int)result.TotalCount;
+            AppointmentList = await AppointmentAppService.GetListWithNavigationPropertiesAsync(Filter);
         }
 
         #region Doctor 
