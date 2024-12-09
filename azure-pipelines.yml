@@ -23,6 +23,17 @@ steps:
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - bash: |
+    # Install ABP CLI tool
+    dotnet tool install -g Volo.Abp.Cli || echo "ABP CLI is already installed"
+    export PATH="$PATH:/root/.dotnet/tools"
+  displayName: 'Install ABP CLI Tool'
+
+- bash: |
+    # Install necessary NPM libraries for ABP
+    abp install-libs
+  displayName: 'Install ABP Libraries'
+
+- bash: |
     # Build the project
     dotnet build src/Pusula.Training.HealthCare.Blazor/Pusula.Training.HealthCare.Blazor.csproj --configuration Release
   displayName: 'Build Project'
