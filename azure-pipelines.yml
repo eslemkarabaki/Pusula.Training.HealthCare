@@ -22,7 +22,6 @@ steps:
     version: '8.x'
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
-# Install dependencies and ABP CLI
 - bash: |
     # Update package list and install dependencies
     sudo apt-get update && sudo apt-get install -y curl && \
@@ -30,15 +29,16 @@ steps:
     sudo apt-get install -y nodejs && \
     sudo npm install -g npm
 
-    # Restore dotnet tools and install ABP CLI
+    # Install dotnet tools
     dotnet tool restore
     dotnet tool install -g Volo.Abp.Cli --version 8.0.*
 
-    # Update the PATH for ABP CLI
+    # Add ABP CLI to PATH
     export PATH="$PATH:/root/.dotnet/tools"
     echo "ABP CLI version: $(abp --version)"
 
-    # Install ABP Libraries
+    # Verify abp command exists
+    which abp
     abp install-libs
   displayName: 'Install Dependencies and ABP CLI'
 
