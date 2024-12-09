@@ -25,13 +25,19 @@ steps:
 - bash: |
     # Install ABP CLI tool
     dotnet tool install -g Volo.Abp.Cli || echo "ABP CLI is already installed"
-    export PATH="$PATH:/root/.dotnet/tools"
+    # Add the dotnet tools path to PATH
+    export PATH="$PATH:~/.dotnet/tools"
+    # Verify the installation
+    abp --version
   displayName: 'Install ABP CLI Tool'
 
 - bash: |
     # Install necessary NPM libraries for ABP
+    export PATH="$PATH:~/.dotnet/tools"
     abp install-libs
   displayName: 'Install ABP Libraries'
+
+  
 
 - bash: |
     # Build the project
