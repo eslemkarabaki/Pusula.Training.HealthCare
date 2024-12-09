@@ -38,6 +38,7 @@ using Pusula.Training.HealthCare.Tests;
 using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.WorkLists;
 using Pusula.Training.HealthCare.Insurances;
+using Pusula.Training.HealthCare.Diagnoses;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -90,6 +91,7 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
                 options.AddRepository<ProtocolType, EfCoreProtocolTypeRepository>();
                 options.AddRepository<Insurance, EfCoreInsuranceRepository>();
+                options.AddRepository<Diagnosis, EfCoreDiagnosisRepository>();
                 options.AddRepository<Test, EfCoreTestRepository>();
                 options.AddRepository<TestType, EfCoreTestTypeRepository>();
                 options.AddRepository<TestGroup, EfCoreTestGroupRepository>();

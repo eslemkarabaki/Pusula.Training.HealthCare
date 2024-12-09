@@ -1,28 +1,27 @@
-using System;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
+using System;
 
-namespace Pusula.Training.HealthCare.Diagnoses;
-
-public sealed class Diagnosis : FullAuditedAggregateRoot<Guid>
+namespace Pusula.Training.HealthCare.Diagnoses
 {
-    public string Code { get; set; }
-    public string Name { get; set; }
-
-    private Diagnosis()
+    public class Diagnosis : FullAuditedAggregateRoot<Guid>
     {
-        Code = string.Empty;
-        Name = string.Empty;
-    }
+        public string Code { get; set; }
+        public string Name { get; set; }
 
-    public Diagnosis(Guid id, string code, string name)
-    {
-        Check.NotDefaultOrNull<Guid>(id, nameof(id));
-        Check.NotNullOrWhiteSpace(code, nameof(code), DiagnosisConsts.CodeMaxLength);
-        Check.NotNullOrWhiteSpace(name, nameof(name), DiagnosisConsts.NameMaxLength);
+        public Diagnosis(Guid id, string code, string name) : base(id)
+        {
+            SetCode(code); SetName(name); 
+        }
 
-        Id = id;
-        Code = code;
-        Name = name;
+        public void  SetCode(string code)
+        {
+            Code = Check.NotNullOrWhiteSpace(code, nameof(code), DiagnosisConsts.CodeMaxLength);
+           
+        }
+        public void  SetName(string name)
+        {
+           Name = Check.NotNullOrWhiteSpace(name, nameof(name), DiagnosisConsts.NameMaxLength);
+        }
     }
 }

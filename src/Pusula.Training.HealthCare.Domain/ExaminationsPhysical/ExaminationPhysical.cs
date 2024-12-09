@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using JetBrains.Annotations;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp;
@@ -13,14 +13,7 @@ namespace Pusula.Training.HealthCare.Examinations
         public virtual int Height { get; private set; } //Boy
         public virtual int Faver { get; private set; } // Ateş
         public virtual int Pulse { get; private set; } // Nabız
-        public string WeightAsString => Weight.ToString();
-        public string HeightAsString => Height.ToString();
-        public string FaverAsString => Faver.ToString();
-        public string PulseAsString => Pulse.ToString();
-        public virtual string GetIntsAsString()
-        {
-            return $"{WeightAsString}-{HeightAsString}-{FaverAsString}-{PulseAsString}";
-        }
+    
         protected ExaminationPhysical()
         {
             IdentityNumber = string.Empty;

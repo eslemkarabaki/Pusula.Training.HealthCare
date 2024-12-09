@@ -94,7 +94,14 @@ public class HealthCareMenuContributor : IMenuContributor
             )
             );
         #endregion
-
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Diagnoses,
+                l["Menu:Diagnosis"],
+                url: "/diagnosis",
+                icon: "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Diagnosis.Default)
+        );
         return Task.CompletedTask;
     }
 

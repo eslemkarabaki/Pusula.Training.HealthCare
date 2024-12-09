@@ -22,6 +22,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Prism.Forms" Version="9.0.537" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />
