@@ -23,21 +23,22 @@ steps:
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - bash: |
-    # Install ABP CLI tool
-    dotnet tool install -g Volo.Abp.Cli || echo "ABP CLI is already installed"
-    # Add the dotnet tools path to PATH
+    # ABP CLI varsa kaldır
+    dotnet tool uninstall -g Volo.Abp.Cli || echo "ABP CLI zaten yüklenmemiş"
+    # Yeniden yükle
+    dotnet tool install -g Volo.Abp.Cli
+    # PATH güncelle
     export PATH="$PATH:~/.dotnet/tools"
-    # Verify the installation
-    abp --version
+    # Doğrula
+    abp --version || echo "ABP CLI yüklenemedi!"
   displayName: 'Install ABP CLI Tool'
 
 - bash: |
-    # Install necessary NPM libraries for ABP
+    # PATH güncelle
     export PATH="$PATH:~/.dotnet/tools"
+    # ABP kütüphanelerini yükle
     abp install-libs
   displayName: 'Install ABP Libraries'
-
-  
 
 - bash: |
     # Build the project
