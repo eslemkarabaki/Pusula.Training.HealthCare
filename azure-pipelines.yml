@@ -22,23 +22,23 @@ steps:
     version: '8.x'
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
+# ABP CLI yükleme
 - bash: |
-    # ABP CLI varsa kaldır
-    dotnet tool uninstall -g Volo.Abp.Cli || echo "ABP CLI zaten yüklenmemiş"
-    # Yeniden yükle
+    dotnet tool uninstall -g Volo.Abp.Cli || echo "ABP CLI zaten yüklü değil"
     dotnet tool install -g Volo.Abp.Cli
-    # PATH güncelle
     export PATH="$PATH:~/.dotnet/tools"
-    # Doğrula
     abp --version || echo "ABP CLI yüklenemedi!"
   displayName: 'Install ABP CLI Tool'
 
+# ABP Libraries yükleme
 - bash: |
-    # PATH güncelle
-    export PATH="$PATH:~/.dotnet/tools"
-    # ABP kütüphanelerini yükle
+    if ! command -v abp &> /dev/null; then
+      echo "ABP CLI çalıştırılamıyor. Lütfen önceki adımdaki yüklemeyi kontrol edin!"
+      exit 1
+    fi
     abp install-libs
   displayName: 'Install ABP Libraries'
+
 
 - bash: |
     # Build the project
