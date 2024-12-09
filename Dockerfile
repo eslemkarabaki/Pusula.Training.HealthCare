@@ -4,7 +4,7 @@ WORKDIR /src
 COPY . .
 RUN dotnet restore
 
-WORKDIR /src/src/Pusula.Training.HealthCare.Blazor
+WORKDIR /src/Pusula.Training.HealthCare.Blazor
 RUN dotnet publish "Pusula.Training.HealthCare.Blazor.csproj" -c Release -o /app/blazor
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
