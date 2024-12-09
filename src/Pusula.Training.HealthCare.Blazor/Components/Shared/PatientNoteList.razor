@@ -1,0 +1,21 @@
+@using Pusula.Training.HealthCare.PatientNotes
+
+@if (Notes != null && Notes.Any())
+{
+    <div class="patient-note-list">
+        @foreach (var note in Notes)
+        {
+            <div class="patient-note-list-item">
+                <span class="fs-13p">@note.Note</span>
+                <div class="patient-note-information">
+                    <span class="patient-note-creator">@note.CreatorName</span>
+                    <span class="patient-note-date">@note.CreationTime.ToString("dd.MM.yyyy hh:mm")</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public IEnumerable<PatientNoteDto>? Notes { get; set; }
+}

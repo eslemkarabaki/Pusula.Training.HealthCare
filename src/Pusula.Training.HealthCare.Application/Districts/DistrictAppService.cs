@@ -14,13 +14,12 @@ namespace Pusula.Training.HealthCare.Districts;
 public class DistrictAppService(
     IDistrictRepository districtRepository,
     ICityRepository cityRepository,
-    DistrictManager districtManager)
+    DistrictManager districtManager
+)
     : HealthCareAppService, IDistrictAppService
 {
-    public async Task<DistrictDto> GetAsync(Guid id)
-    {
-        return ObjectMapper.Map<District, DistrictDto>(await districtRepository.GetAsync(id));
-    }
+    public async Task<DistrictDto> GetAsync(Guid id) =>
+        ObjectMapper.Map<District, DistrictDto>(await districtRepository.GetAsync(id));
 
     public async Task<CityDto> GetCityAsync(Guid districtId)
     {
@@ -28,26 +27,27 @@ public class DistrictAppService(
         return ObjectMapper.Map<City, CityDto>(await cityRepository.GetAsync(e => e.Id == district.CityId));
     }
 
-    public async Task<List<DistrictDto>> GetListAsync()
-    {
-        return ObjectMapper.Map<List<DistrictWithCity>, List<DistrictDto>>(await districtRepository.GetListAsync());
-    }
+    public async Task<List<DistrictDto>> GetListWithDetailsAsync() =>
+        ObjectMapper.Map<List<District>, List<DistrictDto>>(await districtRepository.GetListWithDetailsAsync());
 
-    public async Task<List<DistrictDto>> GetListAsync(Guid cityId)
-    {
-        return ObjectMapper.Map<List<District>, List<DistrictDto>>(
-            await districtRepository.GetListAsync(e => e.CityId == cityId));
-    }
+    public async Task<List<DistrictDto>> GetListWithDetailsAsync(Guid cityId) =>
+        ObjectMapper.Map<List<District>, List<DistrictDto>>(
+            await districtRepository.GetListWithDetailsAsync(cityId: cityId)
+        );
 
-    public async Task<PagedResultDto<DistrictDto>> GetListAsync(GetDistrictsInput input)
+    public async Task<PagedResultDto<DistrictDto>> GetListWithDetailsAsync(GetDistrictsInput input)
     {
-        var items = await districtRepository.GetListAsync(input.FilterText, input.Name, input.CityId,
-            input.Sorting, input.MaxResultCount, input.SkipCount);
+        var items = await districtRepository.GetListWithDetailsAsync(
+            input.FilterText, input.Name, input.CityId,
+            input.Sorting, input.MaxResultCount, input.SkipCount
+        );
 
         var count = await districtRepository.GetCountAsync(input.FilterText, input.Name, input.CityId);
 
-        return new PagedResultDto<DistrictDto>(count,
-            ObjectMapper.Map<List<DistrictWithCity>, List<DistrictDto>>(items));
+        return new PagedResultDto<DistrictDto>(
+            count,
+            ObjectMapper.Map<List<District>, List<DistrictDto>>(items)
+        );
     }
 
     public async Task<DistrictDto> CreateAsync(DistrictCreateDto input)
@@ -62,18 +62,10 @@ public class DistrictAppService(
         return ObjectMapper.Map<District, DistrictDto>(district);
     }
 
-    public async Task DeleteAsync(Guid id)
-    {
-        await districtRepository.DeleteAsync(id);
-    }
+    public async Task DeleteAsync(Guid id) => await districtRepository.DeleteAsync(id);
 
-    public async Task DeleteByIdsAsync(List<Guid> ids)
-    {
-        await districtRepository.DeleteManyAsync(ids);
-    }
+    public async Task DeleteByIdsAsync(List<Guid> ids) => await districtRepository.DeleteManyAsync(ids);
 
-    public async Task DeleteAllAsync(GetDistrictsInput input)
-    {
+    public async Task DeleteAllAsync(GetDistrictsInput input) =>
         await districtRepository.DeleteAllAsync(input.FilterText, input.Name, input.CityId);
-    }
 }

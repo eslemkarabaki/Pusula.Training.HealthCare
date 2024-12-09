@@ -3,75 +3,89 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
+using Volo.Abp.Uow;
 
 namespace Pusula.Training.HealthCare.Addresses;
 
 public class AddressManager(IAddressRepository addressRepository) : DomainService
 {
-    public async Task CreateAddressAsync(Guid patientId, Address address) =>
-        await addressRepository.InsertAsync(
-            new Address(
-                GuidGenerator.Create(),
-                patientId,
-                address.DistrictId,
-                address.AddressTitle,
-                address.AddressLine
-            )
-        );
-
-    public async Task CreateAddressAsync(Guid patientId, IEnumerable<Address> addresses)
+    public async Task CreateAddressesAsync(Guid patientId, IEnumerable<Address> addresses)
     {
-        foreach (var address in addresses)
+        if (addresses.Any())
         {
-            await CreateAddressAsync(patientId, address);
+            var addressList = addresses.Select(
+                e => new Address(GuidGenerator.Create(), patientId, e.DistrictId, e.AddressTitle, e.AddressLine)
+            );
+            await addressRepository.InsertManyAsync(addressList);
         }
     }
 
-    public async Task UpdateAddressAsync(Address address)
+    private async Task CreateAddressesAsync(
+        Guid patientId,
+        IEnumerable<Address> existingAddresses,
+        IEnumerable<Address> addresses
+    )
     {
-        var entity = await addressRepository.GetAsync(address.Id);
-        entity.SetDistrictId(address.DistrictId);
-        entity.SetAddressTitle(address.AddressTitle);
-        entity.SetAddressLine(address.AddressLine);
-        await addressRepository.UpdateAsync(entity);
-    }
-
-    public async Task UpdateOrCreateAddressAsync(Guid patientId, IEnumerable<Address> addresses)
-    {
-        var existingAddresses = await addressRepository.GetListAsync(e => e.PatientId == patientId);
-
-        // delete
-        var addressesToDelete = existingAddresses
-                                .Where(e => !addresses.Any(a => a.Id == e.Id))
-                                .Select(e => e.Id);
-
-        // update
-        var addressesToUpdate = addresses
-            .Where(e => existingAddresses.Any(a => a.Id == e.Id));
-
-        // create
-        var addressesToCreate = addresses
+        var created = addresses
             .Where(e => !existingAddresses.Any(a => a.Id == e.Id));
 
-        await Task.WhenAll(addressesToDelete.Select(e => addressRepository.DeleteAsync(e)));
-        await Task.WhenAll(addressesToUpdate.Select(UpdateAddressAsync));
-        await CreateAddressAsync(patientId, addressesToCreate);
+        if (created.Any())
+        {
+            var addressList = created.Select(
+                e => new Address(GuidGenerator.Create(), patientId, e.DistrictId, e.AddressTitle, e.AddressLine)
+            );
+            await addressRepository.InsertManyAsync(addressList);
+        }
+    }
 
-        // var entities = await addressRepository.GetListAsync(e => e.PatientId == patientId);
-        //
-        // // delete
-        // foreach (var address in entities.Where(e => !addresses.Any(a => a.Id == e.Id)))
-        // {
-        //     await addressRepository.DeleteAsync(address.Id);
-        // }
-        //
-        // // update
-        // foreach (var address in addresses.Where(e => entities.Any(a => a.Id == e.Id)))
-        // {
-        //     await UpdateAddressAsync(address);
-        // }
-        //
-        // // create
-        // await CreateAddressAsync(patientId, addresses.Where(e => !entities.Any(a => a.Id == e.Id)));
+    private async Task UpdateAddressesAsync(IEnumerable<Address> existingAddresses, IEnumerable<Address> addresses)
+    {
+        var updated = addresses
+            .Where(e => existingAddresses.Any(a => a.Id == e.Id));
+
+        if (updated.Any())
+        {
+            var entities = existingAddresses.Where(e => updated.Any(u => u.Id == e.Id));
+            foreach (var entity in entities)
+            {
+                var address = addresses.First(e => e.Id == entity.Id);
+                entity.SetDistrictId(address.DistrictId);
+                entity.SetAddressTitle(address.AddressTitle);
+                entity.SetAddressLine(address.AddressLine);
+            }
+
+            await addressRepository.UpdateManyAsync(entities);
+        }
+    }
+
+    private async Task DeleteAddressesAsync(IEnumerable<Address> existingAddresses, IEnumerable<Address> addresses)
+    {
+        var deleted = existingAddresses
+                      .Where(e => !addresses.Any(a => a.Id == e.Id))
+                      .Select(e => e.Id);
+        if (deleted.Any())
+        {
+            await addressRepository.DeleteManyAsync(deleted);
+        }
+    }
+
+    public async Task SetAddressesAsync(Guid patientId, IEnumerable<Address> addresses)
+    {
+        var existingAddresses = await addressRepository.GetListAsync(e => e.PatientId == patientId);
+        if (existingAddresses.Count == 0)
+        {
+            await CreateAddressesAsync(patientId, addresses);
+            return;
+        }
+
+        if (!addresses.Any())
+        {
+            await addressRepository.DeleteAsync(e => true);
+            return;
+        }
+
+        await DeleteAddressesAsync(existingAddresses, addresses);
+        await UpdateAddressesAsync(existingAddresses, addresses);
+        await CreateAddressesAsync(patientId, existingAddresses, addresses);
     }
 }

@@ -12,7 +12,8 @@ namespace Pusula.Training.HealthCare.Patients;
 public class PatientManager(
     IPatientRepository patientRepository,
     IPatientNoteRepository patientNoteRepository,
-    AddressManager addressManager
+    AddressManager addressManager,
+    PatientNoteManager patientNoteManager
 ) : DomainService
 {
     public virtual async Task<Patient> CreateAsync(
@@ -31,11 +32,10 @@ public class PatientManager(
         EnumGender gender,
         EnumBloodType bloodType,
         EnumMaritalStatus maritalStatus,
-        IEnumerable<Address> addresses
+        ICollection<Address> addresses,
+        ICollection<PatientNote> notes
     )
     {
-        await CheckIdentityAndPassportNumberAsync(identityNumber, passportNumber);
-
         var patient = new Patient(
             GuidGenerator.Create(),
             countryId,
@@ -54,7 +54,8 @@ public class PatientManager(
             bloodType,
             maritalStatus
         );
-        await addressManager.CreateAddressAsync(patient.Id, addresses);
+        await addressManager.CreateAddressesAsync(patient.Id, addresses);
+        await patientNoteManager.CreateNotesAsync(patient.Id, notes);
         return await patientRepository.InsertAsync(patient);
     }
 
@@ -65,8 +66,6 @@ public class PatientManager(
         string firstName,
         string lastName,
         DateTime birthDate,
-        string? identityNumber,
-        string? passportNumber,
         string emailAddress,
         string mobilePhoneNumberCode,
         string mobilePhoneNumber,
@@ -75,18 +74,14 @@ public class PatientManager(
         EnumGender gender,
         EnumBloodType bloodType,
         EnumMaritalStatus maritalStatus,
-        IEnumerable<Address> addresses,
+        ICollection<Address> addresses,
+        ICollection<PatientNote> notes,
         string? concurrencyStamp = null
     )
     {
-        await CheckIdentityAndPassportNumberAsync(identityNumber, passportNumber, id);
-
         var patient = await patientRepository.GetAsync(id);
-        patient.SetFirstName(firstName);
-        patient.SetLastName(lastName);
+        patient.SetName(firstName, lastName);
         patient.SetBirthDate(birthDate);
-        patient.SetIdentityNumber(identityNumber);
-        patient.SetPassportNumber(passportNumber);
         patient.SetEmailAddress(emailAddress);
         patient.SetMobilePhoneNumber(mobilePhoneNumber);
         patient.SetMobilePhoneNumberCode(mobilePhoneNumberCode);
@@ -98,44 +93,9 @@ public class PatientManager(
         patient.SetCountryId(countryId);
         patient.SetPatientTypeId(patientTypeId);
 
-        await addressManager.UpdateOrCreateAddressAsync(patient.Id, addresses);
+        await addressManager.SetAddressesAsync(patient.Id, addresses);
+        await patientNoteManager.SetNotesAsync(patient.Id, notes);
         patient.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await patientRepository.UpdateAsync(patient);
-    }
-
-    private async Task CheckIdentityAndPassportNumberAsync(
-        string? identityNumber,
-        string? passportNumber,
-        Guid? excludeId = null
-    )
-    {
-        if (identityNumber.IsNullOrWhiteSpace() && passportNumber.IsNullOrWhiteSpace())
-        {
-            throw new Exception("Identity number or passport number is required."); //todo: custom exception
-        }
-
-        if (!identityNumber.IsNullOrWhiteSpace())
-        {
-            await CheckIdentityNumberNotExistAsync(excludeId, identityNumber);
-        } else
-        {
-            await CheckPassportNumberNotExistAsync(excludeId, passportNumber!);
-        }
-    }
-
-    private async Task CheckIdentityNumberNotExistAsync(Guid? excludeId, string identityNumber)
-    {
-        if (await patientRepository.IdentityNumberExistsAsync(excludeId, identityNumber))
-        {
-            throw new Exception("Identity number already exists."); //todo: custom exception
-        }
-    }
-
-    private async Task CheckPassportNumberNotExistAsync(Guid? excludeId, string passportNumber)
-    {
-        if (await patientRepository.PassportNumberExistsAsync(excludeId, passportNumber))
-        {
-            throw new Exception("Passport number already exists."); //todo: custom exception
-        }
     }
 }

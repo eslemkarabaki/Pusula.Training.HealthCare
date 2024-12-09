@@ -1,0 +1,95 @@
+﻿@page "/prm/definitions/insurances"
+@attribute [Authorize(HealthCarePermissions.Insurances.Default)]
+@using Polly
+@using Pusula.Training.HealthCare.Insurances
+@using Pusula.Training.HealthCare.Permissions
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@inherits HealthCareComponentBase
+@inject SfDialogService DialogService
+@inject IJSRuntime JSRuntime
+
+<div class="custom-header">
+    <SfButton CssClass="e-primary" @onclick="OpenCreateDialog">New Insurance</SfButton>
+    <SfButton CssClass="e-flat" @onclick="RefreshInsurances">Refresh List</SfButton>
+</div>
+
+<SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" Visible="@IsDialogVisible" Header="New Insurance">
+    <DialogTemplates>
+        <Content>
+            <EditForm Model="@InsuranceModel" OnValidSubmit="HandleCreate">
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger">
+                        @ErrorMessage
+                    </div>
+                }
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+        <Blazorise.ValidationSummary></Blazorise.ValidationSummary>
+    <SfTextBox @bind-Value="InsuranceModel.Name" Placeholder="Enter Insurance name" Label="Name" TValue="string"></SfTextBox>
+    <ValidationMessage For="() => InsuranceModel.Name"></ValidationMessage>
+</EditForm>
+        </Content>
+        <FooterTemplate>
+            <div class="dialog-footer">
+                <SfButton CssClass="e-primary" OnClick="HandleCreate">Create</SfButton>
+                <SfButton OnClick="CloseDialog">Cancel</SfButton>
+            </div>
+        </FooterTemplate>
+    </DialogTemplates>
+</SfDialog>
+
+<SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" Visible="@OpenUpdateDialog" Header="Update Insurance">
+    <DialogTemplates>
+        <Content>
+            <EditForm Model="@EditingInsurance" OnValidSubmit="HandleUpdate">
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger">
+                        @ErrorMessage
+                    </div>
+                }
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                 <SfTextBox @bind-Value="EditingInsurance.Name" Placeholder="Enter insurance name" Label="Name" TValue="string"></SfTextBox>
+            </EditForm>
+        </Content>
+        <FooterTemplate>
+            <SfButton CssClass="e-primary " OnClick="HandleUpdate">Update</SfButton>
+            <SfButton OnClick="CloseUpdateDialog">Cancel</SfButton>
+        </FooterTemplate>
+    </DialogTemplates>
+</SfDialog>
+
+<SfGrid DataSource="@InsuranceList" TValue="InsuranceDto">
+    <GridColumns>
+        <GridColumn Field="@nameof(InsuranceDto.Name)" HeaderText="Name" Width="150"></GridColumn>
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton OnClick="@(() => OpenEditInsurancesModalAsync((context as InsuranceDto)))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-edit"></SfButton>
+                <SfButton  OnClick="@(() => DeleteInsuranceAsync((context as InsuranceDto)))"
+                          CssClass="e-flat button e-custom delete"
+                          IconCss="e-icons e-trash">
+                </SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+
+<style>
+    .e-custom{
+        background-color:blue;
+       
+    }
+
+        .e-custom, .e-custom:hover, .e-custom:focus, .e-custom:active .delete {
+            background-color: reds;
+            color: #fff;
+        }
+    
+   
+</style>

@@ -270,7 +270,36 @@
                             </TextEdit>
                         </Field>
                     </Validation>
-
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Diagnosis"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewExamination.Diagnosis" MaxLength="ExaminationConsts.DiagnosisNumberMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Prescription"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewExamination.Prescription" MaxLength="ExaminationConsts.PrescriptionNumberMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["ImagingResults"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewExamination.ImagingResults" MaxLength="ExaminationConsts.ImagingResultsNumberMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
                 </Validations>
             </ModalBody>
             <ModalFooter>
@@ -337,7 +366,7 @@
 
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
-                            <FieldLabel>@L["Notes"] *</FieldLabel>
+                            <FieldLabel>@L["ChronicDiseases"] *</FieldLabel>
                             <TextEdit @bind-Text="@NewExamination.ChronicDiseases" MaxLength="ExaminationConsts.ChronicDiseasesNumberMaxLength">
                                 <Feedback>
                                     <ValidationError />
@@ -347,7 +376,7 @@
                     </Validation>
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
-                            <FieldLabel>@L["Notes"] *</FieldLabel>
+                            <FieldLabel>@L["Allergies"] *</FieldLabel>
                             <TextEdit @bind-Text="@NewExamination.Allergies" MaxLength="ExaminationConsts.AllergiesNumberMaxLength">
                                 <Feedback>
                                     <ValidationError />
@@ -357,8 +386,39 @@
                     </Validation>
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
-                            <FieldLabel>@L["Notes"] *</FieldLabel>
+                            <FieldLabel>@L["Medications"] *</FieldLabel>
                             <TextEdit @bind-Text="@NewExamination.Medications" MaxLength="ExaminationConsts.MedicationsNumberMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Diagnosis"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewExamination.Diagnosis" MaxLength="ExaminationConsts.DiagnosisNumberMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Prescription"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewExamination.Prescription" MaxLength="ExaminationConsts.PrescriptionNumberMaxLength">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["ImagingResults"] *</FieldLabel>
+                            <TextEdit @bind-Text="@NewExamination.ImagingResults" MaxLength="ExaminationConsts.ImagingResultsNumberMaxLength">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>

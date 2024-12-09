@@ -1,23 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using Pusula.Training.HealthCare.DataAnnotations;
 using Volo.Abp.Domain.Entities;
 
-namespace Pusula.Training.HealthCare.Appointments
-{
-    public class AppointmentUpdateDto:IHasConcurrencyStamp
-    {
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-        public EnumStatus Status { get; set; }
-        public string? Notes { get; set; }
-        public Guid AppointmentTypeId { get; set; }
-        public Guid DepartmentId { get; set; }
-        public Guid DoctorId { get; set; }
-        public Guid PatientId { get; set; }
+namespace Pusula.Training.HealthCare.Appointments;
 
-        public string? ConcurrencyStamp { get; set; }
-    }
+public class AppointmentUpdateDto : IHasConcurrencyStamp
+{
+    [Required] public DateTime StartTime { get; set; }
+
+    [Required] public DateTime EndTime { get; set; }
+
+    [Required] public EnumStatus Status { get; set; }
+
+    [StringLength(AppointmentConsts.NoteMaxLength, MinimumLength = 3)]
+    public string? Notes { get; set; }
+
+    [Required] [NotEmptyGuid] public Guid AppointmentTypeId { get; set; }
+
+    [Required] [NotEmptyGuid] public Guid DepartmentId { get; set; }
+
+    [Required] [NotEmptyGuid] public Guid DoctorId { get; set; }
+
+    [Required] [NotEmptyGuid] public Guid PatientId { get; set; }
+
+    public string? ConcurrencyStamp { get; set; }
 }

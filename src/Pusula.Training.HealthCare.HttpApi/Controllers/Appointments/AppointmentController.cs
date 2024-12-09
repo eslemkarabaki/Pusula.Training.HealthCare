@@ -4,128 +4,102 @@ using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Content;
 
-namespace Pusula.Training.HealthCare.Controllers.Appointments
+namespace Pusula.Training.HealthCare.Controllers.Appointments;
+
+[RemoteService]
+[Area("app")]
+[ControllerName("Appointment")]
+[Route("api/app/appointments")]
+public class AppointmentController : HealthCareController, IAppointmentsAppService
 {
-    [RemoteService]
-    [Area("app")]
-    [ControllerName("Appointment")]
-    [Route("api/app/appointments")]
-    public class AppointmentController: HealthCareController, IAppointmentsAppService
-    {
-        protected IAppointmentsAppService _appointmentsAppService;
+    protected IAppointmentsAppService _appointmentsAppService;
 
-        public AppointmentController(IAppointmentsAppService appointmentsAppService)
-        {
-            _appointmentsAppService = appointmentsAppService;
-        }
+    public AppointmentController(IAppointmentsAppService appointmentsAppService) =>
+        _appointmentsAppService = appointmentsAppService;
 
-        [HttpGet("all")]
-        public virtual Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
-        {
-            return _appointmentsAppService.GetListAsync(input);
-        }        
+    [HttpGet("all")]
+    public virtual Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input) =>
+        _appointmentsAppService.GetListAsync(input);
 
-        [HttpGet]
-        [Route("with-navigation-properties/{id}")]
-        public virtual Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
-        {
-            return _appointmentsAppService.GetWithNavigationPropertiesAsync(id);
-        }
+    [HttpGet("all/with-navigation-properties")]
+    public virtual Task<List<AppointmentWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
+        GetAppointmentsInput input
+    ) =>
+        _appointmentsAppService.GetListWithNavigationPropertiesAsync(input);
 
-        [HttpGet]
-        [Route("{id}")]
-        public virtual Task<AppointmentDto> GetAsync(Guid id)
-        {
-            return _appointmentsAppService.GetAsync(id);
-        }
+    [HttpGet]
+    [Route("with-navigation-properties/{id}")]
+    public virtual Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) =>
+        _appointmentsAppService.GetWithNavigationPropertiesAsync(id);
 
-        [HttpGet]
-        [Route("hospital-lookup")]
-        public virtual Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input)
-        {
-            return _appointmentsAppService.GetAppointmentTypeLookupAsync(input);
-        }
+    [HttpGet]
+    [Route("{id}")]
+    public virtual Task<AppointmentDto> GetAsync(Guid id) => _appointmentsAppService.GetAsync(id);
 
-        [HttpGet]
-        [Route("department-lookup")]
-        public virtual Task<PagedResultDto<LookupDto<Guid>>> GetDepartmentLookupAsync(LookupRequestDto input)
-        {
-            return _appointmentsAppService.GetDepartmentLookupAsync(input);
-        }
-        [HttpGet]
-        [Route("doctor-lookup")]
-        public virtual Task<PagedResultDto<LookupDto<Guid>>> GetDoctorLookupAsync(LookupRequestDto input)
-        {
-            return _appointmentsAppService.GetDoctorLookupAsync(input);
-        }
+    [HttpGet]
+    [Route("hospital-lookup")]
+    public virtual Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input) =>
+        _appointmentsAppService.GetAppointmentTypeLookupAsync(input);
 
-        [HttpGet]
-        [Route("patient-lookup")]
-        public virtual Task<PagedResultDto<LookupDto<Guid>>> GetPatientLookupAsync(LookupRequestDto input)
-        {
-            return _appointmentsAppService.GetPatientLookupAsync(input);
-        }        
+    [HttpGet]
+    [Route("department-lookup")]
+    public virtual Task<PagedResultDto<LookupDto<Guid>>> GetDepartmentLookupAsync(LookupRequestDto input) =>
+        _appointmentsAppService.GetDepartmentLookupAsync(input);
 
-        [HttpPost]
-        public virtual Task<AppointmentDto> CreateAsync(AppointmentCreateDto input)
-        {
-            return _appointmentsAppService.CreateAsync(input);
-        }
+    [HttpGet]
+    [Route("doctor-lookup")]
+    public virtual Task<PagedResultDto<LookupDto<Guid>>> GetDoctorLookupAsync(LookupRequestDto input) =>
+        _appointmentsAppService.GetDoctorLookupAsync(input);
 
-        [HttpPut]
-        [Route("{id}")]
-        public virtual Task<AppointmentDto> UpdateAsync(Guid id, AppointmentUpdateDto input)
-        {
-            return _appointmentsAppService.UpdateAsync(id, input);
-        }
+    [HttpGet]
+    [Route("patient-lookup")]
+    public virtual Task<PagedResultDto<LookupDto<Guid>>> GetPatientLookupAsync(LookupRequestDto input) =>
+        _appointmentsAppService.GetPatientLookupAsync(input);
 
-        [HttpDelete]
-        [Route("{id}")]
-        public virtual Task DeleteAsync(Guid id)
-        {
-            return _appointmentsAppService.DeleteAsync(id);
-        }
+    [HttpPost]
+    public virtual Task<AppointmentDto> CreateAsync(AppointmentCreateDto input) =>
+        _appointmentsAppService.CreateAsync(input);
 
-        [HttpGet]
-        [Route("as-excel-file")]
-        public virtual Task<IRemoteStreamContent> GetListAsExcelFileAsync(AppointmentExcelDownloadDto input)
-        {
-            return _appointmentsAppService.GetListAsExcelFileAsync(input);
-        }
+    [HttpPut]
+    [Route("{id}")]
+    public virtual Task<AppointmentDto> UpdateAsync(Guid id, AppointmentUpdateDto input) =>
+        _appointmentsAppService.UpdateAsync(id, input);
 
-        [HttpGet]
-        [Route("download-token")]
-        public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync()
-        {
-            return _appointmentsAppService.GetDownloadTokenAsync();
-        }
+    [HttpPut]
+    [Route("date/{id}")]
+    public virtual Task<AppointmentDto> UpdateDateAsync(Guid id, [FromQuery]DateTime startTime, [FromQuery]DateTime endTime) =>
+        _appointmentsAppService.UpdateDateAsync(id,startTime,endTime);
 
-        [HttpDelete]
-        [Route("")]
-        public virtual Task DeleteByIdsAsync(List<Guid> appointmentIds)
-        {
-            return _appointmentsAppService.DeleteByIdsAsync(appointmentIds);
-        }
+    [HttpDelete]
+    [Route("{id}")]
+    public virtual Task DeleteAsync(Guid id) => _appointmentsAppService.DeleteAsync(id);
 
-        [HttpDelete]
-        [Route("all")]
-        public virtual Task DeleteAllAsync(GetAppointmentsInput input)
-        {
-            return _appointmentsAppService.DeleteAllAsync(input);
-        }
+    [HttpGet]
+    [Route("as-excel-file")]
+    public virtual Task<IRemoteStreamContent> GetListAsExcelFileAsync(AppointmentExcelDownloadDto input) =>
+        _appointmentsAppService.GetListAsExcelFileAsync(input);
 
-        [HttpGet]
-        [Route("list-doctor-appointment/{id}")]
-        public Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id)
-        {
-            return _appointmentsAppService.GetListAppointmentsAsync(id);
-        }
-    }
+    [HttpGet]
+    [Route("download-token")]
+    public virtual Task<DownloadTokenResultDto> GetDownloadTokenAsync() =>
+        _appointmentsAppService.GetDownloadTokenAsync();
+
+    [HttpDelete]
+    [Route("")]
+    public virtual Task DeleteByIdsAsync(List<Guid> appointmentIds) =>
+        _appointmentsAppService.DeleteByIdsAsync(appointmentIds);
+
+    [HttpDelete]
+    [Route("all")]
+    public virtual Task DeleteAllAsync(GetAppointmentsInput input) => _appointmentsAppService.DeleteAllAsync(input);
+
+    [HttpGet]
+    [Route("list-doctor-appointment/{id}")]
+    public Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id) =>
+        _appointmentsAppService.GetListAppointmentsAsync(id);
 }

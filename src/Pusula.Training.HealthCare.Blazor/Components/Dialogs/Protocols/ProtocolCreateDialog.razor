@@ -1,0 +1,184 @@
+@using Pusula.Training.HealthCare.Protocols
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Blazored.FluentValidation
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.ProtocolTypes
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@inherits HealthCareComponentBase
+
+@inject IPatientAppService PatientAppService
+@inject IDoctorAppService DoctorAppService
+@inject IProtocolTypeAppService ProtocolTypeAppService
+@inject IProtocolAppService ProtocolAppService
+@inject IDepartmentsAppService DepartmentsAppService
+
+<SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogTemplates>
+        <Header>@L["NewProtocol"]</Header>
+        <Content>
+            <SfDataForm ID="NewProtocolForm"
+                        EditContext="@EditContext"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnValidSubmitAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                <FormValidator>
+                    <FluentValidationValidator
+                        Validator="@ProtocolCreateValidator"></FluentValidationValidator>
+                </FormValidator>
+                <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <div>
+                            <SfTextBox Value="@PatientName" Readonly Placeholder="@L["Patient"]"
+                                       FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+                        </div>
+                        <div>
+                            <label class="e-form-label">@L["Doctor"]</label>
+                            <SfAutoComplete @ref="DoctorFilterAutoComplete" @bind-Value="@ProtocolCreate.DoctorId"
+                                            TValue="Guid" TItem="DoctorDto" Placeholder="@L["Doctor"]"
+                                            DataSource="@DoctorList" AllowFiltering Autofill Highlight
+                                            EnableVirtualization
+                                            PopupHeight="150px">
+                                <AutoCompleteEvents TValue="Guid" TItem="DoctorDto" Filtering="@FilterDoctorAsync"/>
+                                <AutoCompleteFieldSettings Text="FullName" Value="Id"/>
+                            </SfAutoComplete>
+                        </div>
+                        <div>
+                            <label class="e-form-label">@L["Department"]</label>
+                            <SfAutoComplete @ref="DepartmentFilterAutoComplete"
+                                            @bind-Value="@ProtocolCreate.DepartmentId" TValue="Guid"
+                                            TItem="DepartmentDto" Placeholder="@L["Department"]"
+                                            DataSource="@DepartmentList" AllowFiltering Autofill Highlight
+                                            EnableVirtualization
+                                            PopupHeight="150px">
+                                <AutoCompleteEvents TValue="Guid" TItem="DepartmentDto"
+                                                    Filtering="@FilterDepartmentAsync"/>
+                                <AutoCompleteFieldSettings Text="Name" Value="Id"/>
+                            </SfAutoComplete>
+                        </div>
+                        <div>
+                            <label class="e-form-label">@L["ProtocolType"]</label>
+                            <SfDropDownList @bind-Value="@ProtocolCreate.ProtocolTypeId" TValue="Guid"
+                                            TItem="ProtocolTypeDto" Placeholder="@L["ProtocolType"]"
+                                            DataSource="@ProtocolTypeList" AllowFiltering EnableVirtualization
+                                            PopupHeight="150px">
+                                <DropDownListFieldSettings Text="Name" Value="Id"/>
+                            </SfDropDownList>
+                        </div>
+                        <div>
+                            <SfTextArea @bind-Value="@ProtocolCreate.Description" ColumnCount="400"
+                                        Placeholder="@L["Description"]"
+                                        RowCount="3" FloatLabelType="FloatLabelType.Always"
+                            ></SfTextArea>
+                        </div>
+                    </div>
+                </FormTemplate>
+            </SfDataForm>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    [Parameter] public EventCallback<ProtocolCreateDto> ProtocolCreatedAsync { get; set; }
+    private SfDialog Dialog { get; set; } = null!;
+    private EditContext EditContext { get; set; }
+    private ProtocolCreateDto ProtocolCreate { get; set; } = new();
+    private ProtocolCreateDtoValidator ProtocolCreateValidator { get; set; } = null!;
+    private string? PatientName { get; set; }
+
+    private IEnumerable<ProtocolTypeDto> ProtocolTypeList { get; set; } = [];
+
+    public ProtocolCreateDialog() => EditContext = new EditContext(ProtocolCreate);
+
+    protected override async Task OnInitializedAsync() => ProtocolTypeList = await ProtocolTypeAppService.GetListAsync();
+
+#region Patient
+
+    private IEnumerable<PatientDto> PatientList { get; set; } = [];
+    private SfAutoComplete<Guid, PatientDto> PatientFilterAutoComplete { get; set; } = null!;
+    private GetPatientsInput GetPatientsInput { get; set; } = new() { MaxResultCount = 10 };
+
+    private async Task FilterPatientAsync(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        GetPatientsInput.FullName = args.Text;
+        var patients = await PatientAppService.GetListAsync(GetPatientsInput);
+        PatientList = patients.Items;
+        await PatientFilterAutoComplete.FilterAsync(PatientList);
+    }
+
+#endregion
+
+#region Doctor
+
+    private IEnumerable<DoctorDto> DoctorList { get; set; } = [];
+    private SfAutoComplete<Guid, DoctorDto> DoctorFilterAutoComplete { get; set; } = null!;
+    private GetDoctorsInput GetDoctorsInput { get; set; } = new() { MaxResultCount = 10 };
+
+    private async Task FilterDoctorAsync(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        GetDoctorsInput.FullName = args.Text;
+        var doctors = await DoctorAppService.GetListAsync(GetDoctorsInput);
+        DoctorList = doctors.Items;
+        await DoctorFilterAutoComplete.FilterAsync(DoctorList);
+    }
+
+#endregion
+
+#region Department
+
+    private IEnumerable<DepartmentDto> DepartmentList { get; set; } = [];
+    private SfAutoComplete<Guid, DepartmentDto> DepartmentFilterAutoComplete { get; set; } = null!;
+    private GetDepartmentsInput GetDepartmentsInput { get; set; } = new() { MaxResultCount = 10 };
+
+    private async Task FilterDepartmentAsync(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        GetDepartmentsInput.Name = args.Text;
+        var departments = await DepartmentsAppService.GetListAsync(GetDepartmentsInput);
+        DepartmentList = departments.Items;
+        await DepartmentFilterAutoComplete.FilterAsync(DepartmentList);
+    }
+
+#endregion
+
+    public async Task ShowAsync(PatientDto patient)
+    {
+        SetDefaultValuesForDialog();
+        PatientName = patient.FullName;
+        ProtocolCreate.PatientId = patient.Id;
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        SetDefaultValuesForDialog();
+        await Dialog.HideAsync();
+    }
+
+    private async Task OnValidSubmitAsync(EditContext context)
+    {
+        try
+        {
+            await ProtocolAppService.CreateAsync(ProtocolCreate);
+            await ProtocolCreatedAsync.InvokeAsync();
+            await HideAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    private void SetDefaultValuesForDialog()
+    {
+        ProtocolCreate = new ProtocolCreateDto();
+        EditContext = new EditContext(ProtocolCreate);
+    }
+
+}

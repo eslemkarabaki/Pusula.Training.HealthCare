@@ -133,9 +133,6 @@ public class HealthCareBlazorModule : AbpModule
             .Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        context.Services.AddSyncfusionBlazor();
-       
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR LICENSE KEY");
         ConfigureAuthentication(context);
         ConfigureUrls(configuration);
         ConfigureBundles();

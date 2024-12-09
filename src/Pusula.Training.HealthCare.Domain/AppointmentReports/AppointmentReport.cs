@@ -1,9 +1,5 @@
 ﻿using JetBrains.Annotations;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -11,14 +7,14 @@ namespace Pusula.Training.HealthCare.AppointmentReports
 {
     public class AppointmentReport: FullAuditedAggregateRoot<Guid>
     {
-        [JetBrains.Annotations.NotNull]
-        public virtual DateTime ReportDate { get; set; } // Raporun oluşturulduğu tarih
+        [NotNull]
+        public virtual DateTime ReportDate { get; private set; } // Raporun oluşturulduğu tarih
         [CanBeNull]
-        public virtual string? PriorityNotes { get; set; } // Öncelikli Durumlar veya Acil Notlar
+        public virtual string? PriorityNotes { get; private set; } // Öncelikli Durumlar veya Acil Notlar
         [CanBeNull]
-        public virtual string? DoctorNotes { get; set; } // Doktorun kendi notları
+        public virtual string? DoctorNotes { get; private set; } // Doktorun kendi notları
 
-        public virtual Guid AppointmentId { get; set; }
+        public virtual Guid AppointmentId { get; private set; }
 
         protected AppointmentReport() 
         {
@@ -30,18 +26,17 @@ namespace Pusula.Training.HealthCare.AppointmentReports
         public AppointmentReport(Guid id, Guid appointmentId,
             DateTime reportDate, string priorityNotes, string doctorNotes)
         {
-            Check.NotNullOrWhiteSpace(appointmentId.ToString(), nameof(appointmentId));
-            Check.NotNull(reportDate, nameof(reportDate));
-            Check.NotNullOrWhiteSpace(priorityNotes, nameof(priorityNotes));
-            Check.NotNullOrWhiteSpace(doctorNotes, nameof(doctorNotes));
-
-            Id = id;
-            AppointmentId = appointmentId;
-            ReportDate = reportDate;
-            PriorityNotes = priorityNotes;
-            DoctorNotes = doctorNotes;
+            SetReportDate(reportDate);
+            SetPriorityNotes(priorityNotes);
+            SetDoctorNotes(doctorNotes);
+            SetAppointmentId(appointmentId);
 
         }
+
+        public void SetReportDate(DateTime reportDate) => ReportDate = Check.NotNull(reportDate, nameof(reportDate));
+        public void SetPriorityNotes(string? priorityNotes) => PriorityNotes = Check.Length(priorityNotes, nameof(priorityNotes), AppointmentReportConsts.PriorityNotesMaxLength, AppointmentReportConsts.PriorityNotesMinLength);
+        public void SetDoctorNotes(string? doctorNotes) => DoctorNotes = Check.Length(doctorNotes, nameof(doctorNotes), AppointmentReportConsts.DoctorNotesMaxLength, AppointmentReportConsts.DoctorNotesMinLength);
+        public void SetAppointmentId(Guid appointmentId) => AppointmentId = Check.NotDefaultOrNull<Guid>(appointmentId, nameof(appointmentId));
 
     }
 }

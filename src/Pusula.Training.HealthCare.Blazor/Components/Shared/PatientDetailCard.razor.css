@@ -1,0 +1,38 @@
+.patient-detail-card {
+    border-radius: 6px;
+    color: var(--material-grey-900);
+    background-color: white;
+}
+
+.patient-detail-card-header {
+    display: flex;
+    height: 32px;
+}
+
+.patient-detail-card-header-content {
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+}
+
+.patient-detail-card-icon {
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--material-grey-200);
+    border-radius: 6px 0;
+}
+
+.patient-detail-card-title {
+    display: flex;
+    font-weight: 600;
+}
+
+.patient-detail-card-nocontent-text {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--material-grey-500);
+}

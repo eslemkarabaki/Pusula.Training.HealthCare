@@ -1,0 +1,31 @@
+﻿.appointment-status {
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+    .appointment-status[progress="Scheduled"] {
+        background-color: var(--material-blue-100);
+        color: var(--material-blue-500);
+    }
+
+    .appointment-status[progress="Completed"] {
+        background-color: var(--material-green-100);
+        color: var(--material-green-500);
+    }
+
+    .appointment-status[progress="Cancelled"] {
+        background-color: var(--material-red-100);
+        color: var(--material-red-500);
+    }
+
+    .appointment-status[progress="NoShow"] {
+        background-color: var(--material-orange-100);
+        color: var(--material-orange-500);
+    }
+
+    .appointment-status[progress="Rescheduled"] {
+        background-color: var(--material-purple-100);
+        color: var(--material-purple-500);
+    }

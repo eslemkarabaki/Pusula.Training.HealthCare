@@ -1,0 +1,9 @@
+::deep .e-list-item {
+    padding: 8px !important;
+    line-height: normal !important;
+    height: auto !important;
+}
+
+::deep .e-range-header {
+    display: none !important;
+}

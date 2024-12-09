@@ -32,15 +32,13 @@ namespace Pusula.Training.HealthCare.Departments
                 TotalCount = totalCount,
                 Items = ObjectMapper.Map<List<Department>, List<DepartmentDto>>(items)
             };
-        }
-        // For Appointment
+        } 
+
         public async Task<List<DepartmentDto>> GetListDepartmentsAsync()
         {
             return ObjectMapper.Map<List<Department>, List<DepartmentDto>>(await departmentRepository.GetListAsync());
         }
-
-  
-
+         
         public virtual async Task<DepartmentDto> GetAsync(Guid id)
         {
             return ObjectMapper.Map<Department, DepartmentDto>(await departmentRepository.GetAsync(id));

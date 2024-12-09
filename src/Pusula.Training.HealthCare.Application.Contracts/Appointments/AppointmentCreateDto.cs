@@ -1,26 +1,20 @@
-﻿using Pusula.Training.HealthCare.Departments;
+﻿using Pusula.Training.HealthCare.DataAnnotations;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Pusula.Training.HealthCare.Appointments
+namespace Pusula.Training.HealthCare.Appointments;
+
+public class AppointmentCreateDto
 {
-    public class AppointmentCreateDto
-    {
-        [Required]
-        public DateTime StartTime { get; set; }
-        [Required]
-        public DateTime EndTime { get; set; }
-        [Required]
-        public EnumStatus Status { get; set; }
-        [StringLength(AppointmentConsts.NoteMaxLength)]
-        public string Notes { get; set; } = null!;
-        public Guid AppointmentTypeId { get; set; }
-        public Guid DepartmentId { get; set; }
-        public Guid DoctorId { get; set; }
-        public Guid PatientId { get; set; }
-    }
+    [Required] public DateTime StartTime { get; set; }
+    [Required] public DateTime EndTime { get; set; }
+    [Required] public EnumStatus Status { get; set; } = EnumStatus.Scheduled;
+
+    [StringLength(AppointmentConsts.NoteMaxLength, MinimumLength = 3)]
+    public string Notes { get; set; } = null!;
+
+    [Required] [NotEmptyGuid] public Guid AppointmentTypeId { get; set; }
+    [Required] [NotEmptyGuid] public Guid DepartmentId { get; set; }
+    [Required] [NotEmptyGuid] public Guid DoctorId { get; set; }
+    [Required] [NotEmptyGuid] public Guid PatientId { get; set; }
 }

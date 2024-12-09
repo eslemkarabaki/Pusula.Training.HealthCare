@@ -1,0 +1,7 @@
+@page "/prm/management/patient-detail/{PatientNo:int}/appointment"
+@using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+@layout PatientDetailLayout
+
+@code {
+    [Parameter] public int PatientNo { get; set; }
+}

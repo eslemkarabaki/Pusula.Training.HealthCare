@@ -1,0 +1,147 @@
+@page "/prm/reports/patient-protocols"
+@attribute [Authorize(HealthCarePermissions.Protocols.Default)]
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Protocols
+@using Pusula.Training.HealthCare.ProtocolTypes
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+
+@inherits HealthCareComponentBase
+
+@inject IProtocolAppService ProtocolAppService
+@inject IDoctorAppService DoctorAppService
+@inject IDepartmentsAppService DepartmentsAppService
+@inject IProtocolTypeAppService ProtocolTypeAppService
+
+@* ************************* SEARCH ************************* *@
+<div class="bg-white mb-3">
+    <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync"
+                ButtonsAlignment="FormButtonsAlignment.Stretch"
+                ValidationDisplayMode="FormValidationDisplay.Tooltip">
+        <FormValidator>
+            <DataAnnotationsValidator/>
+        </FormValidator>
+        <FormTemplate>
+            <div class="d-flex gap-2 p-2 align-items-end">
+                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]"/>
+
+                <SfDateRangePicker TValue="DateTime" @bind-StartDate="@Filter.StartTime"
+                                   @bind-EndDate="@Filter.EndTime" FullScreen Format="dd.MM.yyyy"
+                                   FirstDayOfWeek="@((int)DayOfWeek.Monday)">
+                    <DateRangePickerEvents TValue="DateTime" ValueChange="@SearchAsync"></DateRangePickerEvents>
+                    <DateRangePickerPresets>
+                        <DateRangePickerPreset Label="@L["Today"]" Start="@Today" End="@Tomorrow"/>
+                        <DateRangePickerPreset Label="@L["ThisWeek"]" Start="@ThisWeekStart"
+                                               End="@ThisWeekStart.AddDays(6)"/>
+                        <DateRangePickerPreset Label="@L["ThisMonth"]" Start="@ThisMonthStart"
+                                               End="@ThisMonthStart.AddMonths(1).AddDays(-1)"/>
+                        <DateRangePickerPreset Label="@L["OneMonth"]" Start="@Today.AddMonths(-1)"
+                                               End="@Today"/>
+                        <DateRangePickerPreset Label="@L["ThreeMonth"]" Start="@Today.AddMonths(-3)"
+                                               End="@Today"/>
+                        <DateRangePickerPreset Label="@L["SixMonth"]" Start="@Today.AddMonths(-6)"
+                                               End="@Today"/>
+                        <DateRangePickerPreset Label="@L["OneYear"]" Start="@Today.AddYears(-1)"
+                                               End="@Today"/>
+                    </DateRangePickerPresets>
+                </SfDateRangePicker>
+
+                <SfAutoComplete @ref="DoctorFilterAutoComplete" @bind-Value="@Filter.DoctorId"
+                                TValue="Guid?" TItem="DoctorDto" Placeholder="@L["Doctor"]"
+                                DataSource="@DoctorList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton
+                                PopupHeight="300px">
+                    <AutoCompleteEvents TValue="Guid?" TItem="DoctorDto" Filtering="@FilterDoctorAsync"
+                                        ValueChange="@SearchAsync"/>
+                    <AutoCompleteFieldSettings Text="FullName" Value="Id"/>
+                </SfAutoComplete>
+
+                <SfAutoComplete @ref="DepartmentFilterAutoComplete"
+                                @bind-Value="@Filter.DepartmentId" TValue="Guid?"
+                                TItem="DepartmentDto" Placeholder="@L["Department"]"
+                                DataSource="@DepartmentList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton
+                                PopupHeight="300px">
+                    <AutoCompleteEvents TValue="Guid?" TItem="DepartmentDto"
+                                        Filtering="@FilterDepartmentAsync" ValueChange="@SearchAsync"/>
+                    <AutoCompleteFieldSettings Text="Name" Value="Id"/>
+                </SfAutoComplete>
+
+                <SfDropDownList @bind-Value="@Filter.ProtocolTypeId" TValue="Guid?"
+                                TItem="ProtocolTypeDto" Placeholder="@L["ProtocolType"]"
+                                DataSource="@ProtocolTypeList" AllowFiltering EnableVirtualization
+                                ShowClearButton PopupHeight="300px">
+                    <DropDownListEvents TItem="ProtocolTypeDto" TValue="Guid?"
+                                        ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="Name" Value="Id"/>
+                </SfDropDownList>
+
+                <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumProtocolStatus"
+                                TItem="string" Placeholder="@L["Status"]"
+                                DataSource="@Enum.GetNames(typeof(EnumProtocolStatus))" ShowClearButton>
+                    <DropDownListEvents TItem="string" TValue="EnumProtocolStatus"
+                                        ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="string" Value="EnumProtocolStatus"/>
+                </SfDropDownList>
+
+                <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
+            </div>
+        </FormTemplate>
+        <FormButtons></FormButtons>
+    </SfDataForm>
+</div>
+
+<SfGrid @ref="SfGrid" TValue="ProtocolDto" Height="600px" DataSource="@ProtocolList"
+        AllowSelection="@CanDeleteProtocol" EnableHover EnableVirtualMaskRow EnableStickyHeader>
+    <GridSelectionSettings CheckboxOnly PersistSelection/>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="30" Visible="@CanDeleteProtocol"></GridColumn>
+        <GridColumn Field="@nameof(ProtocolDto.StartTime)" Format="dd.MM.yyyy hh:mm"></GridColumn>
+        <GridColumn HeaderText="@L["Status"]">
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    <ProtocolStatusBadge Status="@dto.Status"/>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["ProtocolType"]">
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    @(dto.ProtocolType.Name)
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@nameof(ProtocolDto.Description)"></GridColumn>
+        <GridColumn HeaderText="@L["Patient"]">
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    @(dto.Patient.FullName)
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Doctor"]">
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    @(dto.Doctor.FullName)
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Department"]">
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    @(dto.Department.Name)
+                }
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>

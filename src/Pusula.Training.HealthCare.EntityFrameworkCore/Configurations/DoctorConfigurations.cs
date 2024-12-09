@@ -18,6 +18,7 @@ public class DoctorConfigurations:IEntityTypeConfiguration<Doctor>
          .HasMaxLength(DoctorConsts.FirstNameMaxLength);
         b.Property(x => x.LastName).HasColumnName(nameof(Doctor.LastName)).IsRequired()
          .HasMaxLength(DoctorConsts.LastNameMaxLength);
+        b.Property(x => x.FullName).HasColumnName(nameof(Doctor.FullName));
         b.Property(x => x.WorkingHours).HasColumnName(nameof(Doctor.WorkingHours)).IsRequired();
         b.HasOne<Title>().WithMany().HasForeignKey(x => x.TitleId).IsRequired()
          .OnDelete(DeleteBehavior.NoAction);

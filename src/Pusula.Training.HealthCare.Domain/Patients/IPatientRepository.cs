@@ -8,8 +8,13 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientRepository : IRepository<Patient, Guid>
 {
-    Task<PatientWithNavigationProperties> GetNavigationPropertiesAsync(
+    Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
         Guid id,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
+        int patientNo,
         CancellationToken cancellationToken = default
     );
 
@@ -17,8 +22,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -35,12 +39,11 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         CancellationToken cancellationToken = default
     );
 
-    Task<List<PatientWithNavigationProperties>> GetNavigationPropertiesListAsync(
+    Task<List<PatientWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -61,8 +64,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -80,8 +82,7 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         string? filterText = null,
         int? no = null,
         Guid? countryId = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? fullname = null,
         DateTime? birthDateMin = null,
         DateTime? birthDateMax = null,
         string? identityNumber = null,
@@ -92,18 +93,6 @@ public interface IPatientRepository : IRepository<Patient, Guid>
         EnumGender gender = EnumGender.None,
         EnumBloodType bloodType = EnumBloodType.None,
         EnumMaritalStatus maritalStatus = EnumMaritalStatus.None,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<bool> IdentityNumberExistsAsync(
-        Guid? id,
-        string identityNumber,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<bool> PassportNumberExistsAsync(
-        Guid? id,
-        string passportNumber,
         CancellationToken cancellationToken = default
     );
 }

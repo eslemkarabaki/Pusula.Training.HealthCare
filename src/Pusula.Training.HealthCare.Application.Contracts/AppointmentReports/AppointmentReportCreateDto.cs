@@ -1,11 +1,5 @@
-﻿using Pusula.Training.HealthCare.Appointments;
-using Pusula.Training.HealthCare.Departments;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pusula.Training.HealthCare.AppointmentReports
 {
@@ -17,6 +11,7 @@ namespace Pusula.Training.HealthCare.AppointmentReports
         public string PriorityNotes { get; set; } = null!;
         [StringLength(AppointmentReportConsts.DoctorNotesMaxLength)]
         public string DoctorNotes { get; set; } = null!;
+        [Required]
         public Guid AppointmentId { get; set; }
 
     }
