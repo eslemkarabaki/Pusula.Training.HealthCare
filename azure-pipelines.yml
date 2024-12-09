@@ -23,27 +23,6 @@ steps:
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - bash: |
-    # Update package list and install dependencies
-    sudo apt-get update && sudo apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo bash - && \
-    sudo apt-get install -y nodejs && \
-    sudo npm install -g npm
-
-    # Install dotnet tools
-    dotnet tool restore
-    dotnet tool install -g Volo.Abp.Cli --version 8.0.*
-
-    # Add ABP CLI to PATH
-    export PATH="$PATH:/root/.dotnet/tools"
-    echo "ABP CLI version: $(abp --version)"
-
-    # Verify abp command exists
-    which abp
-    abp install-libs
-  displayName: 'Install Dependencies and ABP CLI'
-
-
-- bash: |
     # Build the project
     dotnet build src/Pusula.Training.HealthCare.Blazor/Pusula.Training.HealthCare.Blazor.csproj --configuration Release
   displayName: 'Build Project'
