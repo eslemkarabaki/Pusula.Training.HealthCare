@@ -29,19 +29,13 @@ using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
-using System.Reflection;
 using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
-using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.AppointmentTypes;
-using Npgsql.Replication.PgOutput.Messages;
 using Pusula.Training.HealthCare.TestGroups;
 using Pusula.Training.HealthCare.Tests;
 using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.TestProcesses;
 using Pusula.Training.HealthCare.WorkLists;
-
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
@@ -49,6 +43,8 @@ using ProtocolType = Pusula.Training.HealthCare.ProtocolTypes.ProtocolType;
 using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Pusula.Training.HealthCare.Insurances;
+using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.AppointmentReports;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -87,6 +83,7 @@ public class HealthCareDbContext :
     public DbSet<TestType> TestTypes { get; set; } = null!;
     public DbSet<TestProcess> TestProcesses { get; set; } = null!;
     public DbSet<WorkList> WorkLists { get; set; } = null!;
+    public DbSet<Diagnosis> Diagnoses { get; set; } = null!;
 
     #region Radiology
 

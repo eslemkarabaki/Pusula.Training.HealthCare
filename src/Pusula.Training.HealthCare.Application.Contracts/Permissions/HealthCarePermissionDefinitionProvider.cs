@@ -25,6 +25,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetProtocolsPermissions(myGroup);
         SetPatientProtocolsPermissions(myGroup);
         SetProtocolTypesPermissions(myGroup);
+        SetDiagnosisPermissions(myGroup);
         SetInsurancesPermissions(myGroup);
         SetExaminationsPermissions(myGroup);
         SetRadiologyPermissions(myGroup); 
@@ -256,6 +257,16 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Insurances.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Insurances.Delete, L("Permission:Delete"));
     }
+    private void SetDiagnosisPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.Diagnosis.Default, L("Permission:Diagnosis")
+        );
+        permission.AddChild(HealthCarePermissions.Diagnosis.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Diagnosis.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Diagnosis.Delete, L("Permission:Delete"));
+    }
+
 
     private void SetPatientNotesPermissions(PermissionGroupDefinition group)
     {

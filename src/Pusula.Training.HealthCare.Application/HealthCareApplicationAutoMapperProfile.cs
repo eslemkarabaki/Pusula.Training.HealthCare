@@ -30,6 +30,7 @@ using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Pusula.Training.HealthCare.PatientNotes;
+using Pusula.Training.HealthCare.Diagnoses;
 
 namespace Pusula.Training.HealthCare;
 
@@ -84,7 +85,8 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 
         CreateMap<City, CityDto>().ReverseMap();
         CreateMap<CityDto, CityUpdateDto>();
-
+        CreateMap<Diagnosis, DiagnosisDto>().ReverseMap();
+        CreateMap<DiagnosisDto, DiagnosisUpdateDto>();
         CreateMap<District, DistrictDto>().ReverseMap();
         CreateMap<DistrictDto, DistrictUpdateDto>();
 
