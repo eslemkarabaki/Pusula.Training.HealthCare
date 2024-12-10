@@ -28,7 +28,7 @@ public class AddressConfigurations : IEntityTypeConfiguration<Address>
 
         b
             .HasOne<Patient>()
-            .WithMany()
+            .WithMany(e => e.Addresses)
             .IsRequired()
             .HasForeignKey(e => e.PatientId)
             .OnDelete(DeleteBehavior.NoAction);
