@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - devops
+      - development
 
 pool:
   name: pusula-akademi-team3-agent
