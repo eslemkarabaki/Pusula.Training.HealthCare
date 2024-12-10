@@ -1,16 +1,24 @@
 ﻿using JetBrains.Annotations;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Services;
+using Volo.Abp.Identity;
 
 namespace Pusula.Training.HealthCare.Doctors;
 
-public class DoctorManager(IDoctorRepository doctorRepository) : DomainService
+public class DoctorManager(IDoctorRepository doctorRepository, UserManager<IdentityUser> userManager) : DomainService
 {
     public virtual async Task<Doctor> CreateAsync(
-        string firstName, string lastName, string workingHours, Guid titleId, Guid departmentId, Guid hospitalId)
+        string firstName,
+        string lastName,
+        string workingHours,
+        Guid titleId,
+        Guid departmentId,
+        Guid hospitalId
+    )
     {
         Check.NotNullOrWhiteSpace(firstName, nameof(firstName));
         Check.Length(firstName, nameof(firstName), DoctorConsts.FirstNameMaxLength);
@@ -26,14 +34,19 @@ public class DoctorManager(IDoctorRepository doctorRepository) : DomainService
             GuidGenerator.Create(),
             firstName, lastName, workingHours, titleId, departmentId, hospitalId
         );
-
         return await doctorRepository.InsertAsync(doctor);
     }
 
     public virtual async Task<Doctor> UpdateAsync(
         Guid id,
-        string firstName, string lastName, string workingHours, Guid titleId, Guid departmentId, Guid hospitalId,
-        [CanBeNull] string? concurrencyStamp = null)
+        string firstName,
+        string lastName,
+        string workingHours,
+        Guid titleId,
+        Guid departmentId,
+        Guid hospitalId,
+        [CanBeNull] string? concurrencyStamp = null
+    )
     {
         Check.NotNullOrWhiteSpace(firstName, nameof(firstName));
         Check.Length(firstName, nameof(firstName), DoctorConsts.FirstNameMaxLength);

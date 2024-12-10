@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.Hospitals;
 using Pusula.Training.HealthCare.Departments;
+using Volo.Abp.Identity;
 
 namespace Pusula.Training.HealthCare.Doctors;
 
@@ -19,13 +20,14 @@ public class Doctor : FullAuditedAggregateRoot<Guid>
     public virtual Guid TitleId { get; set; }
     public virtual Guid DepartmentId { get; set; }
     public virtual Guid HospitalId { get; set; }
+    public virtual Guid UserId { get; set; }
 
     protected Doctor()
     {
         FirstName = string.Empty;
         LastName = string.Empty;
         WorkingHours = string.Empty;
-        FullName=string.Empty;
+        FullName = string.Empty;
     }
 
     public Doctor(

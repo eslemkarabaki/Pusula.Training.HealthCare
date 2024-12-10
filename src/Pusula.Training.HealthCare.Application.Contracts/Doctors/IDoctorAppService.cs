@@ -22,5 +22,6 @@ public interface IDoctorAppService : IApplicationService
     Task<DownloadTokenResultDto> GetDownloadTokenAsync();
     Task<IRemoteStreamContent> GetListAsExcelFileAsync(DoctorExcelDownloadDto input);
     Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input);
-    Task<DoctorDto> UpdateAsync(Guid id, DoctorUpdateDto input);    
+    Task<PagedResultDto<DoctorWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(GetDoctorsInput input);
+    Task<DoctorDto> UpdateAsync(Guid id, DoctorUpdateDto input);
 }

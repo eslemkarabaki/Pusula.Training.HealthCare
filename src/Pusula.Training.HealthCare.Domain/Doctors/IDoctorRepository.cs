@@ -35,6 +35,21 @@ public interface IDoctorRepository : IRepository<Doctor, Guid>
         CancellationToken cancellationToken = default
     );
 
+    Task<List<DoctorWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
+        string? filterText = null,
+        string? firstName = null,
+        string? lastName = null,
+        string? fullname = null,
+        string? workingHours = null,
+        Guid? titleId = null,
+        Guid? departmentId = null,
+        Guid? hospitalId = null,
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        CancellationToken cancellationToken = default
+    );
+
     Task<long> GetCountAsync(
         string? filterText = null,
         string? firstName = null,
