@@ -26,24 +26,31 @@ public class PatientFileManager : HealthCareController
     private const string Key =
         "VRb6I3i7NqsxuaAyU52ddige5L8WIHVqyfPOev3dvTFDn7T5Ft0m/aHvdY4I2fQw/f5nA//i3l58+AStQ3JYhA==";
 
-    protected virtual async Task<string> CreateBlobContainerIfNotExistAsync(Guid patientId)
+    protected virtual async Task CreateBlobContainerIfNotExistAsync(Guid patientId)
     {
-        var containerName = patientId.ToString("N");
+        var containerName = GetContainerName(patientId);
         var blobServiceClient = new BlobServiceClient(
             new Uri(BasePath),
             new StorageSharedKeyCredential(AccountName, Key)
         );
         await blobServiceClient.GetBlobContainerClient(containerName).CreateIfNotExistsAsync();
-        return containerName;
     }
 
-    protected virtual async Task InitializeAzureAsync(Guid patientId)
+    protected virtual void RegisterAzure(Guid patientId)
     {
-        var containerName = await CreateBlobContainerIfNotExistAsync(patientId);
+        var containerName = GetContainerName(patientId);
         var blobPath = $"{BasePath}/{containerName}/";
         _operation.SetBlobContainer(blobPath, $"{blobPath}{FolderName}");
         _operation.RegisterAzure(AccountName, Key, containerName);
     }
+
+    protected virtual async Task InitializeAzureAsync(Guid patientId)
+    {
+        await CreateBlobContainerIfNotExistAsync(patientId);
+        RegisterAzure(patientId);
+    }
+
+    protected virtual string GetContainerName(Guid patientId) => patientId.ToString("N");
 
     [HttpPost("file-operations/{patientId:guid}")]
     public async Task<object> FileOperationsAsync([FromBody] FileManagerDirectoryContent args, Guid patientId)
@@ -99,11 +106,10 @@ public class PatientFileManager : HealthCareController
         };
     }
 
-    // Uploads the file(s) into a specified path
     [HttpPost("upload/{patientId:guid}")]
-    public async Task<ActionResult> UploadAsync(FileManagerDirectoryContent args, Guid patientId)
+    public ActionResult Upload([FromBody] FileManagerDirectoryContent args, Guid patientId)
     {
-        await InitializeAzureAsync(patientId);
+        RegisterAzure(patientId);
         if (args.Path != "")
         {
             args.Path = (FolderName + args.Path).Replace("//", "/");
@@ -120,22 +126,23 @@ public class PatientFileManager : HealthCareController
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = uploadResponse.Error.Message;
         }
 
-        return Ok();
+        return Content("");
     }
 
     [HttpPost("download/{patientId:guid}")]
-    public async Task<object> DownloadAsync(string downloadInput, Guid patientId)
+    public object Download([FromBody] string downloadInput, Guid patientId)
     {
-        await InitializeAzureAsync(patientId);
+        RegisterAzure(patientId);
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         var args = JsonSerializer.Deserialize<FileManagerDirectoryContent>(downloadInput, options);
         return _operation.Download(args.Path, args.Names, args.Data);
     }
+    
 
     [HttpGet("get-image/{patientId:guid}")]
-    public async Task<IActionResult> GetImageAsync(FileManagerDirectoryContent args, Guid patientId)
+    public IActionResult GetImage([FromBody] FileManagerDirectoryContent args, Guid patientId)
     {
-        await InitializeAzureAsync(patientId);
+        RegisterAzure(patientId);
         return _operation.GetImage(args.Path, args.Id, true, null, args.Data);
     }
 }

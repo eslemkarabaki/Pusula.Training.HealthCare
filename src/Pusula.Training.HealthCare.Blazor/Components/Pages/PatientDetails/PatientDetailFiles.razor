@@ -4,38 +4,44 @@
 @using Syncfusion.Blazor.FileManager
 @layout PatientDetailLayout
 
-<SfFileManager TValue="FileManagerDirectoryContent" AllowDragAndDrop AllowMultiSelection
-               ShowFileExtension="false" CssClass="bg-white">
-    <FileManagerAjaxSettings Url="@($"{basePath}/file-operations/{Patient.Patient.Id}")"
-                             UploadUrl="@($"{basePath}/upload/{Patient.Patient.Id}")"
-                             DownloadUrl="@($"{basePath}/download/{Patient.Patient.Id}")"
-                             GetImageUrl="@($"{basePath}/get-image/{Patient.Patient.Id}")">
-    </FileManagerAjaxSettings>
-    <FileManagerToolbarSettings ToolbarItems="@_toolBarItems"></FileManagerToolbarSettings>
-    <FileManagerContextMenuSettings File="@FileItems" Layout="@LayoutItems"
-                                    Visible="true"></FileManagerContextMenuSettings>
-    <FileManagerDetailsViewSettings>
-        <FileManagerColumns>
-            <FileManagerColumn Field="Name" HeaderText="Name"></FileManagerColumn>
-            <FileManagerColumn Field="DateModified" Format="MM/dd/yyyy h:mm tt"
-                               HeaderText="Modified"></FileManagerColumn>
-            <FileManagerColumn Field="Size" HeaderText="Size"></FileManagerColumn>
-        </FileManagerColumns>
-    </FileManagerDetailsViewSettings>
-</SfFileManager>
+<div class="bg-white">
+    <SfFileManager TValue="FileManagerDirectoryContent" AllowDragAndDrop AllowMultiSelection Height="600px"
+                   ShowFileExtension="false">
+        <FileManagerAjaxSettings Url="@GetUrl("file-operations")"
+                                 UploadUrl="@GetUrl("upload")"
+                                 DownloadUrl="@GetUrl("download")"
+                                 GetImageUrl="@GetUrl("get-image")">
+        </FileManagerAjaxSettings>
+        <FileManagerUploadSettings AutoUpload UploadMode="UploadMode.HttpClient"  ></FileManagerUploadSettings>
+        <FileManagerToolbarSettings ToolbarItems="@_toolBarItems"></FileManagerToolbarSettings>
+        <FileManagerContextMenuSettings File="@_fileItems"
+                                        Visible="true"></FileManagerContextMenuSettings>
+        <FileManagerDetailsViewSettings>
+            <FileManagerColumns>
+                <FileManagerColumn Field="Name" HeaderText="Name"></FileManagerColumn>
+                <FileManagerColumn Field="DateModified" Format="MM/dd/yyyy h:mm tt"
+                                   HeaderText="Modified"></FileManagerColumn>
+                <FileManagerColumn Field="Size" HeaderText="Size"></FileManagerColumn>
+            </FileManagerColumns>
+        </FileManagerDetailsViewSettings>
+    </SfFileManager>
+</div>
 
 @code {
     [Parameter] public int PatientNo { get; set; }
     [CascadingParameter] private PatientWithNavigationPropertiesDto Patient { get; set; } = null!;
-    private string basePath = "/api/app/patient-file-manager";
 
-    private List<ToolBarItemModel> _toolBarItems =
+    private string GetUrl(string route) => $"/api/app/patient-file-manager/{route}/{Patient.Patient.Id}";
+    
+    private readonly List<ToolBarItemModel> _toolBarItems =
     [
         new() { Name = "NewFolder" },
+        new() { Name = "Upload" },
         new() { Name = "Cut" },
         new() { Name = "Copy" },
         new() { Name = "Paste" },
         new() { Name = "Delete" },
+        new() { Name = "Download" },
         new() { Name = "Rename" },
         new() { Name = "SortBy" },
         new() { Name = "Refresh" },
@@ -44,9 +50,10 @@
         new() { Name = "Details" }
     ];
 
-    private string[] LayoutItems = new string[]
-    {
+    private readonly string[] _layoutItems =
+    [
         "SortBy",
+        "Upload",
         "View",
         "Refresh",
         "|",
@@ -57,17 +64,17 @@
         "Details",
         "|",
         "SelectAll"
-    };
+    ];
 
-    private string[] FileItems = new string[]
-    {
+    private readonly string[] _fileItems =
+    [
         "Cut",
         "Copy",
         "|",
         "Delete",
+        "Download",
         "Rename",
         "|",
         "Details"
-    };
-
+    ];
 }
