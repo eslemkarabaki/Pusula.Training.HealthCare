@@ -4,8 +4,6 @@
 @using Pusula.Training.HealthCare.Patients
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
 @using Pusula.Training.HealthCare.Permissions
-@using Pusula.Training.HealthCare.Countries
-@using Pusula.Training.HealthCare.PatientTypes
 @using Volo.Abp.Http.Client
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
@@ -18,15 +16,14 @@
 @using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients
 @using Position = Syncfusion.Blazor.Popups.Position
 @using Syncfusion.Blazor.SplitButtons
+
 @inherits HealthCareComponentBase
 @inject IPatientAppService PatientAppService
-@inject IPatientTypeAppService PatientTypeAppService
-@inject ICountryAppService CountryAppService
 @inject SfDialogService DialogService
 @inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
 @inject NavigationManager NavigationManager
 
-<PageHeader Title="" BreadcrumbItems="BreadcrumbItems"/>
+<PageHeader Title="Patients" BreadcrumbItems="BreadcrumbItems"/>
 
 @* ************************* SEARCH ************************* *@
 <div class="bg-white mb-3">
