@@ -1,20 +1,24 @@
 @page "/prm/management/patient-detail/{PatientNo:int}/file"
 @using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+@using Pusula.Training.HealthCare.Patients
 @using Syncfusion.Blazor.FileManager
 @layout PatientDetailLayout
 
-<SfFileManager TValue="FileManagerDirectoryContent" AllowDragAndDrop="true" AllowMultiSelection="true" ShowFileExtension="false" >
-    <FileManagerAjaxSettings Url="/api/file-manager"
-                             UploadUrl="/api/file-manager/upload"
-                             DownloadUrl="/api/file-manager/download"
-                             GetImageUrl="/api/file-manager/get-image">
+<SfFileManager TValue="FileManagerDirectoryContent" AllowDragAndDrop AllowMultiSelection
+               ShowFileExtension="false" CssClass="bg-white">
+    <FileManagerAjaxSettings Url="@($"{basePath}/file-operations/{Patient.Patient.Id}")"
+                             UploadUrl="@($"{basePath}/upload/{Patient.Patient.Id}")"
+                             DownloadUrl="@($"{basePath}/download/{Patient.Patient.Id}")"
+                             GetImageUrl="@($"{basePath}/get-image/{Patient.Patient.Id}")">
     </FileManagerAjaxSettings>
-    <FileManagerToolbarSettings ToolbarItems="@Items"></FileManagerToolbarSettings>
-    <FileManagerContextMenuSettings File="@FileItems" Layout="@LayoutItems" Visible="true"></FileManagerContextMenuSettings>
+    <FileManagerToolbarSettings ToolbarItems="@_toolBarItems"></FileManagerToolbarSettings>
+    <FileManagerContextMenuSettings File="@FileItems" Layout="@LayoutItems"
+                                    Visible="true"></FileManagerContextMenuSettings>
     <FileManagerDetailsViewSettings>
         <FileManagerColumns>
             <FileManagerColumn Field="Name" HeaderText="Name"></FileManagerColumn>
-            <FileManagerColumn Field="DateModified" Format="MM/dd/yyyy h:mm tt" HeaderText="Modified"></FileManagerColumn>
+            <FileManagerColumn Field="DateModified" Format="MM/dd/yyyy h:mm tt"
+                               HeaderText="Modified"></FileManagerColumn>
             <FileManagerColumn Field="Size" HeaderText="Size"></FileManagerColumn>
         </FileManagerColumns>
     </FileManagerDetailsViewSettings>
@@ -22,20 +26,48 @@
 
 @code {
     [Parameter] public int PatientNo { get; set; }
-    public List<ToolBarItemModel> Items = new List<ToolBarItemModel>()
+    [CascadingParameter] private PatientWithNavigationPropertiesDto Patient { get; set; } = null!;
+    private string basePath = "/api/app/patient-file-manager";
+
+    private List<ToolBarItemModel> _toolBarItems =
+    [
+        new() { Name = "NewFolder" },
+        new() { Name = "Cut" },
+        new() { Name = "Copy" },
+        new() { Name = "Paste" },
+        new() { Name = "Delete" },
+        new() { Name = "Rename" },
+        new() { Name = "SortBy" },
+        new() { Name = "Refresh" },
+        new() { Name = "Selection" },
+        new() { Name = "View" },
+        new() { Name = "Details" }
+    ];
+
+    private string[] LayoutItems = new string[]
     {
-        new ToolBarItemModel() { Name = "NewFolder" },
-        new ToolBarItemModel() { Name = "Cut" },
-        new ToolBarItemModel() { Name = "Copy" },
-        new ToolBarItemModel() { Name = "Paste" },
-        new ToolBarItemModel() { Name = "Delete" },
-        new ToolBarItemModel() { Name = "Rename" },
-        new ToolBarItemModel() { Name = "SortBy" },
-        new ToolBarItemModel() { Name = "Refresh" },
-        new ToolBarItemModel() { Name = "Selection" },
-        new ToolBarItemModel() { Name = "View" },
-        new ToolBarItemModel() { Name = "Details" },
+        "SortBy",
+        "View",
+        "Refresh",
+        "|",
+        "Paste",
+        "|",
+        "NewFolder",
+        "|",
+        "Details",
+        "|",
+        "SelectAll"
     };
-    public string[] LayoutItems = new string[] { "SortBy", "View", "Refresh", "|", "Paste", "|", "NewFolder", "|", "Details", "|", "SelectAll" };
-    public string[] FileItems = new string[] { "Cut", "Copy", "|", "Delete", "Rename", "|", "Details" };
+
+    private string[] FileItems = new string[]
+    {
+        "Cut",
+        "Copy",
+        "|",
+        "Delete",
+        "Rename",
+        "|",
+        "Details"
+    };
+
 }

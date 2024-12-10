@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Countries;
+using Pusula.Training.HealthCare.PatientNotes;
+using Pusula.Training.HealthCare.PatientTypes;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -26,9 +28,12 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
     public EnumBloodType BloodType { get; private set; }
     public EnumMaritalStatus MaritalStatus { get; private set; }
     public Guid CountryId { get; private set; }
+    public Country Country { get; set; }
     public Guid PatientTypeId { get; private set; }
+    public PatientType PatientType { get; set; }
 
     public ICollection<Address> Addresses { get; set; }
+    public ICollection<PatientNote> PatientNotes { get; set; }
 
     protected Patient()
     {
@@ -39,6 +44,7 @@ public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
         MobilePhoneNumber = string.Empty;
         MobilePhoneNumberCode = string.Empty;
         Addresses = [];
+        PatientNotes = [];
     }
 
     public Patient(

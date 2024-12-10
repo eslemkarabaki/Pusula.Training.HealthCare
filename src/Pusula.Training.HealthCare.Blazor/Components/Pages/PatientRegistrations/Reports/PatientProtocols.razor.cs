@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
+using Pusula.Training.HealthCare.Blazor.Models;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.ProtocolTypes;
+using Syncfusion.Blazor.Charts;
 using Syncfusion.Blazor.DropDowns;
 using Syncfusion.Blazor.Grids;
 using FilteringEventArgs = Syncfusion.Blazor.DropDowns.FilteringEventArgs;
@@ -18,42 +21,50 @@ public partial class PatientProtocols
 {
     private EditContext FilterContext { get; set; }
     private GetProtocolsInput Filter { get; set; }
-    private int PageSize => 50;
+    private int PageSize => 100;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; } = string.Empty;
     private int TotalCount { get; set; }
 
-    private DateTime Today => DateTime.Today;
-    private DateTime Tomorrow => Today.AddDays(1).AddMinutes(-1);
-    private bool TodayIsSaturday => Today.DayOfWeek is DayOfWeek.Saturday; // cumartesi
-    private bool TodayIsSunday => Today.DayOfWeek is DayOfWeek.Sunday;     // pazar
-
-    private DateTime ThisWeekStart =>
-        TodayIsSaturday ? Today.AddDays(2) :
-        TodayIsSunday ? Today.AddDays(1) : Today.AddDays(-((int)Today.DayOfWeek - 1));
-
-    private DateTime ThisMonthStart => new(Today.Year, Today.Month, 1);
-
+    private readonly DateTime _today;
+    private readonly DateTime _tomorrow;
+    private readonly DateTime _thisWeekStart;
+    private readonly DateTime _thisMonthStart;
     private IEnumerable<ProtocolTypeDto> ProtocolTypeList { get; set; } = [];
     private IReadOnlyList<ProtocolDto> ProtocolList { get; set; } = [];
 
     private SfGrid<ProtocolDto> SfGrid { get; set; } = null!;
+    private IEnumerable<SfPieChartModel>? DepartmentPieChartData { get; set; }
+    private IEnumerable<SfPieChartModel>? StatusPieChartData { get; set; }
+    private string? SelectedPieChartDepartment { get; set; }
 
     public PatientProtocols()
     {
+        _today = DateTime.Today;
+        _tomorrow = _today.AddDays(1).AddMinutes(-1);
+        var todayIsSaturday = _today.DayOfWeek is DayOfWeek.Saturday; // cumartesi
+        var todayIsSunday = _today.DayOfWeek is DayOfWeek.Sunday;     // pazar
+        _thisWeekStart =
+            todayIsSaturday ? _today.AddDays(2) :
+            todayIsSunday ? _today.AddDays(1) : _today.AddDays(-((int)_today.DayOfWeek - 1));
+        _thisMonthStart = new DateTime(_today.Year, _today.Month, 1);
+
         Filter = new GetProtocolsInput
         {
             MaxResultCount = PageSize,
             SkipCount = (CurrentPage - 1) * PageSize,
             Sorting = CurrentSorting,
-            StartTime = Today,
-            EndTime = Tomorrow
+            StartTime = _today,
+            EndTime = _tomorrow
         };
         FilterContext = new EditContext(Filter);
     }
 
-    protected override async Task OnInitializedAsync() =>
+    protected override async Task OnInitializedAsync()
+    {
         ProtocolTypeList = await ProtocolTypeAppService.GetListAsync();
+        await GetProtocolsAsync();
+    }
 
     protected virtual async Task SearchAsync()
     {
@@ -71,7 +82,36 @@ public partial class PatientProtocols
         var result = await ProtocolAppService.GetListWithDetailsAsync(Filter);
         ProtocolList = result.Items;
         TotalCount = (int)result.TotalCount;
+        DepartmentPieChartData = SfPieChartModel.FromGroup(
+            ProtocolList.Count, ProtocolList.GroupBy(e => e.DepartmentId), e => e.Department.Name
+        );
+        FillStatusPieChartData();
     }
+
+    private void FillStatusChartDataWithSelectedDepartment(AccumulationPointEventArgs args)
+    {
+        SelectedPieChartDepartment = (string)args.Point.X;
+        StatusPieChartData = SfPieChartModel.FromGroup(
+            ProtocolList.Count(e => e.Department.Name == SelectedPieChartDepartment),
+            ProtocolList.Where(e => e.Department.Name == SelectedPieChartDepartment).GroupBy(e => e.Status),
+            e => e.Status.ToString()
+        );
+        StateHasChanged();
+    }
+
+    private void FillStatusPieChartData()
+    {
+        SelectedPieChartDepartment = null;
+        StatusPieChartData = SfPieChartModel.FromGroup(
+            ProtocolList.Count, ProtocolList.GroupBy(e => e.Status), e => e.Status.ToString()
+        );
+    }
+
+#region Dashboard
+
+    private readonly double[] _spacing = [10, 10];
+
+#endregion
 
 #region Doctor
 

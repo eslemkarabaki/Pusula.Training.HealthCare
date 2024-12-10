@@ -69,19 +69,13 @@ public class PatientConfigurations : IEntityTypeConfiguration<Patient>
         b.Property(x => x.MaritalStatus).HasColumnName(nameof(Patient.MaritalStatus)).IsRequired();
 
         b
-            .HasMany(e => e.Addresses)
-            .WithOne()
-            .IsRequired(false)
-            .HasForeignKey(e => e.PatientId)
-            .OnDelete(DeleteBehavior.NoAction);
-        b
-            .HasOne<Country>()
+            .HasOne(e => e.Country)
             .WithMany()
             .IsRequired()
             .HasForeignKey(e => e.CountryId)
             .OnDelete(DeleteBehavior.NoAction);
         b
-            .HasOne<PatientType>()
+            .HasOne(e => e.PatientType)
             .WithMany()
             .IsRequired()
             .HasForeignKey(e => e.PatientTypeId)

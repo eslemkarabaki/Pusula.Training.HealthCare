@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
@@ -17,11 +16,5 @@ public partial class PatientDetail
     protected override async Task OnInitializedAsync() => await GetPatientWaitingAppointmentsAsync();
 
     private async Task GetPatientWaitingAppointmentsAsync() =>
-        Appointments = await AppointmentsAppService.GetListWithNavigationPropertiesAsync(
-            new GetAppointmentsInput()
-            {
-                PatientId = Patient.Patient.Id,
-                StartTime = DateTime.Now
-            }
-        );
+        Appointments = await AppointmentsAppService.GetPatientWaitingAppointmentsAsync(Patient.Patient.Id);
 }
