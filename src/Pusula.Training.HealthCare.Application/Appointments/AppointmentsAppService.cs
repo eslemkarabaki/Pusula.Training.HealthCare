@@ -58,6 +58,15 @@ public class AppointmentsAppService(
 
 #region GetWithNavigationProperties
 
+    public async Task<List<AppointmentWithNavigationPropertiesDto>> GetPatientWaitingAppointmentsAsync(Guid patientId)
+    {
+        var items = await appointmentRepository.GetListWithNavigationPropertiesAsync(
+            patientId: patientId, startTime: DateTime.Now
+        );
+        return ObjectMapper
+            .Map<List<AppointmentWithNavigationProperties>, List<AppointmentWithNavigationPropertiesDto>>(items);
+    }
+
     public virtual async Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) =>
         ObjectMapper.Map<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>
             (await appointmentRepository.GetWithNavigationPropertiesAsync(id));
@@ -74,7 +83,6 @@ public class AppointmentsAppService(
         var count = await appointmentRepository.GetCountAsync(
             input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId
-
         );
 
         return ObjectMapper

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -150,28 +151,24 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
     protected virtual async Task<IQueryable<PatientWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()
     {
         var dbContext = await GetDbContextAsync();
-        return
-            from patient in dbContext
-                            .Patients.Include(e => e.Addresses)
-                            .ThenInclude(e => e.District.City.Country)
-            join country in dbContext.Countries
-                on patient.CountryId equals country.Id
-                into countries
-            from country in countries.DefaultIfEmpty()
-            join patientType in dbContext.PatientTypes
-                on patient.PatientTypeId equals patientType.Id
-                into patientTypes
-            from patientType in patientTypes.DefaultIfEmpty()
-            join patientNote in dbContext.PatientNotes.Include(e=>e.Creator)
-                on patient.Id equals patientNote.PatientId
-                into patientNotes
-            select new PatientWithNavigationProperties
-            {
-                Patient = patient,
-                Country = country,
-                PatientType = patientType,
-                PatientNotes = patientNotes.AsEnumerable()
-            };
+
+        return dbContext
+               .Patients
+               .Include(e => e.Addresses)
+               .ThenInclude(e => e.District.City.Country)
+               .Include(e => e.Country)
+               .Include(e => e.PatientType)
+               .Include(e => e.PatientNotes)
+               .ThenInclude(e => e.Creator)
+               .Select(
+                   p => new PatientWithNavigationProperties()
+                   {
+                       Patient = p,
+                       Country = p.Country,
+                       PatientType = p.PatientType,
+                       PatientNotes = p.PatientNotes
+                   }
+               );
     }
 
 #region Delete
