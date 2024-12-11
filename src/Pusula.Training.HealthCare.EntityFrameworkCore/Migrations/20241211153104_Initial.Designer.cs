@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Pusula.Training.HealthCare.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    [Migration("20241210074020_Initial")]
+    [Migration("20241211153104_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -22,7 +22,7 @@ namespace Pusula.Training.HealthCare.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("_Abp_DatabaseProvider", EfCoreDatabaseProvider.PostgreSql)
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -703,8 +703,8 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
                         .HasColumnName("FirstName");
 
                     b.Property<string>("FullName")
@@ -731,16 +731,18 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
                         .HasColumnName("LastName");
 
                     b.Property<Guid>("TitleId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("WorkingHours")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("WorkingHours")
+                        .HasColumnType("integer")
                         .HasColumnName("WorkingHours");
 
                     b.HasKey("Id");
@@ -750,6 +752,9 @@ namespace Pusula.Training.HealthCare.Migrations
                     b.HasIndex("HospitalId");
 
                     b.HasIndex("TitleId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("AppDoctors", (string)null);
                 });
@@ -4097,6 +4102,12 @@ namespace Pusula.Training.HealthCare.Migrations
                         .WithMany()
                         .HasForeignKey("TitleId")
                         .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Volo.Abp.Identity.IdentityUser", null)
+                        .WithOne()
+                        .HasForeignKey("Pusula.Training.HealthCare.Doctors.Doctor", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
