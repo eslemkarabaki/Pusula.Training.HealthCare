@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Pusula.Training.HealthCare.AppointmentTypes;
 using Syncfusion.Blazor.Schedule;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Doctors;
@@ -14,21 +13,25 @@ using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients;
 using Syncfusion.Blazor.Popups;
 using Pusula.Training.HealthCare.Shared;
 using System.Linq.Dynamic.Core;
+using Pusula.Training.HealthCare.AppointmentTypes;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
-public partial class Appointments
-{
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
+
+    public partial class PatientDetailAppointments
+    {
+
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
     private DateTime CurrentDate { get; set; } = DateTime.Today;
-    private GetPatientsInputValidator PatientsInputValidator { get; set; } = new();
+    //private GetPatientsInputValidator PatientsInputValidator { get; set; } = new();
     private List<AppointmentDto> AppointmentLists { get; set; } = [];
     private List<DoctorDto> Doctors { get; set; } = [];
     private IReadOnlyList<DepartmentDto> Departments { get; set; } = [];
     private List<AppointmentTypeDto> AppointmentTypes { get; set; } = [];
+    private Guid SelectedPatientId { get; set; }
     private Guid SelectedDepartmentId { get; set; }
     private Guid SelectedDoctorId { get; set; }
-    private IReadOnlyList<LookupDto<Guid>> Patients { get; set; } = [];
+    //private IReadOnlyList<LookupDto<Guid>> Patients { get; set; } = [];
     private SfAutoComplete<Guid, LookupDto<Guid>> refAutoComplatePatient { get; set; }
     private SfAutoComplete<Guid, DepartmentDto> refAutoComplateDepartment { get; set; }
     private bool valueSelected => SelectedDepartmentId != Guid.Empty && SelectedDoctorId != Guid.Empty;
@@ -37,11 +40,11 @@ public partial class Appointments
     private bool GridLine { get; set; } = true;
     private DateTime MinDate = DateTime.Now;
 
-    public Appointments()
-    {
-        SetDefaultsForCreateDto();
-        SetDefaultsForUpdateDto();
-    }
+    public PatientDetailAppointments()
+        {
+            SetDefaultsForCreateDto();
+            SetDefaultsForUpdateDto();
+        }
 
     public static class AppointmentHelper
     {
@@ -58,7 +61,8 @@ public partial class Appointments
             if (!attributes.ContainsKey("style"))
             {
                 attributes["style"] = $"background-color: {color};";
-            } else
+            }
+            else
             {
                 attributes["style"] += $" background-color: {color};";
             }
@@ -71,27 +75,27 @@ public partial class Appointments
     {
         var categoryColor = args.Data.Status switch
         {
-            EnumStatus.Scheduled   => "#FFD700",
-            EnumStatus.Completed   => "#32CD32",
-            EnumStatus.Cancelled   => "#FF6347",
-            EnumStatus.NoShow      => "#A9A9A9",
+            EnumStatus.Scheduled => "#FFD700",
+            EnumStatus.Completed => "#32CD32",
+            EnumStatus.Cancelled => "#FF6347",
+            EnumStatus.NoShow => "#A9A9A9",
             EnumStatus.Rescheduled => "#1E90FF",
-            _                      => "#FFFFFF"
+            _ => "#FFFFFF"
         };
 
         var updatedAttributes = AppointmentHelper.ApplyCategoryColor(categoryColor, args.Attributes);
         args.Attributes = updatedAttributes.ToDictionary(entry => entry.Key, entry => entry.Value);
     }
 
-    protected async Task GetPatientFilter(FilteringEventArgs args)
-    {
-        args.PreventDefaultAction = true;
-        var filter = new LookupRequestDto { Filter = args.Text };      
-        var patients = await AppointmentsAppService.GetPatientLookupAsync(filter);
-        Patients = patients.Items;
-        await refAutoComplatePatient.FilterAsync(Patients);
-        await InvokeAsync(StateHasChanged);
-    }
+    //protected async Task GetPatientFilter(FilteringEventArgs args)
+    //{
+    //    args.PreventDefaultAction = true;
+    //    var filter = new LookupRequestDto { Filter = args.Text };
+    //    var patients = await AppointmentsAppService.GetPatientLookupAsync(filter);
+    //    Patients = patients.Items;
+    //    await refAutoComplatePatient.FilterAsync(Patients);
+    //    await InvokeAsync(StateHasChanged);
+    //}
 
     protected override async Task OnInitializedAsync()
     {
@@ -120,23 +124,23 @@ public partial class Appointments
     private void CancelScheduleEvent(CellClickEventArgs args) => args.Cancel = true;
     private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;
 
-#region Patient Creation
+    #region Patient Creation
 
-    private PatientCreateDialog CreatePatientDialog { get; set; } = null!;
+    //private PatientCreateDialog CreatePatientDialog { get; set; } = null!;
 
-    private async Task OpenCreatePatientDialogAsync() => await CreatePatientDialog.ShowAsync();
-    private PatientDto? CreatedPatient { get; set; }
+    //private async Task OpenCreatePatientDialogAsync() => await CreatePatientDialog.ShowAsync();
+    //private PatientDto? CreatedPatient { get; set; }
 
-    private async Task PatientCreatedAsync(PatientDto createdPatient)
-    {
-        CreatedPatient = createdPatient;
-        AppointmentCreateDto.PatientId = createdPatient.Id;
-        await Task.CompletedTask;
-    }
+    //private async Task PatientCreatedAsync(PatientDto createdPatient)
+    //{
+    //    CreatedPatient = createdPatient;
+    //    AppointmentCreateDto.PatientId = createdPatient.Id;
+    //    await Task.CompletedTask;
+    //}
 
-#endregion
+    #endregion
 
-#region Create
+    #region Create
 
     private AppointmentCreateDto AppointmentCreateDto { get; set; }
     private EditContext AppointmentCreateContext { get; set; }
@@ -156,8 +160,9 @@ public partial class Appointments
 
     private async Task CreateAppointmentAsync()
     {
-        try
-        {
+        //try
+        //{
+            AppointmentCreateDto.PatientId = SelectedPatientId;
             AppointmentCreateDto.DepartmentId = SelectedDepartmentId;
             AppointmentCreateDto.DoctorId = SelectedDoctorId;
             if (AppointmentCreateContext.Validate())
@@ -166,11 +171,11 @@ public partial class Appointments
                 await GetAppointmentsAsync();
                 await CloseCreateAppointmentDialogAsync();
             }
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
+        //}
+        //catch (Exception ex)
+        //{
+        //    await HandleErrorAsync(ex);
+        //}
     }
 
     private void SetDefaultsForCreateDto(CellClickEventArgs? args = null)
@@ -183,9 +188,9 @@ public partial class Appointments
         AppointmentCreateContext = new EditContext(AppointmentCreateDto);
     }
 
-#endregion
+    #endregion
 
-#region Update
+    #region Update
 
     private AppointmentUpdateDto AppointmentUpdateDto { get; set; }
     private Guid EditingAppointmentId { get; set; }
@@ -195,9 +200,9 @@ public partial class Appointments
     private async Task OpenUpdateAppointmentDialogAsync(EventClickArgs<AppointmentDto> args)
     {
         EditingAppointmentId = args.Event.Id;
-        ObjectMapper.Map(args.Event, AppointmentUpdateDto);
+        //ObjectMapper.Map(args.Event, AppointmentUpdateDto);
         await UpdateAppointmentDialog.ShowAsync();
-        
+
     }
 
     private async Task CloseUpdateAppointmentDialogAsync()
@@ -208,19 +213,19 @@ public partial class Appointments
 
     private async Task UpdateAppointmentAsync()
     {
-        try
-        {
+        //try
+        //{
             if (AppointmentUpdateContext.Validate())
             {
                 await AppointmentsAppService.UpdateAsync(EditingAppointmentId, AppointmentUpdateDto);
                 await GetAppointmentsAsync();
                 await CloseUpdateAppointmentDialogAsync();
             }
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
+        //}
+        //catch (Exception ex)
+        //{
+        //    await HandleErrorAsync(ex);
+        //}
     }
 
     private void SetDefaultsForUpdateDto()
@@ -229,7 +234,7 @@ public partial class Appointments
         AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
     }
 
-#endregion
+    #endregion
 
     public async Task OnActionBegin(ActionEventArgs<AppointmentDto> args)
     {
@@ -248,4 +253,7 @@ public partial class Appointments
         await GetAppointmentsAsync();
 
     }
+
 }
+
+

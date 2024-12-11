@@ -27,7 +27,6 @@ using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentTypes;
-using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.RadiologyExaminations;
@@ -88,7 +87,6 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<PatientNote, EfCorePatientNoteRepository>();
                 options.AddRepository<AppDefault, EfCoreAppDefaultRepository>();
                 options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
-                options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
                 options.AddRepository<ProtocolType, EfCoreProtocolTypeRepository>();
                 options.AddRepository<Insurance, EfCoreInsuranceRepository>();
                 options.AddRepository<Diagnosis, EfCoreDiagnosisRepository>();

@@ -6,8 +6,8 @@
 }
 
     .appointment-status[progress="Scheduled"] {
-        background-color: var(--material-blue-100);
-        color: var(--material-blue-500);
+        background-color: var(--material-yellow-100);
+        color: var(--material-yellow-500);
     }
 
     .appointment-status[progress="Completed"] {
@@ -21,8 +21,8 @@
     }
 
     .appointment-status[progress="NoShow"] {
-        background-color: var(--material-orange-100);
-        color: var(--material-orange-500);
+        background-color: var(--material-gray-100);
+        color: var(--material-gray-500);
     }
 
     .appointment-status[progress="Rescheduled"] {
