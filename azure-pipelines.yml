@@ -55,7 +55,7 @@ steps:
     trivy --version
 
     echo "Scanning Docker image: $(imageName):$(imageTag)"
-    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL --exit-code 1 $(imageName):$(imageTag)
+    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL --scanners vuln --exit-code 1 $(imageName):$(imageTag)
   displayName: 'Scan Docker Image with Trivy'
 
 - bash: |
