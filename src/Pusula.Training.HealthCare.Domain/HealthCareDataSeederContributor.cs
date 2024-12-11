@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
+using Microsoft.AspNetCore.Identity;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.AppointmentTypes;
@@ -26,11 +27,14 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Address = Pusula.Training.HealthCare.Addresses.Address;
 using Pusula.Training.HealthCare.RadiologyRequests;
-using Pusula.Training.HealthCare.RadioloyRequestItems; 
+using Pusula.Training.HealthCare.RadioloyRequestItems;
+using Volo.Abp.Identity;
+using Volo.Abp.Uow;
 
 namespace Pusula.Training.HealthCare;
 
 public class HealthCareDataSeederContributor(
+    IGuidGenerator guidGenerator,
     ICityRepository cityRepository,
     ICountryRepository countryRepository,
     IDistrictRepository districtRepository,
@@ -49,7 +53,8 @@ public class HealthCareDataSeederContributor(
     IProtocolRepository protocolRepository,
     IRadiologyRequestRepository radiologyRequestRepository,
     IRadiologyRequestItemRepository radiologyRequestItemRepository,
-    IGuidGenerator guidGenerator
+    UserManager<IdentityUser> userManager,
+    RoleManager<IdentityRole> roleManager
 )
     : IDataSeedContributor, ITransientDependency
 {
@@ -69,10 +74,8 @@ public class HealthCareDataSeederContributor(
             }
         );
 
-
         var radiologyExaminationGroups = await SeedRadiologyExaminationGroupsAsync();
         await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
-
 
         var departments = await SeedDepartmentsAsync();
         var hospital = await SeedHospitalsAsync();
@@ -83,7 +86,9 @@ public class HealthCareDataSeederContributor(
         var protocolTypeIds = await SeedProtocolTypesAsync();
         var prtocolIds = await SeedProtocolsAsync(patientIds, doctors, departments, protocolTypeIds);
 
-        var radiologyRequests = await SeedRadiologyRequestsAsync(prtocolIds, departments, doctors.Select(d => d.Id).ToList());
+        var radiologyRequests = await SeedRadiologyRequestsAsync(
+            prtocolIds, departments, doctors.Select(d => d.Id).ToList()
+        );
         var radiologyExaminations = await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
         await SeedRadiologyRequestItemsAsync(radiologyRequests, radiologyExaminations);
     }
@@ -320,9 +325,9 @@ public class HealthCareDataSeederContributor(
 
     // Doctor
     private async Task<IEnumerable<Doctor>> SeedDoctorsAsync(
-        IEnumerable<Guid> departmentsId,
+        IEnumerable<Guid> departmentsIds,
         Hospital hospital,
-        IEnumerable<Guid> titleId
+        IEnumerable<Guid> titleIds
     )
     {
         if (await doctorRepository.AnyAsync())
@@ -330,20 +335,46 @@ public class HealthCareDataSeederContributor(
             return await doctorRepository.GetListAsync();
         }
 
-        var faker = new Faker<Doctor>("tr")
-            .CustomInstantiator(
-                f =>
-                    new Doctor(
-                        guidGenerator.Create(),
-                        f.Name.FirstName(),
-                        f.Name.LastName(),
-                        string.Empty,
-                        f.PickRandom(titleId),
-                        f.PickRandom(departmentsId),
-                        hospital.Id
-                    )
+        var faker = new Faker();
+        ICollection<Doctor> doctors = [];
+
+        doctors.Add(
+            new Doctor(
+                guidGenerator.Create(), "Selçuk", "Şahin", 30, faker.PickRandom(titleIds),
+                faker.PickRandom(departmentsIds), hospital.Id
+            )
+        );
+        foreach (var departmentId in departmentsIds)
+        {
+            doctors.Add(
+                new Doctor(
+                    guidGenerator.Create(), faker.Name.FirstName(), faker.Name.LastName(),
+                    faker.Random.Int(10, 30), faker.PickRandom(titleIds), departmentId, hospital.Id
+                )
             );
-        var doctors = faker.Generate(100);
+            doctors.Add(
+                new Doctor(
+                    guidGenerator.Create(), faker.Name.FirstName(), faker.Name.LastName(),
+                    faker.Random.Int(10, 30), faker.PickRandom(titleIds), departmentId, hospital.Id
+                )
+            );
+            doctors.Add(
+                new Doctor(
+                    guidGenerator.Create(), faker.Name.FirstName(), faker.Name.LastName(),
+                    faker.Random.Int(10, 30), faker.PickRandom(titleIds), departmentId, hospital.Id
+                )
+            );
+        }
+
+        foreach (var doctor in doctors)
+        {
+            var user = await SeedUserAsync(
+                faker.Internet.UserName(doctor.FirstName, doctor.LastName),
+                faker.Internet.Email(doctor.FirstName, doctor.LastName), "1q2w3E*", "doctor"
+            );
+            doctor.SetUserId(user.Id);
+        }
+
         await SeedEntitiesAsync(doctors, e => doctorRepository.InsertManyAsync(e, true));
         return doctors;
     }
@@ -374,7 +405,7 @@ public class HealthCareDataSeederContributor(
         await SeedEntitiesAsync(appointmentTypes, e => appointmentTypeRepository.InsertManyAsync(e, true));
     }
 
-    #region Radiology
+#region Radiology
 
     private async Task<IEnumerable<Guid>> SeedRadiologyExaminationGroupsAsync()
     {
@@ -399,7 +430,12 @@ public class HealthCareDataSeederContributor(
 
         return await SeedEntitiesAsync(examinations, e => radiologyExaminationRepository.InsertManyAsync(e, true));
     }
-    private async Task<List<Guid>> SeedRadiologyRequestsAsync(IEnumerable<Guid> protocolIds, IEnumerable<Guid> departmentIds, IEnumerable<Guid> doctorIds)
+
+    private async Task<List<Guid>> SeedRadiologyRequestsAsync(
+        IEnumerable<Guid> protocolIds,
+        IEnumerable<Guid> departmentIds,
+        IEnumerable<Guid> doctorIds
+    )
     {
         var faker = new Faker<RadiologyRequest>("tr")
             .CustomInstantiator(
@@ -416,12 +452,14 @@ public class HealthCareDataSeederContributor(
         var radiologyRequests = faker.Generate(50);
 
         await SeedEntitiesAsync(radiologyRequests, e => radiologyRequestRepository.InsertManyAsync(e, true));
-         
+
         return radiologyRequests.Select(r => r.Id).ToList();
     }
 
-
-    private async Task SeedRadiologyRequestItemsAsync(IEnumerable<Guid> radiologyRequestIds, IEnumerable<Guid> examinationIds)
+    private async Task SeedRadiologyRequestItemsAsync(
+        IEnumerable<Guid> radiologyRequestIds,
+        IEnumerable<Guid> examinationIds
+    )
     {
         var faker = new Faker<RadiologyRequestItem>("tr")
             .CustomInstantiator(
@@ -441,7 +479,7 @@ public class HealthCareDataSeederContributor(
         await SeedEntitiesAsync(radiologyRequestItems, e => radiologyRequestItemRepository.InsertManyAsync(e, true));
     }
 
-    #endregion
+#endregion
 
     // Protocol types
     private async Task<IEnumerable<Guid>> SeedProtocolTypesAsync()
@@ -473,7 +511,7 @@ public class HealthCareDataSeederContributor(
     {
         if (await protocolRepository.AnyAsync())
         {
-            return Enumerable.Empty<Guid>(); ;
+            return (await protocolRepository.GetListAsync()).Select(e => e.Id);
         }
 
         var faker = new Faker<Protocol>("tr")
@@ -500,6 +538,38 @@ public class HealthCareDataSeederContributor(
         var protocols = faker.Generate(500);
         await SeedEntitiesAsync(protocols, e => protocolRepository.InsertManyAsync(e, true));
         return protocols.Select(p => p.Id);
+    }
+
+    // User
+    private async Task<IdentityUser> SeedUserAsync(
+        string userName,
+        string email,
+        string password,
+        string? roleName = null
+    )
+    {
+        await userManager.CreateAsync(new IdentityUser(guidGenerator.Create(), userName, email), password);
+        var user = await userManager.FindByNameAsync(userName);
+        if (!roleName.IsNullOrWhiteSpace())
+        {
+            var role = await SeedRoleAsync(roleName);
+            await userManager.AddToRoleAsync(user!, role.Name);
+        }
+
+        return user!;
+    }
+
+    //Role
+    private async Task<IdentityRole> SeedRoleAsync(string roleName)
+    {
+        var role = await roleManager.FindByNameAsync(roleName);
+        if (role != null)
+        {
+            return role!;
+        }
+
+        await roleManager.CreateAsync(new IdentityRole(guidGenerator.Create(), roleName));
+        return (await roleManager.FindByNameAsync(roleName))!;
     }
 
     // Generic Entities
