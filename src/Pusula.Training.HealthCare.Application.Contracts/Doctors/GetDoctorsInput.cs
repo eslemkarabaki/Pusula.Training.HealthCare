@@ -5,7 +5,7 @@ namespace Pusula.Training.HealthCare.Doctors;
 
 public class GetDoctorsInput : PagedAndSortedResultRequestDto
 {
-    public string? WorkingHours;
+    public int? WorkingHours { get; set; }
 
     public string? FilterText { get; set; }
 

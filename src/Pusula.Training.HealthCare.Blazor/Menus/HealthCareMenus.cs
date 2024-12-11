@@ -26,6 +26,7 @@ public class HealthCareMenus
 
 #endregion
 
+    public const string Doctors = Prefix + ".Doctors";
     public const string Departments = Prefix + ".Departments";
     public const string Locations = Prefix + ".Locations";
     public const string Countries = Locations + ".Countries";
