@@ -44,7 +44,6 @@ using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.Diagnoses;
-using Pusula.Training.HealthCare.AppointmentReports;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -71,7 +70,6 @@ public class HealthCareDbContext :
     public DbSet<District> Districts { get; set; } = null!;
     public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Appointment> Appointments { get; set; } = null!;
-    public DbSet<AppointmentReport> AppointmentReports { get; set; } = null!;
     public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;

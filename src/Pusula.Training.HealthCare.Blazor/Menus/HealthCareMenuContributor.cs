@@ -90,7 +90,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 HealthCareMenus.Reports,
                                 l["Reports"],
                                 "/appointment-reports",
-                                requiredPermissionName: HealthCarePermissions.AppointmentReports.Default)
+                                requiredPermissionName: HealthCarePermissions.Appointments.Default)
             )
             );
         #endregion
