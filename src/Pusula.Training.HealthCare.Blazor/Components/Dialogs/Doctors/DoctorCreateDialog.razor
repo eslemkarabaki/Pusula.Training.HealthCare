@@ -17,7 +17,7 @@
 @inject IDepartmentsAppService DepartmentsAppService
 @inject IHospitalsAppService HospitalsAppService
 
-<SfDialog @ref="Dialog" Target="#target" Width="1000px" IsModal ShowCloseIcon Visible="false">
+<SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
         <Header>@L["NewDoctor"]</Header>
         <Content>
@@ -32,8 +32,18 @@
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
                         <div>
+                            <label class="e-form-label">@L["Hospital"]</label>
+                            <SfDropDownList TItem="HospitalDto" TValue="Guid?"
+                                            @bind-Value="@NewDoctor.HospitalId" PopupHeight="150px"
+                                            Placeholder="@L["Hospital"]"
+                                            DataSource="@HospitalList">
+                                <DropDownListFieldSettings Value="Id" Text="Name"/>
+                            </SfDropDownList>
+                        </div>
+                        
+                        <div>
                             <label class="e-form-label">@L["Department"]</label>
-                            <SfDropDownList TItem="DepartmentDto" TValue="Guid"
+                            <SfDropDownList TItem="DepartmentDto" TValue="Guid?"
                                             @bind-Value="@NewDoctor.DepartmentId" PopupHeight="150px"
                                             Placeholder="@L["Department"]"
                                             DataSource="@DepartmentList">
@@ -41,41 +51,32 @@
                             </SfDropDownList>
                         </div>
 
-                        <div>
-                            <label class="e-form-label">@L["Title"]</label>
-                            <SfDropDownList TItem="TitleDto" TValue="Guid"
-                                            @bind-Value="@NewDoctor.TitleId" PopupHeight="150px"
-                                            Placeholder="@L["Title"]"
-                                            DataSource="@TitleList">
-                                <DropDownListFieldSettings Value="Id" Text="Name"/>
-                            </SfDropDownList>
-                        </div>
-
-                        <div>
-                            <label class="e-form-label">@L["Hospital"]</label>
-                            <SfDropDownList TItem="HospitalDto" TValue="Guid"
-                                            @bind-Value="@NewDoctor.HospitalId" PopupHeight="150px"
-                                            Placeholder="@L["Hospital"]"
-                                            DataSource="@HospitalList">
-                                <DropDownListFieldSettings Value="Id" Text="Name"/>
-                            </SfDropDownList>
-                        </div>
-
-                        <div>
-                            <label class="e-form-label">@L["FirstName"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.FirstName"
-                                       Placeholder="@L["FirstName"]"></SfTextBox>
-                        </div>
-                        <div>
-                            <label class="e-form-label">@L["LastName"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.LastName"
-                                       Placeholder="@L["LastName"]"></SfTextBox>
+                        <div class="row g-1">
+                            <div class="col-3">
+                                <label class="e-form-label">@L["Title"]</label>
+                                <SfDropDownList TItem="TitleDto" TValue="Guid?"
+                                                @bind-Value="@NewDoctor.TitleId" PopupHeight="150px"
+                                                Placeholder="@L["Title"]"
+                                                DataSource="@TitleList">
+                                    <DropDownListFieldSettings Value="Id" Text="Name"/>
+                                </SfDropDownList>
+                            </div>
+                            <div class="col">
+                                <label class="e-form-label">@L["FirstName"]</label>
+                                <SfTextBox @bind-Value="@NewDoctor.FirstName"
+                                           Placeholder="@L["FirstName"]" ></SfTextBox>
+                            </div>
+                            <div class="col">
+                                <label class="e-form-label">@L["LastName"]</label>
+                                <SfTextBox @bind-Value="@NewDoctor.LastName"
+                                           Placeholder="@L["LastName"]"></SfTextBox>
+                            </div>
                         </div>
 
                         <div>
                             <label class="e-form-label">@L["WorkingHours"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.WorkingHours"
-                                       Placeholder="@L["WorkingHours"]" Type="InputType.Number"></SfTextBox>
+                            <SfNumericTextBox @bind-Value="@NewDoctor.WorkingHours"
+                                       Placeholder="@L["WorkingHours"]" Min="@DoctorConsts.WorkingHoursMin" Max="@DoctorConsts.WorkingHoursMax" Step="@DoctorConsts.WorkingHoursMin"></SfNumericTextBox>
                         </div>
 
                         <div>

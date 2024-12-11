@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Doctors;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Protocols;
 using Pusula.Training.HealthCare.Blazor.Extensions;
+using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Permissions;
 using Syncfusion.Blazor.Grids;
@@ -27,12 +28,10 @@ public partial class Doctors
     private string CurrentSorting { get; set; } = string.Empty;
     private int TotalCount { get; set; }
 
-    private bool ShowAdvancedFilters { get; set; }
-
     private IReadOnlyList<DoctorWithNavigationPropertiesDto> DoctorList { get; set; } = [];
+    private IEnumerable<DepartmentDto> DepartmentList { get; set; } = [];
     private GetDoctorsInput Filter { get; set; }
     private GetDoctorsInput LastFilter { get; set; } = new();
-    private EditContext FilterContext { get; set; }
 
     private bool AllDoctorsSelected { get; set; }
 
@@ -44,13 +43,13 @@ public partial class Doctors
             SkipCount = (CurrentPage - 1) * PageSize,
             Sorting = CurrentSorting
         };
-        FilterContext = new EditContext(Filter);
     }
 
     protected override async Task OnInitializedAsync()
     {
         await SetPermissionsAsync();
         await GetDoctorsAsync();
+        DepartmentList = await DepartmentsAppService.GetListDepartmentsAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -133,19 +132,6 @@ public partial class Doctors
     {
         EditingDoctorId = id;
         await UpdateDoctorDialog.ShowAsync(EditingDoctorId);
-    }
-
-    private async Task UpdateDoctorAsync(DoctorUpdateDto dto)
-    {
-        try
-        {
-            await DoctorAppService.UpdateAsync(EditingDoctorId, dto);
-            await GetDoctorsAsync();
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
     }
 
 #endregion

@@ -34,6 +34,7 @@ using Volo.Abp.Uow;
 namespace Pusula.Training.HealthCare;
 
 public class HealthCareDataSeederContributor(
+    IGuidGenerator guidGenerator,
     ICityRepository cityRepository,
     ICountryRepository countryRepository,
     IDistrictRepository districtRepository,
@@ -52,10 +53,8 @@ public class HealthCareDataSeederContributor(
     IProtocolRepository protocolRepository,
     IRadiologyRequestRepository radiologyRequestRepository,
     IRadiologyRequestItemRepository radiologyRequestItemRepository,
-    IIdentityUserRepository identityUserRepository,
-    RoleManager<IdentityRole> roleManager,
     UserManager<IdentityUser> userManager,
-    IGuidGenerator guidGenerator
+    RoleManager<IdentityRole> roleManager
 )
     : IDataSeedContributor, ITransientDependency
 {
@@ -326,9 +325,9 @@ public class HealthCareDataSeederContributor(
 
     // Doctor
     private async Task<IEnumerable<Doctor>> SeedDoctorsAsync(
-        IEnumerable<Guid> departmentsId,
+        IEnumerable<Guid> departmentsIds,
         Hospital hospital,
-        IEnumerable<Guid> titleId
+        IEnumerable<Guid> titleIds
     )
     {
         if (await doctorRepository.AnyAsync())
@@ -336,27 +335,45 @@ public class HealthCareDataSeederContributor(
             return await doctorRepository.GetListAsync();
         }
 
-        var faker = new Faker<Doctor>("tr")
-            .CustomInstantiator(
-                f =>
-                    new Doctor(
-                        guidGenerator.Create(),
-                        f.Name.FirstName(),
-                        f.Name.LastName(),
-                        string.Empty,
-                        f.PickRandom(titleId),
-                        f.PickRandom(departmentsId),
-                        hospital.Id
-                    )
+        var faker = new Faker();
+        ICollection<Doctor> doctors = [];
+
+        doctors.Add(
+            new Doctor(
+                guidGenerator.Create(), "Selçuk", "Şahin", 30, faker.PickRandom(titleIds),
+                faker.PickRandom(departmentsIds), hospital.Id
+            )
+        );
+        foreach (var departmentId in departmentsIds)
+        {
+            doctors.Add(
+                new Doctor(
+                    guidGenerator.Create(), faker.Name.FirstName(), faker.Name.LastName(),
+                    faker.Random.Int(10, 30), faker.PickRandom(titleIds), departmentId, hospital.Id
+                )
             );
-        var doctors = faker.Generate(100);
-        // foreach (var doctor in doctors)
-        // {
-        //     var user = await SeedUserAsync(
-        //         doctor.Id.ToString("N"), $"{doctor.Id:N}@gmail.com", "1q2w3E*", "doctor"
-        //     );
-        //     doctor.UserId = user.Id;
-        // }
+            doctors.Add(
+                new Doctor(
+                    guidGenerator.Create(), faker.Name.FirstName(), faker.Name.LastName(),
+                    faker.Random.Int(10, 30), faker.PickRandom(titleIds), departmentId, hospital.Id
+                )
+            );
+            doctors.Add(
+                new Doctor(
+                    guidGenerator.Create(), faker.Name.FirstName(), faker.Name.LastName(),
+                    faker.Random.Int(10, 30), faker.PickRandom(titleIds), departmentId, hospital.Id
+                )
+            );
+        }
+
+        foreach (var doctor in doctors)
+        {
+            var user = await SeedUserAsync(
+                faker.Internet.UserName(doctor.FirstName, doctor.LastName),
+                faker.Internet.Email(doctor.FirstName, doctor.LastName), "1q2w3E*", "doctor"
+            );
+            doctor.SetUserId(user.Id);
+        }
 
         await SeedEntitiesAsync(doctors, e => doctorRepository.InsertManyAsync(e, true));
         return doctors;
@@ -524,36 +541,36 @@ public class HealthCareDataSeederContributor(
     }
 
     // User
-    // private async Task<IdentityUser> SeedUserAsync(
-    //     string userName,
-    //     string email,
-    //     string password,
-    //     string? roleName = null
-    // )
-    // {
-    //     var user = new IdentityUser(guidGenerator.Create(), userName, email);
-    //     await userManager.AddPasswordAsync(user, password);
-    //     if (!roleName.IsNullOrWhiteSpace())
-    //     {
-    //         var role = await SeedRoleAsync(roleName);
-    //         await userManager.AddToRoleAsync(user!, role.Name);
-    //     }
-    //     user = await identityUserRepository.InsertAsync(user);
-    //     return user!;
-    // }
+    private async Task<IdentityUser> SeedUserAsync(
+        string userName,
+        string email,
+        string password,
+        string? roleName = null
+    )
+    {
+        await userManager.CreateAsync(new IdentityUser(guidGenerator.Create(), userName, email), password);
+        var user = await userManager.FindByNameAsync(userName);
+        if (!roleName.IsNullOrWhiteSpace())
+        {
+            var role = await SeedRoleAsync(roleName);
+            await userManager.AddToRoleAsync(user!, role.Name);
+        }
+
+        return user!;
+    }
 
     //Role
-    // private async Task<IdentityRole> SeedRoleAsync(string roleName)
-    // {
-    //     var role = await roleManager.FindByNameAsync(roleName);
-    //     if (role != null)
-    //     {
-    //         return role!;
-    //     }
-    //
-    //     await roleManager.CreateAsync(new IdentityRole(guidGenerator.Create(), roleName));
-    //     return (await roleManager.FindByNameAsync(roleName))!;
-    // }
+    private async Task<IdentityRole> SeedRoleAsync(string roleName)
+    {
+        var role = await roleManager.FindByNameAsync(roleName);
+        if (role != null)
+        {
+            return role!;
+        }
+
+        await roleManager.CreateAsync(new IdentityRole(guidGenerator.Create(), roleName));
+        return (await roleManager.FindByNameAsync(roleName))!;
+    }
 
     // Generic Entities
     private async Task<IEnumerable<Guid>> SeedEntitiesAsync<T>(

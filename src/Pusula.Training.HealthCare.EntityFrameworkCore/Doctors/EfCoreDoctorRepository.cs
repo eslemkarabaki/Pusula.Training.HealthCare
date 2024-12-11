@@ -23,7 +23,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         string? firstName = null,
         string? lastName = null,
         string? fullname = null,
-        string? workingHours = null,
+        int? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -49,7 +49,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         string? firstName = null,
         string? lastName = null,
         string? fullname = null,
-        string? workingHours = null,
+        int? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -76,7 +76,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         string? firstName = null,
         string? lastName = null,
         string? fullname = null,
-        string? workingHours = null,
+        int? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -92,7 +92,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         );
 
         // Apply sorting if provided
-        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? DoctorConsts.GetDefaultSorting(false) : sorting);
+        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? DoctorConsts.GetDefaultSorting(true) : sorting);
 
         // Paginate the result set
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
@@ -103,7 +103,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         string? firstName = null,
         string? lastName = null,
         string? fullname = null,
-        string? workingHours = null,
+        int? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -145,7 +145,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         string? firstName = null,
         string? lastName = null,
         string? fullname = null,
-        string? workingHours = null,
+        int? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null
@@ -162,10 +162,10 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
             .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.FirstName.Contains(firstName!))
             .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.LastName.Contains(lastName!))
             .WhereIf(!fullname.IsNullOrWhiteSpace(), e => e.FullName.Contains(fullname!))
-            .WhereIf(!string.IsNullOrWhiteSpace(workingHours), e => e.WorkingHours.Contains(workingHours!))
-            .WhereIf(titleId.HasValue, e => e.TitleId == titleId.Value)
-            .WhereIf(departmentId.HasValue, e => e.DepartmentId == departmentId.Value)
-            .WhereIf(hospitalId.HasValue, e => e.HospitalId == hospitalId.Value);
+            .WhereIf(workingHours.HasValue, e => e.WorkingHours == workingHours!.Value)
+            .WhereIf(titleId.HasValue, e => e.TitleId == titleId!.Value)
+            .WhereIf(departmentId.HasValue, e => e.DepartmentId == departmentId!.Value)
+            .WhereIf(hospitalId.HasValue, e => e.HospitalId == hospitalId!.Value);
 
     private IQueryable<DoctorWithNavigationProperties> ApplyFilter(
         IQueryable<DoctorWithNavigationProperties> query,
@@ -173,7 +173,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         string? firstName = null,
         string? lastName = null,
         string? fullname = null,
-        string? workingHours = null,
+        int? workingHours = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null
@@ -190,8 +190,8 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
             .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.Doctor.FirstName.Contains(firstName!))
             .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.Doctor.LastName.Contains(lastName!))
             .WhereIf(!fullname.IsNullOrWhiteSpace(), e => e.Doctor.FullName.Contains(fullname!))
-            .WhereIf(!string.IsNullOrWhiteSpace(workingHours), e => e.Doctor.WorkingHours.Contains(workingHours!))
-            .WhereIf(titleId.HasValue, e => e.Doctor.TitleId == titleId.Value)
-            .WhereIf(departmentId.HasValue, e => e.Doctor.DepartmentId == departmentId.Value)
-            .WhereIf(hospitalId.HasValue, e => e.Doctor.HospitalId == hospitalId.Value);
+           .WhereIf(workingHours.HasValue, e => e.Doctor.WorkingHours == workingHours!.Value)
+            .WhereIf(titleId.HasValue, e => e.Doctor.TitleId == titleId!.Value)
+            .WhereIf(departmentId.HasValue, e => e.Doctor.DepartmentId == departmentId!.Value)
+            .WhereIf(hospitalId.HasValue, e => e.Doctor.HospitalId == hospitalId!.Value);
 }

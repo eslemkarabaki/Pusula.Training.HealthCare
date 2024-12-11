@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Pusula.Training.HealthCare.Users;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Authorization;
@@ -21,42 +22,30 @@ namespace Pusula.Training.HealthCare.Doctors;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(HealthCarePermissions.Doctors.Default)]
-public class DoctorAppService : HealthCareAppService, IDoctorAppService
+public class DoctorAppService(
+    IDoctorRepository doctorRepository,
+    DoctorManager doctorManager,
+    IDistributedCache<DoctorDownloadTokenCacheItem, string> downloadTokenCache,
+    ILogger<DoctorAppService> logger,
+    IUserRules userRules
+) : HealthCareAppService, IDoctorAppService
 {
-    private readonly UserManager<IdentityUserCreateDto> _userManager;
-    private readonly IDoctorRepository _doctorRepository;
-    private readonly DoctorManager _doctorManager;
-    private readonly IDistributedCache<DoctorDownloadTokenCacheItem, string> _downloadTokenCache;
-    private readonly ILogger<DoctorAppService> _logger;
-
-    public DoctorAppService(
-        IDoctorRepository doctorRepository,
-        DoctorManager doctorManager,
-        IDistributedCache<DoctorDownloadTokenCacheItem, string> downloadTokenCache,
-        ILogger<DoctorAppService> logger
-    ) // Logger dependency injection
-    {
-        _doctorRepository = doctorRepository ?? throw new ArgumentNullException(nameof(doctorRepository));
-        _doctorManager = doctorManager ?? throw new ArgumentNullException(nameof(doctorManager));
-        _downloadTokenCache = downloadTokenCache ?? throw new ArgumentNullException(nameof(downloadTokenCache));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger)); // Assign logger
-    }
 
     //For Appointment
     public async Task<List<DoctorDto>> GetListDoctorsAsync() =>
-        ObjectMapper.Map<List<Doctor>, List<DoctorDto>>(await _doctorRepository.GetListAsync());
+        ObjectMapper.Map<List<Doctor>, List<DoctorDto>>(await doctorRepository.GetListAsync());
 
     // For Appointment
     public async Task<List<DoctorDto>> GetListDoctorsAsync(Guid id) =>
-        ObjectMapper.Map<List<Doctor>, List<DoctorDto>>(await _doctorRepository.GetListAsync(departmentId: id));
+        ObjectMapper.Map<List<Doctor>, List<DoctorDto>>(await doctorRepository.GetListAsync(departmentId: id));
 
     public virtual async Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input)
     {
-        var totalCount = await _doctorRepository.GetCountAsync(
+        var totalCount = await doctorRepository.GetCountAsync(
             input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
-        var items = await _doctorRepository.GetListAsync(
+        var items = await doctorRepository.GetListAsync(
             input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
             input.DepartmentId, input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
@@ -72,11 +61,11 @@ public class DoctorAppService : HealthCareAppService, IDoctorAppService
         GetDoctorsInput input
     )
     {
-        var totalCount = await _doctorRepository.GetCountAsync(
+        var totalCount = await doctorRepository.GetCountAsync(
             input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
-        var items = await _doctorRepository.GetListWithNavigationPropertiesAsync(
+        var items = await doctorRepository.GetListWithNavigationPropertiesAsync(
             input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
             input.DepartmentId, input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
@@ -92,55 +81,57 @@ public class DoctorAppService : HealthCareAppService, IDoctorAppService
 
     public virtual async Task<DoctorDto> GetAsync(Guid id)
     {
-        var doctor = await _doctorRepository.GetAsync(id);
+        var doctor = await doctorRepository.GetAsync(id);
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
     }
 
     [Authorize(HealthCarePermissions.Doctors.Delete)]
-    public virtual async Task DeleteAsync(Guid id) => await _doctorRepository.DeleteAsync(id);
+    public virtual async Task DeleteAsync(Guid id) => await doctorRepository.DeleteAsync(id);
 
     public async Task<DoctorDto> GetDoctorAsync(Guid id)
     {
-        var doctor = await _doctorRepository.GetAsync(id);
+        var doctor = await doctorRepository.GetAsync(id);
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
     }
 
     [Authorize(HealthCarePermissions.Doctors.Create)]
     public virtual async Task<DoctorDto> CreateAsync(DoctorCreateDto input)
     {
-        var doctor = await _doctorManager.CreateAsync(
+        await userRules.EnsureUsernameNotExistAsync(input.User.UserName);
+        await userRules.EnsureEmailNotExistAsync(input.User.Email);
+        
+        var doctor = await doctorManager.CreateAsync(
             input.FirstName,
             input.LastName,
             input.WorkingHours,
-            input.TitleId,
-            input.DepartmentId,
-            input.HospitalId
+            input.TitleId!.Value,
+            input.DepartmentId!.Value,
+            input.HospitalId!.Value,
+            input.User.UserName,
+            input.User.Email,
+            input.User.Password
         );
-        input.User.Name = doctor.FirstName;
-        input.User.Surname = doctor.LastName;
-        await _userManager.CreateAsync(input.User, input.User.Password);
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
     }
 
     [Authorize(HealthCarePermissions.Doctors.Edit)]
     public virtual async Task<DoctorDto> UpdateAsync(Guid id, DoctorUpdateDto input)
     {
-        var doctor = await _doctorManager.UpdateAsync(
-            id, input.FirstName, input.LastName, input.WorkingHours, input.DepartmentId, input.TitleId,
-            input.HospitalId, input.ConcurrencyStamp
+        var doctor = await doctorManager.UpdateAsync(
+            id, input.FirstName, input.LastName, input.WorkingHours, input.TitleId!.Value,input.DepartmentId!.Value,  input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
     }
 
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(DoctorExcelDownloadDto input)
     {
-        var downloadToken = await _downloadTokenCache.GetAsync(input.DownloadToken);
+        var downloadToken = await downloadTokenCache.GetAsync(input.DownloadToken);
         if (downloadToken == null || input.DownloadToken != downloadToken.Token)
         {
             throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
         }
 
-        var items = await _doctorRepository.GetListAsync(
+        var items = await doctorRepository.GetListAsync(
             input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
@@ -159,18 +150,18 @@ public class DoctorAppService : HealthCareAppService, IDoctorAppService
     {
         try
         {
-            await _doctorRepository.DeleteManyAsync(doctorIds);
+            await doctorRepository.DeleteManyAsync(doctorIds);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while deleting doctors");
+            logger.LogError(ex, "Error occurred while deleting doctors");
             throw new UserFriendlyException("Doktorları silerken bir hata oluştu.");
         }
     }
 
     [Authorize(HealthCarePermissions.Doctors.Delete)]
     public virtual async Task DeleteAllAsync(GetDoctorsInput input) =>
-        await _doctorRepository.DeleteAllAsync(
+        await doctorRepository.DeleteAllAsync(
             input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
             input.DepartmentId
         );
@@ -179,7 +170,7 @@ public class DoctorAppService : HealthCareAppService, IDoctorAppService
     {
         var token = Guid.NewGuid().ToString("N");
 
-        await _downloadTokenCache.SetAsync(
+        await downloadTokenCache.SetAsync(
             token,
             new DoctorDownloadTokenCacheItem { Token = token },
             new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30) }

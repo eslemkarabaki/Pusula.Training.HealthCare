@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Pusula.Training.HealthCare.GlobalExceptions;
 using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Services;
@@ -14,25 +15,20 @@ public class DoctorManager(IDoctorRepository doctorRepository, UserManager<Ident
     public virtual async Task<Doctor> CreateAsync(
         string firstName,
         string lastName,
-        string workingHours,
+        int workingHours,
         Guid titleId,
         Guid departmentId,
-        Guid hospitalId
+        Guid hospitalId,
+        string userName,
+        string email,
+        string password
     )
     {
-        Check.NotNullOrWhiteSpace(firstName, nameof(firstName));
-        Check.Length(firstName, nameof(firstName), DoctorConsts.FirstNameMaxLength);
-        Check.NotNullOrWhiteSpace(lastName, nameof(lastName));
-        Check.Length(lastName, nameof(lastName), DoctorConsts.LastNameMaxLength);
-        Check.NotNullOrWhiteSpace(workingHours, nameof(workingHours));
-        Check.Length(workingHours, nameof(workingHours), DoctorConsts.WorkingHoursMaxLength);
-        Check.NotNull(titleId, nameof(titleId));
-        Check.NotNull(departmentId, nameof(departmentId));
-        Check.NotNull(hospitalId, nameof(hospitalId));
+        var user = await CreateDoctorUserAsync(firstName, lastName, userName, email, password);
 
         var doctor = new Doctor(
             GuidGenerator.Create(),
-            firstName, lastName, workingHours, titleId, departmentId, hospitalId
+            firstName, lastName, workingHours, titleId, departmentId, hospitalId, user!.Id
         );
         return await doctorRepository.InsertAsync(doctor);
     }
@@ -41,33 +37,62 @@ public class DoctorManager(IDoctorRepository doctorRepository, UserManager<Ident
         Guid id,
         string firstName,
         string lastName,
-        string workingHours,
+        int workingHours,
         Guid titleId,
         Guid departmentId,
-        Guid hospitalId,
         [CanBeNull] string? concurrencyStamp = null
     )
     {
-        Check.NotNullOrWhiteSpace(firstName, nameof(firstName));
-        Check.Length(firstName, nameof(firstName), DoctorConsts.FirstNameMaxLength);
-        Check.NotNullOrWhiteSpace(lastName, nameof(lastName));
-        Check.Length(lastName, nameof(lastName), DoctorConsts.LastNameMaxLength);
-        Check.NotNullOrWhiteSpace(workingHours, nameof(workingHours));
-        Check.Length(workingHours, nameof(workingHours), DoctorConsts.WorkingHoursMaxLength);
-        Check.NotNull(titleId, nameof(titleId));
-        Check.NotNull(departmentId, nameof(departmentId));
-        Check.NotNull(hospitalId, nameof(hospitalId));
-
         var doctor = await doctorRepository.GetAsync(id);
 
-        doctor.FirstName = firstName;
-        doctor.LastName = lastName;
-        doctor.WorkingHours = workingHours;
-        doctor.TitleId = titleId;
-        doctor.DepartmentId = departmentId;
-        doctor.HospitalId = hospitalId;
+        doctor.SetName(firstName, lastName);
+        doctor.SetWorkingHours(workingHours);
+        doctor.SetTitleId(titleId);
+        doctor.SetDepartmentId(departmentId);
 
         doctor.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await doctorRepository.UpdateAsync(doctor);
+    }
+
+    protected virtual async Task<IdentityUser> CreateDoctorUserAsync(
+        string firstName,
+        string lastName,
+        string userName,
+        string email,
+        string password
+    )
+    {
+        await userManager.CreateAsync(
+            new IdentityUser(GuidGenerator.Create(), userName, email)
+            {
+                Name = firstName,
+                Surname = lastName
+            }, password
+        );
+        var user = await userManager.FindByNameAsync(userName);
+        await userManager.AddToRoleAsync(user!, "doctor");
+        return user!;
+    }
+    
+    protected virtual async Task<IdentityUser> UpdateDoctorUserAsync(
+        Guid userId,
+        string firstName,
+        string lastName,
+        string userName,
+        string email,
+        string password
+    )
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        user.Name = firstName;
+        user.Surname = firstName;
+        await userManager.SetUserNameAsync(user,userName);
+        await userManager.SetEmailAsync(user, email);
+        await userManager.ChangePasswordAsync(user, "", password);
+            
+            
+        await userManager.UpdateAsync(user);
+        await userManager.AddToRoleAsync(user!, "doctor");
+        return user!;
     }
 }

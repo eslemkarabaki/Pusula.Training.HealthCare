@@ -3,26 +3,48 @@
 @attribute [Authorize(HealthCarePermissions.Doctors.Default)]
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
 @using Pusula.Training.HealthCare.Permissions
-@using Volo.Abp.Http.Client
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.DataForm
 @using Syncfusion.Blazor.Navigations
-@using Blazored.FluentValidation
 @using Pusula.Training.HealthCare.Doctors
 @using Position = Syncfusion.Blazor.Popups.Position
 @using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Doctors
+@using Pusula.Training.HealthCare.Departments
+@using Syncfusion.Blazor.DropDowns
+@using GridColumns = Syncfusion.EJ2.Grids.GridColumns
+
 @inherits HealthCareComponentBase
+
 @inject IDoctorAppService DoctorAppService
+@inject IDepartmentsAppService DepartmentsAppService
 @inject SfDialogService DialogService
-@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
-@inject NavigationManager NavigationManager
 
 <PageHeader Title="" BreadcrumbItems="BreadcrumbItems"/>
 
 @* ************************* SEARCH ************************* *@
+<div class="bg-white mb-3">
+    <SfDataForm Model="@Filter" OnValidSubmit="@SearchAsync"
+                ButtonsAlignment="FormButtonsAlignment.Stretch"
+                ValidationDisplayMode="FormValidationDisplay.Tooltip">
+        <FormTemplate>
+            <div class="d-flex gap-2 p-2 align-items-end">
+                <SfTextBox @bind-Value="@Filter.FullName" Placeholder="@L["Name"]"/>
+                <SfDropDownList TItem="DepartmentDto" TValue="Guid?"
+                                @bind-Value="@Filter.DepartmentId" PopupHeight="150px"
+                                Placeholder="@L["Department"]"
+                                DataSource="@DepartmentList" ShowClearButton>
+                    <DropDownListFieldSettings Value="Id" Text="Name"/>
+                </SfDropDownList>
+                <SfButton type="submit" IsPrimary CssClass="e-outline" IconCss="e-icons e-filter"
+                          IconPosition="IconPosition.Left">@L["ApplyFilter"]</SfButton>
+            </div>
+        </FormTemplate>
+        <FormButtons></FormButtons>
+    </SfDataForm>
+</div>
 
 @* ************************* DATA GRID ************************* *@
 <SfGrid @ref="SfGrid" TValue="DoctorWithNavigationPropertiesDto" Height="600px" DataSource="@DoctorList"
@@ -44,11 +66,35 @@
     <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30" Visible="@CanDeleteDoctor"></GridColumn>
-        <GridColumn HeaderText="@L["Doctor"]">
+        <GridColumn HeaderText="@L["Title"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as DoctorWithNavigationPropertiesDto)!;
+                    @dto.Title.Name
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Name"]">
             <Template>
                 @{
                     var dto = (context as DoctorWithNavigationPropertiesDto)!;
                     @dto.Doctor.FullName
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["WorkingHours"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as DoctorWithNavigationPropertiesDto)!;
+                    @dto.Doctor.WorkingHours
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Department"]">
+            <Template>
+                @{
+                    var dto = (context as DoctorWithNavigationPropertiesDto)!;
+                    @dto.Department.Name
                 }
             </Template>
         </GridColumn>
@@ -81,7 +127,7 @@
 <DoctorCreateDialog @ref="CreateDoctorDialog" DoctorCreatedAsync="GetDoctorsAsync"/>
 
 @* ************************* UPDATE MODAL ************************* *@
-<DoctorUpdateDialog @ref="UpdateDoctorDialog" OnValidSaveAsync="UpdateDoctorAsync"/>
+<DoctorUpdateDialog @ref="UpdateDoctorDialog" DoctorUpdatedAsync="GetDoctorsAsync"/>
 
 <style>
     .e-btn.e-top-icon-btn {

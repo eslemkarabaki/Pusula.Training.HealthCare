@@ -46,6 +46,6 @@ public class DoctorConfigurations : IEntityTypeConfiguration<Doctor>
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
-        // b.HasOne<IdentityUser>().WithOne().HasForeignKey<Doctor>(e => e.UserId).IsRequired();
+        b.HasOne<IdentityUser>().WithOne().HasForeignKey<Doctor>(e => e.UserId).IsRequired();
     }
 }

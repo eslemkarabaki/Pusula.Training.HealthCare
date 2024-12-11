@@ -15,12 +15,12 @@
 @inject IDepartmentsAppService DepartmentsAppService
 @inject IHospitalsAppService HospitalsAppService
 
-<SfDialog @ref="Dialog" Target="#target" Width="1000px" IsModal ShowCloseIcon Visible="false">
+<SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
-        <Header>@L["NewDoctor"]</Header>
+        <Header>@L["EditDoctor"]</Header>
         <Content>
-            <SfDataForm ID="NewDoctorForm"
-                        Model="@NewDoctor"
+            <SfDataForm ID="EditingDoctorForm"
+                        Model="@EditingDoctor"
                         ButtonsAlignment="FormButtonsAlignment.Right"
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Inline">
@@ -31,67 +31,40 @@
                     <div class="d-flex flex-column gap-2">
                         <div>
                             <label class="e-form-label">@L["Department"]</label>
-                            <SfDropDownList TItem="DepartmentDto" TValue="Guid"
-                                            @bind-Value="@NewDoctor.DepartmentId" PopupHeight="150px"
+                            <SfDropDownList TItem="DepartmentDto" TValue="Guid?"
+                                            @bind-Value="@EditingDoctor.DepartmentId" PopupHeight="150px"
                                             Placeholder="@L["Department"]"
                                             DataSource="@DepartmentList">
                                 <DropDownListFieldSettings Value="Id" Text="Name"/>
                             </SfDropDownList>
                         </div>
 
-                        <div>
-                            <label class="e-form-label">@L["Title"]</label>
-                            <SfDropDownList TItem="TitleDto" TValue="Guid"
-                                            @bind-Value="@NewDoctor.TitleId" PopupHeight="150px"
-                                            Placeholder="@L["Title"]"
-                                            DataSource="@TitleList">
-                                <DropDownListFieldSettings Value="Id" Text="Name"/>
-                            </SfDropDownList>
+                        <div class="row g-1">
+                            <div class="col-3">
+                                <label class="e-form-label">@L["Title"]</label>
+                                <SfDropDownList TItem="TitleDto" TValue="Guid?"
+                                                @bind-Value="@EditingDoctor.TitleId" PopupHeight="150px"
+                                                Placeholder="@L["Title"]"
+                                                DataSource="@TitleList">
+                                    <DropDownListFieldSettings Value="Id" Text="Name"/>
+                                </SfDropDownList>
+                            </div>
+                            <div class="col">
+                                <label class="e-form-label">@L["FirstName"]</label>
+                                <SfTextBox @bind-Value="@EditingDoctor.FirstName"
+                                           Placeholder="@L["FirstName"]" ></SfTextBox>
+                            </div>
+                            <div class="col">
+                                <label class="e-form-label">@L["LastName"]</label>
+                                <SfTextBox @bind-Value="@EditingDoctor.LastName"
+                                           Placeholder="@L["LastName"]"></SfTextBox>
+                            </div>
                         </div>
-
-                        <div>
-                            <label class="e-form-label">@L["Hospital"]</label>
-                            <SfDropDownList TItem="HospitalDto" TValue="Guid"
-                                            @bind-Value="@NewDoctor.HospitalId" PopupHeight="150px"
-                                            Placeholder="@L["Hospital"]"
-                                            DataSource="@HospitalList">
-                                <DropDownListFieldSettings Value="Id" Text="Name"/>
-                            </SfDropDownList>
-                        </div>
-
-                        <div>
-                            <label class="e-form-label">@L["FirstName"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.FirstName"
-                                       Placeholder="@L["FirstName"]"></SfTextBox>
-                        </div>
-                        <div>
-                            <label class="e-form-label">@L["LastName"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.LastName"
-                                       Placeholder="@L["LastName"]"></SfTextBox>
-                        </div>
-
+                        
                         <div>
                             <label class="e-form-label">@L["WorkingHours"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.WorkingHours"
-                                       Placeholder="@L["WorkingHours"]" Type="InputType.Number"></SfTextBox>
-                        </div>
-
-                        <div>
-                            <label class="e-form-label">@L["Username"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.User.UserName"
-                                       Placeholder="@L["Username"]"></SfTextBox>
-                        </div>
-
-                        <div>
-                            <label class="e-form-label">@L["Email"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.User.Email"
-                                       Placeholder="@L["Email"]" Type="InputType.Email"></SfTextBox>
-                        </div>
-
-                        <div>
-                            <label class="e-form-label">@L["Password"]</label>
-                            <SfTextBox @bind-Value="@NewDoctor.User.Password"
-                                       Placeholder="@L["Password"]" Type="InputType.Password"></SfTextBox>
+                            <SfNumericTextBox @bind-Value="@EditingDoctor.WorkingHours"
+                                       Placeholder="@L["WorkingHours"]" Min="@DoctorConsts.WorkingHoursMin" Max="@DoctorConsts.WorkingHoursMax" Step="@DoctorConsts.WorkingHoursMin"></SfNumericTextBox>
                         </div>
 
                     </div>
@@ -110,12 +83,12 @@
 
 @code {
 
-    [Parameter] public EventCallback<DoctorDto> DoctorCreatedAsync { get; set; }
+    [Parameter] public EventCallback<DoctorDto> DoctorUpdatedAsync { get; set; }
 
     private SfDialog Dialog { get; set; } = null!;
 
     private Guid EditingDoctorId { get; set; }
-    private DoctorUpdateDto NewDoctor { get; set; } = new();
+    private DoctorUpdateDto EditingDoctor { get; set; } = new();
 
     private IEnumerable<DepartmentDto> DepartmentList { get; set; } = [];
     private IEnumerable<TitleDto> TitleList { get; set; } = [];
@@ -154,8 +127,8 @@
     {
         try
         {
-            var doctor = await DoctorAppService.UpdateAsync(EditingDoctorId, NewDoctor);
-            await DoctorCreatedAsync.InvokeAsync(doctor);
+            var doctor = await DoctorAppService.UpdateAsync(EditingDoctorId, EditingDoctor);
+            await DoctorUpdatedAsync.InvokeAsync(doctor);
             await HideAsync();
         }
         catch (Exception ex)
@@ -168,14 +141,11 @@
     {
         EditingDoctorId = doctorId;
         var doctor = await DoctorAppService.GetAsync(doctorId);
-        NewDoctor.FirstName = doctor.FirstName;
-        NewDoctor.LastName = doctor.LastName;
-        NewDoctor.DepartmentId = doctor.DepartmentId;
-        NewDoctor.HospitalId = doctor.HospitalId;
-        NewDoctor.TitleId = doctor.TitleId;
-        NewDoctor.WorkingHours = doctor.WorkingHours;
-
-        SetDefaultValuesForDialog();
+        EditingDoctor.FirstName = doctor.FirstName;
+        EditingDoctor.LastName = doctor.LastName;
+        EditingDoctor.DepartmentId = doctor.DepartmentId;
+        EditingDoctor.TitleId = doctor.TitleId;
+        EditingDoctor.WorkingHours = doctor.WorkingHours;
         await Dialog.ShowAsync();
     }
 
@@ -185,5 +155,5 @@
         await Dialog.HideAsync();
     }
 
-    private void SetDefaultValuesForDialog() => NewDoctor = new DoctorUpdateDto();
+    private void SetDefaultValuesForDialog() => EditingDoctor = new DoctorUpdateDto();
 }
