@@ -23,13 +23,13 @@ using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.Extensions;
 using Pusula.Training.HealthCare.PatientTypes;
-using System.Net.Sockets;
-using Pusula.Training.HealthCare.ProtocolTypes; 
+using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.ProtocolTypeActions;
 
 namespace Pusula.Training.HealthCare;
 
@@ -59,8 +59,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForMember(e => e.Type, opt => opt.MapFrom(e => e.PatientType.Name));
 
         CreateMap<PatientNote, PatientNoteDto>()
-            .ForMember(e=>e.CreatorName,e=>e.MapFrom(o=>o.Creator!.UserName));
-        CreateMap<Patient, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FullName));
+            .ForMember(e => e.CreatorName, e => e.MapFrom(o => o.Creator!.UserName));
+        CreateMap<Patient, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.FullName));
 
         CreateMap<PatientNoteCreateDto, PatientNote>().ReverseMap();
         CreateMap<PatientNoteUpdateDto, PatientNote>().ReverseMap();
@@ -70,6 +71,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<PatientType, PatientTypeDto>();
         CreateMap<ProtocolTypes.ProtocolType, ProtocolTypeDto>();
         CreateMap<ProtocolTypeDto, ProtocolTypeUpdateDto>();
+        CreateMap<ProtocolTypeWithNavigationProperties, ProtocolTypeWithNavigationPropertiesDto>();
+
+        CreateMap<ProtocolTypeAction, ProtocolTypeActionDto>();
 
         CreateMap<Address, AddressDto>().ReverseMap();
         CreateMap<AddressCreateDto, Address>();
@@ -104,14 +108,13 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Appointment, AppointmentDto>();
         CreateMap<AppointmentDto, AppointmentUpdateDto>();
         CreateMap<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>();
-        CreateMap<AppointmentDto, AppointmentCreateDto>();        
+        CreateMap<AppointmentDto, AppointmentCreateDto>();
 
         CreateMap<AppointmentType, AppointmentTypeDto>();
         CreateMap<AppointmentTypeDto, AppointmentTypeUpdateDto>();
 
         CreateMap<Insurance, InsuranceDto>();
         CreateMap<InsuranceDto, InsuranceUpdateDto>();
-
 
         CreateMap<Hospital, HospitalDto>();
         CreateMap<Hospital, HospitalExcelDto>();
@@ -147,9 +150,10 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<TestGroup, TestGroupDto>();
         CreateMap<TestGroup, TestGroupExcelDto>();
         CreateMap<TestGroupDto, TestGroupUpdateDto>();
-        CreateMap<TestGroup, LookupDto<Guid>>().ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
-         
-        #region Radiology
+        CreateMap<TestGroup, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+
+#region Radiology
 
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupExcelDto>();
@@ -184,7 +188,6 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<RadiologyRequestItemDto, RadiologyRequestItemUpdateDto>();
         CreateMap<RadiologyRequestItemWithNavigationProperties, RadiologyRequestItemWithNavigationPropertiesDto>();
 
-
-        #endregion 
+#endregion
     }
 }
