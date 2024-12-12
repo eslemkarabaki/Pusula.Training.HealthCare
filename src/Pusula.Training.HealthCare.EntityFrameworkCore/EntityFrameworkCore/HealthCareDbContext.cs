@@ -4,7 +4,7 @@ using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.Examinations; 
+using Pusula.Training.HealthCare.Examinations;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Hospitals;
@@ -17,7 +17,7 @@ using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.EntityFrameworkCore; 
+using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -25,7 +25,7 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
-using Volo.Abp.TenantManagement.EntityFrameworkCore; 
+using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
@@ -44,6 +44,7 @@ using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.ProtocolTypeActions;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -57,7 +58,11 @@ public class HealthCareDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
     public DbSet<Department> Departments { get; set; } = null!;
+
     public DbSet<Protocol> Protocols { get; set; } = null!;
+    public DbSet<ProtocolType> ProtocolTypes { get; set; } = null!;
+    public DbSet<ProtocolTypeAction> ProtocolTypeActions { get; set; } = null!;
+
     public DbSet<Patient> Patients { get; set; } = null!;
     public DbSet<PatientType> PatientTypes { get; set; } = null!;
     public DbSet<PatientNote> PatientNotes { get; set; } = null!;
@@ -65,15 +70,18 @@ public class HealthCareDbContext :
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<Doctor> Doctors { get; set; } = null!;
     public DbSet<Title> Titles { get; set; } = null!;
+
+    public DbSet<Address> Addresses { get; set; } = null!;
     public DbSet<Country> Countries { get; set; } = null!;
     public DbSet<City> Cities { get; set; } = null!;
     public DbSet<District> Districts { get; set; } = null!;
-    public DbSet<Address> Addresses { get; set; } = null!;
+
     public DbSet<Appointment> Appointments { get; set; } = null!;
+
     public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
+
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
     public DbSet<Examination> Examinations { get; set; } = null!;
-    public DbSet<ProtocolType> ProtocolTypes { get; set; } = null!;
     public DbSet<Insurance> Insurances { get; set; } = null!;
     public DbSet<AppDefault> AppDefaults { get; set; } = null!;
     public DbSet<TestGroup> TestGroups { get; set; } = null!;
@@ -83,18 +91,18 @@ public class HealthCareDbContext :
     public DbSet<WorkList> WorkLists { get; set; } = null!;
     public DbSet<Diagnosis> Diagnoses { get; set; } = null!;
 
-    #region Radiology
+#region Radiology
 
     public DbSet<RadiologyExaminationGroup> RadiologyExaminationGroups { get; set; } = null!;
     public DbSet<RadiologyExamination> RadiologyExaminations { get; set; } = null!;
     public DbSet<RadiologyExaminationProcedure> RadiologyExaminationProcedures { get; set; } = null!;
     public DbSet<RadiologyExaminationDocument> RadiologyExaminationDocuments { get; set; } = null!;
-    public DbSet<RadiologyRequest> RadiologyRequests {  get; set; } = null!;
+    public DbSet<RadiologyRequest> RadiologyRequests { get; set; } = null!;
     public DbSet<RadiologyRequestItem> RadiologyRequestItems { get; set; } = null!;
 
-    #endregion
+#endregion
 
-    #region Entities from the modules
+#region Entities from the modules
 
     /* Notice: We only implemented IIdentityDbContext and ITenantManagementDbContext
      * and replaced them for this DbContext. This allows you to perform JOIN

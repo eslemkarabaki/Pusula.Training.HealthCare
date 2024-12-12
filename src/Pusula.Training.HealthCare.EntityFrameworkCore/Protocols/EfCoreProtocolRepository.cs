@@ -33,7 +33,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
                   await GetQueryableAsync(), string.Empty, patientId, doctorId, departmentId, protocolTypeId, status,
                   startTime, endTime
               )
-              .OrderBy(GetSorting(sorting, true))
+              .OrderBy(GetSorting(sorting, false))
               .Skip(skipCount)
               .Take(maxResultCount)
               .ToListAsync(GetCancellationToken(cancellationToken));

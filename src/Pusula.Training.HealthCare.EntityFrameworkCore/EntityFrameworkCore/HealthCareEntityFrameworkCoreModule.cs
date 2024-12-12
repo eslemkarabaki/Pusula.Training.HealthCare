@@ -38,6 +38,7 @@ using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.WorkLists;
 using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.ProtocolTypeActions;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -99,14 +100,16 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<RadiologyExamination, EfCoreRadiologyExaminationRepository>();
                 options.AddRepository<RadiologyExaminationProcedure, EfCoreRadiologyExaminationProcedureRepository>();
                 options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+                options.AddRepository<ProtocolTypeAction, EfCoreProtocolTypeActionRepository>();
             }
         );
 
-        Configure<AbpDbContextOptions>(options =>
-        {
-
-            options.UseNpgsql();
-        });
+        Configure<AbpDbContextOptions>(
+            options =>
+            {
+                options.UseNpgsql();
+            }
+        );
         Configure<AbpDbContextOptions>(
             options =>
             {
