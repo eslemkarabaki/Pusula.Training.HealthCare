@@ -1,0 +1,149 @@
+@using Pusula.Training.HealthCare.Doctors
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+@using Volo.Abp.Identity
+@using Syncfusion.Blazor.Navigations
+
+@inherits HealthCareComponentBase
+
+@inject IDoctorAppService DoctorAppService
+
+<SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="SetDefaultValuesForDialog"></DialogEvents>
+    <DialogTemplates>
+        <Header>@L["DoctorAccount"]</Header>
+        <Content>
+            <SfTab HeaderPlacement="HeaderPosition.Top">
+                <TabAnimationSettings>
+                    <TabAnimationPrevious Effect="AnimationEffect.None"></TabAnimationPrevious>
+                    <TabAnimationNext Effect="AnimationEffect.None"></TabAnimationNext>
+                </TabAnimationSettings>
+                <TabItems>
+                    <TabItem>
+                        <ChildContent>
+                            <TabHeader Text="@L["Information"]"></TabHeader>
+                        </ChildContent>
+                        <ContentTemplate>
+                            <SfDataForm ID="DoctorUserInformationUpdateForm"
+                                        Model="@DoctorUserInformationUpdateDto"
+                                        ButtonsAlignment="FormButtonsAlignment.Right"
+                                        OnValidSubmit="@DoctorUserInformationUpdateFormOnValidSubmitAsync"
+                                        ValidationDisplayMode="FormValidationDisplay.Inline">
+                                <FormValidator>
+                                    <DataAnnotationsValidator/>
+                                </FormValidator>
+                                <FormTemplate>
+                                    <div class="d-flex flex-column gap-2 p-2">
+                                        <SfTextBox @bind-Value="@DoctorUserInformationUpdateDto.UserName"
+                                                   Placeholder="@L["Username"]"
+                                                   FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                                        <SfTextBox @bind-Value="@DoctorUserInformationUpdateDto.Email"
+                                                   Placeholder="@L["Email"]" Type="InputType.Email"
+                                                   FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                                    </div>
+                                </FormTemplate>
+                                <FormButtons>
+                                    <SfButton type="button" CssClass="e-outline"
+                                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                                </FormButtons>
+                            </SfDataForm>
+                        </ContentTemplate>
+                    </TabItem>
+                    <TabItem>
+                        <ChildContent>
+                            <TabHeader Text="@L["Password"]"></TabHeader>
+                        </ChildContent>
+                        <ContentTemplate>
+                            <SfDataForm ID="DoctorUserPasswordUpdateFrom"
+                                        Model="@DoctorUserPasswordUpdateDto"
+                                        ButtonsAlignment="FormButtonsAlignment.Right"
+                                        OnValidSubmit="@DoctorUserPasswordUpdateFromOnValidSubmitAsync"
+                                        ValidationDisplayMode="FormValidationDisplay.Inline">
+                                <FormValidator>
+                                    <DataAnnotationsValidator/>
+                                </FormValidator>
+                                <FormTemplate>
+                                    <div class="d-flex flex-column gap-2 p-2">
+                                        <SfTextBox @bind-Value="@DoctorUserPasswordUpdateDto.CurrentPassword"
+                                                   Placeholder="@L["CurrentPassword"]" Type="InputType.Password"
+                                                   FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                                        <SfTextBox @bind-Value="@DoctorUserPasswordUpdateDto.NewPassword"
+                                                   Placeholder="@L["NewPassword"]" Type="InputType.Password"
+                                                   FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                                        <SfTextBox @bind-Value="@DoctorUserPasswordUpdateDto.ConfirmNewPassword"
+                                                   Placeholder="@L["ConfirmNewPassword"]" Type="InputType.Password"
+                                                   FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                                    </div>
+                                </FormTemplate>
+                                <FormButtons>
+                                    <SfButton type="button" CssClass="e-outline"
+                                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                                    <SfButton type="submit" IsPrimary>@L["ChangePassword"]</SfButton>
+                                </FormButtons>
+                            </SfDataForm>
+                        </ContentTemplate>
+                    </TabItem>
+                </TabItems>
+            </SfTab>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+
+@code {
+
+    private IdentityUserDto? DoctorUser { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private DoctorUserPasswordUpdateDto DoctorUserPasswordUpdateDto { get; set; } = new();
+    private DoctorUserInformationUpdateDto DoctorUserInformationUpdateDto { get; set; } = new();
+
+    private async Task DoctorUserPasswordUpdateFromOnValidSubmitAsync()
+    {
+        try
+        {
+            await DoctorAppService.ChangePasswordAsync(DoctorUser!.Id, DoctorUserPasswordUpdateDto);
+            await HideAsync();
+        }
+        catch (Exception ex)
+        {
+            await Notify.Error(ex.Message);
+        }
+    }
+
+    private async Task DoctorUserInformationUpdateFormOnValidSubmitAsync()
+    {
+        try
+        {
+            await DoctorAppService.UpdateUserAsync(DoctorUser!.Id, DoctorUserInformationUpdateDto);
+            await HideAsync();
+        }
+        catch (Exception ex)
+        {
+            await Notify.Error(ex.Message);
+        }
+    }
+
+    public async Task ShowAsync(Guid userId)
+    {
+        DoctorUser = await DoctorAppService.GetDoctorUserAsync(userId);
+        DoctorUserInformationUpdateDto.UserName = DoctorUser!.UserName;
+        DoctorUserInformationUpdateDto.Email = DoctorUser!.Email;
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        SetDefaultValuesForDialog();
+        await Dialog.HideAsync();
+    }
+
+    private void SetDefaultValuesForDialog() => DoctorUserPasswordUpdateDto = new DoctorUserPasswordUpdateDto();
+}

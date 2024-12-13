@@ -5,7 +5,7 @@ using Volo.Abp.Identity;
 
 namespace Pusula.Training.HealthCare.Users;
 
-public class UserRules(UserManager<IdentityUser> userManager) : IUserRules
+public class UserRules(IdentityUserManager userManager) : IUserRules
 {
     public async Task EnsureUsernameNotExistAsync(string userName) =>
         GlobalException.ThrowIf(

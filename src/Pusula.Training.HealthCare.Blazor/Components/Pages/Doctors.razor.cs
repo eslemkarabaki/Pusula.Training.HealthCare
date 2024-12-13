@@ -35,15 +35,13 @@ public partial class Doctors
 
     private bool AllDoctorsSelected { get; set; }
 
-    public Doctors()
-    {
+    public Doctors() =>
         Filter = new GetDoctorsInput
         {
             MaxResultCount = PageSize,
             SkipCount = (CurrentPage - 1) * PageSize,
             Sorting = CurrentSorting
         };
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -172,6 +170,10 @@ public partial class Doctors
     }
 
 #endregion
+
+    private DoctorAccountDialog DoctorAccountDialog { get; set; } = null!;
+
+    private async Task ShowDoctorAccountDialogAsync(Guid userId) => await DoctorAccountDialog.ShowAsync(userId);
 
 #region Permission
 

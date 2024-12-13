@@ -13,4 +13,5 @@ public class DoctorDto : FullAuditedEntityDto<Guid>
     public Guid TitleId { get; set; }
     public Guid DepartmentId { get; set; }
     public Guid HospitalId { get; set; }
+    public Guid UserId { get; set; }
 }

@@ -2,14 +2,14 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using MiniExcelLibs;
-using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+using Pusula.Training.HealthCare.GlobalExceptions;
 using Pusula.Training.HealthCare.Users;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -25,12 +25,12 @@ namespace Pusula.Training.HealthCare.Doctors;
 public class DoctorAppService(
     IDoctorRepository doctorRepository,
     DoctorManager doctorManager,
+    IdentityUserManager userManager,
     IDistributedCache<DoctorDownloadTokenCacheItem, string> downloadTokenCache,
     ILogger<DoctorAppService> logger,
     IUserRules userRules
 ) : HealthCareAppService, IDoctorAppService
 {
-
     //For Appointment
     public async Task<List<DoctorDto>> GetListDoctorsAsync() =>
         ObjectMapper.Map<List<Doctor>, List<DoctorDto>>(await doctorRepository.GetListAsync());
@@ -85,6 +85,13 @@ public class DoctorAppService(
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
     }
 
+    public async Task<IdentityUserDto?> GetDoctorUserAsync(Guid userId)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        GlobalException.ThrowIf(user == null, "Doctor user not found");
+        return ObjectMapper.Map<IdentityUser, IdentityUserDto>(user!);
+    }
+
     [Authorize(HealthCarePermissions.Doctors.Delete)]
     public virtual async Task DeleteAsync(Guid id) => await doctorRepository.DeleteAsync(id);
 
@@ -99,7 +106,7 @@ public class DoctorAppService(
     {
         await userRules.EnsureUsernameNotExistAsync(input.User.UserName);
         await userRules.EnsureEmailNotExistAsync(input.User.Email);
-        
+
         var doctor = await doctorManager.CreateAsync(
             input.FirstName,
             input.LastName,
@@ -118,9 +125,39 @@ public class DoctorAppService(
     public virtual async Task<DoctorDto> UpdateAsync(Guid id, DoctorUpdateDto input)
     {
         var doctor = await doctorManager.UpdateAsync(
-            id, input.FirstName, input.LastName, input.WorkingHours, input.TitleId!.Value,input.DepartmentId!.Value,  input.ConcurrencyStamp
+            id, input.FirstName, input.LastName, input.WorkingHours, input.TitleId!.Value, input.DepartmentId!.Value,
+            input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
+    }
+
+    [Authorize(HealthCarePermissions.Doctors.Edit)]
+    public async Task<bool> ChangePasswordAsync(Guid userId, DoctorUserPasswordUpdateDto input)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        GlobalException.ThrowIf(
+            !await userManager.CheckPasswordAsync(user!, input.CurrentPassword), "Current password is incorrect."
+        );
+
+        var result = await userManager.ChangePasswordAsync(user!, input.CurrentPassword, input.NewPassword);
+        GlobalException.ThrowIf(!result.Succeeded, result.Errors.Select(e => e.Description));
+        return result.Succeeded;
+    }
+
+    [Authorize(HealthCarePermissions.Doctors.Edit)]
+    public async Task<bool> UpdateUserAsync(Guid userId, DoctorUserInformationUpdateDto input)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        
+        await userRules.EnsureUsernameNotExistAsync(input.UserName);
+        await userRules.EnsureEmailNotExistAsync(input.Email);
+        
+        await userManager.SetUserNameAsync(user!, input.UserName);
+        await userManager.SetEmailAsync(user!, input.Email);
+        
+        var result = await userManager.UpdateAsync(user!);
+        GlobalException.ThrowIf(!result.Succeeded, result.Errors.Select(e => e.Description));
+        return result.Succeeded;
     }
 
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(DoctorExcelDownloadDto input)
