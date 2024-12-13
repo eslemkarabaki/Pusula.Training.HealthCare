@@ -12,7 +12,8 @@ public interface IProtocolAppService : IApplicationService
 
     Task<PagedResultDto<ProtocolDto>> GetListAsync(GetProtocolsInput input);
     Task<PagedResultDto<ProtocolDto>> GetListWithDetailsAsync(GetProtocolsInput input);
-
+    Task<PagedResultDto<ProtocolDto>> GetDoctorWorkListWithDetailsAsync(GetDoctorWorkListInput input);
+    
     Task<ProtocolDto> CreateAsync(ProtocolCreateDto input);
 
     Task<ProtocolDto> UpdateAsync(Guid id, ProtocolUpdateDto input);
