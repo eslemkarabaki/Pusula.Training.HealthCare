@@ -17,7 +17,7 @@ namespace Pusula.Training.HealthCare.Controllers.Doctors;
 [Area("app")]
 [ControllerName("Doctor")]
 [Route("api/app/doctors")]
-public class DoctorController : HealthCareController, IDoctorAppService
+public class DoctorController : HealthCareController
 {
     private readonly IDoctorAppService _doctorAppService;
 

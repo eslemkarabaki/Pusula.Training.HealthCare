@@ -69,7 +69,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<PatientNoteDto, PatientNoteCreateDto>();
 
         CreateMap<PatientType, PatientTypeDto>();
-        CreateMap<ProtocolTypes.ProtocolType, ProtocolTypeDto>();
+        CreateMap<ProtocolType, ProtocolTypeDto>();
         CreateMap<ProtocolTypeDto, ProtocolTypeUpdateDto>();
         CreateMap<ProtocolTypeWithNavigationProperties, ProtocolTypeWithNavigationPropertiesDto>();
 
