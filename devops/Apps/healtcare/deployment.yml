@@ -25,36 +25,8 @@ services:
       labels:
         - "traefik.docker.network=frontend"
         - "traefik.http.services.healtcare-blazor.loadbalancer.sticky.cookie=true"
-        - "traefik.http.routers.healtcare-blazor.rule=PathPrefix(`/`)"
         - "traefik.http.routers.healtcare-blazor.entrypoints=web"
         - "traefik.http.middlewares.websocket.headers.customrequestheaders.Sec-WebSocket-Protocol=graphql-ws"
-
-  loadbalancer:
-    image: traefik:v2.10
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.swarmMode=true"
-      - "--providers.docker.exposedByDefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web-secure.address=:443"
-      - "--log.level=DEBUG"
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    deploy:
-      restart_policy:
-        condition: any
-      mode: replicated
-      replicas: 1
-      update_config:
-        delay: 2s
-      placement:
-        constraints: [node.role == manager]
-    networks:
-      - frontend
-
 networks:
   frontend:
     external: true
