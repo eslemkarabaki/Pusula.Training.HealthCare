@@ -13,7 +13,7 @@ variables:
   dockerFilePath: 'Dockerfile'
   publishDir: '$(Build.ArtifactStagingDirectory)'
   GITLAB_REGISTRY_USER: 'berkmkaracayir' 
-  GITLAB_REGISTRY_PASSWORD: 'glpat-vsCVyES1xiGb2zQeZ4Eg'
+  GITLAB_REGISTRY_PASSWORD: 'glpat-VxJgKhLEvz6ECi-ybUgS'
 
 steps:
 - task: UseDotNet@2
