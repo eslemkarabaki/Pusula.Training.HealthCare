@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpChallenge.entryPoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=berkmkaracayir@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/home/berk-karacayir/devops/data/acme.json:/etc/traefik/acme.json"
+    networks:
+      - frontend
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  frontend:
+    external: true
