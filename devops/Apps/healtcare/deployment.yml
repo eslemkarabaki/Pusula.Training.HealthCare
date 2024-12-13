@@ -27,6 +27,7 @@ services:
         - "traefik.http.services.healtcare-blazor.loadbalancer.sticky.cookie=true"
         - "traefik.http.routers.healtcare-blazor.rule=PathPrefix(`/`)"
         - "traefik.http.routers.healtcare-blazor.entrypoints=web"
+        - "traefik.http.middlewares.websocket.headers.customrequestheaders.Sec-WebSocket-Protocol=graphql-ws"
 
   loadbalancer:
     image: traefik:v2.10
@@ -35,9 +36,11 @@ services:
       - "--providers.docker.swarmMode=true"
       - "--providers.docker.exposedByDefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web-secure.address=:443"
       - "--log.level=DEBUG"
     ports:
       - 80:80
+      - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
