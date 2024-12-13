@@ -25,6 +25,7 @@ services:
       labels:
         - "traefik.docker.network=frontend"
         - "traefik.http.services.healtcare-blazor.loadbalancer.sticky.cookie=true"
+        - "traefik.http.routers.healtcare-blazor.rule=PathPrefix(`/`)"
         - "traefik.http.routers.healtcare-blazor.entrypoints=web"
         - "traefik.http.middlewares.websocket.headers.customrequestheaders.Sec-WebSocket-Protocol=graphql-ws"
 networks:
