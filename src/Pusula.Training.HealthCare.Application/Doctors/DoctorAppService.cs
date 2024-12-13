@@ -148,13 +148,13 @@ public class DoctorAppService(
     public async Task<bool> UpdateUserAsync(Guid userId, DoctorUserInformationUpdateDto input)
     {
         var user = await userManager.FindByIdAsync(userId.ToString());
-        
-        await userRules.EnsureUsernameNotExistAsync(input.UserName);
-        await userRules.EnsureEmailNotExistAsync(input.Email);
-        
+
+        await userRules.EnsureUsernameNotExistForOthersAsync(input.UserName, userId);
+        await userRules.EnsureEmailNotExistForOthersAsync(input.Email,userId);
+
         await userManager.SetUserNameAsync(user!, input.UserName);
         await userManager.SetEmailAsync(user!, input.Email);
-        
+
         var result = await userManager.UpdateAsync(user!);
         GlobalException.ThrowIf(!result.Succeeded, result.Errors.Select(e => e.Description));
         return result.Succeeded;
