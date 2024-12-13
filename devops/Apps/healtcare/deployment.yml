@@ -24,7 +24,7 @@ services:
         constraints: [node.role==manager]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.healthcare-blazor.rule=Host('team3-pusula-healthcare.pusulayazilim.com.tr')"
+      - "traefik.http.routers.healthcare-blazor.rule=Host(`team3-pusula-healthcare.pusulayazilim.com.tr`)"
       - "traefik.http.services.healthcare-blazor.loadbalancer.server.port=80"
       - "traefik.http.routers.healthcare-blazor.entrypoints=websecure"
       - "traefik.http.routers.healthcare-blazor.tls=true"
