@@ -19,7 +19,7 @@ RUN npm install
 RUN dotnet restore
 RUN dotnet publish "Pusula.Training.HealthCare.Blazor.csproj" -c Release -o /app/blazor
 
-COPY /src/src/Pusula.Training.HealthCare.Blazor/wwwroot /app/blazor/wwwroot
+COPY wwwroot /app/blazor/wwwroot
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
