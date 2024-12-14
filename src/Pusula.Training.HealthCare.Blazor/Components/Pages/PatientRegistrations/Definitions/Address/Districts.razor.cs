@@ -43,11 +43,11 @@ public partial class Districts
 
     private async Task GetDistrictsAsync()
     {
-        DistrictList = await DistrictAppService.GetListWithDetailsAsync();
+        DistrictList = await DistrictAppService.GetListWithDetailsAsync(new GetDistrictsInput());
         await ClearSelection();
     }
 
-    #region DataGrid
+#region DataGrid
 
     private Task ClearSelection()
     {
@@ -63,9 +63,9 @@ public partial class Districts
         return Task.CompletedTask;
     }
 
-    #endregion
+#endregion
 
-    #region Create
+#region Create
 
     private DistrictCreateDialog CreateDistrictDialog { get; set; } = null!;
     private async Task OpenCreateDistrictDialogAsync() => await CreateDistrictDialog.ShowAsync();
@@ -83,9 +83,9 @@ public partial class Districts
         }
     }
 
-    #endregion
+#endregion
 
-    #region Update
+#region Update
 
     private DistrictUpdateDialog UpdateDistrictDialog { get; set; } = null!;
     private Guid EditingDistrictId { get; set; }
@@ -109,9 +109,9 @@ public partial class Districts
         }
     }
 
-    #endregion
+#endregion
 
-    #region Delete
+#region Delete
 
     private async Task DeleteDistrictAsync(DistrictDto input)
     {
@@ -139,9 +139,9 @@ public partial class Districts
         await GetDistrictsAsync();
     }
 
-    #endregion
+#endregion
 
-    #region Permission
+#region Permission
 
     private bool CanCreateDistrict { get; set; }
     private bool CanEditDistrict { get; set; }
@@ -157,6 +157,5 @@ public partial class Districts
             .IsGrantedAsync(HealthCarePermissions.Districts.Delete);
     }
 
-    #endregion
+#endregion
 }
-

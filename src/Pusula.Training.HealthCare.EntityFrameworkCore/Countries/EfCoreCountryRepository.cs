@@ -60,10 +60,10 @@ public class EfCoreCountryRepository(IDbContextProvider<HealthCareDbContext> dbC
         string? phoneCode = null
     ) =>
         query
-            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Name!.Contains(filterText!))
-            .WhereIf(!string.IsNullOrWhiteSpace(name), e => e.Name.Contains(name!))
-            .WhereIf(!string.IsNullOrWhiteSpace(iso), e => e.Iso.Contains(iso!))
-            .WhereIf(!string.IsNullOrWhiteSpace(phoneCode), e => e.PhoneCode.Contains(phoneCode!));
+            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => EF.Functions.ILike(e.Name, filterText!))
+            .WhereIf(!string.IsNullOrWhiteSpace(name), e => EF.Functions.ILike(e.Name, name!))
+            .WhereIf(!string.IsNullOrWhiteSpace(iso), e => EF.Functions.ILike(e.Iso, iso!))
+            .WhereIf(!string.IsNullOrWhiteSpace(phoneCode), e => EF.Functions.ILike(e.PhoneCode, phoneCode!));
 
     protected virtual string GetSorting(string? sorting, bool withEntityName) =>
         sorting.IsNullOrWhiteSpace() ?

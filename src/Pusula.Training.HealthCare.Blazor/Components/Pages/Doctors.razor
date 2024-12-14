@@ -82,11 +82,11 @@
                 }
             </Template>
         </GridColumn>
-        <GridColumn HeaderText="@L["WorkingHours"]" AutoFit>
+        <GridColumn HeaderText="@L["AppointmentTime"]" AutoFit>
             <Template>
                 @{
                     var dto = (context as DoctorWithNavigationPropertiesDto)!;
-                    @dto.Doctor.WorkingHours
+                    @dto.Doctor.AppointmentTime
                 }
             </Template>
         </GridColumn>
@@ -105,6 +105,12 @@
                     var doctor = (context as DoctorWithNavigationPropertiesDto)!.Doctor;
                 }
                 <div class="d-flex justify-content-end gap-1">
+                    <SfTooltip Position="Position.BottomCenter" Content="@L["Account"]">
+                        <SfButton
+                            OnClick="@(() => ShowDoctorAccountDialogAsync(doctor.UserId))"
+                            CssClass="e-flat"
+                            IconCss="e-icons fas fa-user-shield"></SfButton>
+                    </SfTooltip>
                     <SfTooltip Position="Position.BottomCenter" Content="@L["Update"]">
                         <SfButton
                             OnClick="@(() => OpenEditDoctorModalAsync(doctor.Id))"
@@ -128,6 +134,9 @@
 
 @* ************************* UPDATE MODAL ************************* *@
 <DoctorUpdateDialog @ref="UpdateDoctorDialog" DoctorUpdatedAsync="GetDoctorsAsync"/>
+
+@* ************************* ACCOUNT MODAL ************************* *@
+<DoctorAccountDialog @ref="DoctorAccountDialog"/>
 
 <style>
     .e-btn.e-top-icon-btn {

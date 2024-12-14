@@ -35,7 +35,7 @@
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <DataAnnotationsValidator/>
+                    <FluentValidationValidator Validator="@PatientUpdateValidator"/>
                 </FormValidator>
                 <FormTemplate>
                     <SfTab HeaderPlacement="HeaderPosition.Left" LoadOn="ContentLoad.Init" CssClass="e-fill">
@@ -430,7 +430,10 @@
 
 @code {
 
-    [Parameter] public EventCallback<PatientUpdateDto> OnValidSaveAsync { get; set; }
+    [Parameter]
+    public EventCallback<PatientUpdateDto> OnValidSaveAsync { get; set; }
+    
+    private PatientUpdateDtoValidator PatientUpdateValidator { get; set; } = new();
 
     private SfDialog Dialog { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> PatientCountryListAutoComplete { get; set; } = null!;
@@ -455,7 +458,7 @@
     {
         SetDefaultValuesForDialog();
         PatientTypeList = await PatientTypeAppService.GetListAsync();
-        CountryList = await CountryAppService.GetListAsync();
+        CountryList = await CountryAppService.GetListAsync(new GetCountriesInput());
         CurrentCountry = await CountryAppService.GetCurrentAsync();
     }
 
@@ -491,7 +494,7 @@
 
     public async Task ShowAsync(Guid patientId)
     {
-        var patient = await PatientAppService.GetWithNavigationPropertiesAsync(patientId);
+        var patient = await PatientAppService.GetWithNavigationPropertiesAsync(new GetPatientInput(patientId));
         ObjectMapper.Map(patient.Patient, EditingPatient);
         ObjectMapper.Map(patient.PatientNotes, EditingPatient.Notes);
         EditingPatientId = patientId;
@@ -512,7 +515,7 @@
         EditingPatient.MobilePhoneNumberCode = CountryList.FirstOrDefault(e => e.Id == countryId)?.PhoneCode ?? "1";
         await Task.CompletedTask;
     }
-    
+
     private void SetDefaultValuesForDialog()
     {
         SetDefaultsForPatient();
@@ -521,7 +524,6 @@
     }
 
     private void SetDefaultsForPatient() => EditingPatient = new PatientUpdateDto();
-
 
 #region Address
 
@@ -570,7 +572,7 @@
         SelectedAddressCountryId = countryId;
         SelectedAddressCityId = Guid.Empty;
         EditingAddress.DistrictId = Guid.Empty;
-        CityList = await CityAppService.GetListWithDetailsAsync(countryId);
+        CityList = await CityAppService.GetListWithDetailsAsync(new GetCitiesInput() { CountryId = countryId });
         DistrictList = [];
     }
 
@@ -578,7 +580,7 @@
     {
         SelectedAddressCityId = cityId;
         EditingAddress.DistrictId = Guid.Empty;
-        DistrictList = await DistrictAppService.GetListWithDetailsAsync(cityId);
+        DistrictList = await DistrictAppService.GetListWithDetailsAsync(new GetDistrictsInput() { CityId = cityId });
     }
 
     private void SetDefaultsForAddress()
@@ -590,6 +592,7 @@
         CityList = [];
         DistrictList = [];
     }
+
 #endregion
 
 #region Note
@@ -636,7 +639,7 @@
         note.Note = EditingNote.Note;
         await CancelNoteEditingAsync();
     }
-    
+
     private void SetDefaultsForNote()
     {
         NoteEditingMode = false;
@@ -644,4 +647,5 @@
     }
 
 #endregion
+
 }

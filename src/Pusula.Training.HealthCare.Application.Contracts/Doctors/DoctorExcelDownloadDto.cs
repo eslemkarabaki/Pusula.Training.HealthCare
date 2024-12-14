@@ -11,12 +11,10 @@ public class DoctorExcelDownloadDto
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? FullName { get; set; }
-    public int? WorkingHours { get; set; } 
-    public Guid? TitleId { get; set; } 
-    public Guid? DepartmentId { get; set; } 
-    public Guid? HospitalId { get; set; } 
+    public int? AppointmentTime { get; set; }
+    public Guid? TitleId { get; set; }
+    public Guid? DepartmentId { get; set; }
+    public Guid? HospitalId { get; set; }
 
-    public DoctorExcelDownloadDto()
-    {
-    }
+    public DoctorExcelDownloadDto() { }
 }

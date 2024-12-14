@@ -12,29 +12,30 @@
 @inject ICountryAppService CountryAppService
 
 <SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@(() => NewCity = new CityCreateDto())"></DialogEvents>
     <DialogTemplates>
         <Header>@L["NewCity"]</Header>
         <Content>
             <SfDataForm ID="NewCityForm"
-                        EditContext="@NewCityEditContext"
+                        Model="@NewCity"
                         ButtonsAlignment="FormButtonsAlignment.Right"
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <FluentValidationValidator Validator="@NewCityValidator"></FluentValidationValidator>
+                    <DataAnnotationsValidator/>
                 </FormValidator>
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
                         <SfTextBox @bind-Value="@NewCity.Name"
-                                   Placeholder="@L["City"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>  
-                                   
-                                   <SfDropDownList TValue="Guid" @bind-Value="@NewCity.CountryId"
-                                TItem="CountryDto" Placeholder="@L["Country"]"
-                                DataSource="@CountryList" AllowFiltering EnableVirtualization
-                                ShowClearButton PopupHeight="300px">
+                                   Placeholder="@L["City"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                        <SfDropDownList TValue="Guid" @bind-Value="@NewCity.CountryId"
+                                        TItem="CountryDto" Placeholder="@L["Country"]"
+                                        DataSource="@CountryList" AllowFiltering EnableVirtualization
+                                        ShowClearButton PopupHeight="300px">
                             <DropDownListEvents TItem="CountryDto" TValue="Guid"></DropDownListEvents>
-                    <DropDownListFieldSettings Text="Name" Value="Id"/>
-                </SfDropDownList>
+                            <DropDownListFieldSettings Text="Name" Value="Id"/>
+                        </SfDropDownList>
 
                     </div>
                 </FormTemplate>
@@ -51,15 +52,12 @@
 
 @code {
 
-    [Parameter] public EventCallback<CityCreateDto> OnValidSaveAsync { get; set; }
+    [Parameter]
+    public EventCallback<CityCreateDto> OnValidSaveAsync { get; set; }
 
     private SfDialog Dialog { get; set; } = null!;
 
-    private EditContext NewCityEditContext { get; set; } = null!;
-
     private CityCreateDto NewCity { get; set; } = new();
-
-    private CityCreateDtoValidator NewCityValidator { get; set; } = null!;
 
     private IReadOnlyList<CountryDto> CountryList { get; set; } = [];
 
@@ -69,21 +67,10 @@
         await HideAsync();
     }
 
-    public async Task ShowAsync()
-    {
-        NewCityEditContext = new EditContext(NewCity);       
-        await Dialog.ShowAsync();
-    }
+    public async Task ShowAsync() => await Dialog.ShowAsync();
 
-    public async Task HideAsync()
-    {
-        NewCity = new CityCreateDto();
-        await Dialog.HideAsync();
-    }
+    public async Task HideAsync() => await Dialog.HideAsync();
 
-    protected override async Task OnInitializedAsync()
-    {
-        CountryList = await CountryAppService.GetListAsync();
-    }
-    
+    protected override async Task OnInitializedAsync() => CountryList = await CountryAppService.GetListAsync(new GetCountriesInput());
+
 }

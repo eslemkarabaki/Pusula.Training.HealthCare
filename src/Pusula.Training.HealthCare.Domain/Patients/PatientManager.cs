@@ -11,7 +11,6 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public class PatientManager(
     IPatientRepository patientRepository,
-    IPatientNoteRepository patientNoteRepository,
     AddressManager addressManager,
     PatientNoteManager patientNoteManager
 ) : DomainService

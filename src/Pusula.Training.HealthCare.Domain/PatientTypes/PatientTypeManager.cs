@@ -16,7 +16,7 @@ public class PatientTypeManager(IPatientTypeRepository patientTypeRepository) : 
     public async Task<PatientType> UpdateAsync(Guid id, string name, string? concurrencyStamp = null)
     {
         var patientType = await patientTypeRepository.GetAsync(id);
-        patientType.Set(name);
+        patientType.SetName(name);
         patientType.SetConcurrencyStampIfNotNull(concurrencyStamp);
         return await patientTypeRepository.UpdateAsync(patientType);
     }

@@ -69,7 +69,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<PatientNoteDto, PatientNoteCreateDto>();
 
         CreateMap<PatientType, PatientTypeDto>();
-        CreateMap<ProtocolTypes.ProtocolType, ProtocolTypeDto>();
+        CreateMap<ProtocolType, ProtocolTypeDto>();
         CreateMap<ProtocolTypeDto, ProtocolTypeUpdateDto>();
         CreateMap<ProtocolTypeWithNavigationProperties, ProtocolTypeWithNavigationPropertiesDto>();
 
@@ -95,7 +95,6 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 
         CreateMap<Protocol, ProtocolDto>();
         CreateMap<Protocol, ProtocolExcelDto>();
-        CreateMap<ProtocolDto, ProtocolUpdateDto>();
         CreateMap<ProtocolWithNavigationProperties, ProtocolWithNavigationPropertiesDto>();
         CreateMap<Department, DepartmentDto>();
         CreateMap<Department, DepartmentExcelDto>();

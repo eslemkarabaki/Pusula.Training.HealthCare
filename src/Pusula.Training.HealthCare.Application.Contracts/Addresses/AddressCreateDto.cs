@@ -2,14 +2,16 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Pusula.Training.HealthCare.DataAnnotations;
 using Pusula.Training.HealthCare.Districts;
+using Volo.Abp.Application.Dtos;
 
 namespace Pusula.Training.HealthCare.Addresses;
 
-public class AddressCreateDto
+public class AddressCreateDto : EntityDto<Guid>
 {
-    public Guid Id { get; set; }
+    [Required]
+    [NotEmptyGuid]
+    public Guid DistrictId { get; set; }
 
-    [Required] [NotEmptyGuid] public Guid DistrictId { get; set; }
     public DistrictDto District { get; set; } = new();
 
     [Required]

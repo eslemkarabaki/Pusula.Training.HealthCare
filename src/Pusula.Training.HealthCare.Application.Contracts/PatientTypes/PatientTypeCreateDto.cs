@@ -1,9 +1,10 @@
-using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pusula.Training.HealthCare.PatientTypes;
 
 public class PatientTypeCreateDto
 {
-    public Guid Id { get; set; }
+    [Required]
+    [StringLength(PatientTypeContst.NameMaxLength)]
     public string Name { get; set; } = null!;
 }

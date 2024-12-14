@@ -26,7 +26,7 @@ public class DoctorConfigurations : IEntityTypeConfiguration<Doctor>
             .IsRequired()
             .HasMaxLength(DoctorConsts.LastNameMaxLength);
         b.Property(x => x.FullName).HasColumnName(nameof(Doctor.FullName));
-        b.Property(x => x.WorkingHours).HasColumnName(nameof(Doctor.WorkingHours)).IsRequired();
+        b.Property(x => x.AppointmentTime).HasColumnName(nameof(Doctor.AppointmentTime)).IsRequired();
         b
             .HasOne<Title>()
             .WithMany()

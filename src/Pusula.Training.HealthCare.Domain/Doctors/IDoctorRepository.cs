@@ -10,10 +10,8 @@ public interface IDoctorRepository : IRepository<Doctor, Guid>
 {
     Task DeleteAllAsync(
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
         string? fullname = null,
-        int? workingHours = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -22,10 +20,8 @@ public interface IDoctorRepository : IRepository<Doctor, Guid>
 
     Task<List<Doctor>> GetListAsync(
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
         string? fullname = null,
-        int? workingHours = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -37,10 +33,8 @@ public interface IDoctorRepository : IRepository<Doctor, Guid>
 
     Task<List<DoctorWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
         string? fullname = null,
-        int? workingHours = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -52,10 +46,8 @@ public interface IDoctorRepository : IRepository<Doctor, Guid>
 
     Task<long> GetCountAsync(
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
         string? fullname = null,
-        int? workingHours = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,

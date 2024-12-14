@@ -16,14 +16,21 @@ public class DoctorCreateDto
     public string LastName { get; set; } = null!;
 
     [Required]
-    [Range(DoctorConsts.WorkingHoursMin, DoctorConsts.WorkingHoursMax)]
-    public int WorkingHours { get; set; }
+    [Range(DoctorConsts.AppointmentTimeMin, DoctorConsts.AppointmentTimeMax)]
+    public int AppointmentTime { get; set; }
 
-    [Required] public Guid? TitleId { get; set; }
+    [Required]
+    [NotEmptyGuid]
+    public Guid? TitleId { get; set; }
 
-    [Required]public Guid? DepartmentId { get; set; }
+    [Required]
+    [NotEmptyGuid]
+    public Guid? DepartmentId { get; set; }
 
-    [Required] public Guid? HospitalId { get; set; }
+    [Required]
+    [NotEmptyGuid]
+    public Guid? HospitalId { get; set; }
 
-    [Required] public IdentityUserCreateDto User { get; set; } = new();
+    [Required]
+    public IdentityUserCreateDto User { get; set; } = new();
 }

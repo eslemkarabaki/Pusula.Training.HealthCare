@@ -17,7 +17,7 @@ namespace Pusula.Training.HealthCare.Controllers.Doctors;
 [Area("app")]
 [ControllerName("Doctor")]
 [Route("api/app/doctors")]
-public class DoctorController : HealthCareController, IDoctorAppService
+public class DoctorController : HealthCareController
 {
     private readonly IDoctorAppService _doctorAppService;
 
@@ -37,6 +37,7 @@ public class DoctorController : HealthCareController, IDoctorAppService
     public virtual Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input) =>
         _doctorAppService.GetListAsync(input);
 
+    [HttpGet("all/with-navigation-properties")]
     public async Task<PagedResultDto<DoctorWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
         GetDoctorsInput input
     ) =>

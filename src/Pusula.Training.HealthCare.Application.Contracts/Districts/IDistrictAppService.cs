@@ -10,11 +10,8 @@ namespace Pusula.Training.HealthCare.Districts;
 public interface IDistrictAppService : IApplicationService
 {
     Task<DistrictDto> GetAsync(Guid id);
-    Task<CityDto> GetCityAsync(Guid districtId);
 
-    Task<List<DistrictDto>> GetListWithDetailsAsync();
-    Task<List<DistrictDto>> GetListWithDetailsAsync(Guid cityId);
-    Task<PagedResultDto<DistrictDto>> GetListWithDetailsAsync(GetDistrictsInput input);
+    Task<List<DistrictDto>> GetListWithDetailsAsync(GetDistrictsInput input);
 
     Task<DistrictDto> CreateAsync(DistrictCreateDto input);
 

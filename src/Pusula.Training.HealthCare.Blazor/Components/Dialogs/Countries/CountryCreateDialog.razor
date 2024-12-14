@@ -12,13 +12,12 @@
         <Header>@L["NewCountry"]</Header>
         <Content>
             <SfDataForm ID="NewCountryForm"
-                        EditContext="@NewCountryEditContext"
+                        Model="@NewCountry"
                         ButtonsAlignment="FormButtonsAlignment.Right"
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <FluentValidationValidator
-                        Validator="@NewCountryValidator"></FluentValidationValidator>
+                    <DataAnnotationsValidator/>
                 </FormValidator>
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
@@ -49,11 +48,7 @@
 
     private SfDialog Dialog { get; set; } = null!;
 
-    private EditContext NewCountryEditContext { get; set; } = null!;
-
     private CountryCreateDto NewCountry { get; set; } = new();
-
-    private CountryCreateDtoValidator NewCountryValidator { get; set; } = null!;
 
     private async Task OnSaveClickAsync(EditContext context)
     {
@@ -61,16 +56,8 @@
         await HideAsync();
     }
 
-    public async Task ShowAsync()
-    {
-        NewCountryEditContext = new EditContext(NewCountry);
-        await Dialog.ShowAsync();
-    }
+    public async Task ShowAsync() => await Dialog.ShowAsync();
 
-    public async Task HideAsync()
-    {
-        NewCountry = new CountryCreateDto();
-        await Dialog.HideAsync();
-    }
+    public async Task HideAsync() => await Dialog.HideAsync();
 
 }
