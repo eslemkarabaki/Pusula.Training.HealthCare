@@ -15,6 +15,7 @@
 @using Syncfusion.Blazor.Navigations
 @using Syncfusion.Blazor.Notifications
 @using Syncfusion.Blazor.Popups
+@using Blazored.FluentValidation
 
 @inherits HealthCareComponentBase
 
@@ -35,7 +36,7 @@
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Inline">
                 <FormValidator>
-                    <DataAnnotationsValidator/>
+                    <FluentValidationValidator Validator="@PatientCreateValidator"></FluentValidationValidator>
                 </FormValidator>
                 <FormTemplate>
                     <SfTab HeaderPlacement="HeaderPosition.Left" LoadOn="ContentLoad.Init" CssClass="e-fill">
@@ -434,6 +435,8 @@
     [Parameter]
     public EventCallback<PatientDto> PatientCreatedAsync { get; set; }
 
+    private PatientCreateDtoValidator PatientCreateValidator { get; set; } = new();
+    
     private SfDialog Dialog { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> PatientCountryListAutoComplete { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> AddressCountryListAutoComplete { get; set; } = null!;

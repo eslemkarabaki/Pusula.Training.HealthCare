@@ -35,7 +35,7 @@
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <DataAnnotationsValidator/>
+                    <FluentValidationValidator Validator="@PatientUpdateValidator"/>
                 </FormValidator>
                 <FormTemplate>
                     <SfTab HeaderPlacement="HeaderPosition.Left" LoadOn="ContentLoad.Init" CssClass="e-fill">
@@ -432,6 +432,8 @@
 
     [Parameter]
     public EventCallback<PatientUpdateDto> OnValidSaveAsync { get; set; }
+    
+    private PatientUpdateDtoValidator PatientUpdateValidator { get; set; } = new();
 
     private SfDialog Dialog { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> PatientCountryListAutoComplete { get; set; } = null!;
