@@ -71,11 +71,9 @@ public partial class Appointments
     {
         var categoryColor = args.Data.Status switch
         {
-            EnumStatus.Scheduled   => "#FFD700",
-            EnumStatus.Completed   => "#32CD32",
-            EnumStatus.Cancelled   => "#FF6347",
-            EnumStatus.NoShow      => "#A9A9A9",
-            EnumStatus.Rescheduled => "#1E90FF",
+            EnumAppointmentStatus.Scheduled   => "#FFD700",
+            EnumAppointmentStatus.Completed   => "#32CD32",
+            EnumAppointmentStatus.Cancelled   => "#FF6347",         
             _                      => "#FFFFFF"
         };
 
@@ -120,7 +118,14 @@ public partial class Appointments
     private void CancelScheduleEvent(CellClickEventArgs args) => args.Cancel = true;
     private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;
 
-#region Patient Creation
+    public string SelectedPatient { get; set; }
+
+    public void PatientIdChanged(SelectEventArgs<LookupDto<Guid>> args)
+    {
+        SelectedPatient = args.ItemData.DisplayName;
+    }
+
+    #region Patient Creation
 
     private PatientCreateDialog CreatePatientDialog { get; set; } = null!;
 
@@ -178,7 +183,9 @@ public partial class Appointments
         AppointmentCreateDto = new AppointmentCreateDto()
         {
             StartTime = args?.StartTime ?? DateTime.Today,
-            EndTime = args?.EndTime ?? DateTime.Today
+            EndTime = args?.EndTime ?? DateTime.Today,
+            DepartmentId = SelectedDepartmentId,
+            DoctorId = SelectedDoctorId,
         };
         AppointmentCreateContext = new EditContext(AppointmentCreateDto);
     }
@@ -196,6 +203,7 @@ public partial class Appointments
     {
         EditingAppointmentId = args.Event.Id;
         ObjectMapper.Map(args.Event, AppointmentUpdateDto);
+        SelectedPatient = (await PatientAppService.GetAsync(AppointmentUpdateDto.PatientId)).FullName;
         await UpdateAppointmentDialog.ShowAsync();
         
     }

@@ -6,7 +6,6 @@ using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Permissions;
-using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
@@ -228,7 +227,7 @@ public class AppointmentsAppService(
 
     #endregion
 
-    #region GetListAsExcelFile
+#region GetListAsExcelFile
 
     [AllowAnonymous]
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(AppointmentExcelDownloadDto input)
@@ -264,7 +263,7 @@ public class AppointmentsAppService(
         );
     }
 
-#endregion
+    #endregion    
 
 #region DeleteById
 

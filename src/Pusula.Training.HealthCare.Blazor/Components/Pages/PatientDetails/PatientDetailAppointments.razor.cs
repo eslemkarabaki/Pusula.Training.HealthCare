@@ -14,6 +14,7 @@ using Syncfusion.Blazor.Popups;
 using Pusula.Training.HealthCare.Shared;
 using System.Linq.Dynamic.Core;
 using Pusula.Training.HealthCare.AppointmentTypes;
+using Microsoft.AspNetCore.Components;
 
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
@@ -21,17 +22,16 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
     public partial class PatientDetailAppointments
     {
 
+    [Parameter] public int PatientNo { get; set; }
+    [CascadingParameter] private PatientWithNavigationPropertiesDto Patient { get; set; } = null!;
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
     private DateTime CurrentDate { get; set; } = DateTime.Today;
-    //private GetPatientsInputValidator PatientsInputValidator { get; set; } = new();
     private List<AppointmentDto> AppointmentLists { get; set; } = [];
     private List<DoctorDto> Doctors { get; set; } = [];
     private IReadOnlyList<DepartmentDto> Departments { get; set; } = [];
     private List<AppointmentTypeDto> AppointmentTypes { get; set; } = [];
-    private Guid SelectedPatientId { get; set; }
     private Guid SelectedDepartmentId { get; set; }
     private Guid SelectedDoctorId { get; set; }
-    //private IReadOnlyList<LookupDto<Guid>> Patients { get; set; } = [];
     private SfAutoComplete<Guid, LookupDto<Guid>> refAutoComplatePatient { get; set; }
     private SfAutoComplete<Guid, DepartmentDto> refAutoComplateDepartment { get; set; }
     private bool valueSelected => SelectedDepartmentId != Guid.Empty && SelectedDoctorId != Guid.Empty;
@@ -75,27 +75,15 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
     {
         var categoryColor = args.Data.Status switch
         {
-            EnumStatus.Scheduled => "#FFD700",
-            EnumStatus.Completed => "#32CD32",
-            EnumStatus.Cancelled => "#FF6347",
-            EnumStatus.NoShow => "#A9A9A9",
-            EnumStatus.Rescheduled => "#1E90FF",
+            EnumAppointmentStatus.Scheduled => "#FFD700",
+            EnumAppointmentStatus.Completed => "#32CD32",
+            EnumAppointmentStatus.Cancelled => "#FF6347",         
             _ => "#FFFFFF"
         };
 
         var updatedAttributes = AppointmentHelper.ApplyCategoryColor(categoryColor, args.Attributes);
         args.Attributes = updatedAttributes.ToDictionary(entry => entry.Key, entry => entry.Value);
-    }
-
-    //protected async Task GetPatientFilter(FilteringEventArgs args)
-    //{
-    //    args.PreventDefaultAction = true;
-    //    var filter = new LookupRequestDto { Filter = args.Text };
-    //    var patients = await AppointmentsAppService.GetPatientLookupAsync(filter);
-    //    Patients = patients.Items;
-    //    await refAutoComplatePatient.FilterAsync(Patients);
-    //    await InvokeAsync(StateHasChanged);
-    //}
+    }   
 
     protected override async Task OnInitializedAsync()
     {
@@ -122,23 +110,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
         AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
 
     private void CancelScheduleEvent(CellClickEventArgs args) => args.Cancel = true;
-    private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;
-
-    #region Patient Creation
-
-    //private PatientCreateDialog CreatePatientDialog { get; set; } = null!;
-
-    //private async Task OpenCreatePatientDialogAsync() => await CreatePatientDialog.ShowAsync();
-    //private PatientDto? CreatedPatient { get; set; }
-
-    //private async Task PatientCreatedAsync(PatientDto createdPatient)
-    //{
-    //    CreatedPatient = createdPatient;
-    //    AppointmentCreateDto.PatientId = createdPatient.Id;
-    //    await Task.CompletedTask;
-    //}
-
-    #endregion
+    private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;    
 
     #region Create
 
@@ -160,9 +132,9 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
 
     private async Task CreateAppointmentAsync()
     {
-        //try
-        //{
-            AppointmentCreateDto.PatientId = SelectedPatientId;
+        try
+        {
+            AppointmentCreateDto.PatientId=Patient.Patient.Id;
             AppointmentCreateDto.DepartmentId = SelectedDepartmentId;
             AppointmentCreateDto.DoctorId = SelectedDoctorId;
             if (AppointmentCreateContext.Validate())
@@ -171,11 +143,11 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
                 await GetAppointmentsAsync();
                 await CloseCreateAppointmentDialogAsync();
             }
-        //}
-        //catch (Exception ex)
-        //{
-        //    await HandleErrorAsync(ex);
-        //}
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     private void SetDefaultsForCreateDto(CellClickEventArgs? args = null)
@@ -200,7 +172,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
     private async Task OpenUpdateAppointmentDialogAsync(EventClickArgs<AppointmentDto> args)
     {
         EditingAppointmentId = args.Event.Id;
-        //ObjectMapper.Map(args.Event, AppointmentUpdateDto);
+        ObjectMapper.Map(args.Event, AppointmentUpdateDto);
         await UpdateAppointmentDialog.ShowAsync();
 
     }
@@ -213,19 +185,19 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
 
     private async Task UpdateAppointmentAsync()
     {
-        //try
-        //{
+        try
+        {
             if (AppointmentUpdateContext.Validate())
             {
                 await AppointmentsAppService.UpdateAsync(EditingAppointmentId, AppointmentUpdateDto);
                 await GetAppointmentsAsync();
                 await CloseUpdateAppointmentDialogAsync();
             }
-        //}
-        //catch (Exception ex)
-        //{
-        //    await HandleErrorAsync(ex);
-        //}
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     private void SetDefaultsForUpdateDto()

@@ -19,7 +19,7 @@ namespace Pusula.Training.HealthCare.Appointments
             Guid appointmentTypeId,Guid departmentId, 
             Guid doctorId, Guid patientId, 
             DateTime startTime, DateTime endTime,
-            EnumStatus status, string? note = null)
+            EnumAppointmentStatus status, string? note = null)
         {           
 
             var appointment = new Appointment(
@@ -35,7 +35,7 @@ namespace Pusula.Training.HealthCare.Appointments
             Guid appointmentTypeId, Guid departmentId,
             Guid doctorId, Guid patientId,
             DateTime startTime, DateTime endTime,
-            EnumStatus status, string? note = null, 
+            EnumAppointmentStatus status, string? note = null, 
             [CanBeNull] string? concurrencyStamp = null)
         {           
             var appointment = await appointmentRepository.GetAsync(id);
