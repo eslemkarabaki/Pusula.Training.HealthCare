@@ -37,6 +37,7 @@ public class DoctorController : HealthCareController
     public virtual Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input) =>
         _doctorAppService.GetListAsync(input);
 
+    [HttpGet("all/with-navigation-properties")]
     public async Task<PagedResultDto<DoctorWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
         GetDoctorsInput input
     ) =>
