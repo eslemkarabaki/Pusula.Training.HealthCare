@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y curl && \
 
 COPY . .
 
-RUN dotnet tool install -g Volo.Abp.Cli --version 9.0.*
+RUN dotnet tool install -g Volo.Abp.Cli --version 8.0.*
 ENV PATH="$PATH:/root/.dotnet/tools"
 
 RUN abp install-libs
