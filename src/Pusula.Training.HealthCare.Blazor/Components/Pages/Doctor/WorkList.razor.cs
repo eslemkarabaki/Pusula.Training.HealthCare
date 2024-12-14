@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Pusula.Training.HealthCare.Protocols;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Medical;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Doctor;
 
 public partial class WorkList
 {
     private IReadOnlyList<ProtocolDto> DoctorWorkList { get; set; } = [];
     private GetDoctorWorkListInput DoctorWorkListInput { get; set; } = null!;
-    
+
     private readonly DateTime _today;
     private readonly DateTime _tomorrow;
     private readonly DateTime _thisWeekStart;
     private readonly DateTime _thisMonthStart;
-    
+
     public WorkList()
     {
         _today = DateTime.Today;
@@ -42,7 +42,7 @@ public partial class WorkList
         var result = await ProtocolAppService.GetDoctorWorkListWithDetailsAsync(DoctorWorkListInput);
         DoctorWorkList = result.Items;
     }
-    
+
     protected virtual async Task SearchAsync()
     {
         await GetDoctorWorkListAsync();

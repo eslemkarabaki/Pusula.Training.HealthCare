@@ -30,6 +30,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetExaminationsPermissions(myGroup);
         SetRadiologyPermissions(myGroup); 
         SetPatientNotesPermissions(myGroup);
+        SetDoctorWorkListPermissions(myGroup);
 
         var appointmentPermission =
             myGroup.AddPermission(HealthCarePermissions.Appointments.Default, L("Permission:Appointments"));
@@ -269,6 +270,12 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.PatientNotes.Create, L("Permission:Create"));
         permission.AddChild(HealthCarePermissions.PatientNotes.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.PatientNotes.Delete, L("Permission:Delete"));
+    }
+    private void SetDoctorWorkListPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.DoctorWorkList.Default, L("Permission:DoctorWorkList")
+        );
     }
 
     #region StandardPermissions

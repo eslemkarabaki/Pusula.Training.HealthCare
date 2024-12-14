@@ -4,6 +4,8 @@
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.DataForm
 @using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.SplitButtons
+@using SelectionMode = Syncfusion.Blazor.SplitButtons.SelectionMode
 @inherits HealthCareComponentBase
 
 @inject IProtocolAppService ProtocolAppService
@@ -38,6 +40,18 @@
                     </DateRangePickerPresets>
                 </SfDateRangePicker>
 
+                <div class="d-flex align-items-center border-r-6p" style="height: 32px;border: 1px solid var(--material-grey-300);border-left: 6px solid var(--material-blue-500);">
+                    <span class="text-nowrap fs-12p color-black px-2">İş Listesi</span>
+                    <SfButtonGroup Mode="SelectionMode.Multiple">
+                        <ButtonGroupButton IconCss="far fa-hourglass" CssClass="e-flat e-primary"  Selected="@DoctorWorkListInput.HasStatus(EnumProtocolStatus.Waiting)"
+                                           @onclick="@(() => DoctorWorkListInput.ToggleStatus(EnumProtocolStatus.Waiting))"/>
+                        <ButtonGroupButton IconCss="fas fa-cog"  CssClass="e-flat e-primary"  Selected="@DoctorWorkListInput.HasStatus(EnumProtocolStatus.InProgress)"
+                                           @onclick="@(() => DoctorWorkListInput.ToggleStatus(EnumProtocolStatus.InProgress))"/>
+                        <ButtonGroupButton IconCss="fas fa-check"  CssClass="e-flat e-primary"  Selected="@DoctorWorkListInput.HasStatus(EnumProtocolStatus.Completed)"
+                                           @onclick="@(() => DoctorWorkListInput.ToggleStatus(EnumProtocolStatus.Completed))"/>
+                    </SfButtonGroup>
+                </div>
+
                 <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
             </div>
         </FormTemplate>
@@ -45,14 +59,15 @@
     </SfDataForm>
 </div>
 
-<SfGrid TValue="ProtocolDto" Height="100%" Width="100%" DataSource="@DoctorWorkList" EnableHover EnableStickyHeader AllowPaging="false"
+<SfGrid TValue="ProtocolDto" Height="100%" Width="100%" DataSource="@DoctorWorkList" EnableHover EnableStickyHeader
+        AllowPaging="false"
         EnableVirtualMaskRow>
     <GridColumns>
         <GridColumn HeaderText="@L["Gender"]" AutoFit>
             <Template>
                 @{
                     var dto = (context as ProtocolDto)!;
-                    <PatientGenderIcon Gender="@dto.Patient.Gender" />
+                    <PatientGenderIcon Gender="@dto.Patient.Gender"/>
                 }
             </Template>
         </GridColumn>
@@ -64,7 +79,7 @@
                 }
             </Template>
         </GridColumn>
-        <GridColumn HeaderText="@L["Patient"]" >
+        <GridColumn HeaderText="@L["Patient"]">
             <Template>
                 @{
                     var dto = (context as ProtocolDto)!;

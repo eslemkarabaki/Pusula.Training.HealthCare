@@ -49,6 +49,16 @@ public class HealthCareMenuContributor : IMenuContributor
         context.Menu.AddItem(
             new ApplicationMenuItem(
                 HealthCareMenus.Doctors,
+                l["Menu:Doctor:WorkList"],
+                "/doctor/work-list",
+                "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.DoctorWorkList.Default
+            )
+        );
+        
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Doctors,
                 l["Menu:Doctors"],
                 "/doctors",
                 "fa fa-file-alt",

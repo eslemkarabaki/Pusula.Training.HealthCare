@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,10 +38,10 @@ public interface IProtocolRepository : IRepository<Protocol, Guid>
         int skipCount = 0,
         CancellationToken cancellationToken = default
     );
-    
+
     Task<List<Protocol>> GetDoctorWorkListWithDetailsAsync(
-        Guid? userId = null,
-        EnumProtocolStatus status = EnumProtocolStatus.None,
+        Guid userId,
+        ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
         string? sorting = null,
@@ -48,7 +49,7 @@ public interface IProtocolRepository : IRepository<Protocol, Guid>
         int skipCount = 0,
         CancellationToken cancellationToken = default
     );
-    
+
     Task<long> GetCountAsync(
         Guid? patientId = null,
         Guid? doctorId = null,
@@ -60,10 +61,10 @@ public interface IProtocolRepository : IRepository<Protocol, Guid>
         DateTime? endTime = null,
         CancellationToken cancellationToken = default
     );
-    
+
     Task<long> GetCountForDoctorWorkListAsync(
-        Guid? userId = null,
-        EnumProtocolStatus status = EnumProtocolStatus.None,
+        Guid userId,
+        ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
         CancellationToken cancellationToken = default

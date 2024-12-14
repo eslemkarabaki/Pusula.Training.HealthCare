@@ -18,7 +18,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
 using Volo.Abp.BlazoriseUI.Components;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Medical;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Doctor;
 
 public partial class Examinations
 {
