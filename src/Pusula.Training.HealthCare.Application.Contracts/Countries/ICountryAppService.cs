@@ -11,8 +11,7 @@ public interface ICountryAppService : IApplicationService
     Task<CountryDto> GetAsync(Guid id);
     Task<CountryDto> GetCurrentAsync();
 
-    Task<List<CountryDto>> GetListAsync();
-    Task<PagedResultDto<CountryDto>> GetListAsync(GetCountriesInput input);
+    Task<List<CountryDto>> GetListAsync(GetCountriesInput input);
 
     Task<CountryDto> CreateAsync(CountryCreateDto input);
 

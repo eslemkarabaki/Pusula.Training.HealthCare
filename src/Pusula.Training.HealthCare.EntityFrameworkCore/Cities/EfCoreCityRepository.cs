@@ -71,8 +71,8 @@ public class EfCoreCityRepository(IDbContextProvider<HealthCareDbContext> dbCont
         Guid? countryId = null
     ) =>
         query
-            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Name!.Contains(filterText!))
-            .WhereIf(!string.IsNullOrWhiteSpace(name), e => e.Name.Contains(name!))
+            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => EF.Functions.ILike(e.Name, filterText!))
+            .WhereIf(!string.IsNullOrWhiteSpace(name), e => EF.Functions.ILike(e.Name, name!))
             .WhereIf(countryId.HasValue, e => e.CountryId == countryId!.Value);
 
     protected virtual string GetSorting(string? sorting, bool withEntityName) =>

@@ -5,22 +5,14 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.PatientTypes;
 
-public sealed class PatientType : FullAuditedAggregateRoot<Guid>
+public class PatientType : FullAuditedAggregateRoot<Guid>
 {
     public string Name { get; private set; }
 
-    private PatientType()
-    {
-        Name = string.Empty;
-    }
+    protected PatientType() => Name = string.Empty;
 
-    internal PatientType(Guid id, string name) : base(id)
-    {
-        Set(name);
-    }
+    public PatientType(Guid id, string name) : base(id) => SetName(name);
 
-    internal void Set(string name)
-    {
+    public void SetName(string name) =>
         Name = Check.NotNullOrWhiteSpace(name, nameof(name), PatientTypeContst.NameMaxLength);
-    }
 }

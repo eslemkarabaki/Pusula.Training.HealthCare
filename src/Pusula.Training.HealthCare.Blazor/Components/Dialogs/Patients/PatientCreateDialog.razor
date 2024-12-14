@@ -431,7 +431,8 @@
 
 @code {
 
-    [Parameter] public EventCallback<PatientDto> PatientCreatedAsync { get; set; }
+    [Parameter]
+    public EventCallback<PatientDto> PatientCreatedAsync { get; set; }
 
     private SfDialog Dialog { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> PatientCountryListAutoComplete { get; set; } = null!;
@@ -472,7 +473,7 @@
     {
         SetDefaultValuesForDialog();
         PatientTypeList = await PatientTypeAppService.GetListAsync();
-        CountryList = await CountryAppService.GetListAsync();
+        CountryList = await CountryAppService.GetListAsync(new GetCountriesInput());
         CurrentCountry = await AppDefaultAppService.GetCurrentCountryAsync();
     }
 
@@ -537,14 +538,14 @@
         SetDefaultsForAddress();
         SetDefaultsForNote();
     }
-    
+
     private void SetDefaultsForPatient() =>
         NewPatient = new PatientCreateDto
         {
             CountryId = CurrentCountry.Id,
             MobilePhoneNumberCode = CurrentCountry.PhoneCode
         };
-    
+
 #region Address
 
     private AddressCreateDto NewAddress { get; set; } = new();
@@ -595,7 +596,7 @@
         SelectedAddressCountryId = countryId;
         SelectedAddressCityId = Guid.Empty;
         NewAddress.DistrictId = Guid.Empty;
-        CityList = await CityAppService.GetListWithDetailsAsync(countryId);
+        CityList = await CityAppService.GetListWithDetailsAsync(new GetCitiesInput() { CountryId = countryId });
         DistrictList = [];
     }
 
@@ -603,7 +604,7 @@
     {
         SelectedAddressCityId = cityId;
         NewAddress.DistrictId = Guid.Empty;
-        DistrictList = await DistrictAppService.GetListWithDetailsAsync(cityId);
+        DistrictList = await DistrictAppService.GetListWithDetailsAsync(new GetDistrictsInput() { CityId = cityId });
     }
 
     private void SetDefaultsForAddress()
@@ -615,6 +616,7 @@
         CityList = [];
         DistrictList = [];
     }
+
 #endregion
 
 #region Note
@@ -667,5 +669,7 @@
         NoteEditingMode = false;
         NewNote = new PatientNoteCreateDto();
     }
+
 #endregion
+
 }

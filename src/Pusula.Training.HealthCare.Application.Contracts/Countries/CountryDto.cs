@@ -4,7 +4,7 @@ using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.Countries;
 
-public class CountryDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
+public class CountryDto : EntityDto<Guid>, IHasConcurrencyStamp
 {
     public string Name { get; set; } = null!;
     public string Iso { get; set; } = null!;

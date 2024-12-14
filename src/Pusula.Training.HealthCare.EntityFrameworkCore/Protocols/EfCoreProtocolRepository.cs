@@ -34,8 +34,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
                   startTime, endTime
               )
               .OrderBy(GetSorting(sorting, false))
-              .Skip(skipCount)
-              .Take(maxResultCount)
+              .PageBy(skipCount, maxResultCount)
               .ToListAsync(GetCancellationToken(cancellationToken));
 
     public async Task<List<Protocol>> GetListWithDetailsAsync(
@@ -57,8 +56,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
                   startTime, endTime
               )
               .OrderBy(GetSorting(sorting, false))
-              .Skip(skipCount)
-              .Take(maxResultCount)
+              .PageBy(skipCount, maxResultCount)
               .ToListAsync(GetCancellationToken(cancellationToken));
 
     public async Task<long> GetCountAsync(

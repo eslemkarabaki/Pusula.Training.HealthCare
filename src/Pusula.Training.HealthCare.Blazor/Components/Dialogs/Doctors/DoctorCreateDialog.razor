@@ -18,6 +18,7 @@
 @inject IHospitalsAppService HospitalsAppService
 
 <SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultValuesForDialog"></DialogEvents>
     <DialogTemplates>
         <Header>@L["NewDoctor"]</Header>
         <Content>
@@ -40,7 +41,7 @@
                                 <DropDownListFieldSettings Value="Id" Text="Name"/>
                             </SfDropDownList>
                         </div>
-                        
+
                         <div>
                             <label class="e-form-label">@L["Department"]</label>
                             <SfDropDownList TItem="DepartmentDto" TValue="Guid?"
@@ -64,7 +65,7 @@
                             <div class="col">
                                 <label class="e-form-label">@L["FirstName"]</label>
                                 <SfTextBox @bind-Value="@NewDoctor.FirstName"
-                                           Placeholder="@L["FirstName"]" ></SfTextBox>
+                                           Placeholder="@L["FirstName"]"></SfTextBox>
                             </div>
                             <div class="col">
                                 <label class="e-form-label">@L["LastName"]</label>
@@ -74,9 +75,11 @@
                         </div>
 
                         <div>
-                            <label class="e-form-label">@L["WorkingHours"]</label>
-                            <SfNumericTextBox @bind-Value="@NewDoctor.WorkingHours"
-                                       Placeholder="@L["WorkingHours"]" Min="@DoctorConsts.WorkingHoursMin" Max="@DoctorConsts.WorkingHoursMax" Step="@DoctorConsts.WorkingHoursMin"></SfNumericTextBox>
+                            <label class="e-form-label">@L["AppointmentTime"]</label>
+                            <SfNumericTextBox @bind-Value="@NewDoctor.AppointmentTime"
+                                              Placeholder="@L["WorkingHours"]" Min="@DoctorConsts.AppointmentTimeMin"
+                                              Max="@DoctorConsts.AppointmentTimeMax"
+                                              Step="@DoctorConsts.AppointmentTimeMin"></SfNumericTextBox>
                         </div>
 
                         <div>

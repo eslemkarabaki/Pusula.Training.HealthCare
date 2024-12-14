@@ -82,11 +82,11 @@
                 }
             </Template>
         </GridColumn>
-        <GridColumn HeaderText="@L["WorkingHours"]" AutoFit>
+        <GridColumn HeaderText="@L["AppointmentTime"]" AutoFit>
             <Template>
                 @{
                     var dto = (context as DoctorWithNavigationPropertiesDto)!;
-                    @dto.Doctor.WorkingHours
+                    @dto.Doctor.AppointmentTime
                 }
             </Template>
         </GridColumn>

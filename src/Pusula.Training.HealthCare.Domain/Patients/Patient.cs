@@ -10,7 +10,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Patients;
 
-public sealed class Patient : FullAuditedAggregateRoot<Guid>, IPatient
+public class Patient : FullAuditedAggregateRoot<Guid>
 {
     public int No { get; private set; }
     public string FirstName { get; private set; }

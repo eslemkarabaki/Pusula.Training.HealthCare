@@ -16,30 +16,30 @@
 
 <SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
-        <Header>@L["NewDistrict"]</Header>
+        <Header>@L["EditDistrict"]</Header>
         <Content>
             <SfDataForm ID="NewDistrictForm"
-                        EditContext="@EditingDistrictEditContext"
+                        Model="@EditingDistrict"
                         ButtonsAlignment="FormButtonsAlignment.Right"
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <FluentValidationValidator Validator="@EditingDistrictValidator"></FluentValidationValidator>
+                    <DataAnnotationsValidator/>
                 </FormValidator>
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
                         <SfTextBox @bind-Value="@EditingDistrict.Name"
                                    Placeholder="@L["District"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
-                        
-                   <SfDropDownList TValue="Guid?"
-                                TItem="CityDto" Placeholder="@L["City"]"
-                                DataSource="@CityList" AllowFiltering EnableVirtualization
-                                ShowClearButton PopupHeight="300px">
-                            <DropDownListEvents TItem="CityDto" TValue="Guid?"></DropDownListEvents>
-                    <DropDownListFieldSettings Text="Name" Value="Id"/>
-                </SfDropDownList>
 
-                               </div>
+                        <SfDropDownList TValue="Guid?"
+                                        TItem="CityDto" Placeholder="@L["City"]"
+                                        DataSource="@CityList" AllowFiltering EnableVirtualization
+                                        ShowClearButton PopupHeight="300px">
+                            <DropDownListEvents TItem="CityDto" TValue="Guid?"></DropDownListEvents>
+                            <DropDownListFieldSettings Text="Name" Value="Id"/>
+                        </SfDropDownList>
+
+                    </div>
                 </FormTemplate>
                 <FormButtons>
                     <SfButton type="button" CssClass="e-outline"
@@ -54,18 +54,16 @@
 
 @code {
 
-    [Parameter] public EventCallback<DistrictUpdateDto> OnValidSaveAsync { get; set; }
+    [Parameter]
+    public EventCallback<DistrictUpdateDto> OnValidSaveAsync { get; set; }
 
     private SfDialog Dialog { get; set; } = null!;
 
-    private EditContext EditingDistrictEditContext { get; set; } = null!;
-
     private DistrictUpdateDto EditingDistrict { get; set; } = new();
-
-    private DistrictUpdateDtoValidator EditingDistrictValidator { get; set; } = null!;
 
     private IReadOnlyList<CityDto> CityList { get; set; } = [];
 
+    protected override async Task OnInitializedAsync() => CityList = await CityAppService.GetListWithDetailsAsync(new GetCitiesInput());
 
     private async Task OnSaveClickAsync(EditContext context)
     {
@@ -77,19 +75,8 @@
     {
         var city = await DistrictAppService.GetAsync(districtId);
         ObjectMapper.Map(city, EditingDistrict);
-        EditingDistrictEditContext = new EditContext(EditingDistrict);
         await Dialog.ShowAsync();
     }
 
-    public async Task HideAsync()
-    {
-        EditingDistrict = new DistrictUpdateDto();
-        await Dialog.HideAsync();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        CityList = await CityAppService.GetListWithDetailsAsync();
-    }
-
+    public async Task HideAsync() => await Dialog.HideAsync();
 }

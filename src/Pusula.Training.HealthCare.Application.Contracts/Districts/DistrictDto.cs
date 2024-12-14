@@ -5,7 +5,7 @@ using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.Districts;
 
-public class DistrictDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
+public class DistrictDto : EntityDto<Guid>, IHasConcurrencyStamp
 {
     public Guid CityId { get; set; }
     public CityDto City { get; set; } = null!;

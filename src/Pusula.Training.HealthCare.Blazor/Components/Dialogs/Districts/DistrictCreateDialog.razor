@@ -17,12 +17,12 @@
         <Header>@L["NewDistrict"]</Header>
         <Content>
             <SfDataForm ID="NewDistrictForm"
-                        EditContext="@NewDistrictEditContext"
+                        Model="@NewDistrict"
                         ButtonsAlignment="FormButtonsAlignment.Right"
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <FluentValidationValidator Validator="@NewDistrictValidator"></FluentValidationValidator>
+                    <DataAnnotationsValidator/>
                 </FormValidator>
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
@@ -34,7 +34,7 @@
                                         DataSource="@CityList" AllowFiltering EnableVirtualization
                                         ShowClearButton PopupHeight="300px">
                             <DropDownListEvents TItem="CityDto" TValue="Guid"></DropDownListEvents>
-                            <DropDownListFieldSettings Text="Name" Value="Id" />
+                            <DropDownListFieldSettings Text="Name" Value="Id"/>
                         </SfDropDownList>
 
                     </div>
@@ -52,17 +52,16 @@
 
 @code {
 
-    [Parameter] public EventCallback<DistrictCreateDto> OnValidSaveAsync { get; set; }
+    [Parameter]
+    public EventCallback<DistrictCreateDto> OnValidSaveAsync { get; set; }
 
     private SfDialog Dialog { get; set; } = null!;
 
-    private EditContext NewDistrictEditContext { get; set; } = null!;
-
     private DistrictCreateDto NewDistrict { get; set; } = new();
 
-    private DistrictCreateDtoValidator NewDistrictValidator { get; set; } = null!;
-
     private IReadOnlyList<CityDto> CityList { get; set; } = [];
+
+    protected override async Task OnInitializedAsync() => CityList = await CityAppService.GetListWithDetailsAsync(new GetCitiesInput());
 
     private async Task OnSaveClickAsync(EditContext context)
     {
@@ -70,21 +69,8 @@
         await HideAsync();
     }
 
-    public async Task ShowAsync()
-    {
-        NewDistrictEditContext = new EditContext(NewDistrict);
-        await Dialog.ShowAsync();
-    }
+    public async Task ShowAsync() => await Dialog.ShowAsync();
 
-    public async Task HideAsync()
-    {
-        NewDistrict = new DistrictCreateDto();
-        await Dialog.HideAsync();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        CityList = await CityAppService.GetListWithDetailsAsync();
-    }
+    public async Task HideAsync() => await Dialog.HideAsync();
 
 }

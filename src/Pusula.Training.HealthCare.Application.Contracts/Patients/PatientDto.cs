@@ -7,7 +7,7 @@ using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.Patients;
 
-public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IPatient
+public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
 {
     public int No { get; set; }
     public string FirstName { get; set; } = null!;

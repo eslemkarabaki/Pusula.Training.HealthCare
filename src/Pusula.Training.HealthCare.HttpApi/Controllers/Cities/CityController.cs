@@ -19,18 +19,8 @@ public class CityController(ICityAppService cityAppService) : HealthCareControll
     [HttpGet("get/{id:guid}")]
     public async Task<CityDto> GetAsync(Guid id) => await cityAppService.GetAsync(id);
 
-    [HttpGet("get/country/{cityId:guid}")]
-    public async Task<CountryDto> GetCountryAsync(Guid cityId) => await cityAppService.GetCountryAsync(cityId);
-
     [HttpGet("get/all/with-details")]
-    public async Task<List<CityDto>> GetListWithDetailsAsync() => await cityAppService.GetListWithDetailsAsync();
-
-    [HttpGet("get/all/with-details/{countryId:guid}")]
-    public async Task<List<CityDto>> GetListWithDetailsAsync(Guid countryId) =>
-        await cityAppService.GetListWithDetailsAsync(countryId);
-
-    [HttpGet("get/all/with-details/filtered")]
-    public async Task<PagedResultDto<CityDto>> GetListWithDetailsAsync([FromBody] GetCitiesInput input) =>
+    public async Task<List<CityDto>> GetListWithDetailsAsync([FromBody] GetCitiesInput input) =>
         await cityAppService.GetListWithDetailsAsync(input);
 
     [HttpPost]
