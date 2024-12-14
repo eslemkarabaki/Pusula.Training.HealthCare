@@ -18,6 +18,7 @@ RUN dotnet workload restore
 RUN dotnet restore
 
 WORKDIR /src/src/Pusula.Training.HealthCare.Blazor
+COPY wwwroot /app/blazor/wwwroot
 RUN dotnet publish "Pusula.Training.HealthCare.Blazor.csproj" -c Release -o /app/blazor
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
