@@ -16,22 +16,6 @@ public class ProtocolAppService(IProtocolRepository protocolRepository, Protocol
     [Authorize(HealthCarePermissions.Protocols.Delete)]
     public virtual async Task DeleteAsync(Guid id) => await protocolRepository.DeleteAsync(id);
 
-    public async Task<PagedResultDto<ProtocolDto>> GetListAsync(GetProtocolsInput input)
-    {
-        var items = await protocolRepository.GetListAsync(
-            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.Status,
-            input.StartTime, input.EndTime, input.Sorting, input.MaxResultCount, input.SkipCount
-        );
-        var count = await protocolRepository.GetCountAsync(
-            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.Status,
-            input.StartTime, input.EndTime
-        );
-
-        return new PagedResultDto<ProtocolDto>(
-            count, ObjectMapper.Map<List<Protocol>, List<ProtocolDto>>(items)
-        );
-    }
-
     public async Task<PagedResultDto<ProtocolDto>> GetListWithDetailsAsync(GetProtocolsInput input)
     {
         var items = await protocolRepository.GetListWithDetailsAsync(
@@ -59,13 +43,6 @@ public class ProtocolAppService(IProtocolRepository protocolRepository, Protocol
     }
 
     [Authorize(HealthCarePermissions.Protocols.Edit)]
-    public async Task<ProtocolDto> UpdateAsync(Guid id, ProtocolUpdateDto input)
-    {
-        var protocol = await protocolManager.UpdateAsync(id, input.Description, input.Status);
-        return ObjectMapper.Map<Protocol, ProtocolDto>(protocol);
-    }
-
-    [Authorize(HealthCarePermissions.Protocols.Edit)]
     public virtual async Task<ProtocolDto> UpdateDescriptionAsync(Guid id, string? description)
     {
         var protocol = await protocolManager.UpdateDescriptionAsync(id, description);
@@ -85,8 +62,4 @@ public class ProtocolAppService(IProtocolRepository protocolRepository, Protocol
         var protocol = await protocolManager.CompleteAsync(id);
         return ObjectMapper.Map<Protocol, ProtocolDto>(protocol);
     }
-
-    [Authorize(HealthCarePermissions.Protocols.Delete)]
-    public virtual async Task DeleteByIdsAsync(List<Guid> protocolIds) =>
-        await protocolRepository.DeleteManyAsync(protocolIds);
 }

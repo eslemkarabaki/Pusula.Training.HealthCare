@@ -15,19 +15,22 @@ namespace Pusula.Training.HealthCare.Patients;
 public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
     : EfCoreRepository<HealthCareDbContext, Patient, Guid>(dbContextProvider), IPatientRepository
 {
-    public async Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
-        Guid id,
+    public async Task<Patient> GetAsync(
+        Guid? patientId,
+        int? patientNo,
         CancellationToken cancellationToken = default
     ) =>
-        await (await GetQueryForNavigationPropertiesAsync())
-            .FirstOrDefaultAsync(e => e.Patient.Id == id, GetCancellationToken(cancellationToken));
+        await ApplyFilter(await GetQueryableAsync(), patientId, patientNo)
+            .FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
 
     public async Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
-        int patientNo,
+        Guid? patientId,
+        int? patientNo,
         CancellationToken cancellationToken = default
     ) =>
-        await (await GetQueryForNavigationPropertiesAsync())
-            .FirstOrDefaultAsync(e => e.Patient.No == patientNo, GetCancellationToken(cancellationToken));
+        await ApplyFilter(
+                await GetQueryForNavigationPropertiesAsync(), patientId, patientNo)
+            .FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
 
     public virtual async Task<List<Patient>> GetListAsync(
         string? filterText = null,
@@ -236,9 +239,9 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => e.FullName!.Contains(filterText!) ||
-                    e.IdentityNumber!.Contains(filterText!) ||
-                    e.PassportNumber!.Contains(filterText!)
+                e => EF.Functions.ILike(e.FullName, filterText!) ||
+                    EF.Functions.ILike(e.IdentityNumber, filterText!) ||
+                    EF.Functions.ILike(e.PassportNumber, filterText!)
             )
             .WhereIf(
                 no.HasValue, e => e.No == no!.Value
@@ -251,29 +254,39 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
             .WhereIf(birthDateMax.HasValue, e => e.BirthDate <= birthDateMax!.Value)
             .WhereIf(
                 !string.IsNullOrWhiteSpace(identityNumber),
-                e => e.IdentityNumber!.Contains(identityNumber!)
+                e => EF.Functions.ILike(e.IdentityNumber, identityNumber!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(passportNumber),
-                e => e.PassportNumber!.Contains(passportNumber!)
+                e => EF.Functions.ILike(e.PassportNumber, passportNumber!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(emailAddress),
-                e => e.EmailAddress.Contains(emailAddress!)
+                e => EF.Functions.ILike(e.EmailAddress, emailAddress!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(mobilePhoneNumber),
-                e => e.MobilePhoneNumber.Contains(mobilePhoneNumber!)
+                e => EF.Functions.ILike(e.MobilePhoneNumber, mobilePhoneNumber!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(homePhoneNumber),
-                e => e.HomePhoneNumber != null &&
-                    e.HomePhoneNumber.Contains(homePhoneNumber!)
+                e => EF.Functions.ILike(e.HomePhoneNumber, homePhoneNumber!)
             )
             .WhereIf(gender != EnumGender.None, e => e.Gender == gender)
             .WhereIf(bloodType != EnumBloodType.None, e => e.BloodType == bloodType)
             .WhereIf(maritalStatus != EnumMaritalStatus.None, e => e.MaritalStatus == maritalStatus)
             .WhereIf(countryId.HasValue, e => e.CountryId == countryId!.Value);
+
+    protected virtual IQueryable<Patient> ApplyFilter(
+        IQueryable<Patient> query,
+        Guid? id = null,
+        int? no = null
+    ) =>
+        query
+            .WhereIf(id.HasValue, e => e.Id == id)
+            .WhereIf(
+                no.HasValue, e => e.No == no!.Value
+            );
 
     protected virtual IQueryable<PatientWithNavigationProperties> ApplyFilter(
         IQueryable<PatientWithNavigationProperties> query,
@@ -295,9 +308,9 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => e.Patient.FullName!.Contains(filterText!) ||
-                    e.Patient.IdentityNumber!.Contains(filterText!) ||
-                    e.Patient.PassportNumber!.Contains(filterText!)
+                e => EF.Functions.ILike(e.Patient.FullName, filterText!) ||
+                    EF.Functions.ILike(e.Patient.IdentityNumber, filterText!) ||
+                    EF.Functions.ILike(e.Patient.PassportNumber, filterText!)
             )
             .WhereIf(
                 no.HasValue, e => e.Patient.No == no!.Value
@@ -310,29 +323,39 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
             .WhereIf(birthDateMax.HasValue, e => e.Patient.BirthDate <= birthDateMax!.Value)
             .WhereIf(
                 !string.IsNullOrWhiteSpace(identityNumber),
-                e => e.Patient.IdentityNumber!.Contains(identityNumber!)
+                e => EF.Functions.ILike(e.Patient.IdentityNumber, identityNumber!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(passportNumber),
-                e => e.Patient.PassportNumber!.Contains(passportNumber!)
+                e => EF.Functions.ILike(e.Patient.PassportNumber, passportNumber!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(emailAddress),
-                e => e.Patient.EmailAddress.Contains(emailAddress!)
+                e => EF.Functions.ILike(e.Patient.EmailAddress, emailAddress!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(mobilePhoneNumber),
-                e => e.Patient.MobilePhoneNumber.Contains(mobilePhoneNumber!)
+                e => EF.Functions.ILike(e.Patient.MobilePhoneNumber, mobilePhoneNumber!)
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(homePhoneNumber),
-                e => e.Patient.HomePhoneNumber != null &&
-                    e.Patient.HomePhoneNumber.Contains(homePhoneNumber!)
+                e => EF.Functions.ILike(e.Patient.HomePhoneNumber, homePhoneNumber!)
             )
             .WhereIf(gender != EnumGender.None, e => e.Patient.Gender == gender)
             .WhereIf(bloodType != EnumBloodType.None, e => e.Patient.BloodType == bloodType)
             .WhereIf(maritalStatus != EnumMaritalStatus.None, e => e.Patient.MaritalStatus == maritalStatus)
             .WhereIf(countryId.HasValue, e => e.Patient.CountryId == countryId!.Value);
+
+    protected virtual IQueryable<PatientWithNavigationProperties> ApplyFilter(
+        IQueryable<PatientWithNavigationProperties> query,
+        Guid? id = null,
+        int? no = null
+    ) =>
+        query
+            .WhereIf(id.HasValue, e => e.Patient.Id == id)
+            .WhereIf(
+                no.HasValue, e => e.Patient.No == no!.Value
+            );
 
 #endregion
 

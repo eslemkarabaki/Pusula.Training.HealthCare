@@ -6,7 +6,9 @@ namespace Pusula.Training.HealthCare.ProtocolTypeActions;
 
 public class ProtocolTypeActionCreateDto
 {
-    [Required] [NotEmptyGuid] public Guid ProtocolTypeId { get; set; }
+    [Required]
+    [NotEmptyGuid]
+    public Guid ProtocolTypeId { get; set; }
 
     [Required]
     [StringLength(ProtocolTypeActionConsts.NameMaxLength)]

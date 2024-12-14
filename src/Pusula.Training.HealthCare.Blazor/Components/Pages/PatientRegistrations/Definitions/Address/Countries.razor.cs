@@ -43,7 +43,7 @@ public partial class Countries
 
     private async Task GetCountriesAsync()
     {
-        CountryList = await CountryAppService.GetListAsync();
+        CountryList = await CountryAppService.GetListAsync(new GetCountriesInput());
         await ClearSelection();
     }
 

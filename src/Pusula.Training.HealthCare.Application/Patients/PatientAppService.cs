@@ -25,35 +25,20 @@ public class PatientAppService(
     IAddressRepository addressRepository,
     PatientManager patientManager,
     IPatientRules patientRules,
-    IDistributedCache<PatientDownloadTokenCacheItem, string> downloadTokenCache,
-    IDistributedEventBus distributedEventBus
+    IDistributedCache<PatientDownloadTokenCacheItem, string> downloadTokenCache
 ) : HealthCareAppService, IPatientAppService
 {
 #region Get
 
-    public virtual async Task<PatientDto> GetAsync(string number)
-    {
-        var patient = await patientRepository.GetAsync(e => e.IdentityNumber == number || e.PassportNumber == number);
-        return ObjectMapper.Map<Patient, PatientDto>(patient);
-    }
+    public virtual async Task<PatientDto> GetAsync(GetPatientInput input) =>
+        ObjectMapper.Map<Patient, PatientDto>(await patientRepository.GetAsync(input.Id, input.PatientNo));
 
-    public virtual async Task<PatientDto> GetAsync(Guid id)
-    {
-        var patient = await patientRepository.GetAsync(id);
-        return ObjectMapper.Map<Patient, PatientDto>(patient);
-    }
-
-    public virtual async Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id)
-    {
-        var patient = await patientRepository.GetWithNavigationPropertiesAsync(id);
-        return ObjectMapper.Map<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>(patient);
-    }
-
-    public virtual async Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(int patientNo)
-    {
-        var patient = await patientRepository.GetWithNavigationPropertiesAsync(patientNo);
-        return ObjectMapper.Map<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>(patient);
-    }
+    public virtual async Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(
+        GetPatientInput input
+    ) =>
+        ObjectMapper.Map<PatientWithNavigationProperties, PatientWithNavigationPropertiesDto>(
+            await patientRepository.GetWithNavigationPropertiesAsync(input.Id, input.PatientNo)
+        );
 
 #endregion
 
@@ -121,21 +106,8 @@ public class PatientAppService(
     [Authorize(HealthCarePermissions.Patients.Create)]
     public virtual async Task<PatientDto> CreateAsync(PatientCreateDto input)
     {
-        GlobalException
-            .ThrowIf(
-                input.PassportNumber.IsNullOrWhiteSpace() && input.IdentityNumber.IsNullOrWhiteSpace(),
-                L["IdentityOrPassportNumberRequired"]
-            );
-        GlobalException
-            .ThrowIf(
-                await patientRules.IdentityNumberExistsAsync(input.IdentityNumber),
-                L["IdentityNumberAlreadyExists"]
-            );
-        GlobalException
-            .ThrowIf(
-                await patientRules.PassportNumberExistsAsync(input.PassportNumber),
-                L["IdentityNumberAlreadyExists"]
-            );
+        await patientRules.EnsureIdentityNumberNotExistsAsync(input.IdentityNumber);
+        await patientRules.EnsurePassportNumberNotExistsAsync(input.PassportNumber);
 
         var patient = await patientManager.CreateAsync(
             input.CountryId, input.PatientTypeId, input.FirstName, input.LastName, input.BirthDate,

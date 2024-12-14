@@ -15,7 +15,7 @@ public class DoctorManager(IDoctorRepository doctorRepository, UserManager<Ident
     public virtual async Task<Doctor> CreateAsync(
         string firstName,
         string lastName,
-        int workingHours,
+        int appointmentTime,
         Guid titleId,
         Guid departmentId,
         Guid hospitalId,
@@ -28,7 +28,7 @@ public class DoctorManager(IDoctorRepository doctorRepository, UserManager<Ident
 
         var doctor = new Doctor(
             GuidGenerator.Create(),
-            firstName, lastName, workingHours, titleId, departmentId, hospitalId, user!.Id
+            firstName, lastName, appointmentTime, titleId, departmentId, hospitalId, user!.Id
         );
         return await doctorRepository.InsertAsync(doctor);
     }
@@ -37,16 +37,16 @@ public class DoctorManager(IDoctorRepository doctorRepository, UserManager<Ident
         Guid id,
         string firstName,
         string lastName,
-        int workingHours,
+        int appointmentTime,
         Guid titleId,
         Guid departmentId,
-        [CanBeNull] string? concurrencyStamp = null
+        string? concurrencyStamp = null
     )
     {
         var doctor = await doctorRepository.GetAsync(id);
 
         doctor.SetName(firstName, lastName);
-        doctor.SetWorkingHours(workingHours);
+        doctor.SetAppointmentTime(appointmentTime);
         doctor.SetTitleId(titleId);
         doctor.SetDepartmentId(departmentId);
 
@@ -70,28 +70,6 @@ public class DoctorManager(IDoctorRepository doctorRepository, UserManager<Ident
             }, password
         );
         var user = await userManager.FindByNameAsync(userName);
-        await userManager.AddToRoleAsync(user!, "doctor");
-        return user!;
-    }
-    
-    protected virtual async Task<IdentityUser> UpdateDoctorUserAsync(
-        Guid userId,
-        string firstName,
-        string lastName,
-        string userName,
-        string email,
-        string password
-    )
-    {
-        var user = await userManager.FindByIdAsync(userId.ToString());
-        user.Name = firstName;
-        user.Surname = firstName;
-        await userManager.SetUserNameAsync(user,userName);
-        await userManager.SetEmailAsync(user, email);
-        await userManager.ChangePasswordAsync(user, "", password);
-            
-            
-        await userManager.UpdateAsync(user);
         await userManager.AddToRoleAsync(user!, "doctor");
         return user!;
     }

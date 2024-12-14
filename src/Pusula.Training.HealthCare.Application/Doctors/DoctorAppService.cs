@@ -42,11 +42,11 @@ public class DoctorAppService(
     public virtual async Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input)
     {
         var totalCount = await doctorRepository.GetCountAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
         var items = await doctorRepository.GetListAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
 
@@ -62,11 +62,11 @@ public class DoctorAppService(
     )
     {
         var totalCount = await doctorRepository.GetCountAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
         var items = await doctorRepository.GetListWithNavigationPropertiesAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
 
@@ -110,7 +110,7 @@ public class DoctorAppService(
         var doctor = await doctorManager.CreateAsync(
             input.FirstName,
             input.LastName,
-            input.WorkingHours,
+            input.AppointmentTime,
             input.TitleId!.Value,
             input.DepartmentId!.Value,
             input.HospitalId!.Value,
@@ -125,7 +125,7 @@ public class DoctorAppService(
     public virtual async Task<DoctorDto> UpdateAsync(Guid id, DoctorUpdateDto input)
     {
         var doctor = await doctorManager.UpdateAsync(
-            id, input.FirstName, input.LastName, input.WorkingHours, input.TitleId!.Value, input.DepartmentId!.Value,
+            id, input.FirstName, input.LastName, input.AppointmentTime, input.TitleId!.Value, input.DepartmentId!.Value,
             input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
@@ -150,26 +150,24 @@ public class DoctorAppService(
         var user = await userManager.FindByIdAsync(userId.ToString());
 
         await userRules.EnsureUsernameNotExistForOthersAsync(input.UserName, userId);
-        await userRules.EnsureEmailNotExistForOthersAsync(input.Email,userId);
+        await userRules.EnsureEmailNotExistForOthersAsync(input.Email, userId);
 
-        await userManager.SetUserNameAsync(user!, input.UserName);
-        await userManager.SetEmailAsync(user!, input.Email);
-
-        var result = await userManager.UpdateAsync(user!);
+        var result = await userManager.SetUserNameAsync(user!, input.UserName);
         GlobalException.ThrowIf(!result.Succeeded, result.Errors.Select(e => e.Description));
+
+        result = await userManager.SetEmailAsync(user!, input.Email);
+        GlobalException.ThrowIf(!result.Succeeded, result.Errors.Select(e => e.Description));
+
         return result.Succeeded;
     }
 
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(DoctorExcelDownloadDto input)
     {
         var downloadToken = await downloadTokenCache.GetAsync(input.DownloadToken);
-        if (downloadToken == null || input.DownloadToken != downloadToken.Token)
-        {
-            throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
-        }
+        GlobalException.ThrowIf(downloadToken is null, "Invalid download token: " + input.DownloadToken);
 
         var items = await doctorRepository.GetListAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
 
@@ -183,24 +181,12 @@ public class DoctorAppService(
     }
 
     [Authorize(HealthCarePermissions.Doctors.Delete)]
-    public async Task DeleteByIdsAsync(List<Guid> doctorIds)
-    {
-        try
-        {
-            await doctorRepository.DeleteManyAsync(doctorIds);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error occurred while deleting doctors");
-            throw new UserFriendlyException("Doktorları silerken bir hata oluştu.");
-        }
-    }
+    public async Task DeleteByIdsAsync(List<Guid> doctorIds) => await doctorRepository.DeleteManyAsync(doctorIds);
 
     [Authorize(HealthCarePermissions.Doctors.Delete)]
     public virtual async Task DeleteAllAsync(GetDoctorsInput input) =>
         await doctorRepository.DeleteAllAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
-            input.DepartmentId
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId, input.DepartmentId
         );
 
     public async Task<DownloadTokenResultDto> GetDownloadTokenAsync()

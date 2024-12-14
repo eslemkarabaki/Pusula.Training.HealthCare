@@ -5,6 +5,6 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientRules : IScopedDependency
 {
-    Task<bool> PassportNumberExistsAsync(string? passportNumber);
-    Task<bool> IdentityNumberExistsAsync(string? identityNumber);
+    Task EnsurePassportNumberNotExistsAsync(string? passportNumber);
+    Task EnsureIdentityNumberNotExistsAsync(string? identityNumber);
 }

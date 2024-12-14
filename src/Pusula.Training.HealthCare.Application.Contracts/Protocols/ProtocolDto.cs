@@ -8,7 +8,7 @@ using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.Protocols;
 
-public class ProtocolDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IProtocol
+public class ProtocolDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
 {
     public Guid PatientId { get; set; }
     public PatientDto Patient { get; set; } = null!;

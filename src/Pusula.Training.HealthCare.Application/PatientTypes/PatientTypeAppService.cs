@@ -12,27 +12,19 @@ namespace Pusula.Training.HealthCare.PatientTypes;
 public class PatientTypeAppService(IPatientTypeRepository patientTypeRepository, PatientTypeManager patientTypeManager)
     : HealthCareAppService, IPatientTypeAppService
 {
-    public async Task<List<PatientTypeDto>> GetListAsync()
-    {
-        return ObjectMapper.Map<List<PatientType>, List<PatientTypeDto>>(
-            await patientTypeRepository.GetListAsync(false));
-    }
+    public async Task<List<PatientTypeDto>> GetListAsync() =>
+        ObjectMapper.Map<List<PatientType>, List<PatientTypeDto>>(
+            await patientTypeRepository.GetListAsync()
+        );
 
     [Authorize(HealthCarePermissions.PatientTypes.Create)]
-    public async Task<PatientTypeDto> CreateAsync(PatientTypeUpdateDto input)
-    {
-        return ObjectMapper.Map<PatientType, PatientTypeDto>(await patientTypeManager.CreateAsync(input.Name));
-    }
+    public async Task<PatientTypeDto> CreateAsync(PatientTypeUpdateDto input) =>
+        ObjectMapper.Map<PatientType, PatientTypeDto>(await patientTypeManager.CreateAsync(input.Name));
 
     [Authorize(HealthCarePermissions.PatientTypes.Edit)]
-    public async Task<PatientTypeDto> UpdateAsync(Guid id, PatientTypeUpdateDto input)
-    {
-        return ObjectMapper.Map<PatientType, PatientTypeDto>(await patientTypeManager.UpdateAsync(id, input.Name));
-    }
-    
+    public async Task<PatientTypeDto> UpdateAsync(Guid id, PatientTypeUpdateDto input) =>
+        ObjectMapper.Map<PatientType, PatientTypeDto>(await patientTypeManager.UpdateAsync(id, input.Name));
+
     [Authorize(HealthCarePermissions.PatientTypes.Delete)]
-    public async Task DeleteAsync(Guid id)
-    {
-        await patientTypeRepository.DeleteAsync(id);
-    }
+    public async Task DeleteAsync(Guid id) => await patientTypeRepository.DeleteAsync(id);
 }

@@ -8,16 +8,20 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Protocols;
 
-public sealed class Protocol : FullAuditedAggregateRoot<Guid>, IProtocol
+public class Protocol : FullAuditedAggregateRoot<Guid>
 {
     public Guid PatientId { get; private set; }
     public Patient Patient { get; set; }
+
     public Guid DoctorId { get; private set; }
     public Doctor Doctor { get; set; }
+
     public Guid DepartmentId { get; private set; }
     public Department Department { get; set; }
+
     public Guid ProtocolTypeId { get; private set; }
     public ProtocolType ProtocolType { get; set; }
+
     public EnumProtocolStatus Status { get; private set; }
     public string? Description { get; private set; }
     public DateTime StartTime { get; private set; }

@@ -16,6 +16,7 @@
 @inject IHospitalsAppService HospitalsAppService
 
 <SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultValuesForDialog"></DialogEvents>
     <DialogTemplates>
         <Header>@L["EditDoctor"]</Header>
         <Content>
@@ -52,7 +53,7 @@
                             <div class="col">
                                 <label class="e-form-label">@L["FirstName"]</label>
                                 <SfTextBox @bind-Value="@EditingDoctor.FirstName"
-                                           Placeholder="@L["FirstName"]" ></SfTextBox>
+                                           Placeholder="@L["FirstName"]"></SfTextBox>
                             </div>
                             <div class="col">
                                 <label class="e-form-label">@L["LastName"]</label>
@@ -60,11 +61,13 @@
                                            Placeholder="@L["LastName"]"></SfTextBox>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <label class="e-form-label">@L["WorkingHours"]</label>
-                            <SfNumericTextBox @bind-Value="@EditingDoctor.WorkingHours"
-                                       Placeholder="@L["WorkingHours"]" Min="@DoctorConsts.WorkingHoursMin" Max="@DoctorConsts.WorkingHoursMax" Step="@DoctorConsts.WorkingHoursMin"></SfNumericTextBox>
+                            <label class="e-form-label">@L["AppointmentTime"]</label>
+                            <SfNumericTextBox @bind-Value="@EditingDoctor.AppointmentTime"
+                                              Placeholder="@L["AppointmentTime"]" Min="@DoctorConsts.AppointmentTimeMin"
+                                              Max="@DoctorConsts.AppointmentTimeMax"
+                                              Step="@DoctorConsts.AppointmentTimeMin"></SfNumericTextBox>
                         </div>
 
                     </div>
@@ -145,7 +148,7 @@
         EditingDoctor.LastName = doctor.LastName;
         EditingDoctor.DepartmentId = doctor.DepartmentId;
         EditingDoctor.TitleId = doctor.TitleId;
-        EditingDoctor.WorkingHours = doctor.WorkingHours;
+        EditingDoctor.AppointmentTime = doctor.AppointmentTime;
         await Dialog.ShowAsync();
     }
 

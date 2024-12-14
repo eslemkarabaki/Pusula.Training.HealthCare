@@ -18,17 +18,17 @@
 @inject IDepartmentsAppService DepartmentsAppService
 
 <SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultValuesForDialog"></DialogEvents>
     <DialogTemplates>
         <Header>@L["NewProtocol"]</Header>
         <Content>
             <SfDataForm ID="NewProtocolForm"
-                        EditContext="@EditContext"
+                        Model="@ProtocolCreate"
                         ButtonsAlignment="FormButtonsAlignment.Right"
                         OnValidSubmit="@OnValidSubmitAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <FluentValidationValidator
-                        Validator="@ProtocolCreateValidator"></FluentValidationValidator>
+                    <DataAnnotationsValidator/>
                 </FormValidator>
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
@@ -72,8 +72,7 @@
                         <div>
                             <SfTextArea @bind-Value="@ProtocolCreate.Description" ColumnCount="400"
                                         Placeholder="@L["Description"]"
-                                        RowCount="3" FloatLabelType="FloatLabelType.Always"
-                            ></SfTextArea>
+                                        RowCount="3" FloatLabelType="FloatLabelType.Always"></SfTextArea>
                         </div>
                     </div>
                 </FormTemplate>
@@ -85,14 +84,10 @@
 @code {
     [Parameter] public EventCallback<ProtocolCreateDto> ProtocolCreatedAsync { get; set; }
     private SfDialog Dialog { get; set; } = null!;
-    private EditContext EditContext { get; set; }
     private ProtocolCreateDto ProtocolCreate { get; set; } = new();
-    private ProtocolCreateDtoValidator ProtocolCreateValidator { get; set; } = null!;
     private string? PatientName { get; set; }
 
     private IEnumerable<ProtocolTypeDto> ProtocolTypeList { get; set; } = [];
-
-    public ProtocolCreateDialog() => EditContext = new EditContext(ProtocolCreate);
 
     protected override async Task OnInitializedAsync() => ProtocolTypeList = await ProtocolTypeAppService.GetListAsync();
 
@@ -175,10 +170,6 @@
         }
     }
 
-    private void SetDefaultValuesForDialog()
-    {
-        ProtocolCreate = new ProtocolCreateDto();
-        EditContext = new EditContext(ProtocolCreate);
-    }
+    private void SetDefaultValuesForDialog() => ProtocolCreate = new ProtocolCreateDto();
 
 }

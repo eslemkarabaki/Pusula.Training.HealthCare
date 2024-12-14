@@ -9,9 +9,6 @@ public static class DoctorConsts
 
     public const int FirstNameMaxLength = 64;
     public const int LastNameMaxLength = 64;
-    public const int WorkingHoursMin = 5;
-    public const int WorkingHoursMax = 120;
-    public const int TitleIdMinLength = 1;
-    public const int DepartmentIdMinLength = 1;
-    public const int HospitalIdMinLength = 1;
+    public const int AppointmentTimeMin = 5;
+    public const int AppointmentTimeMax = 120;
 }

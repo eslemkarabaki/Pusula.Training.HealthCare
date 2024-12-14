@@ -45,11 +45,11 @@ public partial class Cities
 
     private async Task GetCitiesAsync()
     {
-        CityList = await CityAppService.GetListWithDetailsAsync();
+        CityList = await CityAppService.GetListWithDetailsAsync(new GetCitiesInput());
         await ClearSelection();
     }
 
-    #region DataGrid
+#region DataGrid
 
     private Task ClearSelection()
     {
@@ -65,9 +65,9 @@ public partial class Cities
         return Task.CompletedTask;
     }
 
-    #endregion
+#endregion
 
-    #region Create
+#region Create
 
     private CityCreateDialog CreateCityDialog { get; set; } = null!;
     private async Task OpenCreateCityDialogAsync() => await CreateCityDialog.ShowAsync();
@@ -85,9 +85,9 @@ public partial class Cities
         }
     }
 
-    #endregion
+#endregion
 
-    #region Update
+#region Update
 
     private CityUpdateDialog UpdateCityDialog { get; set; } = null!;
     private Guid EditingCityId { get; set; }
@@ -111,9 +111,9 @@ public partial class Cities
         }
     }
 
-    #endregion
+#endregion
 
-    #region Delete
+#region Delete
 
     private async Task DeleteCityAsync(CityDto input)
     {
@@ -141,9 +141,9 @@ public partial class Cities
         await GetCitiesAsync();
     }
 
-    #endregion
+#endregion
 
-    #region Permission
+#region Permission
 
     private bool CanCreateCity { get; set; }
     private bool CanEditCity { get; set; }
@@ -159,6 +159,5 @@ public partial class Cities
             .IsGrantedAsync(HealthCarePermissions.Cities.Delete);
     }
 
-    #endregion
+#endregion
 }
-

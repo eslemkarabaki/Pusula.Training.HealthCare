@@ -1,9 +1,13 @@
-using System;
+using System.ComponentModel.DataAnnotations;
+using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.PatientTypes;
 
-public class PatientTypeUpdateDto
+public class PatientTypeUpdateDto : IHasConcurrencyStamp
 {
-    public Guid Id { get; set; }
+    [Required]
+    [StringLength(PatientTypeContst.NameMaxLength)]
     public string Name { get; set; } = null!;
+
+    public string ConcurrencyStamp { get; set; } = null!;
 }
