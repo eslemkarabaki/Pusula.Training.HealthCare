@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y curl && \
 
 COPY . .
 
-RUN dotnet tool install -g Volo.Abp.Cli --version 8.0.*
+RUN dotnet tool install -g Volo.Abp.Cli --version 9.0.*
 ENV PATH="$PATH:/root/.dotnet/tools"
 
 WORKDIR /src/src/Pusula.Training.HealthCare.Blazor
@@ -18,6 +18,8 @@ RUN npm install
 
 RUN dotnet restore
 RUN dotnet publish "Pusula.Training.HealthCare.Blazor.csproj" -c Release -o /app/blazor
+
+COPY /src/src/Pusula.Training.HealthCare.Blazor/wwwroot /app/blazor/wwwroot
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
