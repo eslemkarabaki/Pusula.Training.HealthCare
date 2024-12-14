@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Pusula.Training.HealthCare.Appointments
 {
-    public enum EnumStatus
+    public enum EnumAppointmentStatus
     {
         Scheduled=1,     
         Completed=2,     
-        Cancelled=3,     
-        NoShow=4,        
-        Rescheduled=5
+        Cancelled=3  
     }
 }

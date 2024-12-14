@@ -259,7 +259,6 @@ public class HealthCareDataSeederContributor(
 
         IEnumerable<Department> departments =
         [
-            new(guidGenerator.Create(), "Acil Servis", "Acil durumlar için hızlı müdahale ve tedavi hizmeti.", 15),
             new(guidGenerator.Create(), "Kardiyoloji", "Kalp ve damar hastalıklarının tanı ve tedavisi.", 30),
             new(guidGenerator.Create(), "Nöroloji", "Sinir sistemi hastalıklarının tanı ve tedavisi.", 30),
             new(guidGenerator.Create(), "Ortopedi", "Kas ve iskelet sistemi hastalıklarının tedavisi.", 20),
@@ -391,7 +390,6 @@ public class HealthCareDataSeederContributor(
         [
             new(guidGenerator.Create(), "Genel Muayene"),
             new(guidGenerator.Create(), "Uzman Görüşü"),
-            new(guidGenerator.Create(), "Acil Durum"),
             new(guidGenerator.Create(), "Takip Randevusu"),
             new(guidGenerator.Create(), "Laboratuvar Testi"),
             new(guidGenerator.Create(), "Rutin Kontrol"),

@@ -8,7 +8,7 @@ namespace Pusula.Training.HealthCare.Appointments
     {
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public EnumStatus Status { get; set; } = EnumStatus.Scheduled;
+        public EnumAppointmentStatus Status { get; set; } = EnumAppointmentStatus.Scheduled;
         public string? Notes { get; set; } = null!;
         public Guid AppointmentTypeId { get; set; }
         public Guid DepartmentId { get; set; }

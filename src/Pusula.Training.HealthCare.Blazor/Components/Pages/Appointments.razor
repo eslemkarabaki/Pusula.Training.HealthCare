@@ -94,140 +94,161 @@
 </div>
 
 @* ************************* CREATE MODAL ************************* *@
-<SfDialog @ref="@CreateAppointmentDialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+<SfDialog @ref="@CreateAppointmentDialog" Target="#target" Width="800px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
-        <Header> @L["CreateAppointment"] </Header>
+        <Header> @L["Randevu Ekleme"] </Header>
         <Content>
-            <EditForm EditContext="@AppointmentCreateContext">
-                <DataAnnotationsValidator></DataAnnotationsValidator>
-                
-                <div class="d-flex flex-column gap-2">
-                    @if (CreatedPatient != null)
-                    {
-                        @CreatedPatient.FullName
-                    }
+            <div class="d-flex gap-4">
+                <EditForm EditContext="@AppointmentCreateContext" class="flex-grow-1">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+                    <div class="d-flex flex-column gap-2">
+                        @if (CreatedPatient != null)
+                        {
+                            @CreatedPatient.FullName
+                        }
+
+                        <div>
+                            <SfAutoComplete TValue="Guid" TItem="LookupDto<Guid>"
+                                            @bind-Value="@AppointmentCreateDto.PatientId" 
+                                            @ref="@refAutoComplatePatient" Placeholder="Hasta Seçin" FloatLabelType="FloatLabelType.Always">
+                                <AutoCompleteFieldSettings Value="Id" Text="DisplayName" />
+                                <AutoCompleteEvents TItem="LookupDto<Guid>" TValue="Guid" OnValueSelect="PatientIdChanged"
+                                                    Filtering="GetPatientFilter"></AutoCompleteEvents>
+                            </SfAutoComplete>
+                            <a class="text-decoration-none" @onclick="@OpenCreatePatientDialogAsync">Yeni hasta</a>
+                        </div>
+
+                        <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto" DataSource="@AppointmentTypes"
+                                        Placeholder="Randevu türü seç" FloatLabelType="FloatLabelType.Always"
+                                        @bind-Value="@AppointmentCreateDto.AppointmentTypeId">
+                            <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                        </SfDropDownList>
+
+                        <SfDropDownList TValue="EnumAppointmentStatus" TItem="string"
+                                        DataSource="@Enum.GetNames(typeof(EnumAppointmentStatus))"
+                                        Placeholder="Randevu statüsü seç" FloatLabelType="FloatLabelType.Always"
+                                        @bind-Value="@AppointmentCreateDto.Status">
+                            <DropDownListFieldSettings Text="string" Value="EnumStatus"></DropDownListFieldSettings>
+                        </SfDropDownList>
+
+                        <div class="d-flex gap-2">
+                            <SfTextBox Value="@AppointmentCreateDto.StartTime.ToString()" Readonly></SfTextBox>
+                            <SfTextBox Value="@AppointmentCreateDto.EndTime.ToString()" Readonly></SfTextBox>
+                        </div>
+
+                        <SfTextBox Multiline @bind-Value="@AppointmentCreateDto.Notes" Placeholder="Not" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    </div>
+                </EditForm>
+                <div class="appointment-summary w-35">
+                    <div class="d-flex gap-1 align-items-center">
+                        <div class="p-1"><i class='fa fa-edit'></i></div>
+                        <div class="fw-700"> Randevu Özeti</div></div>
+                        <div class="p-1">
+                        <p><strong><i class='far fa-user'></i> Hasta:</strong> @SelectedPatient</p>
+                        <p><strong><i class='far fa-list-alt'></i> Tür:</strong> @AppointmentTypes.FirstOrDefault(t => t.Id == AppointmentCreateDto.AppointmentTypeId)?.Name</p>
+                        <p><strong><i class='far fa-hospital'></i> Departman:</strong> @Departments.FirstOrDefault(d => d.Id == AppointmentCreateDto.DepartmentId)?.Name</p>
+                        <p><strong><i class='fa fa-user-md'></i> Doktor:</strong> @Doctors.FirstOrDefault(d => d.Id == AppointmentCreateDto.DoctorId)?.FullName</p>
+                        <p><strong><i class='fa fa-list-ul'></i> Statü:</strong> @AppointmentCreateDto.Status</p>
+                        <p><strong><i class='far fa-clock'></i> Başlangıç:</strong> @AppointmentCreateDto.StartTime.ToString()</p>
+                        <p><strong><i class='far fa-clock'></i> Bitiş:</strong> @AppointmentCreateDto.EndTime.ToString()</p>
+                        <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentCreateDto.Notes</p>
+                        </div>
                     
-                    <div>
-                        <SfAutoComplete TValue="Guid" TItem="LookupDto<Guid>"
-                                        @bind-Value="@AppointmentCreateDto.PatientId"
-                                        @ref="@refAutoComplatePatient" Placeholder="Hasta Seçin" FloatLabelType="FloatLabelType.Always">
-                            <AutoCompleteFieldSettings Value="Id" Text="DisplayName"/>
-                            <AutoCompleteEvents TItem="LookupDto<Guid>" TValue="Guid"
-                                                Filtering="GetPatientFilter"></AutoCompleteEvents>
-                        </SfAutoComplete>
-                        <a href="javascript:;" class="text-decoration-none" @onclick="@OpenCreatePatientDialogAsync">Yeni hasta</a>
-                    </div>
-
-                    <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto" DataSource="@AppointmentTypes"
-                                    Placeholder="Randevu türü seç" FloatLabelType="FloatLabelType.Always"
-                                    @bind-Value="@AppointmentCreateDto.AppointmentTypeId">
-                        <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
-                    </SfDropDownList>
-
-                    <SfDropDownList TValue="EnumStatus" TItem="string"
-                                    DataSource="@Enum.GetNames(typeof(EnumStatus))"
-                                    Placeholder="Randevu statüsü seç" FloatLabelType="FloatLabelType.Always"
-                                    @bind-Value="@AppointmentCreateDto.Status">
-                        <DropDownListFieldSettings Text="string" Value="EnumStatus"></DropDownListFieldSettings>
-                    </SfDropDownList>
-
-                    <div class="d-flex gap-2">
-                        <SfDateTimePicker @bind-Value="@AppointmentCreateDto.StartTime"
-                                          Step="15" Placeholder="Başlangıç Tarihi" FloatLabelType="FloatLabelType.Always"></SfDateTimePicker>
-
-                        <SfDateTimePicker @bind-Value="@AppointmentCreateDto.EndTime" Step="15" Placeholder="Bitiş Tarihi" FloatLabelType="FloatLabelType.Always"></SfDateTimePicker>
-                    </div>
-
-                    <SfTextBox Multiline @bind-Value="@AppointmentCreateDto.Notes" Placeholder="Not" FloatLabelType="FloatLabelType.Always"></SfTextBox>
                 </div>
-            </EditForm>
+
+            </div>
         </Content>
     </DialogTemplates>
     <DialogButtons>
-        <DialogButton Content="Cancel" OnClick="@CloseCreateAppointmentDialogAsync"/>
-        <DialogButton Content="Save" IsPrimary OnClick="@CreateAppointmentAsync"/>
+        <DialogButton Content="Cancel" OnClick="@CloseCreateAppointmentDialogAsync" />
+        <DialogButton Content="Save" IsPrimary OnClick="@CreateAppointmentAsync" />
     </DialogButtons>
 </SfDialog>
 
 @* ************************* UPDATE MODAL ************************* *@
-<SfDialog @ref="@UpdateAppointmentDialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+<SfDialog @ref="@UpdateAppointmentDialog" Target="#target" Width="800px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
-        <Header> @L["UpdateAppointment"] </Header>
+        <Header> @L["Randevu Güncelleme"] </Header>
         <Content>
-            <EditForm EditContext="@AppointmentUpdateContext">
-                <DataAnnotationsValidator></DataAnnotationsValidator>
-                <table class="custom-event-editor" width="100%" cellpadding="5">
-                    <tbody>
-                    <tr>
-                        <td class="e-textlabel">Hasta Seçin</td>
-                        <td colspan="4">
+            <div class="d-flex gap-4">
+                <EditForm EditContext="@AppointmentUpdateContext" class="flex-grow-1">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <table class="custom-event-editor" width="100%" cellpadding="5">
+                        <tbody>                            
 
-                            <SfAutoComplete TValue="Guid" TItem="LookupDto<Guid>"
-                                            @bind-Value="@AppointmentUpdateDto.PatientId"
-                                            @ref="@refAutoComplatePatient">
-                                <AutoCompleteFieldSettings Value="Id" Text="DisplayName"/>
-                                    <AutoCompleteEvents TItem="LookupDto<Guid>" TValue="Guid"
-                                                    Filtering="GetPatientFilter"></AutoCompleteEvents>
-                            </SfAutoComplete>
-                        </td>
-                    </tr>
+                            <tr>
+                                <td class="e-textlabel">Randevu Türü</td>
+                                <td colspan="4">
 
-                    <tr>
-                        <td class="e-textlabel">Randevu Türü</td>
-                        <td colspan="4">
+                                    <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto"
+                                                    DataSource="@AppointmentTypes" Placeholder="Randevu türü seç"
+                                                    @bind-Value="@AppointmentUpdateDto.AppointmentTypeId">
+                                        <DropDownListFieldSettings Text="Name"
+                                                                   Value="Id"></DropDownListFieldSettings>
+                                    </SfDropDownList>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="e-textlabel">Statü</td>
+                                <td class="dropdown" colspan="4">
+                                    <SfDropDownList TValue="EnumAppointmentStatus" TItem="string"
+                                                    DataSource="@Enum.GetNames(typeof(EnumAppointmentStatus))"
+                                                    Placeholder="Randevu statüsü seç"
+                                                    @bind-Value="@AppointmentUpdateDto.Status">
+                                        <DropDownListFieldSettings Text="string"
+                                                                   Value="EnumStatus"></DropDownListFieldSettings>
+                                    </SfDropDownList>
+                                </td>
+                            </tr>
+                            <tr>
 
-                            <SfDropDownList TValue="Guid" TItem="AppointmentTypeDto"
-                                            DataSource="@AppointmentTypes" Placeholder="Randevu türü seç"
-                                            @bind-Value="@AppointmentUpdateDto.AppointmentTypeId">
-                                <DropDownListFieldSettings Text="Name"
-                                                           Value="Id"></DropDownListFieldSettings>
-                            </SfDropDownList>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="e-textlabel">Statü</td>
-                        <td class="dropdown" colspan="4">
-                            <SfDropDownList TValue="EnumStatus" TItem="string"
-                                            DataSource="@Enum.GetNames(typeof(EnumStatus))"
-                                            Placeholder="Randevu statüsü seç"
-                                            @bind-Value="@AppointmentUpdateDto.Status">
-                                <DropDownListFieldSettings Text="string"
-                                                           Value="EnumStatus"></DropDownListFieldSettings>
-                            </SfDropDownList>
-                        </td>
-                    </tr>
-                    <tr>
+                                <td class="e-textlabel">Başlangıç</td>
+                                <td colspan="4">
+                                    <SfTextBox Value="@AppointmentUpdateDto.StartTime.ToString()" Readonly></SfTextBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="e-textlabel">Bitiş</td>
+                                <td colspan="4">
+                                    <SfTextBox Value="@AppointmentUpdateDto.EndTime.ToString()" Readonly></SfTextBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="e-textlabel">Not</td>
+                                <td colspan="4">
+                                    <SfTextBox Multiline="true"
+                                               @bind-Value="@AppointmentUpdateDto.Notes"></SfTextBox>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </EditForm>
+                <div class="appointment-summary w-35">
+                    <div class="d-flex gap-1 align-items-center">
+                        <div class="p-1"><i class='fa fa-edit'></i></div>
+                        <div class="fw-700"> Randevu Özeti</div></div>
+                        <div class="p-1">
+                    <p><strong><i class='far fa-user'></i> Hasta:</strong> @SelectedPatient</p>
+                    <p><strong><i class='far fa-list-alt'></i> Tür:</strong> @AppointmentTypes.FirstOrDefault(t => t.Id == AppointmentUpdateDto.AppointmentTypeId)?.Name</p>
+                    <p><strong><i class='far fa-hospital'></i> Departman:</strong> @Departments.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DepartmentId)?.Name</p>
+                    <p><strong><i class='fa fa-user-md'></i> Doktor:</strong> @Doctors.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DoctorId)?.FullName</p>
+                    <p><strong><i class='fa fa-list-ul'></i> Statü:</strong> @AppointmentUpdateDto.Status</p>
+                    <p><strong><i class='far fa-clock'></i> Başlangıç:</strong> @AppointmentUpdateDto.StartTime.ToString()</p>
+                    <p><strong><i class='far fa-clock'></i> Bitiş:</strong> @AppointmentUpdateDto.EndTime.ToString()</p>
+                    <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentUpdateDto.Notes</p>
+                </div>
+                </div>
 
-                        <td class="e-textlabel">Başlangıç Saati</td>
-                        <td colspan="4">
-                            <SfDateTimePicker @bind-Value="@AppointmentUpdateDto.StartTime"
-                                              Step="15"></SfDateTimePicker>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="e-textlabel">Bitiş Saati</td>
-                        <td colspan="4">
-                            <SfDateTimePicker @bind-Value="@AppointmentUpdateDto.EndTime"
-                                              Step="15"></SfDateTimePicker>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="e-textlabel">Not</td>
-                        <td colspan="4">
-                            <SfTextBox Multiline="true"
-                                       @bind-Value="@AppointmentUpdateDto.Notes"></SfTextBox>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </EditForm>
+            </div>
         </Content>
     </DialogTemplates>
     <DialogButtons>
-        <DialogButton Content="Cancel" OnClick="@CloseUpdateAppointmentDialogAsync"/>
-        <DialogButton Content="Save" IsPrimary OnClick="@UpdateAppointmentAsync"/>
+        <DialogButton Content="Cancel" OnClick="@CloseUpdateAppointmentDialogAsync" />
+        <DialogButton Content="Save" IsPrimary OnClick="@UpdateAppointmentAsync" />
     </DialogButtons>
 </SfDialog>
+
 
 @* ************************* PATIENT CREATE MODAL ************************* *@
 <PatientCreateDialog @ref="@CreatePatientDialog" PatientCreatedAsync="PatientCreatedAsync"/>
