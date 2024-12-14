@@ -11,15 +11,14 @@ COPY . .
 RUN dotnet tool install -g Volo.Abp.Cli --version 9.0.*
 ENV PATH="$PATH:/root/.dotnet/tools"
 
-WORKDIR /src/src/Pusula.Training.HealthCare.Blazor
-RUN abp install-libs --verbose
+RUN abp install-libs
 
-RUN npm install
+RUN dotnet workload restore
 
 RUN dotnet restore
-RUN dotnet publish "Pusula.Training.HealthCare.Blazor.csproj" -c Release -o /app/blazor
 
-COPY ./wwwroot /app/blazor/wwwroot
+WORKDIR /src/src/Pusula.Training.HealthCare.Blazor
+RUN dotnet publish "Pusula.Training.HealthCare.Blazor.csproj" -c Release -o /app/blazor
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
