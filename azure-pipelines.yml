@@ -69,14 +69,12 @@ steps:
   displayName: 'Deploy to Docker Swarm'
 
 - bash: |
-    echo -e "Subject: Pipeline Tamamlandı\n\nPipeline başarıyla tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | \
-    sendmail -S smtp.gmail.com:587 -f berkmkaracayir@gmail.com -au berkmkaracayir@gmail.com -ap rwyqnjcbbmqkkkif berkmkaracayir@gmail.com
+    echo -e "Subject: Pipeline Tamamlandı\n\nPipeline başarıyla tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | sendmail berkmkaracayir@gmail.com
   displayName: 'E-Posta Gönder (Başarı)'
   condition: succeeded()
 
 - bash: |
-    echo -e "Subject: Pipeline Tamamlandı\n\nPipeline başarıyla tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | \
-    sendmail -S smtp.gmail.com:587 -f berkmkaracayir@gmail.com -au berkmkaracayir@gmail.com -ap rwyqnjcbbmqkkkif berkmkaracayir@gmail.com
-  displayName: 'E-Posta Gönder (Başarı)'
+    echo -e "Subject: Pipeline Başarısız\n\nPipeline başarısız oldu: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | sendmail berkmkaracayir@gmail.com
+  displayName: 'E-Posta Gönder (Hata)'
   condition: failed()
 
