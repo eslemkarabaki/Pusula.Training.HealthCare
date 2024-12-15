@@ -17,9 +17,8 @@ variables:
 
 steps:
 - bash: |
-    echo -e "Subject: Deployment Başladı\n\Deployment başlatıldı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | sendmail berkmkaracayir@gmail.com
-  displayName: 'Send mail (Start)'
-  condition: always()
+    echo "Pipeline başladı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)"
+  displayName: 'Pipeline Başlangıç Logu'
 
 - task: UseDotNet@2
   inputs:
@@ -69,8 +68,8 @@ steps:
     docker stack deploy --compose-file devops/Apps/healtcare/deployment.yml blazor-dbmigrator
   displayName: 'Deploy to Docker Swarm'
 
-- bash: |
-    echo -e "Subject: Deployment Bitti\n\nDeployment tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | sendmail berkmkaracayir@gmail.com
-  displayName: 'Send mail (Finish)'
-  condition: always()
+
+
+
+
 
