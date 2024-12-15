@@ -16,11 +16,6 @@ variables:
   GITLAB_REGISTRY_PASSWORD: 'glpat-VxJgKhLEvz6ECi-ybUgS'
 
 steps:
-- bash: |
-    echo -e "Subject: Deployment Başladı\n\nDeployment başladı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com
-  displayName: 'Send mail (Start)'
-  condition: always()
-  
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
