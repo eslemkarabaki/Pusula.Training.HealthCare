@@ -68,44 +68,15 @@ steps:
     docker stack deploy --compose-file devops/Apps/healtcare/deployment.yml blazor-dbmigrator
   displayName: 'Deploy to Docker Swarm'
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      $smtpServer = "smtp.gmail.com"
-      $smtpPort = 587
-      $from = "berkmkaracayir@gmail.com"
-      $to = "berkmkaracayir@gmail.com"
-      $subject = "Pipeline Tamamlandı"
-      $body = "Pipeline başarıyla tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)"
-      $username = "berkmkaracayir@gmail.com"
-      $password = "rwyqnjcbbmqkkkif"
-
-      $smtp = New-Object Net.Mail.SmtpClient($smtpServer, $smtpPort)
-      $smtp.EnableSsl = $true
-      $smtp.Credentials = New-Object System.Net.NetworkCredential($username, $password)
-      $mail = New-Object System.Net.Mail.MailMessage($from, $to, $subject, $body)
-      $smtp.Send($mail)
-  displayName: 'E-posta Gönder (Başarı)'
+- bash: |
+    echo -e "Subject: Pipeline Tamamlandı\n\nPipeline başarıyla tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | \
+    sendmail -S smtp.gmail.com:587 -f berkmkaracayir@gmail.com -au berkmkaracayir@gmail.com -ap rwyqnjcbbmqkkkif berkmkaracayir@gmail.com
+  displayName: 'E-Posta Gönder (Başarı)'
   condition: succeeded()
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      $smtpServer = "smtp.gmail.com"
-      $smtpPort = 587
-      $from = "berkmkaracayir@gmail.com"
-      $to = "berkmkaracayir@gmail.com"
-      $subject = "Pipeline Başarısız"
-      $body = "Pipeline başarısız oldu: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)"
-      $username = "berkmkaracayir@gmail.com"
-      $password = "rwyqnjcbbmqkkkif"
-
-      $smtp = New-Object Net.Mail.SmtpClient($smtpServer, $smtpPort)
-      $smtp.EnableSsl = $true
-      $smtp.Credentials = New-Object System.Net.NetworkCredential($username, $password)
-      $mail = New-Object System.Net.Mail.MailMessage($from, $to, $subject, $body)
-      $smtp.Send($mail)
-  displayName: 'E-posta Gönder (Hata)'
+- bash: |
+    echo -e "Subject: Pipeline Tamamlandı\n\nPipeline başarıyla tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | \
+    sendmail -S smtp.gmail.com:587 -f berkmkaracayir@gmail.com -au berkmkaracayir@gmail.com -ap rwyqnjcbbmqkkkif berkmkaracayir@gmail.com
+  displayName: 'E-Posta Gönder (Başarı)'
   condition: failed()
+
