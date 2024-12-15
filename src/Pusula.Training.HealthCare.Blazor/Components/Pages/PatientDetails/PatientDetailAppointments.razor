@@ -90,12 +90,15 @@
     </div>
 
 @* ************************* CREATE MODAL ************************* *@
-<SfDialog @ref="@CreateAppointmentDialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+<SfDialog @ref="@CreateAppointmentDialog" Target="#target" Width="800px" IsModal ShowCloseIcon Visible="false">
+
     <DialogTemplates>
         <Header> @L["Randevu Ekleme"] </Header>
         <Content>
-            <EditForm EditContext="@AppointmentCreateContext">
-                <DataAnnotationsValidator></DataAnnotationsValidator>
+        <div class="d-flex gap-4">
+
+            <EditForm EditContext="@AppointmentCreateContext" class="flex-grow-1">                     
+            <DataAnnotationsValidator></DataAnnotationsValidator>
 
                 <div class="d-flex flex-column gap-2">                
                     
@@ -116,15 +119,31 @@
                     </SfDropDownList>
 
                     <div class="d-flex gap-2">
-                        @* <SfDateTimePicker @bind-Value="@AppointmentCreateDto.StartTime" Step="15" Placeholder="Baþlangýç Tarihi" FloatLabelType="FloatLabelType.Always"></SfDateTimePicker>
-                        <SfDateTimePicker @bind-Value="@AppointmentCreateDto.EndTime" Step="15" Placeholder="Bitiþ Tarihi" FloatLabelType="FloatLabelType.Always"></SfDateTimePicker> *@
-                        <SfTextBox Value="@AppointmentCreateDto.StartTime.ToString()" Readonly></SfTextBox>
+                         <SfTextBox Value="@AppointmentCreateDto.StartTime.ToString()" Readonly></SfTextBox>
                         <SfTextBox Value="@AppointmentCreateDto.EndTime.ToString()" Readonly></SfTextBox>
                     </div>
 
                     <SfTextBox Multiline @bind-Value="@AppointmentCreateDto.Notes" Placeholder="Not" FloatLabelType="FloatLabelType.Always"></SfTextBox>
                 </div>
             </EditForm>
+
+            <div class="appointment-summary w-35">
+                    <div class="d-flex gap-1 align-items-center">
+                        <div class="p-1"><i class='fa fa-edit'></i></div>
+                        <div class="fw-700"> Randevu Özeti</div></div>
+                        <div class="p-1">
+                        <p><strong><i class='far fa-user'></i> Hasta:</strong> @Patient.Patient.FullName</p>
+                        <p><strong><i class='far fa-list-alt'></i> Tür:</strong> @AppointmentTypes.FirstOrDefault(t => t.Id == AppointmentCreateDto.AppointmentTypeId)?.Name</p>
+                        <p><strong><i class='far fa-hospital'></i> Departman:</strong> @Departments.FirstOrDefault(d => d.Id == AppointmentCreateDto.DepartmentId)?.Name</p>
+                        <p><strong><i class='fa fa-user-md'></i> Doktor:</strong> @Doctors.FirstOrDefault(d => d.Id == AppointmentCreateDto.DoctorId)?.FullName</p>
+                        <p><strong><i class='fa fa-list-ul'></i> Statü:</strong> @AppointmentCreateDto.Status</p>
+                        <p><strong><i class='far fa-clock'></i> Baþlangýç:</strong> @AppointmentCreateDto.StartTime.ToString()</p>
+                        <p><strong><i class='far fa-clock'></i> Bitiþ:</strong> @AppointmentCreateDto.EndTime.ToString()</p>
+                        <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentCreateDto.Notes</p>
+                        </div>
+                    
+                </div>
+                </div>
         </Content>
     </DialogTemplates>
     <DialogButtons>
@@ -134,11 +153,13 @@
 </SfDialog>
 
 @* ************************* UPDATE MODAL ************************* *@
-<SfDialog @ref="@UpdateAppointmentDialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+<SfDialog @ref="@UpdateAppointmentDialog" Target="#target" Width="800px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
         <Header> @L["Randevu Güncelleme"] </Header>
         <Content>
-            <EditForm EditContext="@AppointmentUpdateContext">
+                        <div class="d-flex gap-4">
+
+                <EditForm EditContext="@AppointmentUpdateContext" class="flex-grow-1">                    
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <table class="custom-event-editor" width="100%" cellpadding="5">
                     <tbody>                        
@@ -180,18 +201,16 @@
                         </tr>
                         <tr>
 
-                            <td class="e-textlabel">Baþlangýç Saati</td>
+                            <td class="e-textlabel">Baþlangýç</td>
                             <td colspan="4">
-                                @* <SfDateTimePicker @bind-Value="@AppointmentUpdateDto.StartTime"
-                                                  Step="15"></SfDateTimePicker> *@
+                               
                                 <SfTextBox Value="@AppointmentCreateDto.StartTime.ToString()" Readonly></SfTextBox>
                             </td>
                         </tr>
                         <tr>
-                            <td class="e-textlabel">Bitiþ Saati</td>
+                            <td class="e-textlabel">Bitiþ</td>
                             <td colspan="4">
-                                @* <SfDateTimePicker @bind-Value="@AppointmentUpdateDto.EndTime"
-                                                  Step="15"></SfDateTimePicker> *@
+                                
                                 <SfTextBox Value="@AppointmentCreateDto.EndTime.ToString()" Readonly></SfTextBox>
 
                             </td>
@@ -206,6 +225,23 @@
                     </tbody>
                 </table>
             </EditForm>
+            <div class="appointment-summary w-35">
+                    <div class="d-flex gap-1 align-items-center">
+                        <div class="p-1"><i class='fa fa-edit'></i></div>
+                        <div class="fw-700"> Randevu Özeti</div></div>
+                        <div class="p-1">
+                        <p><strong><i class='far fa-user'></i> Hasta:</strong> @SelectedPatient</p>
+                    <p><strong><i class='far fa-list-alt'></i> Tür:</strong> @AppointmentTypes.FirstOrDefault(t => t.Id == AppointmentUpdateDto.AppointmentTypeId)?.Name</p>
+                    <p><strong><i class='far fa-hospital'></i> Departman:</strong> @Departments.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DepartmentId)?.Name</p>
+                    <p><strong><i class='fa fa-user-md'></i> Doktor:</strong> @Doctors.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DoctorId)?.FullName</p>
+                    <p><strong><i class='fa fa-list-ul'></i> Statü:</strong> @AppointmentUpdateDto.Status</p>
+                    <p><strong><i class='far fa-clock'></i> Baþlangýç:</strong> @AppointmentUpdateDto.StartTime.ToString()</p>
+                    <p><strong><i class='far fa-clock'></i> Bitiþ:</strong> @AppointmentUpdateDto.EndTime.ToString()</p>
+                    <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentUpdateDto.Notes</p>
+                </div>
+                </div>
+            </div>
+
         </Content>
     </DialogTemplates>
     <DialogButtons>

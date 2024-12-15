@@ -1,13 +1,8 @@
 ﻿using JetBrains.Annotations;
-using Pusula.Training.HealthCare.AppointmentTypes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Volo.Abp;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Pusula.Training.HealthCare.Appointments

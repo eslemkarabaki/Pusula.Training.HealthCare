@@ -106,12 +106,16 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task GetAppointmentsAsync() =>
-        AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
+    private async Task GetAppointmentsAsync() => AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
 
     private void CancelScheduleEvent(CellClickEventArgs args) => args.Cancel = true;
-    private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;    
+    private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;
+    public string SelectedPatient { get; set; }
 
+    public void PatientIdChanged(SelectEventArgs<LookupDto<Guid>> args)
+    {
+        SelectedPatient = args.ItemData.DisplayName;
+    }
     #region Create
 
     private AppointmentCreateDto AppointmentCreateDto { get; set; }
@@ -155,7 +159,9 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
         AppointmentCreateDto = new AppointmentCreateDto()
         {
             StartTime = args?.StartTime ?? DateTime.Today,
-            EndTime = args?.EndTime ?? DateTime.Today
+            EndTime = args?.EndTime ?? DateTime.Today,
+            DepartmentId =SelectedDepartmentId,
+            DoctorId = SelectedDoctorId,
         };
         AppointmentCreateContext = new EditContext(AppointmentCreateDto);
     }
@@ -173,6 +179,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
     {
         EditingAppointmentId = args.Event.Id;
         ObjectMapper.Map(args.Event, AppointmentUpdateDto);
+        SelectedPatient = (await PatientAppService.GetAsync(new GetPatientInput(AppointmentUpdateDto.PatientId))).FullName;
         await UpdateAppointmentDialog.ShowAsync();
 
     }
