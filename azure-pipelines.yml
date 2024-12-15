@@ -16,6 +16,10 @@ variables:
   GITLAB_REGISTRY_PASSWORD: 'glpat-VxJgKhLEvz6ECi-ybUgS'
 
 steps:
+- bash: |
+    echo "Pipeline başladı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)"
+  displayName: 'Pipeline Başlangıç Logu'
+
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
@@ -63,3 +67,45 @@ steps:
     # Deploy to Docker Swarm
     docker stack deploy --compose-file devops/Apps/healtcare/deployment.yml blazor-dbmigrator
   displayName: 'Deploy to Docker Swarm'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $smtpServer = "smtp.gmail.com"
+      $smtpPort = 587
+      $from = "berkmkaracayir@gmail.com"
+      $to = "berkmkaracayir@gmail.com"
+      $subject = "Pipeline Tamamlandı"
+      $body = "Pipeline başarıyla tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)"
+      $username = "berkmkaracayir@gmail.com"
+      $password = "rwyqnjcbbmqkkkif"
+
+      $smtp = New-Object Net.Mail.SmtpClient($smtpServer, $smtpPort)
+      $smtp.EnableSsl = $true
+      $smtp.Credentials = New-Object System.Net.NetworkCredential($username, $password)
+      $mail = New-Object System.Net.Mail.MailMessage($from, $to, $subject, $body)
+      $smtp.Send($mail)
+  displayName: 'E-posta Gönder (Başarı)'
+  condition: succeeded()
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $smtpServer = "smtp.gmail.com"
+      $smtpPort = 587
+      $from = "berkmkaracayir@gmail.com"
+      $to = "berkmkaracayir@gmail.com"
+      $subject = "Pipeline Başarısız"
+      $body = "Pipeline başarısız oldu: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)"
+      $username = "berkmkaracayir@gmail.com"
+      $password = "rwyqnjcbbmqkkkif"
+
+      $smtp = New-Object Net.Mail.SmtpClient($smtpServer, $smtpPort)
+      $smtp.EnableSsl = $true
+      $smtp.Credentials = New-Object System.Net.NetworkCredential($username, $password)
+      $mail = New-Object System.Net.Mail.MailMessage($from, $to, $subject, $body)
+      $smtp.Send($mail)
+  displayName: 'E-posta Gönder (Hata)'
+  condition: failed()
