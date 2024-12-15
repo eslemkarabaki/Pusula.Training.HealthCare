@@ -61,13 +61,18 @@
                 <DropDownListEvents TItem="DoctorDto" TValue="Guid" ValueChange="DoctorSelect"/>
                 <DropDownListFieldSettings Text="FullName" Value="Id"/>
             </SfDropDownList>
+            @if (valueSelected)
+            {
+                <br />
+                <SfButton CssClass="e-flat" IsPrimary="true" OnClick="OpenAvailableSlotsDialog">Doktorun Boş Günleri</SfButton>
+            }
         </div>
     </div>
 
     <div class="col-lg-9 control-section">
         @if (valueSelected)
         {
-            <SfSchedule AllowDragAndDrop="true" MinDate="@MinDate" TValue="AppointmentDto" Width="100%" Height="650px"
+            <SfSchedule AllowDragAndDrop="true" MinDate="@MinDate" TValue="AppointmentDto" Width="100%" Height="650px" 
                         ShowQuickInfo="false" @bind-SelectedDate="@CurrentDate" @bind-CurrentView="@CurrentView"
                         StartHour="09:00" EndHour="18:00" ShowWeekend="false">
 
@@ -249,7 +254,21 @@
     </DialogButtons>
 </SfDialog>
 
+@* ************************* AVAILABLE SLOTS MODAL ************************* *@
+<SfDialog @ref="AvailableSlotsDialog" Target="#target" Width="1000px" IsModal ShowCloseIcon Visible="false">
+    <div>
+        <h2> @Doctors.FirstOrDefault(d => d.Id == AppointmentCreateDto.DoctorId)?.FullName</h2>
+    </div>
+    @* <DialogTemplates>
+        <Content>
+            <SfListView DataSource="@(AppointmentLists ?? new List<AppointmentDto>())"></SfListView>
+        </Content>
+    </DialogTemplates> *@
+</SfDialog>
+
 
 @* ************************* PATIENT CREATE MODAL ************************* *@
 <PatientCreateDialog @ref="@CreatePatientDialog" PatientCreatedAsync="PatientCreatedAsync"/>
+
+
 
