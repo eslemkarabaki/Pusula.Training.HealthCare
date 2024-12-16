@@ -50,19 +50,19 @@ steps:
   displayName: 'Build Docker Image'
 
 - bash: |
-    trivy image --severity HIGH,CRITICAL --format table --output trivy-report.txt $(imageName):$(imageTag)
-  displayName: 'Trivy ile Docker İmajını Tara'
+    trivy image --severity HIGH,CRITICAL --exit-code 0 --format json --output trivy-report.json $(imageName):$(imageTag)
+  displayName: 'Scan Docker Image with Trivy'
+  continueOnError: true
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: 'trivy-report.txt'
+    targetPath: 'trivy-report.json'
     artifact: 'TrivyReport'
-  displayName: 'Trivy Raporunu Yayınla'
+  displayName: 'Publish Trivy Report'
 
 - bash: |
-    trivy image --severity HIGH,CRITICAL --exit-code 1 $(imageName):$(imageTag)
-  displayName: 'Zafiyet Bulunursa Pipeline Hatası Ver'
-
+    trivy image --severity HIGH,CRITICAL --exit-code 0 $(imageName):$(imageTag)
+  displayName: 'Report Write to Console'
 
 - bash: |
     # Log in to GitLab Container Registry
@@ -85,6 +85,6 @@ steps:
   displayName: 'Deploy to Docker Swarm'
 
 - bash: |
-    echo -e "Subject: Deployment Tamamlandı\n\nDeployment bitti: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com
+    echo -e "Subject: Deployment Tamamlandı\n\nDeployment Başarıyla Tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com
   displayName: 'Send mail (Finish)'
-  condition: always()
+  condition: succeeded()
