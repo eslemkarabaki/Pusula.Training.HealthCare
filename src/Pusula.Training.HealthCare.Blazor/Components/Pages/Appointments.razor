@@ -60,12 +60,7 @@
                             @bind-Value="@SelectedDoctorId" DataSource="@Doctors">
                 <DropDownListEvents TItem="DoctorDto" TValue="Guid" ValueChange="DoctorSelect"/>
                 <DropDownListFieldSettings Text="FullName" Value="Id"/>
-            </SfDropDownList>
-            @if (valueSelected)
-            {
-                <br />
-                <SfButton CssClass="e-flat" IsPrimary="true" OnClick="OpenAvailableSlotsDialog">Doktorun Boş Günleri</SfButton>
-            }
+            </SfDropDownList>           
         </div>
     </div>
 
@@ -234,14 +229,14 @@
                         <div class="p-1"><i class='fa fa-edit'></i></div>
                         <div class="fw-700"> Randevu Özeti</div></div>
                         <div class="p-1">
-                    <p><strong><i class='far fa-user'></i> Hasta:</strong> @SelectedPatient</p>
-                    <p><strong><i class='far fa-list-alt'></i> Tür:</strong> @AppointmentTypes.FirstOrDefault(t => t.Id == AppointmentUpdateDto.AppointmentTypeId)?.Name</p>
-                    <p><strong><i class='far fa-hospital'></i> Departman:</strong> @Departments.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DepartmentId)?.Name</p>
-                    <p><strong><i class='fa fa-user-md'></i> Doktor:</strong> @Doctors.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DoctorId)?.FullName</p>
-                    <p><strong><i class='fa fa-list-ul'></i> Statü:</strong> @AppointmentUpdateDto.Status</p>
-                    <p><strong><i class='far fa-clock'></i> Başlangıç:</strong> @AppointmentUpdateDto.StartTime.ToString()</p>
-                    <p><strong><i class='far fa-clock'></i> Bitiş:</strong> @AppointmentUpdateDto.EndTime.ToString()</p>
-                    <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentUpdateDto.Notes</p>
+                        <p><strong><i class='far fa-user'></i> Hasta:</strong> @SelectedPatient</p>
+                        <p><strong><i class='far fa-list-alt'></i> Tür:</strong> @AppointmentTypes.FirstOrDefault(t => t.Id == AppointmentUpdateDto.AppointmentTypeId)?.Name</p>
+                        <p><strong><i class='far fa-hospital'></i> Departman:</strong> @Departments.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DepartmentId)?.Name</p>
+                        <p><strong><i class='fa fa-user-md'></i> Doktor:</strong> @Doctors.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DoctorId)?.FullName</p>
+                        <p><strong><i class='fa fa-list-ul'></i> Statü:</strong> @AppointmentUpdateDto.Status</p>
+                        <p><strong><i class='far fa-clock'></i> Başlangıç:</strong> @AppointmentUpdateDto.StartTime.ToString()</p>
+                        <p><strong><i class='far fa-clock'></i> Bitiş:</strong> @AppointmentUpdateDto.EndTime.ToString()</p>
+                        <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentUpdateDto.Notes</p>
                 </div>
                 </div>
 
@@ -253,19 +248,6 @@
         <DialogButton Content="Save" IsPrimary OnClick="@UpdateAppointmentAsync" />
     </DialogButtons>
 </SfDialog>
-
-@* ************************* AVAILABLE SLOTS MODAL ************************* *@
-<SfDialog @ref="AvailableSlotsDialog" Target="#target" Width="1000px" IsModal ShowCloseIcon Visible="false">
-    <div>
-        <h2> @Doctors.FirstOrDefault(d => d.Id == AppointmentCreateDto.DoctorId)?.FullName</h2>
-    </div>
-    @* <DialogTemplates>
-        <Content>
-            <SfListView DataSource="@(AppointmentLists ?? new List<AppointmentDto>())"></SfListView>
-        </Content>
-    </DialogTemplates> *@
-</SfDialog>
-
 
 @* ************************* PATIENT CREATE MODAL ************************* *@
 <PatientCreateDialog @ref="@CreatePatientDialog" PatientCreatedAsync="PatientCreatedAsync"/>

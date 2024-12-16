@@ -169,6 +169,11 @@ public partial class Appointments
 
     private async Task OpenCreateAppointmentDialogAsync(CellClickEventArgs args)
     {
+        if (AppointmentLists.Any(e=>e.StartTime == args.StartTime && e.Status != EnumAppointmentStatus.Cancelled))
+        {
+            await base.Notify.Error("Bu zamana ait randevu bulunmaktadır!");
+            return;
+        }
         SetDefaultsForCreateDto(args);
         await CreateAppointmentDialog.ShowAsync();
     }
@@ -259,19 +264,5 @@ public partial class Appointments
     }
 
     #endregion
-
-    #region DoctorsAvailableSlots 
-    private SfDialog AvailableSlotsDialog { get; set; }
-
-    private async Task OpenAvailableSlotsDialog()
-    {
-        await GetAppointmentsAsync();
-        await AvailableSlotsDialog.ShowAsync();
-    }
-    public async Task GetDoctorName()
-    {
-        AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
-    }
-
-    #endregion    
+      
 }
