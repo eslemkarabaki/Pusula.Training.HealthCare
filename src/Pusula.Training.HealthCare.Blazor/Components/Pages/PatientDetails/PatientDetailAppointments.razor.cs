@@ -124,6 +124,11 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
 
     private async Task OpenCreateAppointmentDialogAsync(CellClickEventArgs args)
     {
+        if (AppointmentLists.Any(e => e.StartTime == args.StartTime && e.Status != EnumAppointmentStatus.Cancelled))
+        {
+            await base.Notify.Error("Bu zamana ait randevu bulunmaktadır!");
+            return;
+        }
         SetDefaultsForCreateDto(args);
         await CreateAppointmentDialog.ShowAsync();
     }
