@@ -2,6 +2,7 @@ using System;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Patients;
+using Pusula.Training.HealthCare.ProtocolTypeActions;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -22,6 +23,9 @@ public class Protocol : FullAuditedAggregateRoot<Guid>
     public Guid ProtocolTypeId { get; private set; }
     public ProtocolType ProtocolType { get; set; }
 
+    public Guid ProtocolTypeActionId { get; private set; }
+    public ProtocolTypeAction ProtocolTypeAction { get; set; }
+
     public EnumProtocolStatus Status { get; private set; }
     public string? Description { get; private set; }
     public DateTime StartTime { get; private set; }
@@ -34,7 +38,8 @@ public class Protocol : FullAuditedAggregateRoot<Guid>
         Guid patientId,
         Guid doctorId,
         Guid departmentId,
-        Guid typeId,
+        Guid protocolTypeId,
+        Guid protocolTypeActionId,
         string? description,
         EnumProtocolStatus status,
         DateTime startTime,
@@ -44,7 +49,8 @@ public class Protocol : FullAuditedAggregateRoot<Guid>
         SetPatientId(patientId);
         SetDoctorId(doctorId);
         SetDepartmentId(departmentId);
-        SetTypeId(typeId);
+        SetProtocolTypeId(protocolTypeId);
+        SetProtocolTypeActionId(protocolTypeActionId);
         SetDescription(description);
         SetStatus(status);
         SetStartTime(startTime);
@@ -57,7 +63,12 @@ public class Protocol : FullAuditedAggregateRoot<Guid>
     public void SetDepartmentId(Guid departmentId) =>
         DepartmentId = Check.NotDefaultOrNull<Guid>(departmentId, nameof(departmentId));
 
-    public void SetTypeId(Guid typeId) => ProtocolTypeId = Check.NotDefaultOrNull<Guid>(typeId, nameof(typeId));
+    public void SetProtocolTypeId(Guid protocolTypeId) =>
+        ProtocolTypeId = Check.NotDefaultOrNull<Guid>(protocolTypeId, nameof(protocolTypeId));
+
+    public void SetProtocolTypeActionId(Guid protocolTypeActionId) =>
+        ProtocolTypeActionId = Check.NotDefaultOrNull<Guid>(protocolTypeActionId, nameof(protocolTypeActionId));
+
     public void SetStatus(EnumProtocolStatus status) => Status = status;
 
     public void SetDescription(string? description) =>

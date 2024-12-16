@@ -137,6 +137,11 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+    
+    public static class DoctorWorkList
+    {
+        public const string Default = GroupName + ".DoctorWorkList";
+    }
 
     public static class Titles
     {

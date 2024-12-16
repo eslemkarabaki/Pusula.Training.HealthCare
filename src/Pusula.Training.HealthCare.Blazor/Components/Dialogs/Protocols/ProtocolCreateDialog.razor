@@ -5,6 +5,7 @@
 @using Pusula.Training.HealthCare.Departments
 @using Pusula.Training.HealthCare.Doctors
 @using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.ProtocolTypeActions
 @using Pusula.Training.HealthCare.ProtocolTypes
 @using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.DropDowns
@@ -14,6 +15,7 @@
 @inject IPatientAppService PatientAppService
 @inject IDoctorAppService DoctorAppService
 @inject IProtocolTypeAppService ProtocolTypeAppService
+@inject IProtocolTypeActionAppService ProtocolTypeActionAppService
 @inject IProtocolAppService ProtocolAppService
 @inject IDepartmentsAppService DepartmentsAppService
 
@@ -42,7 +44,7 @@
                                             TValue="Guid" TItem="DoctorDto" Placeholder="@L["Doctor"]"
                                             DataSource="@DoctorList" AllowFiltering Autofill Highlight
                                             EnableVirtualization
-                                            PopupHeight="150px">
+                                            PopupHeight="250px">
                                 <AutoCompleteEvents TValue="Guid" TItem="DoctorDto" Filtering="@FilterDoctorAsync"/>
                                 <AutoCompleteFieldSettings Text="FullName" Value="Id"/>
                             </SfAutoComplete>
@@ -54,7 +56,7 @@
                                             TItem="DepartmentDto" Placeholder="@L["Department"]"
                                             DataSource="@DepartmentList" AllowFiltering Autofill Highlight
                                             EnableVirtualization
-                                            PopupHeight="150px">
+                                            PopupHeight="250px">
                                 <AutoCompleteEvents TValue="Guid" TItem="DepartmentDto"
                                                     Filtering="@FilterDepartmentAsync"/>
                                 <AutoCompleteFieldSettings Text="Name" Value="Id"/>
@@ -62,10 +64,20 @@
                         </div>
                         <div>
                             <label class="e-form-label">@L["ProtocolType"]</label>
-                            <SfDropDownList @bind-Value="@ProtocolCreate.ProtocolTypeId" TValue="Guid"
+                            <SfDropDownList Value="@ProtocolCreate.ProtocolTypeId"
+                                            ValueChanged="@ProtocolTypeIdChangedAsync" TValue="Guid"
                                             TItem="ProtocolTypeDto" Placeholder="@L["ProtocolType"]"
                                             DataSource="@ProtocolTypeList" AllowFiltering EnableVirtualization
-                                            PopupHeight="150px">
+                                            PopupHeight="250px">
+                                <DropDownListFieldSettings Text="Name" Value="Id"/>
+                            </SfDropDownList>
+                        </div>
+                        <div>
+                            <label class="e-form-label">@L["ProtocolTypeAction"]</label>
+                            <SfDropDownList @bind-Value="@ProtocolCreate.ProtocolTypeActionId" TValue="Guid"
+                                            TItem="ProtocolTypeActionDto" Placeholder="@L["ProtocolTypeAction"]"
+                                            DataSource="@ProtocolTypeActionList" AllowFiltering EnableVirtualization
+                                            PopupHeight="250px" Enabled="@ProtocolTypeActionList.Any()">
                                 <DropDownListFieldSettings Text="Name" Value="Id"/>
                             </SfDropDownList>
                         </div>
@@ -88,6 +100,7 @@
     private string? PatientName { get; set; }
 
     private IEnumerable<ProtocolTypeDto> ProtocolTypeList { get; set; } = [];
+    private IEnumerable<ProtocolTypeActionDto> ProtocolTypeActionList { get; set; } = [];
 
     protected override async Task OnInitializedAsync() => ProtocolTypeList = await ProtocolTypeAppService.GetListAsync();
 
@@ -138,6 +151,17 @@
         var departments = await DepartmentsAppService.GetListAsync(GetDepartmentsInput);
         DepartmentList = departments.Items;
         await DepartmentFilterAutoComplete.FilterAsync(DepartmentList);
+    }
+
+#endregion
+
+#region ProtocolType
+
+    private async Task ProtocolTypeIdChangedAsync(Guid protocolTypeId)
+    {
+        ProtocolCreate.ProtocolTypeActionId = Guid.Empty;
+        ProtocolCreate.ProtocolTypeId = protocolTypeId;
+        ProtocolTypeActionList = await ProtocolTypeActionAppService.GetAllAsync(protocolTypeId);
     }
 
 #endregion

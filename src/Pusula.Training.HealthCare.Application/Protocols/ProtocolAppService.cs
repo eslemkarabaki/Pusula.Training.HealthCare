@@ -16,16 +16,48 @@ public class ProtocolAppService(IProtocolRepository protocolRepository, Protocol
     [Authorize(HealthCarePermissions.Protocols.Delete)]
     public virtual async Task DeleteAsync(Guid id) => await protocolRepository.DeleteAsync(id);
 
-    public async Task<PagedResultDto<ProtocolDto>> GetListWithDetailsAsync(GetProtocolsInput input)
+    public async Task<PagedResultDto<ProtocolDto>> GetListAsync(GetProtocolsInput input)
     {
-        var items = await protocolRepository.GetListWithDetailsAsync(
-            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.Status,
+        var items = await protocolRepository.GetListAsync(
+            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.ProtocolTypeActionId,
+            input.Status,
             input.StartTime, input.EndTime, input.Sorting, input.MaxResultCount, input.SkipCount
         );
         var count = await protocolRepository.GetCountAsync(
-            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.Status,
+            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.ProtocolTypeActionId,
+            input.Status,
             input.StartTime, input.EndTime
         );
+
+        return new PagedResultDto<ProtocolDto>(
+            count, ObjectMapper.Map<List<Protocol>, List<ProtocolDto>>(items)
+        );
+    }
+
+    public async Task<PagedResultDto<ProtocolDto>> GetListWithDetailsAsync(GetProtocolsInput input)
+    {
+        var items = await protocolRepository.GetListWithDetailsAsync(
+            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.ProtocolTypeActionId,
+            input.Status,
+            input.StartTime, input.EndTime, input.Sorting, input.MaxResultCount, input.SkipCount
+        );
+        var count = await protocolRepository.GetCountAsync(
+            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.ProtocolTypeActionId,
+            input.Status,
+            input.StartTime, input.EndTime
+        );
+
+        return new PagedResultDto<ProtocolDto>(
+            count, ObjectMapper.Map<List<Protocol>, List<ProtocolDto>>(items)
+        );
+    }
+    
+    public async Task<PagedResultDto<ProtocolDto>> GetDoctorWorkListWithDetailsAsync(GetDoctorWorkListInput input)
+    {
+        var items = await protocolRepository.GetDoctorWorkListWithDetailsAsync(
+            input.UserId,input.Status,input.StartTime, input.EndTime, input.Sorting, input.MaxResultCount, input.SkipCount
+        );
+        var count = await protocolRepository.GetCountForDoctorWorkListAsync(input.UserId,input.Status,input.StartTime, input.EndTime);
 
         return new PagedResultDto<ProtocolDto>(
             count, ObjectMapper.Map<List<Protocol>, List<ProtocolDto>>(items)
@@ -36,7 +68,8 @@ public class ProtocolAppService(IProtocolRepository protocolRepository, Protocol
     public virtual async Task<ProtocolDto> CreateAsync(ProtocolCreateDto input)
     {
         var protocol = await protocolManager.CreateAsync(
-            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.Description, input.Status
+            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.ProtocolTypeActionId,
+            input.Description, input.Status
         );
 
         return ObjectMapper.Map<Protocol, ProtocolDto>(protocol);

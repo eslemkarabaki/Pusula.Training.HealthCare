@@ -48,5 +48,12 @@ public class ProtocolConfigurations : IEntityTypeConfiguration<Protocol>
             .IsRequired()
             .HasForeignKey(x => x.ProtocolTypeId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        b
+            .HasOne(e => e.ProtocolTypeAction)
+            .WithMany()
+            .IsRequired()
+            .HasForeignKey(x => x.ProtocolTypeActionId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

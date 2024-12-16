@@ -6,21 +6,25 @@ namespace Pusula.Training.HealthCare.Protocols;
 
 public class ProtocolCreateDto
 {
-    [Required]
-    [NotEmptyGuid]
+    [Required] 
+    [NotEmptyGuid] 
     public Guid PatientId { get; set; }
 
-    [Required]
-    [NotEmptyGuid]
+    [Required] 
+    [NotEmptyGuid] 
     public Guid DoctorId { get; set; }
 
-    [Required]
-    [NotEmptyGuid]
+    [Required] 
+    [NotEmptyGuid] 
     public Guid DepartmentId { get; set; }
 
-    [Required]
-    [NotEmptyGuid]
+    [Required] 
+    [NotEmptyGuid] 
     public Guid ProtocolTypeId { get; set; }
+
+    [Required] 
+    [NotEmptyGuid] 
+    public Guid ProtocolTypeActionId { get; set; }
 
     [Required]
     [DeniedValues(EnumProtocolStatus.None)]

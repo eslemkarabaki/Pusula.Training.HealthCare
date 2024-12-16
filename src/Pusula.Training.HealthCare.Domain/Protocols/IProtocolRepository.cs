@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ public interface IProtocolRepository : IRepository<Protocol, Guid>
         Guid? doctorId = null,
         Guid? departmentId = null,
         Guid? protocolTypeId = null,
+        Guid? protocolTypeActionId = null,
         EnumProtocolStatus status = EnumProtocolStatus.None,
         DateTime? startTime = null,
         DateTime? endTime = null,
@@ -27,7 +29,19 @@ public interface IProtocolRepository : IRepository<Protocol, Guid>
         Guid? doctorId = null,
         Guid? departmentId = null,
         Guid? protocolTypeId = null,
+        Guid? protocolTypeActionId = null,
         EnumProtocolStatus status = EnumProtocolStatus.None,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<List<Protocol>> GetDoctorWorkListWithDetailsAsync(
+        Guid userId,
+        ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
         string? sorting = null,
@@ -41,7 +55,16 @@ public interface IProtocolRepository : IRepository<Protocol, Guid>
         Guid? doctorId = null,
         Guid? departmentId = null,
         Guid? protocolTypeId = null,
+        Guid? protocolTypeActionId = null,
         EnumProtocolStatus status = EnumProtocolStatus.None,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<long> GetCountForDoctorWorkListAsync(
+        Guid userId,
+        ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
         CancellationToken cancellationToken = default
