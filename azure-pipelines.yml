@@ -50,6 +50,25 @@ steps:
   displayName: 'Build Docker Image'
 
 - bash: |
+    wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.45.1_Linux-64bit.deb
+    sudo dpkg -i trivy_0.45.1_Linux-64bit.deb
+  displayName: 'Trivy Yükle'
+
+- bash: |
+    trivy image --severity HIGH,CRITICAL --format table --output trivy-report.txt $(imageName):$(imageTag)
+  displayName: 'Trivy ile Docker İmajını Tara'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: 'trivy-report.txt'
+    artifact: 'TrivyReport'
+  displayName: 'Trivy Raporunu Yayınla'
+
+- bash: |
+    trivy image --severity HIGH,CRITICAL --exit-code 1 $(imageName):$(imageTag)
+  displayName: 'Zafiyet Bulunursa Pipeline Hatası Ver'
+
+- bash: |
     # Log in to GitLab Container Registry
     echo $(GITLAB_REGISTRY_PASSWORD) | docker login registry.gitlab.com -u $(GITLAB_REGISTRY_USER) --password-stdin
   displayName: 'Login to GitLab Container Registry'
