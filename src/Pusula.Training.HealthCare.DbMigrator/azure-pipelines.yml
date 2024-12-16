@@ -9,18 +9,13 @@ pool:
     - agent.name -equals team3-node1
 
 variables:
-  imageName: 'registry.gitlab.com/berkmkaracayir/pusula'
-  dockerFilePath: 'Dockerfile'
+  imageName: 'registry.gitlab.com/berkmkaracayir/migrator'
+  dockerFilePath: 'Dockerfile.db'
   publishDir: '$(Build.ArtifactStagingDirectory)'
-  GITLAB_REGISTRY_USER: 'berkmkaracayir'
+  GITLAB_REGISTRY_USER: 'berkmkaracayir' 
   GITLAB_REGISTRY_PASSWORD: 'glpat-VxJgKhLEvz6ECi-ybUgS'
 
 steps:
-- bash: |
-    echo -e "Subject: Deployment Başladı\n\nDeployment başladı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com
-  displayName: 'Send mail (Start)'
-  condition: always()
-
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
@@ -28,59 +23,43 @@ steps:
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - bash: |
-    dotnet build src/Pusula.Training.HealthCare.Blazor/Pusula.Training.HealthCare.Blazor.csproj --configuration Release
+    # Build the project
+    dotnet build src/Pusula.Training.HealthCare.DbMigrator/Pusula.Training.HealthCare.DbMigrator.csproj --configuration Release
   displayName: 'Build Project'
 
 - bash: |
-    dotnet publish src/Pusula.Training.HealthCare.Blazor/Pusula.Training.HealthCare.Blazor.csproj --configuration Release --output $(publishDir)
+    # Publish the project
+    dotnet publish src/Pusula.Training.HealthCare.DbMigrator/Pusula.Training.HealthCare.DbMigrator.csproj --configuration Release --output $(publishDir)
   displayName: 'Publish Project'
 
 - bash: |
+    # Create image tag in the format: year-month-day-hour:minute-commitId
     TAG=$(date +"%Y-%m-%d-%H.%M")-$(echo $(Build.SourceVersion) | cut -c1-7)
     echo "Generated image tag: $TAG"
     echo "##vso[task.setvariable variable=imageTag]$TAG"
   displayName: 'Generate Image Tag'
 
 - bash: |
+    # Build the Docker image
     docker build -t $(imageName):$(imageTag) -f $(dockerFilePath) .
   displayName: 'Build Docker Image'
 
 - bash: |
-    wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.45.1_Linux-64bit.deb
-    sudo dpkg -i trivy_0.45.1_Linux-64bit.deb
-  displayName: 'Install Trivy'
-
-- bash: |
-    trivy image --severity HIGH,CRITICAL --format table --output trivy-report.txt $(imageName):$(imageTag)
-  displayName: 'Scan Docker Image with Trivy'
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: 'trivy-report.txt'
-    artifact: 'TrivyReport'
-  displayName: 'Trivy Raporunu Yayınla'
-  
-- bash: |
-    trivy image --severity HIGH,CRITICAL --exit-code 1 $(imageName):$(imageTag)
-  displayName: 'Fail Pipeline if Vulnerabilities Found'
-
-- bash: |
+    # Log in to GitLab Container Registry
     echo $(GITLAB_REGISTRY_PASSWORD) | docker login registry.gitlab.com -u $(GITLAB_REGISTRY_USER) --password-stdin
   displayName: 'Login to GitLab Container Registry'
 
 - bash: |
+    # Push Docker image to GitLab Container Registry
     docker push $(imageName):$(imageTag)
   displayName: 'Push Docker Image to GitLab Container Registry'
 
 - bash: |
-    sed -i "s|registry.gitlab.com/berkmkaracayir/pusula:.*|registry.gitlab.com/berkmkaracayir/pusula:$(imageTag)|g" devops/Apps/healtcare/deployment.yml
+    # Update docker-compose.yml with dynamic tag
+    sed -i "s|registry.gitlab.com/berkmkaracayir/migrator:.*|registry.gitlab.com/berkmkaracayir/migrator:$(imageTag)|g" devops/Apps/db-migrator/dbmigrator-deploy.yml
   displayName: 'Update Docker Compose with Dynamic Tag'
 
 - bash: |
-    docker stack deploy --compose-file devops/Apps/healtcare/deployment.yml blazor-dbmigrator
+    # Deploy to Docker Swarm
+    docker stack deploy --compose-file devops/Apps/db-migrator/dbmigrator-deploy.yml dbmigrator
   displayName: 'Deploy to Docker Swarm'
-
-- bash: |
-    echo -e "Subject: Deployment Tamamlandı\n\nDeployment bitti: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com
-  displayName: 'Send mail (Finish)'
-  condition: always()
