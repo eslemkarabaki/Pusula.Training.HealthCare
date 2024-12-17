@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Pusula.Training.HealthCare.Localization;
 using Pusula.Training.HealthCare.MultiTenancy;
@@ -9,6 +10,7 @@ using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
+using Volo.Abp.Users;
 
 namespace Pusula.Training.HealthCare.Blazor.Menus;
 
@@ -26,6 +28,7 @@ public class HealthCareMenuContributor : IMenuContributor
     {
         var administration = context.Menu.GetAdministration();
         var l = context.GetLocalizer<HealthCareResource>();
+        var currentUser = context.ServiceProvider.GetRequiredService<ICurrentUser>();
 
         context.Menu.Items.Insert(
             0,
@@ -45,15 +48,17 @@ public class HealthCareMenuContributor : IMenuContributor
 
         ConfigurePatientRegistrationMenu(context, l);
 
-        context.Menu.AddItem(
-            new ApplicationMenuItem(
-                HealthCareMenus.Medical,
-                l["Menu:Medical"],
-                "/medical",
-                "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Medical.Default
-            )
-        );
+        if (currentUser.IsInRole(HealthCareRoles.Doctor))
+        {
+            context.Menu.AddItem(
+                new ApplicationMenuItem(
+                    HealthCareMenus.Medical,
+                    l["Menu:Medical"],
+                    "/medical",
+                    "fa fa-file-alt"
+                )
+            );
+        }
 
         context.Menu.AddItem(
             new ApplicationMenuItem(

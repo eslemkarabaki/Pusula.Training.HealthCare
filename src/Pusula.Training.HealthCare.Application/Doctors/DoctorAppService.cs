@@ -21,7 +21,7 @@ using Volo.Abp.Identity;
 namespace Pusula.Training.HealthCare.Doctors;
 
 [RemoteService(IsEnabled = false)]
-[Authorize(HealthCarePermissions.Doctors.Default)]
+[Authorize(HealthCarePermissions.Doctors.Default, Roles = HealthCareRoles.Doctor)]
 public class DoctorAppService(
     IDoctorRepository doctorRepository,
     DoctorManager doctorManager,
