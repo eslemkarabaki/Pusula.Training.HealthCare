@@ -66,7 +66,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 l["Menu:Doctors"],
                 "/doctors",
                 "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Doctors.Default
+                requiredPermissionName: HealthCarePermissions.Doctors.Menu
             )
         );
 
@@ -76,7 +76,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 l["Menu:Departments"],
                 "/departments",
                 "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Departments.Default
+                requiredPermissionName: HealthCarePermissions.Departments.Menu
             )
         );
 
@@ -86,7 +86,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 l["Menu:Hospitals"],
                 "/hospitals",
                 "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Hospitals.Default
+                requiredPermissionName: HealthCarePermissions.Hospitals.Menu
             )
         );
 
@@ -103,7 +103,7 @@ public class HealthCareMenuContributor : IMenuContributor
                         HealthCareMenus.AppointmentTypes,
                         l["Appointment Type"],
                         "/appointment-type",
-                        requiredPermissionName: HealthCarePermissions.AppointmentTypes.Default
+                        requiredPermissionName: HealthCarePermissions.AppointmentTypes.Menu
                     )
                 )
                 .AddItem(
@@ -111,7 +111,7 @@ public class HealthCareMenuContributor : IMenuContributor
                         HealthCareMenus.Transactions,
                         l["Appointment"],
                         "/appointments",
-                        requiredPermissionName: HealthCarePermissions.Appointments.Default
+                        requiredPermissionName: HealthCarePermissions.Appointments.Menu
                     )
                 )
                 .AddItem(
@@ -119,7 +119,7 @@ public class HealthCareMenuContributor : IMenuContributor
                         HealthCareMenus.Reports,
                         l["Reports"],
                         "/appointment-reports",
-                        requiredPermissionName: HealthCarePermissions.Appointments.Default
+                        requiredPermissionName: HealthCarePermissions.Appointments.Menu
                     )
                 )
         );
@@ -132,7 +132,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 l["Menu:Diagnosis"],
                 "/diagnosis",
                 "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Diagnosis.Default
+                requiredPermissionName: HealthCarePermissions.Diagnosis.Menu
             )
         );
         return Task.CompletedTask;
@@ -155,7 +155,7 @@ public class HealthCareMenuContributor : IMenuContributor
                                 HealthCareMenus.ProtocolTypes,
                                 l["Menu:ProtocolTypes"],
                                 "/prm/definitions/protocol-types",
-                                requiredPermissionName: HealthCarePermissions.ProtocolTypes.Default
+                                requiredPermissionName: HealthCarePermissions.ProtocolTypes.Menu
                             )
                         )
                         .AddItem(
@@ -163,7 +163,7 @@ public class HealthCareMenuContributor : IMenuContributor
                                 HealthCareMenus.Insurances,
                                 l["Menu:Insurances"],
                                 "/prm/definitions/insurances",
-                                requiredPermissionName: HealthCarePermissions.Insurances.Default
+                                requiredPermissionName: HealthCarePermissions.Insurances.Menu
                             )
                         )
                         .AddItem(
@@ -176,7 +176,7 @@ public class HealthCareMenuContributor : IMenuContributor
                                         HealthCareMenus.Countries,
                                         l["Menu:Countries"],
                                         "prm/definitions/countries",
-                                        requiredPermissionName: HealthCarePermissions.Countries.Default
+                                        requiredPermissionName: HealthCarePermissions.Countries.Menu
                                     )
                                 )
                                 .AddItem(
@@ -184,7 +184,7 @@ public class HealthCareMenuContributor : IMenuContributor
                                         HealthCareMenus.Cities,
                                         l["Menu:Cities"],
                                         "prm/definitions/cities",
-                                        requiredPermissionName: HealthCarePermissions.Cities.Default
+                                        requiredPermissionName: HealthCarePermissions.Cities.Menu
                                     )
                                 )
                                 .AddItem(
@@ -192,7 +192,7 @@ public class HealthCareMenuContributor : IMenuContributor
                                         HealthCareMenus.Districts,
                                         l["Menu:Districts"],
                                         "prm/definitions/districts",
-                                        requiredPermissionName: HealthCarePermissions.Districts.Default
+                                        requiredPermissionName: HealthCarePermissions.Districts.Menu
                                     )
                                 )
                         )
@@ -206,7 +206,7 @@ public class HealthCareMenuContributor : IMenuContributor
                             HealthCareMenus.Patients,
                             l["Menu:Patients"],
                             "/prm/management/patients",
-                            requiredPermissionName: HealthCarePermissions.Patients.Default
+                            requiredPermissionName: HealthCarePermissions.Patients.Menu
                         )
                     )
                 )
@@ -219,7 +219,7 @@ public class HealthCareMenuContributor : IMenuContributor
                             HealthCareMenus.PatientProtocols,
                             l["Menu:PatientProtocols"],
                             "/prm/reports/patient-protocols",
-                            requiredPermissionName: HealthCarePermissions.PatientProtocols.Default
+                            requiredPermissionName: HealthCarePermissions.PatientProtocols.Menu
                         )
                     )
                 )
