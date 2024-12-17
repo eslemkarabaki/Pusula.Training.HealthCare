@@ -1,0 +1,10 @@
+﻿@page "/medical/medical-card/{ProtocolNo:int}/examination"
+@using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+
+@attribute [Authorize(Roles = "doctor")]
+
+@layout MedicalCardLayout
+@inherits HealthCareComponentBase
+
+
+<h1>Examination</h1>

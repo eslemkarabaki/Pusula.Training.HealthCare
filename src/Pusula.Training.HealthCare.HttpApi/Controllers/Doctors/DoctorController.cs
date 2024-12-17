@@ -33,7 +33,7 @@ public class DoctorController : HealthCareController
     public virtual Task<List<DoctorDto>> GetListDoctorsAsync(Guid id) => _doctorAppService.GetListDoctorsAsync(id);
 
     // Get list of doctors with pagination
-    [HttpGet]
+    [HttpGet("all")]
     public virtual Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input) =>
         _doctorAppService.GetListAsync(input);
 
@@ -44,8 +44,8 @@ public class DoctorController : HealthCareController
         await _doctorAppService.GetListWithNavigationPropertiesAsync(input);
 
     // Get a single doctor by ID
-    [HttpGet("{id}")]
-    public virtual Task<DoctorDto> GetAsync(Guid id) => _doctorAppService.GetAsync(id);
+    [HttpGet]
+    public virtual Task<DoctorDto> GetAsync(GetDoctorInput input) => _doctorAppService.GetAsync(input);
 
     // Create a new doctor
     [HttpPost]

@@ -11,6 +11,8 @@ namespace Pusula.Training.HealthCare.Protocols;
 
 public class Protocol : FullAuditedAggregateRoot<Guid>
 {
+    public int ProtocolNo { get; private set; }
+
     public Guid PatientId { get; private set; }
     public Patient Patient { get; set; }
 

@@ -1,0 +1,10 @@
+@page "/medical/medical-card/{ProtocolNo:int}/dashboard"
+@using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+
+@attribute [Authorize(Roles = "doctor")]
+
+@layout MedicalCardLayout
+@inherits HealthCareComponentBase
+
+
+<h1>Dashboard</h1>

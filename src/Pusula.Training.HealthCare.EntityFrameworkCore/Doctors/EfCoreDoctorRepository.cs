@@ -18,6 +18,12 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
     {
     }
 
+    public async Task<Doctor> GetAsync(Guid? doctorId, Guid? userId, CancellationToken cancellationToken = default) =>
+        await (await GetQueryableAsync())
+              .WhereIf(doctorId.HasValue, x => x.Id == doctorId!.Value)
+              .WhereIf(userId.HasValue, x => x.UserId == userId!.Value)
+              .FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
+
     public virtual async Task DeleteAllAsync(
         string? filterText = null,
         string? fullname = null,

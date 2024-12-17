@@ -79,9 +79,9 @@ public class DoctorAppService(
         };
     }
 
-    public virtual async Task<DoctorDto> GetAsync(Guid id)
+    public virtual async Task<DoctorDto> GetAsync(GetDoctorInput input)
     {
-        var doctor = await doctorRepository.GetAsync(id);
+        var doctor = await doctorRepository.GetAsync(input.DoctorId, input.UserId);
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
     }
 

@@ -36,12 +36,30 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
     }
     #endregion
 
-    #region GetWithNavigationProperties
-    public virtual async Task<AppointmentWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await (await GetQueryForNavigationPropertiesAsync()).FirstOrDefaultAsync(b => b.Appointment.Id == id);            
-    }
-    #endregion
+#region GetWithNavigationProperties
+
+    public virtual async Task<AppointmentWithNavigationProperties> GetWithNavigationPropertiesAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    ) =>
+        await (await GetQueryForNavigationPropertiesAsync()).FirstOrDefaultAsync(b => b.Appointment.Id == id);
+
+    public async Task<List<AppointmentWithNavigationProperties>> GetDoctorAppointmentListWithNavigationPropertiesAsync(
+        Guid doctorId,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        ICollection<EnumAppointmentStatus>? statuses = null,
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        CancellationToken cancellationToken = default
+    ) =>
+        await ApplyFilter(await GetQueryForNavigationPropertiesAsync(), doctorId, startTime, endTime, statuses)
+              .OrderBy(string.IsNullOrWhiteSpace(sorting) ? AppointmentConsts.GetDefaultSorting(true) : sorting)
+              .PageBy(skipCount, maxResultCount)
+              .ToListAsync(GetCancellationToken(cancellationToken));
+
+#endregion
 
     #region GetListWithNavigationProperties
     public virtual async Task<List<AppointmentWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
@@ -132,20 +150,56 @@ public class EfCoreAppointmentRepository(IDbContextProvider<HealthCareDbContext>
         query = ApplyFilter(query, filterText, startTime, endTime, status, note, appointmentTypeId, departmentId, doctorId, patientId);
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
     }
-    #endregion
+
+    public async Task<long> GetCountForDoctorAppointmentListAsync(
+        Guid doctorId,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        ICollection<EnumAppointmentStatus>? statuses = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        await ApplyFilter(await GetQueryForNavigationPropertiesAsync(), doctorId, startTime, endTime, statuses)
+            .LongCountAsync(GetCancellationToken(cancellationToken));
+
+#endregion
 
     #region ApplyFilter
     protected virtual IQueryable<Appointment> ApplyFilter(
-    IQueryable<Appointment> query,
-    string? filterText = null, Guid? doctorId = null, DateTime? startTime = null, DateTime? endTime = null,
-    EnumAppointmentStatus? status = null, string? note = null)
-{
-    return query
-        .WhereIf(doctorId.HasValue, e=>e.DoctorId==doctorId!.Value)
-        .WhereIf(status.HasValue, e => e.Status == status!.Value)
-        .WhereIf(startTime.HasValue, e => e.StartTime >= startTime!.Value)
-        .WhereIf(endTime.HasValue, e => e.EndTime <= endTime!.Value)
-        .WhereIf(!string.IsNullOrWhiteSpace(note), e => e.Note!.Contains(note!));
-}
-    #endregion
+        IQueryable<Appointment> query,
+        string? filterText = null,
+        Guid? doctorId = null,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        EnumAppointmentStatus? status = null,
+        string? note = null
+    ) =>
+        query
+            .WhereIf(doctorId.HasValue, e => e.DoctorId == doctorId!.Value)
+            .WhereIf(status.HasValue, e => e.Status == status!.Value)
+            .WhereIf(startTime.HasValue, e => e.StartTime >= startTime!.Value)
+            .WhereIf(endTime.HasValue, e => e.EndTime <= endTime!.Value)
+            .WhereIf(!string.IsNullOrWhiteSpace(note), e => e.Note!.Contains(note!));
+
+    protected virtual IQueryable<AppointmentWithNavigationProperties> ApplyFilter(
+        IQueryable<AppointmentWithNavigationProperties> query,
+        Guid doctorId,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        ICollection<EnumAppointmentStatus>? statuses = null
+    ) =>
+        query
+            .Where(e => e.Doctor.Id == doctorId)
+            .WhereIf(
+                statuses == null || statuses.Count == 0,
+                e => e.Appointment.Status == EnumAppointmentStatus.Scheduled ||
+                    e.Appointment.Status == EnumAppointmentStatus.Completed
+            )
+            .WhereIf(
+                statuses != null && statuses.Count != 0,
+                e => statuses!.Contains(e.Appointment.Status)
+            )
+            .WhereIf(startTime.HasValue, e => e.Appointment.StartTime >= startTime!.Value)
+            .WhereIf(endTime.HasValue, e => e.Appointment.EndTime <= endTime!.Value);
+
+#endregion
 }

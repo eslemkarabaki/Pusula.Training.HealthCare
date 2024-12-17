@@ -1,0 +1,106 @@
+@using Microsoft.Extensions.Localization
+@using Pusula.Training.HealthCare.Localization
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Protocols
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Position = Syncfusion.Blazor.Popups.Position
+
+@attribute [Authorize(HealthCarePermissions.Patients.Default)]
+
+@layout MainLayout
+@inherits LayoutComponentBase
+
+@inject IProtocolAppService ProtocolAppService
+@inject IStringLocalizer<HealthCareResource> L
+@inject NavigationManager NavigationManager
+
+@if (Protocol != null)
+{
+   <SfCard ID="MedicalCard" CssClass="position-relative">
+      <CardContent>
+         <div class="d-flex justify-content-between align-items-center">
+            <div>
+               <div class="d-flex gap-1 align-items-center mb-1">
+                  <h5 class="mb-0">@Protocol.Patient.FullName</h5>
+                  @* <span class="badge text-bg-secondary">@Protocol.Patient.PatientType.Name</span> *@
+                  @* <span class="fs-12p color-grey-700">@Protocol.Patient.Country.Name</span> *@
+               </div>
+
+               <div class="d-flex gap-1 align-items-center">
+                  <PatientGenderIcon Gender="@Protocol.Patient.Gender"/>
+                  <div>
+                     <span>Hasta No:</span>
+                     <span>@Protocol.Patient.No</span>
+                  </div>
+                  <span class="vr"></span>
+                  <div>
+                     <div class="d-flex gap-1 align-items-end">
+                        <span>@Protocol.Patient.BirthDate.ToString("dd.MM.yyyy")</span>
+                        <span class="fs-12p">(@Protocol.Patient.Age.Item1 @Protocol.Patient.Age.Item2)</span>
+                     </div>
+                  </div>
+                  <span class="vr"></span>
+                  <div>
+                     @Protocol.Patient.EmailAddress
+                  </div>
+                  <span class="vr"></span>
+                  <div>
+                     @($"+{Protocol.Patient.MobilePhoneNumberCode} {Protocol.Patient.MobilePhoneNumber}")
+                  </div>
+               </div>
+            </div>
+            <div class="d-flex align-items-center flex-column gap-1">
+               <div class="d-flex gap-1">
+                  <SfTooltip Position="Position.BottomCenter" Content="@L["SendMessage"]">
+                     <SfButton CssClass="e-outline" IconCss="far fa-comment" Disabled/>
+                  </SfTooltip>
+                  <SfTooltip Position="Position.BottomCenter" Content="@L["SendMail"]">
+                     <SfButton CssClass="e-outline" IconCss="far fa-envelope" Disabled/>
+                  </SfTooltip>
+               </div>
+            </div>
+         </div>
+      </CardContent>
+   </SfCard>
+
+   <div class="d-flex">
+      <div class="flex-fill p-1">
+         <CascadingValue Value="@Protocol">
+            @Body
+         </CascadingValue>
+      </div>
+      <div class="nav flex-column bg-white">
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link" @onclick="@(() => NavigateTo("dashboard"))">Kontrol Paneli</NavLink>
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link" @onclick="@(() => NavigateTo("examination"))">Muayene</NavLink>
+      </div>
+   </div>
+} else
+{
+   @("Protocol not found")
+}
+
+
+
+@code{
+
+   [CascadingParameter]
+   RouteData RouteData { get; set; } = null!;
+
+   private ProtocolDto? Protocol { get; set; }
+   private string BaseAddress => $"medical/medical-card/{ProtocolNo}";
+   private int ProtocolNo { get; set; }
+
+   protected override async Task OnInitializedAsync()
+   {
+      if (RouteData.RouteValues.TryGetValue("ProtocolNo", out var protocolNo))
+      {
+         ProtocolNo = Convert.ToInt32(protocolNo);
+         Protocol = await ProtocolAppService.GetWithDetailsAsync(ProtocolNo);
+      }
+   }
+
+   private void NavigateTo(string? page,bool forceLoad=false) => NavigationManager.NavigateTo($"{BaseAddress}/{page}",forceLoad);
+
+}

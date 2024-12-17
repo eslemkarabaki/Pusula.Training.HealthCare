@@ -112,7 +112,7 @@ public static class HealthCarePermissions
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
-    }    
+    }
 
     public static class AppointmentTypes
     {
@@ -137,10 +137,10 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
-    
-    public static class DoctorWorkList
+
+    public static class Medical
     {
-        public const string Default = GroupName + ".DoctorWorkList";
+        public const string Default = GroupName + ".Medical";
     }
 
     public static class Titles
@@ -198,6 +198,7 @@ public static class HealthCarePermissions
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
     }
+
     public static class Diagnosis
     {
         public const string Default = GroupName + ".Diagnosis";
@@ -206,7 +207,7 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-    #region Radiology
+#region Radiology
 
     public static class RadiologyExaminationGroups
     {
@@ -256,6 +257,5 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-    #endregion
+#endregion
 }
-

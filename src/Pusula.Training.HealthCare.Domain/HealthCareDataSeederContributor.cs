@@ -69,12 +69,15 @@ public class HealthCareDataSeederContributor(
         var patientIds = await SeedPatientsAsync(countries, patientTypeIds);
         await SeedAddressesAsync(patientIds, districtIds);
 
-        await appDefaultRepository.InsertAsync(
-            new AppDefault(guidGenerator.Create())
-            {
-                CurrentCountryId = countries.FirstOrDefault(e => e.IsCurrent)?.Id ?? Guid.Empty
-            }
-        );
+        if (!await appDefaultRepository.AnyAsync())
+        {
+            await appDefaultRepository.InsertAsync(
+                new AppDefault(guidGenerator.Create())
+                {
+                    CurrentCountryId = countries.FirstOrDefault(e => e.IsCurrent)?.Id ?? Guid.Empty
+                }
+            );
+        }
 
         var radiologyExaminationGroups = await SeedRadiologyExaminationGroupsAsync();
         await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
@@ -373,6 +376,7 @@ public class HealthCareDataSeederContributor(
         foreach (var doctor in doctors)
         {
             var user = await SeedUserAsync(
+                doctor.FirstName, doctor.LastName,
                 faker.Internet.UserName(doctor.FirstName, doctor.LastName),
                 faker.Internet.Email(doctor.FirstName, doctor.LastName), "1q2w3E*", "doctor"
             );
@@ -571,6 +575,8 @@ public class HealthCareDataSeederContributor(
 
     // User
     private async Task<IdentityUser> SeedUserAsync(
+        string name,
+        string surname,
         string userName,
         string email,
         string password,

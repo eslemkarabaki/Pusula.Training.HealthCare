@@ -308,5 +308,24 @@ public class AppointmentsAppService(
             await appointmentRepository.GetListAsync(startTime: DateTime.Now, doctorId: id)
         );
 
+    public async Task<PagedResultDto<AppointmentWithNavigationPropertiesDto>>
+        GetDoctorAppointmentListWithNavigationPropertiesAsync(GetDoctorAppointmentListInput input)
+    {
+        var items = await appointmentRepository.GetDoctorAppointmentListWithNavigationPropertiesAsync(
+            input.DoctorId, input.StartTime, input.EndTime, input.Status, input.Sorting, input.MaxResultCount,
+            input.SkipCount
+        );
+        var count = await appointmentRepository.GetCountForDoctorAppointmentListAsync(
+            input.DoctorId, input.StartTime, input.EndTime, input.Status
+        );
+
+        return new PagedResultDto<AppointmentWithNavigationPropertiesDto>(
+            count,
+            ObjectMapper.Map<List<AppointmentWithNavigationProperties>, List<AppointmentWithNavigationPropertiesDto>>(
+                items
+            )
+        );
+    }
+
 #endregion
 }

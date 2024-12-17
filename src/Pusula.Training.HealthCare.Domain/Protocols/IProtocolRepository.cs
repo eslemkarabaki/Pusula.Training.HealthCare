@@ -9,6 +9,11 @@ namespace Pusula.Training.HealthCare.Protocols;
 
 public interface IProtocolRepository : IRepository<Protocol, Guid>
 {
+    Task<Protocol> GetWithDetailsAsync(
+        int protocolNo,
+        CancellationToken cancellationToken = default
+    );
+
     Task<List<Protocol>> GetListAsync(
         Guid? patientId = null,
         Guid? doctorId = null,
@@ -40,7 +45,7 @@ public interface IProtocolRepository : IRepository<Protocol, Guid>
     );
 
     Task<List<Protocol>> GetDoctorWorkListWithDetailsAsync(
-        Guid userId,
+        Guid doctorId,
         ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
@@ -63,7 +68,7 @@ public interface IProtocolRepository : IRepository<Protocol, Guid>
     );
 
     Task<long> GetCountForDoctorWorkListAsync(
-        Guid userId,
+        Guid doctorId,
         ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null,

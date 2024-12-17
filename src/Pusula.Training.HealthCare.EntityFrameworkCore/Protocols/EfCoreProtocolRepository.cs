@@ -16,6 +16,11 @@ namespace Pusula.Training.HealthCare.Protocols;
 public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
     : EfCoreRepository<HealthCareDbContext, Protocol, Guid>(dbContextProvider), IProtocolRepository
 {
+    public async Task<Protocol> GetWithDetailsAsync(int protocolNo, CancellationToken cancellationToken = default) =>
+        await (await WithDetailsAsync(
+            e => e.Patient, e => e.Department, e => e.Doctor, e => e.ProtocolType, e => e.ProtocolTypeAction
+        )).FirstOrDefaultAsync(e => e.ProtocolNo == protocolNo, GetCancellationToken(cancellationToken));
+
     public async Task<List<Protocol>> GetListAsync(
         Guid? patientId = null,
         Guid? doctorId = null,
@@ -65,7 +70,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
               .ToListAsync(GetCancellationToken(cancellationToken));
 
     public async Task<List<Protocol>> GetDoctorWorkListWithDetailsAsync(
-        Guid userId,
+        Guid doctorId,
         ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
@@ -77,7 +82,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
         await ApplyFilterForDoctorWorkList(
                   await WithDetailsAsync(
                       e => e.Patient, e => e.Department, e => e.Doctor, e => e.ProtocolType, e => e.ProtocolTypeAction
-                  ), userId, status, startTime, endTime
+                  ), doctorId, status, startTime, endTime
               )
               .OrderBy(GetSorting(sorting, false))
               .Skip(skipCount)
@@ -103,14 +108,14 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
             .LongCountAsync(GetCancellationToken(cancellationToken));
 
     public async Task<long> GetCountForDoctorWorkListAsync(
-        Guid userId,
+        Guid doctorId,
         ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
         CancellationToken cancellationToken = default
     ) =>
         await ApplyFilterForDoctorWorkList(
-                await WithDetailsAsync(e => e.Doctor), userId, status, startTime, endTime
+                await WithDetailsAsync(e => e.Doctor), doctorId, status, startTime, endTime
             )
             .LongCountAsync(GetCancellationToken(cancellationToken));
 
@@ -140,13 +145,19 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
 
     protected virtual IQueryable<Protocol> ApplyFilterForDoctorWorkList(
         IQueryable<Protocol> query,
-        Guid userId,
+        Guid doctorId,
         ICollection<EnumProtocolStatus>? status = null,
         DateTime? startTime = null,
         DateTime? endTime = null
     ) =>
         query
-            .Where(e => e.Doctor.UserId == userId)
+            .Where(e => e.Doctor.Id == doctorId)
+            .WhereIf(
+                status == null || status.Count == 0,
+                e => e.Status == EnumProtocolStatus.Waiting ||
+                    e.Status == EnumProtocolStatus.InProgress ||
+                    e.Status == EnumProtocolStatus.Completed
+            )
             .WhereIf(status != null && status.Count != 0, e => status!.Contains(e.Status))
             .WhereIf(startTime.HasValue, e => e.StartTime >= startTime!.Value)
             .WhereIf(endTime.HasValue, e => !e.EndTime.HasValue || e.EndTime <= endTime!.Value);

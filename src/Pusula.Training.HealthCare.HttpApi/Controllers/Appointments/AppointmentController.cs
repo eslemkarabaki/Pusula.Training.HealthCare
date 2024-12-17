@@ -37,6 +37,11 @@ public class AppointmentController : HealthCareController, IAppointmentsAppServi
         GetPatientWaitingAppointmentsAsync(Guid patientId) =>
         await _appointmentsAppService.GetPatientWaitingAppointmentsAsync(patientId);
 
+    [HttpGet("doctor-appointments")]
+    public async Task<PagedResultDto<AppointmentWithNavigationPropertiesDto>>
+        GetDoctorAppointmentListWithNavigationPropertiesAsync(GetDoctorAppointmentListInput input) =>
+        await _appointmentsAppService.GetDoctorAppointmentListWithNavigationPropertiesAsync(input);
+
     [HttpGet]
     [Route("with-navigation-properties/{id}")]
     public virtual Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) =>
