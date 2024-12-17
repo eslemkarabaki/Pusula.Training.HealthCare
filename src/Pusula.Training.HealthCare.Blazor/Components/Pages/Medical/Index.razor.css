@@ -1,0 +1,29 @@
+.work-list-group {
+    display: flex;
+    height: 32px;
+    align-items: center;
+    border: 1px solid var(--material-grey-300);
+    border-left-width: 6px;
+    border-radius: 6px;
+}
+
+.work-list-group ::deep .e-radio-wrapper.e-wrapper,
+.work-list-group ::deep .e-radio-wrapper.e-wrapper label {
+    height: 100%;
+}
+
+.work-list-group ::deep .e-radio-wrapper.e-wrapper label {
+    display: flex;
+    align-items: center;
+}
+
+.work-list-group ::deep .e-radio + label::before {
+    display: none;
+}
+
+.work-list-group ::deep .e-radio + label .e-label {
+    padding: 0 1rem;
+    text-wrap: nowrap;
+    font-size: 12px;
+    color: black;
+}

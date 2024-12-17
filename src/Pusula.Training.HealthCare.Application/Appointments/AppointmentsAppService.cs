@@ -6,7 +6,6 @@ using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Permissions;
-using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
@@ -228,7 +227,7 @@ public class AppointmentsAppService(
 
     #endregion
 
-    #region GetListAsExcelFile
+#region GetListAsExcelFile
 
     [AllowAnonymous]
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(AppointmentExcelDownloadDto input)
@@ -264,7 +263,7 @@ public class AppointmentsAppService(
         );
     }
 
-#endregion
+    #endregion    
 
 #region DeleteById
 
@@ -308,6 +307,25 @@ public class AppointmentsAppService(
         ObjectMapper.Map<List<Appointment>, List<AppointmentDto>>(
             await appointmentRepository.GetListAsync(startTime: DateTime.Now, doctorId: id)
         );
+
+    public async Task<PagedResultDto<AppointmentWithNavigationPropertiesDto>>
+        GetDoctorAppointmentListWithNavigationPropertiesAsync(GetDoctorAppointmentListInput input)
+    {
+        var items = await appointmentRepository.GetDoctorAppointmentListWithNavigationPropertiesAsync(
+            input.DoctorId, input.StartTime, input.EndTime, input.Status, input.Sorting, input.MaxResultCount,
+            input.SkipCount
+        );
+        var count = await appointmentRepository.GetCountForDoctorAppointmentListAsync(
+            input.DoctorId, input.StartTime, input.EndTime, input.Status
+        );
+
+        return new PagedResultDto<AppointmentWithNavigationPropertiesDto>(
+            count,
+            ObjectMapper.Map<List<AppointmentWithNavigationProperties>, List<AppointmentWithNavigationPropertiesDto>>(
+                items
+            )
+        );
+    }
 
 #endregion
 }

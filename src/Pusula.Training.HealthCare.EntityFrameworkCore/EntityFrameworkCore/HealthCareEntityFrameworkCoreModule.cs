@@ -27,7 +27,6 @@ using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentTypes;
-using Pusula.Training.HealthCare.AppointmentReports;
 using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.RadiologyExaminations;
@@ -39,8 +38,9 @@ using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.WorkLists;
 using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.ProtocolTypeActions;
 using Pusula.Training.HealthCare.ExaminationsPhysical;
-using Pusula.Training.HealthCare.EntityFrameworkCore.ExaminationDiagnoses;
+
 using Pusula.Training.HealthCare.ExaminationDiagnoses;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
@@ -91,7 +91,6 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<PatientNote, EfCorePatientNoteRepository>();
                 options.AddRepository<AppDefault, EfCoreAppDefaultRepository>();
                 options.AddRepository<AppointmentType, EfCoreAppointmentTypeRepository>();
-                options.AddRepository<AppointmentReport, EfCoreAppointmentReportRepository>();
                 options.AddRepository<ProtocolType, EfCoreProtocolTypeRepository>();
                 options.AddRepository<Insurance, EfCoreInsuranceRepository>();
                 options.AddRepository<Diagnosis, EfCoreDiagnosisRepository>();
@@ -105,15 +104,17 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<RadiologyExamination, EfCoreRadiologyExaminationRepository>();
                 options.AddRepository<RadiologyExaminationProcedure, EfCoreRadiologyExaminationProcedureRepository>();
                 options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
+                options.AddRepository<ProtocolTypeAction, EfCoreProtocolTypeActionRepository>();
                 options.AddRepository<ExaminationDiagnosis, EfCoreExaminationDiagnosisRepository>();
             }
         );
 
-        Configure<AbpDbContextOptions>(options =>
-        {
-
-            options.UseNpgsql();
-        });
+        Configure<AbpDbContextOptions>(
+            options =>
+            {
+                options.UseNpgsql();
+            }
+        );
         Configure<AbpDbContextOptions>(
             options =>
             {

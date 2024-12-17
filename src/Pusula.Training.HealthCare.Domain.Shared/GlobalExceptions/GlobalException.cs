@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Volo.Abp;
 
 namespace Pusula.Training.HealthCare.GlobalExceptions;
@@ -5,6 +6,7 @@ namespace Pusula.Training.HealthCare.GlobalExceptions;
 public class GlobalException : IGlobalException
 {
     public static void ThrowIf(bool condition, string message) => ThrowIf(condition, message, default);
+    public static void ThrowIf(bool condition, IEnumerable<string> messages) => ThrowIf(condition, string.Join(',',messages), default);
 
     public static void ThrowIf(bool condition, string message, string? code)
     {

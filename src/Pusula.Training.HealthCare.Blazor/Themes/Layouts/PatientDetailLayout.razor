@@ -102,7 +102,7 @@
       if (RouteData.RouteValues.TryGetValue("PatientNo", out var patientNo))
       {
          PatientNo = Convert.ToInt32(patientNo);
-         Patient = await PatientAppService.GetWithNavigationPropertiesAsync(PatientNo);
+         Patient = await PatientAppService.GetWithNavigationPropertiesAsync(new GetPatientInput(PatientNo: PatientNo));
       }
    }
 

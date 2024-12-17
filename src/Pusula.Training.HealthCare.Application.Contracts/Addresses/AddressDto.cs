@@ -5,7 +5,7 @@ using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.Addresses;
 
-public class AddressDto : AuditedEntityDto<Guid>, IHasConcurrencyStamp, IAddress
+public class AddressDto : EntityDto<Guid>, IHasConcurrencyStamp
 {
     public Guid PatientId { get; set; }
     public Guid DistrictId { get; set; }

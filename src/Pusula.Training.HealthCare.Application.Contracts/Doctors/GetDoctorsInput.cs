@@ -5,12 +5,10 @@ namespace Pusula.Training.HealthCare.Doctors;
 
 public class GetDoctorsInput : PagedAndSortedResultRequestDto
 {
-    public string? WorkingHours;
+    public int? AppointmentTime { get; set; }
 
     public string? FilterText { get; set; }
 
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
     public string? FullName { get; set; }
     public Guid? TitleId { get; set; }
     public Guid? DepartmentId { get; set; }

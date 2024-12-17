@@ -6,12 +6,13 @@ using Volo.Abp.Identity;
 
 namespace Pusula.Training.HealthCare.PatientNotes;
 
-public sealed class PatientNote : FullAuditedAggregateRootWithUser<Guid,IdentityUser>
+public class PatientNote : FullAuditedAggregateRoot<Guid>, IMayHaveCreator<IdentityUser>
 {
     public Guid PatientId { get; private set; }
     public string Note { get; private set; }
 
-    
+    public IdentityUser? Creator { get; set; }
+
     protected PatientNote() => Note = string.Empty;
 
     public PatientNote(Guid id, Guid patientId, string note) : base(id)

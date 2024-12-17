@@ -17,7 +17,7 @@ namespace Pusula.Training.HealthCare.Appointments
         [NotNull]
         public virtual DateTime EndTime { get; private set; }
         [NotNull]
-        public virtual EnumStatus Status { get; private set; }
+        public virtual EnumAppointmentStatus Status { get; private set; }
         [CanBeNull]
         public virtual string? Note { get; private set; }     
         public virtual Guid AppointmentTypeId { get; private set; }
@@ -36,7 +36,7 @@ namespace Pusula.Training.HealthCare.Appointments
             Guid departmentId, Guid doctorId, 
             Guid patientId, DateTime startTime,
             DateTime endTime, string note,
-            EnumStatus status = default)
+            EnumAppointmentStatus status = default)
         {
             SetAppointmentTypeId(appointmentTypeId);
             SetDepartmentId(departmentId);
@@ -54,7 +54,7 @@ namespace Pusula.Training.HealthCare.Appointments
         public void SetPatientId(Guid patientId) => PatientId = Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId)); 
         public void SetStartTime(DateTime startTime) => StartTime = Check.NotNull(startTime, nameof(startTime));
         public void SetEndTime(DateTime endTime) => EndTime = Check.NotNull(endTime,nameof(endTime));
-        public void SetStatus(EnumStatus status) => Status = status;
+        public void SetStatus(EnumAppointmentStatus status) => Status = status;
         public void SetNote(string note) => Note = Check.Length(note, nameof(note), AppointmentConsts.NoteMaxLength);
 
     }

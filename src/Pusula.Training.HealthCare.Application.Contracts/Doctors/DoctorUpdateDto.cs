@@ -1,31 +1,32 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Pusula.Training.HealthCare.DataAnnotations;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Identity;
 
 namespace Pusula.Training.HealthCare.Doctors;
 
 public class DoctorUpdateDto : IHasConcurrencyStamp
 {
     [Required]
-    [StringLength(128)] 
+    [StringLength(DoctorConsts.FirstNameMaxLength)]
     public string FirstName { get; set; } = null!;
 
     [Required]
-    [StringLength(128)] 
+    [StringLength(DoctorConsts.LastNameMaxLength)]
     public string LastName { get; set; } = null!;
 
     [Required]
-    [StringLength(256)] 
-    public string WorkingHours { get; set; } = null!;
+    [Range(DoctorConsts.AppointmentTimeMin, DoctorConsts.AppointmentTimeMax)]
+    public int AppointmentTime { get; set; }
 
     [Required]
-    public Guid TitleId { get; set; }
+    [NotEmptyGuid]
+    public Guid? TitleId { get; set; }
 
     [Required]
-    public Guid DepartmentId { get; set; }
-
-    [Required]
-    public Guid HospitalId { get; set; } 
+    [NotEmptyGuid]
+    public Guid? DepartmentId { get; set; }
 
     public string ConcurrencyStamp { get; set; } = null!;
 }

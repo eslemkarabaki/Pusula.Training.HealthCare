@@ -9,17 +9,11 @@ using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Departments;
 using Syncfusion.Blazor.DropDowns;
-using Microsoft.AspNetCore.Components;
-using Syncfusion.Blazor.Data;
 using Microsoft.AspNetCore.Components.Forms;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients;
-using Pusula.Training.HealthCare.Countries;
-using Pusula.Training.HealthCare.PatientTypes;
-using System.Collections.ObjectModel;
 using Syncfusion.Blazor.Popups;
 using Pusula.Training.HealthCare.Shared;
 using System.Linq.Dynamic.Core;
-using Volo.Abp.Application.Dtos;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
 
@@ -29,7 +23,6 @@ public partial class Appointments
     private DateTime CurrentDate { get; set; } = DateTime.Today;
     private GetPatientsInputValidator PatientsInputValidator { get; set; } = new();
     private List<AppointmentDto> AppointmentLists { get; set; } = [];
-
     private List<DoctorDto> Doctors { get; set; } = [];
     private IReadOnlyList<DepartmentDto> Departments { get; set; } = [];
     private List<AppointmentTypeDto> AppointmentTypes { get; set; } = [];
@@ -50,6 +43,21 @@ public partial class Appointments
         SetDefaultsForUpdateDto();
     }
 
+    private void CancelScheduleEvent(CellClickEventArgs args) => args.Cancel = true;
+    private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;
+
+    public void PatientIdChanged(SelectEventArgs<LookupDto<Guid>> args)
+    {
+        SelectedPatient = args.ItemData.DisplayName;
+    }
+    public async Task AppointmentDrag(Syncfusion.Blazor.Schedule.DragEventArgs<AppointmentDto> args)
+    {
+        await AppointmentsAppService.UpdateDateAsync(args.Data.Id, args.Data.StartTime, args.Data.EndTime);
+        await GetAppointmentsAsync();
+
+    }
+
+#region EventRendered
     public static class AppointmentHelper
     {
         public static IDictionary<string, object> ApplyCategoryColor(
@@ -78,11 +86,9 @@ public partial class Appointments
     {
         var categoryColor = args.Data.Status switch
         {
-            EnumStatus.Scheduled   => "#FFD700",
-            EnumStatus.Completed   => "#32CD32",
-            EnumStatus.Cancelled   => "#FF6347",
-            EnumStatus.NoShow      => "#A9A9A9",
-            EnumStatus.Rescheduled => "#1E90FF",
+            EnumAppointmentStatus.Scheduled   => "#FFD700",
+            EnumAppointmentStatus.Completed   => "#32CD32",
+            EnumAppointmentStatus.Cancelled   => "#FF6347",         
             _                      => "#FFFFFF"
         };
 
@@ -90,28 +96,36 @@ public partial class Appointments
         args.Attributes = updatedAttributes.ToDictionary(entry => entry.Key, entry => entry.Value);
     }
 
-    protected async Task GetPatientFilter(FilteringEventArgs args)
-    {
-        args.PreventDefaultAction = true;
-        var filter = new LookupRequestDto { Filter = args.Text };
-        //var result = await PatientsInputValidator.ValidateAsync(filter);
-        //if (!result.IsValid)
-        //{
-        //    return;
-        //}
+    #endregion    
 
-        var patients = await AppointmentsAppService.GetPatientLookupAsync(filter);
-        Patients = patients.Items;
-        await refAutoComplatePatient.FilterAsync(Patients);
-        await InvokeAsync(StateHasChanged);
-    }
-
+#region OnInitialized OnAction
     protected override async Task OnInitializedAsync()
     {
         Departments = await DepartmentsAppService.GetListDepartmentsAsync();
         AppointmentTypes = await AppointmentTypeAppService.GetListAppointmentTypesAsync();
     }
+    public async Task OnActionBegin(ActionEventArgs<AppointmentDto> args)
+    {
+        if (args.ActionType == ActionType.EventRemove)
+        {
+            var x = args.DeletedRecords.First();
+            await AppointmentsAppService.DeleteAsync(x.Id);
+            AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+    #endregion    
 
+#region Get And Selects
+    protected async Task GetPatientFilter(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        var filter = new LookupRequestDto { Filter = args.Text };
+        var patients = await AppointmentsAppService.GetPatientLookupAsync(filter);
+        Patients = patients.Items;
+        await refAutoComplatePatient.FilterAsync(Patients);
+        await InvokeAsync(StateHasChanged);
+    }
     protected async Task DepartmentSelect(ChangeEventArgs<Guid, DepartmentDto> args)
     {
         IntervalValue = args.ItemData.Duration;
@@ -126,12 +140,10 @@ public partial class Appointments
         await GetAppointmentsAsync();
         await InvokeAsync(StateHasChanged);
     }
+    private async Task GetAppointmentsAsync() => AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
+    public string SelectedPatient { get; set; }
 
-    private async Task GetAppointmentsAsync() =>
-        AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
-
-    private void CancelScheduleEvent(CellClickEventArgs args) => args.Cancel = true;
-    private void CancelScheduleEvent(EventClickArgs<AppointmentDto> args) => args.Cancel = true;
+    #endregion
 
 #region Patient Creation
 
@@ -157,6 +169,11 @@ public partial class Appointments
 
     private async Task OpenCreateAppointmentDialogAsync(CellClickEventArgs args)
     {
+        if (AppointmentLists.Any(e=>e.StartTime == args.StartTime && e.Status != EnumAppointmentStatus.Cancelled))
+        {
+            await base.Notify.Error("Bu zamana ait randevu bulunmaktadır!");
+            return;
+        }
         SetDefaultsForCreateDto(args);
         await CreateAppointmentDialog.ShowAsync();
     }
@@ -185,13 +202,16 @@ public partial class Appointments
             await HandleErrorAsync(ex);
         }
     }
+    
 
     private void SetDefaultsForCreateDto(CellClickEventArgs? args = null)
     {
         AppointmentCreateDto = new AppointmentCreateDto()
         {
             StartTime = args?.StartTime ?? DateTime.Today,
-            EndTime = args?.EndTime ?? DateTime.Today
+            EndTime = args?.EndTime ?? DateTime.Today,
+            DepartmentId = SelectedDepartmentId,
+            DoctorId = SelectedDoctorId,
         };
         AppointmentCreateContext = new EditContext(AppointmentCreateDto);
     }
@@ -209,6 +229,7 @@ public partial class Appointments
     {
         EditingAppointmentId = args.Event.Id;
         ObjectMapper.Map(args.Event, AppointmentUpdateDto);
+        SelectedPatient = (await PatientAppService.GetAsync(new GetPatientInput(AppointmentUpdateDto.PatientId))).FullName;
         await UpdateAppointmentDialog.ShowAsync();
         
     }
@@ -242,23 +263,6 @@ public partial class Appointments
         AppointmentUpdateContext = new EditContext(AppointmentUpdateDto);
     }
 
-#endregion
-
-    public async Task OnActionBegin(ActionEventArgs<AppointmentDto> args)
-    {
-        if (args.ActionType == ActionType.EventRemove)
-        {
-            var x = args.DeletedRecords.First();
-            await AppointmentsAppService.DeleteAsync(x.Id);
-            AppointmentLists = await AppointmentsAppService.GetListAppointmentsAsync(SelectedDoctorId);
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    public async Task AppointmentDrag(Syncfusion.Blazor.Schedule.DragEventArgs<AppointmentDto> args)
-    {
-        await AppointmentsAppService.UpdateDateAsync(args.Data.Id, args.Data.StartTime, args.Data.EndTime);
-        await GetAppointmentsAsync();
-
-    }
+    #endregion
+      
 }

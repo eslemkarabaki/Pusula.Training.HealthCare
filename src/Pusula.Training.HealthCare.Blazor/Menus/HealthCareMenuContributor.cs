@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Pusula.Training.HealthCare.Localization;
 using Pusula.Training.HealthCare.MultiTenancy;
@@ -9,7 +10,7 @@ using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
-
+using Volo.Abp.Users;
 
 namespace Pusula.Training.HealthCare.Blazor.Menus;
 
@@ -27,6 +28,7 @@ public class HealthCareMenuContributor : IMenuContributor
     {
         var administration = context.Menu.GetAdministration();
         var l = context.GetLocalizer<HealthCareResource>();
+        var currentUser = context.ServiceProvider.GetRequiredService<ICurrentUser>();
 
         context.Menu.Items.Insert(
             0,
@@ -46,6 +48,28 @@ public class HealthCareMenuContributor : IMenuContributor
 
         ConfigurePatientRegistrationMenu(context, l);
 
+        if (currentUser.IsInRole(HealthCareRoles.Doctor))
+        {
+            context.Menu.AddItem(
+                new ApplicationMenuItem(
+                    HealthCareMenus.Medical,
+                    l["Menu:Medical"],
+                    "/medical",
+                    "fa fa-file-alt"
+                )
+            );
+        }
+
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Doctors,
+                l["Menu:Doctors"],
+                "/doctors",
+                "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Doctors.Default
+            )
+        );
+
         context.Menu.AddItem(
             new ApplicationMenuItem(
                 HealthCareMenus.Departments,
@@ -60,47 +84,56 @@ public class HealthCareMenuContributor : IMenuContributor
             new ApplicationMenuItem(
                 HealthCareMenus.Hospitals,
                 l["Menu:Hospitals"],
-                url: "/hospitals",
-                icon: "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Hospitals.Default)
+                "/hospitals",
+                "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Hospitals.Default
+            )
         );
 
-        #region Appoinments
+#region Appoinments
+
         context.Menu.AddItem(
             new ApplicationMenuItem(
-                HealthCareMenus.Appointments,
-                l["Menu:Appointments"],
-                icon: "fa fa-calendar-check"
+                    HealthCareMenus.Appointments,
+                    l["Menu:Appointments"],
+                    icon: "fa fa-calendar-check"
+                )
+                .AddItem(
+                    new ApplicationMenuItem(
+                        HealthCareMenus.AppointmentTypes,
+                        l["Appointment Type"],
+                        "/appointment-type",
+                        requiredPermissionName: HealthCarePermissions.AppointmentTypes.Default
+                    )
+                )
+                .AddItem(
+                    new ApplicationMenuItem(
+                        HealthCareMenus.Transactions,
+                        l["Appointment"],
+                        "/appointments",
+                        requiredPermissionName: HealthCarePermissions.Appointments.Default
+                    )
+                )
+                .AddItem(
+                    new ApplicationMenuItem(
+                        HealthCareMenus.Reports,
+                        l["Reports"],
+                        "/appointment-reports",
+                        requiredPermissionName: HealthCarePermissions.Appointments.Default
+                    )
+                )
+        );
 
-        )
-            .AddItem(new ApplicationMenuItem(
-                HealthCareMenus.AppointmentTypes,
-                                l["Appointment Type"],
-                                "/appointment-type",
-                                requiredPermissionName: HealthCarePermissions.AppointmentTypes.Default)
-            )
+#endregion
 
-            .AddItem(new ApplicationMenuItem(
-                HealthCareMenus.Transactions,
-                l["Appointment"],
-                "/appointments",
-                requiredPermissionName: HealthCarePermissions.Appointments.Default)
-            )
-            .AddItem(new ApplicationMenuItem(
-                HealthCareMenus.Reports,
-                                l["Reports"],
-                                "/appointment-reports",
-                                requiredPermissionName: HealthCarePermissions.AppointmentReports.Default)
-            )
-            );
-        #endregion
         context.Menu.AddItem(
             new ApplicationMenuItem(
                 HealthCareMenus.Diagnoses,
                 l["Menu:Diagnosis"],
-                url: "/diagnosis",
-                icon: "fa fa-file-alt",
-                requiredPermissionName: HealthCarePermissions.Diagnosis.Default)
+                "/diagnosis",
+                "fa fa-file-alt",
+                requiredPermissionName: HealthCarePermissions.Diagnosis.Default
+            )
         );
         return Task.CompletedTask;
     }

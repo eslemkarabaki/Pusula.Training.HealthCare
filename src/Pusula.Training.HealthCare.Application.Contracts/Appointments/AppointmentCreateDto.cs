@@ -6,15 +6,24 @@ namespace Pusula.Training.HealthCare.Appointments;
 
 public class AppointmentCreateDto
 {
-    [Required] public DateTime StartTime { get; set; }
-    [Required] public DateTime EndTime { get; set; }
-    [Required] public EnumStatus Status { get; set; } = EnumStatus.Scheduled;
-
+    [Required] 
+    public DateTime StartTime { get; set; }
+    [Required] 
+    public DateTime EndTime { get; set; }
+    [Required] 
+    public EnumAppointmentStatus Status { get; set; } = EnumAppointmentStatus.Scheduled;
     [StringLength(AppointmentConsts.NoteMaxLength, MinimumLength = 3)]
     public string Notes { get; set; } = null!;
-
-    [Required] [NotEmptyGuid] public Guid AppointmentTypeId { get; set; }
-    [Required] [NotEmptyGuid] public Guid DepartmentId { get; set; }
-    [Required] [NotEmptyGuid] public Guid DoctorId { get; set; }
-    [Required] [NotEmptyGuid] public Guid PatientId { get; set; }
+    [Required] 
+    [NotEmptyGuid] 
+    public Guid AppointmentTypeId { get; set; }
+    [Required] 
+    [NotEmptyGuid] 
+    public Guid DepartmentId { get; set; }
+    [Required] 
+    [NotEmptyGuid] 
+    public Guid DoctorId { get; set; }
+    [Required] 
+    [NotEmptyGuid] 
+    public Guid PatientId { get; set; }
 }

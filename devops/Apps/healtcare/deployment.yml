@@ -13,7 +13,7 @@ services:
     networks:
       - frontend
     deploy:
-      replicas: 4
+      replicas: 2
       update_config:
         parallelism: 1
         delay: 10s
@@ -22,13 +22,15 @@ services:
         condition: on-failure
       placement:
         constraints: [node.role==manager]
-
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.healthcare-blazor.rule=Host('team3-pusula-healthcare.pusulayazilim.com.tr')"
-        - "traefik.http.services.healthcare-blazor.loadbalancer.server.port=80"
-        - "traefik.http.services.healthcare-blazor.loadbalancer.sticky.cookie=true"
-        - "traefik.http.services.healthcare-blazor.loadbalancer.sticky.cookie.name=healthcare_blazor_session"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.healthcare-blazor.rule=Host(`team3-pusula-healthcare.pusulayazilim.com.tr`)"
+      - "traefik.http.services.healthcare-blazor.loadbalancer.server.port=80"
+      - "traefik.http.routers.healthcare-blazor.entrypoints=websecure"
+      - "traefik.http.routers.healthcare-blazor.tls=true"
+      - "traefik.http.routers.healthcare-blazor.tls.certresolver=myresolver"
+      - "traefik.http.services.healthcare-blazor.loadbalancer.sticky.cookie=true"
+      - "traefik.http.services.healthcare-blazor.loadbalancer.sticky.cookie.name=healthcare_blazor_session"
 
 networks:
   frontend:

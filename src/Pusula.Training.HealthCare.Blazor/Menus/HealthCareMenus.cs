@@ -26,6 +26,8 @@ public class HealthCareMenus
 
 #endregion
 
+    public const string Doctors = Prefix + ".Doctors";
+    public const string Medical = Prefix + ".Medicals";
     public const string Departments = Prefix + ".Departments";
     public const string Locations = Prefix + ".Locations";
     public const string Countries = Locations + ".Countries";
@@ -38,5 +40,4 @@ public class HealthCareMenus
     public const string AppointmentTypes = Appointments + ".AppointmentTypes";
     public const string Reports = Appointments + ".Reports";
     public const string Diagnoses = Prefix + ".Diagnosis";
-
 }

@@ -85,10 +85,10 @@
                     <DropDownListFieldSettings Text="Name" Value="Id" />
                 </SfDropDownList>
 
-                <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumStatus"
+                <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumAppointmentStatus"
                                 TItem="string" Placeholder="@L["Status"]"
-                                DataSource="@Enum.GetNames(typeof(EnumStatus))" ShowClearButton>
-                    <DropDownListEvents TItem="string" TValue="EnumStatus"
+                                DataSource="@Enum.GetNames(typeof(EnumAppointmentStatus))" ShowClearButton>
+                    <DropDownListEvents TItem="string" TValue="EnumAppointmentStatus"
                                         ValueChange="@SearchAsync"></DropDownListEvents>
                     <DropDownListFieldSettings Text="string" Value="EnumStatus" />
                 </SfDropDownList>
@@ -100,9 +100,9 @@
     </SfDataForm>
 </div>
  
-<SfGrid @ref="SfGrid" TValue="AppointmentWithNavigationPropertiesDto" Height="600px" DataSource="@AppointmentList"
+<SfGrid @ref="Grid" TValue="AppointmentWithNavigationPropertiesDto" Height="600px" DataSource="@AppointmentList" 
         EnableHover EnableVirtualMaskRow EnableStickyHeader>
-    <GridSelectionSettings CheckboxOnly PersistSelection />
+    <GridSelectionSettings CheckboxOnly PersistSelection /> 
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30" ></GridColumn>
         <GridColumn HeaderText="Start Time">
@@ -167,4 +167,5 @@
     .e-range-header {
         display: none !important;
     }
+    
 </style>

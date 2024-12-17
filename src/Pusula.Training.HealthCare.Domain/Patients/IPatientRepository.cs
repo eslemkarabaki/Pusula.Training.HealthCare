@@ -8,13 +8,15 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientRepository : IRepository<Patient, Guid>
 {
-    Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
-        Guid id,
+    Task<Patient> GetAsync(
+        Guid? patientId,
+        int? patientNo,
         CancellationToken cancellationToken = default
     );
 
     Task<PatientWithNavigationProperties> GetWithNavigationPropertiesAsync(
-        int patientNo,
+        Guid? patientId,
+        int? patientNo,
         CancellationToken cancellationToken = default
     );
 

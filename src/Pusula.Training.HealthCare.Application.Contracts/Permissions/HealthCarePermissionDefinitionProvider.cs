@@ -28,7 +28,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetDiagnosisPermissions(myGroup);
         SetInsurancesPermissions(myGroup);
         SetExaminationsPermissions(myGroup);
-        SetRadiologyPermissions(myGroup); 
+        SetRadiologyPermissions(myGroup);
         SetPatientNotesPermissions(myGroup);
 
         var appointmentPermission =
@@ -36,13 +36,6 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Create, L("Permission:Create"));
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Edit, L("Permission:Edit"));
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Delete, L("Permission:Delete"));
-
-        var appointmentReportPermission = myGroup.AddPermission(
-            HealthCarePermissions.AppointmentReports.Default, L("Permission:AppointmentReports")
-        );
-        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Create, L("Permission:Create"));
-        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Edit, L("Permission:Edit"));
-        appointmentReportPermission.AddChild(HealthCarePermissions.AppointmentReports.Delete, L("Permission:Delete"));
 
         var appointmentTypePermission = myGroup.AddPermission(
             HealthCarePermissions.AppointmentTypes.Default, L("Permission:AppointmentTypes")
@@ -107,24 +100,29 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         workListPermission.AddChild(HealthCarePermissions.WorkLists.Create, L("Permission:Create"));
         workListPermission.AddChild(HealthCarePermissions.WorkLists.Edit, L("Permission:Edit"));
         workListPermission.AddChild(HealthCarePermissions.WorkLists.Delete, L("Permission:Delete"));
-
     }
 
     private static LocalizableString L(string name) => LocalizableString.Create<HealthCareResource>(name);
 
-    #region Radiology
+#region Radiology
+
     private void SetRadiologyPermissions(PermissionGroupDefinition group)
     {
-        SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminationGroups.Default, "RadiologyExaminationGroups");
+        SetStandardPermissions(
+            group, HealthCarePermissions.RadiologyExaminationGroups.Default, "RadiologyExaminationGroups"
+        );
         SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminations.Default, "RadiologyExaminations");
-        SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminationProcedures.Default, "RadiologyExaminationProcedures");
-        SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminationDocuments.Default, "RadiologyExaminationDocuments");
+        SetStandardPermissions(
+            group, HealthCarePermissions.RadiologyExaminationProcedures.Default, "RadiologyExaminationProcedures"
+        );
+        SetStandardPermissions(
+            group, HealthCarePermissions.RadiologyExaminationDocuments.Default, "RadiologyExaminationDocuments"
+        );
         SetStandardPermissions(group, HealthCarePermissions.RadiologyRequests.Default, "RadiologyRequests");
-        SetStandardPermissions(group, HealthCarePermissions.RadiologyRequestItems.Default, "RadiologyRequestItems");
+        SetStandardPermissions(group, RadiologyRequestItems.Default, "RadiologyRequestItems");
     }
-    #endregion
 
-
+#endregion
 
     private void SetPatientPermissions(PermissionGroupDefinition group)
     {
@@ -257,16 +255,16 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Insurances.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Insurances.Delete, L("Permission:Delete"));
     }
+
     private void SetDiagnosisPermissions(PermissionGroupDefinition group)
     {
         var permission = group.AddPermission(
-            HealthCarePermissions.Diagnosis.Default, L("Permission:Diagnosis")
+            Diagnosis.Default, L("Permission:Diagnosis")
         );
-        permission.AddChild(HealthCarePermissions.Diagnosis.Create, L("Permission:Create"));
-        permission.AddChild(HealthCarePermissions.Diagnosis.Edit, L("Permission:Edit"));
-        permission.AddChild(HealthCarePermissions.Diagnosis.Delete, L("Permission:Delete"));
+        permission.AddChild(Diagnosis.Create, L("Permission:Create"));
+        permission.AddChild(Diagnosis.Edit, L("Permission:Edit"));
+        permission.AddChild(Diagnosis.Delete, L("Permission:Delete"));
     }
-
 
     private void SetPatientNotesPermissions(PermissionGroupDefinition group)
     {
@@ -278,7 +276,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.PatientNotes.Delete, L("Permission:Delete"));
     }
 
-    #region StandardPermissions
+#region StandardPermissions
 
     private void SetStandardPermissions(PermissionGroupDefinition group, string defaultPermission, string displayName)
     {
@@ -293,5 +291,5 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(permission.Name + ".Delete", L("Permission:Delete"));
     }
 
-    #endregion
+#endregion
 }

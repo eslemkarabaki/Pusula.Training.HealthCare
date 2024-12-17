@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Pusula.Training.HealthCare.ExaminationDiagnoses;
+using Pusula.Training.HealthCare.EntityFrameworkCore;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Pusula.Training.HealthCare.EntityFrameworkCore.ExaminationDiagnoses
+namespace Pusula.Training.HealthCare.ExaminationDiagnoses
 {
     public class EfCoreExaminationDiagnosisRepository : EfCoreRepository<HealthCareDbContext, ExaminationDiagnosis, Guid>, IExaminationDiagnosisRepository
     {
