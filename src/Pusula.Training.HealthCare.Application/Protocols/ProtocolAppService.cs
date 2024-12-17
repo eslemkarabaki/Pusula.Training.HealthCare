@@ -9,7 +9,7 @@ using Volo.Abp.Application.Dtos;
 namespace Pusula.Training.HealthCare.Protocols;
 
 [RemoteService(IsEnabled = false)]
-[Authorize(HealthCarePermissions.Protocols.Default, Roles = HealthCareRoles.Doctor)]
+[Authorize(HealthCarePermissions.Protocols.Default)]
 public class ProtocolAppService(IProtocolRepository protocolRepository, ProtocolManager protocolManager)
     : HealthCareAppService, IProtocolAppService
 {
