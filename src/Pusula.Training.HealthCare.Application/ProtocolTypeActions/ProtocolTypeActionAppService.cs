@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Pusula.Training.HealthCare.Permissions;
-using Pusula.Training.HealthCare.ProtocolTypes;
 using Volo.Abp;
 
 namespace Pusula.Training.HealthCare.ProtocolTypeActions;

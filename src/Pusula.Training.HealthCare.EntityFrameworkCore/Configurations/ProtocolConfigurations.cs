@@ -15,6 +15,8 @@ public class ProtocolConfigurations : IEntityTypeConfiguration<Protocol>
     {
         b.ToTable(HealthCareConsts.DbTablePrefix + "Protocols", HealthCareConsts.DbSchema);
         b.ConfigureByConvention();
+
+        b.Property(x => x.ProtocolNo).HasColumnName(nameof(Protocol.ProtocolNo)).ValueGeneratedOnAdd();
         b.Property(x => x.Status).HasColumnName(nameof(Protocol.Status)).IsRequired();
         b
             .Property(x => x.Description)
@@ -47,6 +49,13 @@ public class ProtocolConfigurations : IEntityTypeConfiguration<Protocol>
             .WithMany()
             .IsRequired()
             .HasForeignKey(x => x.ProtocolTypeId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        b
+            .HasOne(e => e.ProtocolTypeAction)
+            .WithMany()
+            .IsRequired()
+            .HasForeignKey(x => x.ProtocolTypeActionId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -13,13 +13,15 @@ public class ProtocolManager(IProtocolRepository protocolRepository) : DomainSer
         Guid patientId,
         Guid doctorId,
         Guid departmentId,
-        Guid typeId,
+        Guid protocolTypeId,
+        Guid protocolTypeActionId,
         string? description,
         EnumProtocolStatus status
     )
     {
         var protocol = new Protocol(
-            GuidGenerator.Create(), patientId, doctorId, departmentId, typeId, description, status, DateTime.Now
+            GuidGenerator.Create(), patientId, doctorId, departmentId, protocolTypeId, protocolTypeActionId,
+            description, status, DateTime.Now
         );
 
         return await protocolRepository.InsertAsync(protocol);

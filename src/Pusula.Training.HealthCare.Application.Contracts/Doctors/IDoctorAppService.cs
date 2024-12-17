@@ -17,7 +17,7 @@ public interface IDoctorAppService : IApplicationService
     Task DeleteAllAsync(GetDoctorsInput input);
     Task DeleteAsync(Guid id);
     Task DeleteByIdsAsync(List<Guid> doctorIds);
-    Task<DoctorDto> GetAsync(Guid id);
+    Task<DoctorDto> GetAsync(GetDoctorInput input);
     Task<IdentityUserDto?> GetDoctorUserAsync(Guid userId);
     Task<DownloadTokenResultDto> GetDownloadTokenAsync();
     Task<IRemoteStreamContent> GetListAsExcelFileAsync(DoctorExcelDownloadDto input);

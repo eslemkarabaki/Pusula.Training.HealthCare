@@ -18,6 +18,7 @@ using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Protocols;
+using Pusula.Training.HealthCare.ProtocolTypeActions;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.Data;
@@ -51,6 +52,7 @@ public class HealthCareDataSeederContributor(
     IRadiologyExaminationGroupRepository radiologyExaminationGroupRepository,
     IRadiologyExaminationRepository radiologyExaminationRepository,
     IProtocolRepository protocolRepository,
+    IProtocolTypeActionRepository protocolTypeActionRepository,
     IRadiologyRequestRepository radiologyRequestRepository,
     IRadiologyRequestItemRepository radiologyRequestItemRepository,
     UserManager<IdentityUser> userManager,
@@ -67,12 +69,15 @@ public class HealthCareDataSeederContributor(
         var patientIds = await SeedPatientsAsync(countries, patientTypeIds);
         await SeedAddressesAsync(patientIds, districtIds);
 
-        await appDefaultRepository.InsertAsync(
-            new AppDefault(guidGenerator.Create())
-            {
-                CurrentCountryId = countries.FirstOrDefault(e => e.IsCurrent)?.Id ?? Guid.Empty
-            }
-        );
+        if (!await appDefaultRepository.AnyAsync())
+        {
+            await appDefaultRepository.InsertAsync(
+                new AppDefault(guidGenerator.Create())
+                {
+                    CurrentCountryId = countries.FirstOrDefault(e => e.IsCurrent)?.Id ?? Guid.Empty
+                }
+            );
+        }
 
         var radiologyExaminationGroups = await SeedRadiologyExaminationGroupsAsync();
         await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
@@ -84,7 +89,10 @@ public class HealthCareDataSeederContributor(
 
         await SeedAppointmentTypesAsync();
         var protocolTypeIds = await SeedProtocolTypesAsync();
-        var prtocolIds = await SeedProtocolsAsync(patientIds, doctors, departments, protocolTypeIds);
+        var protocolTypeActions = await SeedProtocolTypeActionsAsync(protocolTypeIds);
+        var prtocolIds = await SeedProtocolsAsync(
+            patientIds, doctors, departments, protocolTypeIds, protocolTypeActions
+        );
 
         var radiologyRequests = await SeedRadiologyRequestsAsync(
             prtocolIds, departments, doctors.Select(d => d.Id).ToList()
@@ -368,6 +376,7 @@ public class HealthCareDataSeederContributor(
         foreach (var doctor in doctors)
         {
             var user = await SeedUserAsync(
+                doctor.FirstName, doctor.LastName,
                 faker.Internet.UserName(doctor.FirstName, doctor.LastName),
                 faker.Internet.Email(doctor.FirstName, doctor.LastName), "1q2w3E*", "doctor"
             );
@@ -500,11 +509,36 @@ public class HealthCareDataSeederContributor(
         return await SeedEntitiesAsync(protocolTypes, e => protocolTypeRepository.InsertManyAsync(e, true));
     }
 
+    // Protocol type action
+    private async Task<IEnumerable<ProtocolTypeAction>> SeedProtocolTypeActionsAsync(IEnumerable<Guid> protocolTypeIds)
+    {
+        if (await protocolTypeActionRepository.AnyAsync())
+        {
+            return await protocolTypeActionRepository.GetListAsync();
+        }
+
+        IEnumerable<ProtocolTypeAction> protocolTypeActions =
+        [
+            new(guidGenerator.Create(), "Ek Konsültasyon Talebi", protocolTypeIds.ElementAt(0)),
+            new(guidGenerator.Create(), "PCR Testi Talebi", protocolTypeIds.ElementAt(1)),
+            new(guidGenerator.Create(), "Kan Testi Talebi", protocolTypeIds.ElementAt(1)),
+            new(guidGenerator.Create(), "İdrar Testi Talebi", protocolTypeIds.ElementAt(1)),
+            new(guidGenerator.Create(), "MR Çekimi", protocolTypeIds.ElementAt(2)),
+            new(guidGenerator.Create(), "Apendektomi", protocolTypeIds.ElementAt(3)),
+            new(guidGenerator.Create(), "Hemodiyaliz Seansı", protocolTypeIds.ElementAt(4)),
+            new(guidGenerator.Create(), "Psikoterapi Görüşmesi", protocolTypeIds.ElementAt(5)),
+            new(guidGenerator.Create(), "Ventilatör Desteği", protocolTypeIds.ElementAt(6))
+        ];
+        await SeedEntitiesAsync(protocolTypeActions, e => protocolTypeActionRepository.InsertManyAsync(e, true));
+        return protocolTypeActions;
+    }
+
     private async Task<IEnumerable<Guid>> SeedProtocolsAsync(
         IEnumerable<Guid> patientIds,
         IEnumerable<Doctor> doctors,
         IEnumerable<Guid> departmentIds,
-        IEnumerable<Guid> typeIds
+        IEnumerable<Guid> protocolTypeIds,
+        IEnumerable<ProtocolTypeAction> protocolTypeActions
     )
     {
         if (await protocolRepository.AnyAsync())
@@ -517,14 +551,15 @@ public class HealthCareDataSeederContributor(
                 f =>
                 {
                     var departmentId = f.PickRandom(departmentIds);
-                    var doctor = f.PickRandom(doctors.Where(e => e.DepartmentId == departmentId));
+                    var protocolTypeId = f.PickRandom(protocolTypeIds);
                     var protocolStartDate = f.Date.Past(3);
                     return new Protocol(
                         guidGenerator.Create(),
                         f.PickRandom(patientIds),
-                        doctor.Id,
+                        f.PickRandom(doctors.Where(e => e.DepartmentId == departmentId)).Id,
                         departmentId,
-                        f.PickRandom(typeIds),
+                        protocolTypeId,
+                        f.PickRandom(protocolTypeActions.Where(e => e.ProtocolTypeId == protocolTypeId)).Id,
                         null,
                         f.PickRandomWithout<EnumProtocolStatus>(EnumProtocolStatus.None),
                         protocolStartDate,
@@ -540,6 +575,8 @@ public class HealthCareDataSeederContributor(
 
     // User
     private async Task<IdentityUser> SeedUserAsync(
+        string name,
+        string surname,
         string userName,
         string email,
         string password,

@@ -8,6 +8,12 @@ namespace Pusula.Training.HealthCare.Doctors;
 
 public interface IDoctorRepository : IRepository<Doctor, Guid>
 {
+    Task<Doctor> GetAsync(
+        Guid? doctorId,
+        Guid? userId,
+        CancellationToken cancellationToken = default
+    );
+
     Task DeleteAllAsync(
         string? filterText = null,
         string? fullname = null,
