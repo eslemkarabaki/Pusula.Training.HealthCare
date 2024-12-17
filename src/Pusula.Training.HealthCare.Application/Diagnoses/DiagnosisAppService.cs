@@ -1,15 +1,11 @@
-﻿using AutoMapper.Internal.Mappers;
-using Pusula.Training.HealthCare.Diagnoses;
+﻿using Pusula.Training.HealthCare.Diagnoses;
 using System.Threading.Tasks;
 using System;
-using Volo.Abp.Guids;
 using Pusula.Training.HealthCare;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic.Core;
 using Volo.Abp.Domain.Entities;
+using Pusula.Training.HealthCare.GlobalExceptions;
 
 public class DiagnosisAppService : HealthCareAppService, IDiagnosisAppService
 {
@@ -31,41 +27,25 @@ public class DiagnosisAppService : HealthCareAppService, IDiagnosisAppService
     public async Task DeleteAsync(Guid id)
     {
         var diagnosis = await _diagnosisRepository.GetAsync(id);
-        if (diagnosis == null)
-        {
-            throw new EntityNotFoundException(typeof(Diagnosis), id);
-        }
+        GlobalException.ThrowIf(diagnosis is null, "Diagnosis is null!", "DiagnosisCode");
         await _diagnosisRepository.DeleteAsync(diagnosis);
     }
-
-
     public async Task<DiagnosisDto> GetAsync(Guid id)
     {
         var diagnosis = await _diagnosisRepository.GetAsync(id);
         return ObjectMapper.Map<Diagnosis, DiagnosisDto>(diagnosis);
     }
-
-
     public async Task<PagedResultDto<DiagnosisDto>> GetListAsync(GetDiagnosisInput input)
     {
-        var queryable = await _diagnosisRepository.GetQueryableAsync();
-        queryable = queryable.WhereIf(!string.IsNullOrWhiteSpace(input.Name),
-                                      d => d.Name.Contains(input.Name));
-        var totalCount = await AsyncExecuter.CountAsync(queryable);
-        var items = await AsyncExecuter.ToListAsync(
-            queryable
-                .OrderBy(input.Sorting ?? nameof(Diagnosis.Name))
-                .PageBy(input.SkipCount, input.MaxResultCount)
-        );
+        var diagnoses = await _diagnosisRepository.GetListAsync();
+        var diagnosisDtos = ObjectMapper.Map<List<Diagnosis>, List<DiagnosisDto>>(diagnoses);
         return new PagedResultDto<DiagnosisDto>(
-            totalCount,
-            ObjectMapper.Map<List<Diagnosis>, List<DiagnosisDto>>(items)
-        );
+            diagnosisDtos.Count,
+            diagnosisDtos);
     }
     public async Task<DiagnosisDto> UpdateAsync(Guid id, DiagnosisUpdateDto input)
     {
      var diagnosis = await _diagnosisManager.UptadeAsync(id, input.Code, input.Name);
      return ObjectMapper.Map<Diagnosis, DiagnosisDto>(diagnosis);
     }
-
 }

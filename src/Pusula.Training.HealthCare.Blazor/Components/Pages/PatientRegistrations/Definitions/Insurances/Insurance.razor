@@ -12,9 +12,11 @@
 @inject IJSRuntime JSRuntime
 
 <div class="custom-header">
-    <SfButton CssClass="e-primary" @onclick="OpenCreateDialog">New Insurance</SfButton>
-    <SfButton CssClass="e-flat" @onclick="RefreshInsurances">Refresh List</SfButton>
+    <SfButton CssClass="e-primary" @onclick="OpenCreateDialog">
+        <span class="e-icons fas fa-plus"></span> New Protocol Type
+    </SfButton>
 </div>
+<br />
 
 <SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" Visible="@IsDialogVisible" Header="New Insurance">
     <DialogTemplates>
@@ -69,10 +71,10 @@
             <Template>
                 <SfButton OnClick="@(() => OpenEditInsurancesModalAsync((context as InsuranceDto)))"
                           CssClass="e-flat"
-                          IconCss="e-icons e-edit"></SfButton>
+                          IconCss="e-icons fas fa-edit"></SfButton>
                 <SfButton  OnClick="@(() => DeleteInsuranceAsync((context as InsuranceDto)))"
                           CssClass="e-flat button e-custom delete"
-                          IconCss="e-icons e-trash">
+                          IconCss="e-icons fas fa-trash-alt">
                 </SfButton>
             </Template>
         </GridColumn>

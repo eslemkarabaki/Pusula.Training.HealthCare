@@ -1,15 +1,16 @@
 using System;
 using Volo.Abp;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.ExaminationDiagnoses;
 
-public sealed class ExaminationDiagnosis : FullAuditedAggregateRoot<Guid>
+public sealed class ExaminationDiagnosis : Entity<Guid>
 {
-    public Guid ExaminationId { get; private set; }
-    public Guid DiagnosisId { get; private set; }
-    public string Explanation { get; private set; }
-    public string Type { get; private set; }
+    public Guid ExaminationId { get;  set; }
+    public Guid DiagnosisId { get;  set; }
+    public string Explanation { get;  set; }
+    public string Type { get;  set; }
 
     private ExaminationDiagnosis()
     {

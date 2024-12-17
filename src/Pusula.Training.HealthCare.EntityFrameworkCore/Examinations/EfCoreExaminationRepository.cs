@@ -13,6 +13,7 @@ using System.Xml.Linq;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 namespace Pusula.Training.HealthCare.Examinations;
+/*
 public class EfCoreExaminationRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
     : EfCoreRepository<HealthCareDbContext, Examination, Guid>(dbContextProvider), IExaminationRepository
 {
@@ -38,25 +39,26 @@ string? notes = null, string? chronicDiseases = null, string? allergies = null, 
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? ExaminationConsts.GetDefaultSorting(false) : sorting);
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
     }
-    protected virtual IQueryable<Examination> ApplyFilter(
-      IQueryable<Examination> query,
-      string? filterText = null,
-     string? notes = null, string? chronicDiseases = null, string? allergies = null, DateTime? visitDate = null, string? identityNumber = null,
-        string? medications = null, string? diagnosis = null, string? prescription = null,string? imagingResults = null, Guid? patientId = null, Guid? doctorId = null)
-    {
-        return query
-            .WhereIf(!string.IsNullOrWhiteSpace(filterText),
-                e => e.IdentityNumber!.Contains(filterText!) || e.Prescription!.Contains(filterText!) ||
-                     e.Diagnosis!.Contains(filterText!) || e.Medications!.Contains(filterText!))
-            .WhereIf(!string.IsNullOrWhiteSpace(identityNumber), e => e.IdentityNumber.Contains(identityNumber!))
-            .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Notes.Contains(notes!))
-            .WhereIf(!string.IsNullOrWhiteSpace(chronicDiseases), e => e.ChronicDiseases.Contains(chronicDiseases!))
-            .WhereIf(!string.IsNullOrWhiteSpace(allergies), e => e.Allergies.Contains(allergies!))
-            .WhereIf(!string.IsNullOrWhiteSpace(medications), e => e.Medications.Contains(medications!))
-            .WhereIf(!string.IsNullOrWhiteSpace(diagnosis), e => e.Diagnosis.Contains(diagnosis!))
-            .WhereIf(!string.IsNullOrWhiteSpace(prescription), e => e.Prescription.Contains(prescription!))
-            .WhereIf(!string.IsNullOrWhiteSpace(imagingResults), e => e.ImagingResults.Contains(imagingResults!))
-            .WhereIf(patientId.HasValue, e => e.PatientId == patientId!.Value);
-            //.WhereIf(doctorId.HasValue, e => e.DoctorId == doctorId!.Value);
-    }
+    //protected virtual IQueryable<Examination> ApplyFilter(
+    //  IQueryable<Examination> query,
+    //  string? filterText = null,
+    // string? notes = null, string? chronicDiseases = null, string? allergies = null, DateTime? visitDate = null, string? identityNumber = null,
+    //    string? medications = null, string? diagnosis = null, string? prescription = null,string? imagingResults = null, Guid? patientId = null, Guid? doctorId = null)
+    //{
+    //    return query
+    //        .WhereIf(!string.IsNullOrWhiteSpace(filterText),
+    //            e => e.IdentityNumber!.Contains(filterText!) || e.Prescription!.Contains(filterText!) ||
+    //                 e.Diagnosis!.Contains(filterText!) || e.Medications!.Contains(filterText!))
+    //        .WhereIf(!string.IsNullOrWhiteSpace(identityNumber), e => e.IdentityNumber.Contains(identityNumber!))
+    //        .WhereIf(!string.IsNullOrWhiteSpace(notes), e => e.Notes.Contains(notes!))
+    //        .WhereIf(!string.IsNullOrWhiteSpace(chronicDiseases), e => e.ChronicDiseases.Contains(chronicDiseases!))
+    //        .WhereIf(!string.IsNullOrWhiteSpace(allergies), e => e.Allergies.Contains(allergies!))
+    //        .WhereIf(!string.IsNullOrWhiteSpace(medications), e => e.Medications.Contains(medications!))
+    //        .WhereIf(!string.IsNullOrWhiteSpace(diagnosis), e => e.Diagnosis.Contains(diagnosis!))
+    //        .WhereIf(!string.IsNullOrWhiteSpace(prescription), e => e.Prescription.Contains(prescription!))
+    //        .WhereIf(!string.IsNullOrWhiteSpace(imagingResults), e => e.ImagingResults.Contains(imagingResults!))
+    //        .WhereIf(patientId.HasValue, e => e.PatientId == patientId!.Value);
+    //        //.WhereIf(doctorId.HasValue, e => e.DoctorId == doctorId!.Value);
+    //}
 }
+*/

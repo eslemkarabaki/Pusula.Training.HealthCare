@@ -55,9 +55,7 @@ public class ProtocolTypeAppService : ApplicationService, IProtocolTypeAppServic
 
     public async Task<ProtocolTypeDto> UpdateAsync(Guid id, ProtocolTypeUpdateDto input)
     {
-        var protocolType = await _protocolTypeRepository.GetAsync(id);
-        protocolType.SetName(input.Name);
-        await _protocolTypeRepository.UpdateAsync(protocolType);
+        var protocolType = await _protocolTypeManager.UpdateAsync(id, input.Name);
         return ObjectMapper.Map<ProtocolType, ProtocolTypeDto>(protocolType);
     }
 

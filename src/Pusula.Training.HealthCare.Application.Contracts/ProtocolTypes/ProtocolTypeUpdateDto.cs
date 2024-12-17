@@ -11,6 +11,6 @@ namespace Pusula.Training.HealthCare.ProtocolTypes
     {
         [Required]
         [StringLength(ProtocolTypeConsts.NameMaxLength)]
-        public string Name { get;  set; }
+        public string? Name { get;  set; }
     }
 }

@@ -10,9 +10,11 @@
 @inject SfDialogService DialogService
 
 <div class="custom-header">
-    <SfButton CssClass="e-primary" @onclick="OpenCreateDialog">New Protocol Type</SfButton>
-    <SfButton CssClass="e-flat" @onclick="RefreshProtocolTypes">Refresh List</SfButton>
+    <SfButton CssClass="e-primary" @onclick="OpenCreateDialog">
+        <span class="e-icons fas fa-plus"></span> New Protocol Type
+    </SfButton>
 </div>
+<br/>
 <SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" Visible="@IsDialogVisible" Header="Create Protocol Type">
     <DialogTemplates>
         <Content>
@@ -57,8 +59,8 @@
         <GridColumn Field="@nameof(ProtocolTypeDto.Name)" HeaderText="Name" Width="150"></GridColumn>
         <GridColumn TextAlign="TextAlign.Right">
             <Template>
-                <SfButton OnClick="@(() => OpenEditProtocolTypeModalAsync((context as ProtocolTypeDto)))" CssClass="e-flat" IconCss="e-icons e-edit"></SfButton>
-                <SfButton OnClick="@(() => DeleteProtocolTypeAsync((context as ProtocolTypeDto)))" CssClass="e-flat" IconCss="e-icons e-trash"></SfButton>
+                <SfButton OnClick="@(() => OpenEditProtocolTypeModalAsync((context as ProtocolTypeDto)))" CssClass="e-flat" IconCss="e-icons fas fa-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteProtocolTypeAsync((context as ProtocolTypeDto)))" CssClass="e-flat" IconCss="e-icons fas fa-trash-alt"></SfButton>
             </Template>
         </GridColumn>
     </GridColumns>

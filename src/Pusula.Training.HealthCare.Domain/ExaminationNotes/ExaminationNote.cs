@@ -9,8 +9,6 @@ public sealed class ExaminationNote : FullAuditedAggregateRoot<Guid>
     public Guid ExaminationId { get; private set; }
     public Guid DoctorId { get; private set; }
     public string Note { get; private set; }
-
-
     private ExaminationNote()
     {
         Note = string.Empty;

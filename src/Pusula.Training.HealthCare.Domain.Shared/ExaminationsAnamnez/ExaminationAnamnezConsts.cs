@@ -9,7 +9,7 @@
             return string.Format(DefaultSorting, withEntityName ? "ExaminationAnamnez." : string.Empty);
         }
 
-        public const int IdentityNumberMaxLength = 11;
+       
         public const int ComplaintNumberMaxLength = 128;
         public const int HistoryNumberMaxLength = 128;
     }

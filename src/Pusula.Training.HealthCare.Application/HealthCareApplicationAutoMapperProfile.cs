@@ -31,6 +31,7 @@ using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.ExaminationsPhysical;
 
 namespace Pusula.Training.HealthCare;
 
@@ -127,6 +128,9 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Examination, ExaminationDto>();
         CreateMap<Examination, ExaminationExcelDto>();
         CreateMap<ExaminationDto, ExaminationUpdateDto>();
+
+        CreateMap<ExaminationPhysical, ExaminationPhysicalDto>();
+        CreateMap<ExaminationPhysicalDto, ExaminationPhysicalUpdateDto>();
 
         CreateMap<Doctor, DoctorDto>();
         CreateMap<Doctor, DoctorExcelDto>();
