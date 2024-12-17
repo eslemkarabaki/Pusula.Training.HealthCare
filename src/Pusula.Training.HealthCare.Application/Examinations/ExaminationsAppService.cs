@@ -12,12 +12,12 @@ using Volo.Abp.Authorization;
 using Volo.Abp.Caching;
 using Volo.Abp.Content;
 using Volo.Abp.EventBus.Distributed;
-namespace Pusula.Training.HealthCare.Examinations;
+namespace Pusula.Training.HealthCare.Examinations;/*
 [RemoteService(IsEnabled = false)]
 [Authorize(HealthCarePermissions.Examinations.Default)]
 public class ExaminationAppService(
     IExaminationRepository examinationRepository,
-    ExaminationManager examinationManager,
+    //ExaminationManager examinationManager,
     IDistributedCache<ExaminationDownloadTokenCacheItem, string> downloadTokenCache
     ) : HealthCareAppService, IExaminationAppService
 {
@@ -47,8 +47,8 @@ public class ExaminationAppService(
             input.ChronicDiseases, input.VisitDate, input.IdentityNumber, input.Allergies, input.Medications,input.Diagnosis,
             input.Prescription, input.ImagingResults);
         return ObjectMapper.Map<Examination, ExaminationDto>(examination);
-    }
-    [Authorize(HealthCarePermissions.Examinations.Edit)]
+}
+[Authorize(HealthCarePermissions.Examinations.Edit)]
     public virtual async Task<ExaminationDto> UpdateAsync(Guid id, ExaminationUpdateDto input)
     {
         var examination = await examinationManager.UpdateAsync(
@@ -107,3 +107,4 @@ public class ExaminationAppService(
         };
     }
 }
+    */

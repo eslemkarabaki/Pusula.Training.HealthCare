@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
+using Volo.Abp.Domain.Entities;
+using Pusula.Training.HealthCare.GlobalExceptions;
 
 namespace Pusula.Training.HealthCare.ProtocolTypes;
 
@@ -27,8 +29,16 @@ namespace Pusula.Training.HealthCare.ProtocolTypes;
             var protocolType = new ProtocolType(id, name);
             return await _protocolTypeRepository.InsertAsync(protocolType);
         }
+        public async Task<ProtocolType> UpdateAsync(Guid id, string name)
+        {
+        var protocolType = await _protocolTypeRepository.GetAsync(id);
+        GlobalException.ThrowIf(protocolType is null, "ProtocolType is null", "ProtocolTypeCode");
+        protocolType.SetName(name);
+        return await _protocolTypeRepository.UpdateAsync(protocolType);
 
-        public async Task ChangeNameAsync(Guid id, string newName)
+        }
+
+    public async Task ChangeNameAsync(Guid id, string newName)
         {
             var protocolType = await _protocolTypeRepository.GetAsync(id);
 
