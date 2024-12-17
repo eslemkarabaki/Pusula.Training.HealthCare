@@ -72,8 +72,15 @@
          </CascadingValue>
       </div>
       <div class="nav flex-column bg-white">
-         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link" @onclick="@(() => NavigateTo("dashboard"))">Kontrol Paneli</NavLink>
-         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link" @onclick="@(() => NavigateTo("examination"))">Muayene</NavLink>
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link"
+                  @onclick="@(() => NavigateTo("dashboard"))">Kontrol Paneli
+         </NavLink>
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link"
+                  @onclick="@(() => NavigateTo("examination"))">Muayene
+         </NavLink>
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link"
+                  @onclick="@(() => NavigateTo("appointment-history"))">Muayene Geçmişi
+         </NavLink>
       </div>
    </div>
 } else
@@ -101,6 +108,6 @@
       }
    }
 
-   private void NavigateTo(string? page,bool forceLoad=false) => NavigationManager.NavigateTo($"{BaseAddress}/{page}",forceLoad);
+   private void NavigateTo(string? page, bool forceLoad = false) => NavigationManager.NavigateTo($"{BaseAddress}/{page}", forceLoad);
 
 }

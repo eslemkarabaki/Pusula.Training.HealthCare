@@ -62,6 +62,10 @@ public class HealthCareDataSeederContributor(
 {
     public async Task SeedAsync(DataSeedContext context)
     {
+        await SeedUserAsync("Selçuk", "Şahin", "prm_selcuk", "selcuk@gmail.com", "1q2w3E*", "prm");
+        await SeedUserAsync("Berfin", "Tek", "prm_berfin", "berfin@gmail.com", "1q2w3E*", "prm");
+        await SeedUserAsync("Yusuf", "Altunsoy", "prm_yusuf", "yusuf@gmail.com", "1q2w3E*", "prm");
+        
         var countries = await SeedCountriesAsync();
         var cityIds = await SeedCitiesAsync(countries);
         var districtIds = await SeedDistrictsAsync(cityIds);
@@ -583,7 +587,13 @@ public class HealthCareDataSeederContributor(
         string? roleName = null
     )
     {
-        await userManager.CreateAsync(new IdentityUser(guidGenerator.Create(), userName, email), password);
+        await userManager.CreateAsync(
+            new IdentityUser(guidGenerator.Create(), userName, email)
+            {
+                Name = name,
+                Surname = surname
+            }, password
+        );
         var user = await userManager.FindByNameAsync(userName);
         if (!roleName.IsNullOrWhiteSpace())
         {
