@@ -1,10 +1,11 @@
 @page "/medical"
 
-@attribute [Authorize(Roles = "doctor")]
+@attribute [Authorize(Roles = HealthCareRoles.Doctor)]
 
 @using Pusula.Training.HealthCare.Appointments
 @using Pusula.Training.HealthCare.Blazor.Models
 @using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Permissions
 @using Pusula.Training.HealthCare.Protocols
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
@@ -140,7 +141,8 @@
         </GridColumn>
         <GridColumn AutoFit>
             <Template>
-                <SfButton OnClick="@(() => NavigateToMedicalCard((context as ProtocolDto)!.ProtocolNo))">Göreve Git</SfButton>
+                <SfButton OnClick="@(() => NavigateToMedicalCard((context as ProtocolDto)!.ProtocolNo))">Göreve Git
+                </SfButton>
             </Template>
         </GridColumn>
     </GridColumns>

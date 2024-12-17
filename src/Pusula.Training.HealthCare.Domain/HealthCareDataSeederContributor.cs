@@ -598,10 +598,7 @@ public class HealthCareDataSeederContributor(
     private async Task<IdentityRole> SeedRoleAsync(string roleName)
     {
         var role = await roleManager.FindByNameAsync(roleName);
-        if (role != null)
-        {
-            return role!;
-        }
+        if (role != null) return role;
 
         await roleManager.CreateAsync(new IdentityRole(guidGenerator.Create(), roleName));
         return (await roleManager.FindByNameAsync(roleName))!;
