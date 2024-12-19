@@ -16,10 +16,17 @@ namespace Pusula.Training.HealthCare.Examinations
         public string SummaryDocument { get; set; }
         public DateTime StartDate { get; set; }
 
-        
-        public Examination(Guid id, Guid doctorId, Guid patientId, string summaryDocument, DateTime startDate)
+
+        public Examination(
+            Guid id,
+            Guid protocolId,
+            Guid doctorId,
+            Guid patientId,
+            string summaryDocument,
+            DateTime startDate)
+            : base(id)
         {
-            Id = id;
+            ProtocolId = protocolId;
             DoctorId = doctorId;
             PatientId = patientId;
             SummaryDocument = summaryDocument;
