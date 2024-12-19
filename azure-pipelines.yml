@@ -88,3 +88,8 @@ steps:
     echo -e "Subject: Deployment Tamamlandı\n\nDeployment Başarıyla Tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com
   displayName: 'Send mail (Finish)'
   condition: succeeded()
+
+- bash: |
+    echo -e "Subject: HATA!\n\nDeployment Başarısız: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com
+  displayName: 'Send mail (Finish)'
+  condition: failed()
