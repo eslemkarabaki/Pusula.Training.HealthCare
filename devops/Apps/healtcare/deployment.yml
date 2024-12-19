@@ -29,7 +29,11 @@ services:
           cpus: "0.5"   
         reservations:
           memory: 256M  
-          cpus: "0.2"    
+          cpus: "0.2" 
+      placement:
+        constraints:
+          - node.role == manager
+          - node.role == worker   
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.healthcare-blazor.rule=Host(`team3-pusula-healthcare.pusulayazilim.com.tr`)"
