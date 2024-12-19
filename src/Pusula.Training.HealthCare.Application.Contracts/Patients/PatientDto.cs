@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Pusula.Training.HealthCare.Addresses;
+using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.PatientNotes;
+using Pusula.Training.HealthCare.PatientTypes;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 
@@ -30,7 +32,10 @@ public class PatientDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
     public EnumMaritalStatus MaritalStatus { get; set; }
 
     public Guid CountryId { get; set; }
+    public CountryDto? Country { get; set; }
+
     public Guid PatientTypeId { get; set; }
+    public PatientTypeDto? PatientType { get; set; }
 
     public ICollection<AddressDto> Addresses { get; set; }
 

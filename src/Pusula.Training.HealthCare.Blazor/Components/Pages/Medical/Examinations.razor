@@ -1,11 +1,230 @@
 ﻿@page "/medical/medical-card/{ProtocolNo:int}/examination"
 @using Pusula.Training.HealthCare.Blazor.Themes.Layouts
 @using Pusula.Training.HealthCare.Permissions
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DropDowns
 
 @attribute [Authorize(Roles = HealthCareRoles.Doctor)]
 
 @layout MedicalCardLayout
 @inherits HealthCareComponentBase
 
+<style>
+    table.family-history-table{
+        width: 100%;
+        margin-bottom: 6px;
+    }
+    table.family-history-table,
+    table.family-history-table td,
+    table.family-history-table th{
+        border: 1px solid var(--material-grey-300);
+    }
+    
+    table.family-history-table td,
+    table.family-history-table th{
+        max-width: 5vw;
+        overflow: hidden;
+        padding: 6px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 13px;
+        transition: all 300ms;
+    }
+    table.family-history-table td{
+        cursor: pointer;
+    }
+    
+    table.family-history-table td.active{
+        color: white;
+        background-color: var(--material-blue-500);
+    }
+    
+    table.family-history-table td:not(.active):not(:has(input)):hover{
+        color: var(--material-grey-500);
+    }
+    
+    table.family-history-table td:has(input){
+        padding: 0;
+    }
+</style>
 
-<h1>Examination</h1>
+<div class="d-flex gap-1">
+    <div class="d-flex w-50 gap-2 flex-column">
+        <PatientHistory></PatientHistory>
+
+        <HcCard Title="Soygeçmiş" CardIcon="">
+            <HeaderContent>
+                <SfButton IsToggle CssClass="e-outline rounded-pill e-primary e-small">Özellik Yok</SfButton>
+            </HeaderContent>
+            <ChildContent>
+                <div class="p-2">
+                    <table class="family-history-table">
+                        <tbody>
+                        <tr>
+                            <th>Anne</th>
+                            <td class="active">Diyabet</td>
+                            <td class="active">Guatr</td>
+                            <td>Hipertansiyon</td>
+                            <td>Kan Hastalığı</td>
+                            <td>Koroner arter hastalığı (KAH)</td>
+                            <td>Malignite</td>
+                            <td>
+                                <SfTextBox Placeholder="Diğer" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Baba</th>
+                            <td>Diyabet</td>
+                            <td>Guatr</td>
+                            <td>Hipertansiyon</td>
+                            <td>Kan Hastalığı</td>
+                            <td>Koroner arter hastalığı (KAH)</td>
+                            <td>Malignite</td>
+                            <td>
+                                <SfTextBox Placeholder="Diğer" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Erkek Kardeş</th>
+                            <td>Diyabet</td>
+                            <td>Guatr</td>
+                            <td>Hipertansiyon</td>
+                            <td>Kan Hastalığı</td>
+                            <td>Koroner arter hastalığı (KAH)</td>
+                            <td>Malignite</td>
+                            <td>
+                                <SfTextBox Placeholder="Diğer" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Kız Kardeş</th>
+                            <td>Diyabet</td>
+                            <td>Guatr</td>
+                            <td>Hipertansiyon</td>
+                            <td>Kan Hastalığı</td>
+                            <td>Koroner arter hastalığı (KAH)</td>
+                            <td>Malignite</td>
+                            <td>
+                                <SfTextBox Placeholder="Diğer" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Diğer</th>
+                            <td>Diyabet</td>
+                            <td>Guatr</td>
+                            <td>Hipertansiyon</td>
+                            <td>Kan Hastalığı</td>
+                            <td>Koroner arter hastalığı (KAH)</td>
+                            <td>Malignite</td>
+                            <td>
+                                <SfTextBox Placeholder="Diğer" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <SfCheckBox TChecked="bool">Anne ile baba akraba</SfCheckBox>
+                </div>
+            </ChildContent>
+        </HcCard>
+
+        <HcCard Title="Psikolojik Durum" CardIcon="">
+            <HeaderContent>
+                <div class="d-flex gap-3 p-2">
+                    <SfButtonGroup Mode="Syncfusion.Blazor.SplitButtons.SelectionMode.Multiple">
+                        <ButtonGroupButton CssClass="e-small">Sakin</ButtonGroupButton>
+                        <ButtonGroupButton CssClass="e-small">Üzgün</ButtonGroupButton>
+                        <ButtonGroupButton CssClass="e-small">Ajite</ButtonGroupButton>
+                        <ButtonGroupButton CssClass="e-small">Kaygılı</ButtonGroupButton>
+                        <ButtonGroupButton CssClass="e-small">Depresif</ButtonGroupButton>
+                    </SfButtonGroup>
+                    <SfTextBox Placeholder="Açıklama" FloatLabelType="FloatLabelType.Never"
+                               CssClass="e-small"></SfTextBox>
+                </div>
+            </HeaderContent>
+        </HcCard>
+        
+        <HcCard Title="Ağrı" CardIcon="">
+            <HeaderContent>
+                <SfButtonGroup Mode="Syncfusion.Blazor.SplitButtons.SelectionMode.Single">
+                    <ButtonGroupButton CssClass="e-small">Var</ButtonGroupButton>
+                    <ButtonGroupButton CssClass="e-small">Yok</ButtonGroupButton>
+                </SfButtonGroup>
+            </HeaderContent>
+            <ChildContent>
+                <div class="d-flex flex-column gap-2 p-2">
+                    <div>
+                        <div class="fs-13p">Ağrının Niteliği</div>
+                        <div class="d-flex gap-1">
+                            <SfButton IsToggle CssClass="e-outline e-primary">Basdırıcı</SfButton>
+                            <SfButton IsToggle CssClass="e-outline e-primary">Dolgunluk</SfButton>
+                            <SfButton IsToggle CssClass="e-outline e-primary">Ezici</SfButton>
+                            <SfButton IsToggle CssClass="e-outline e-primary">Kolik</SfButton>
+                            <SfButton IsToggle CssClass="e-outline e-primary">Küt</SfButton>
+                            <SfButton IsToggle CssClass="e-outline e-primary">Saplanıcı</SfButton>
+                            <SfButton IsToggle CssClass="e-outline e-primary">Stabilize</SfButton>
+                            <SfButton IsToggle CssClass="e-outline e-primary">Yangın</SfButton>
+                            <SfTextBox Placeholder="Diğer" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <div>
+                            <div class="fs-13p">Ağrı Ritmi / Ağrı Sıklığı</div>
+                            <SfButtonGroup Mode="Syncfusion.Blazor.SplitButtons.SelectionMode.Single">
+                                <ButtonGroupButton CssClass="e-outline e-primary">Daimi</ButtonGroupButton>
+                                <ButtonGroupButton CssClass="e-outline e-primary">Aralıklı</ButtonGroupButton>
+                            </SfButtonGroup>
+                        </div>
+                        <div>
+                            <div class="fs-13p">Ağrı Başlangıcı</div>
+                            <div class="input-group flex-nowrap">
+                                <SfDropDownList TItem="string" TValue="string" PopupHeight="230px"  @bind-Value="@Pain" DataSource="@(new string[]{"Süre","Tarih"})">
+                                    <DropDownListFieldSettings Text="Text"/>
+                                </SfDropDownList>
+                                @if (Pain == "Süre")
+                                {
+                                    <SfNumericTextBox Min="0" Placeholder="Süre" FloatLabelType="FloatLabelType.Never" ShowSpinButton="false"></SfNumericTextBox>
+                                    <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Value="@("saat")" DataSource="@(new string[]{"yıl","ay","gün","saat","dakika"})">
+                                        <DropDownListFieldSettings Text="Text"/>
+                                    </SfDropDownList>
+                                    
+                                }else if (Pain == "Tarih")
+                                {
+                                    <SfDateTimePicker TValue="DateTime?" FullScreen ShowClearButton></SfDateTimePicker>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ChildContent>
+        </HcCard>
+
+        <HcCard Title="Hasta Özel Notları" CardIcon="">
+            <HeaderContent>
+                <SfButton IconCss="fas fa-plus" IconPosition="IconPosition.Left"
+                          CssClass="e-small e-flat e-primary rounded-pill">Yeni Ekle
+                </SfButton>
+            </HeaderContent>
+            <ChildContent>
+                <div class="d-flex justify-content-between gap-1 p-2">
+                    <span>test test test not</span>
+                    <div class="d-flex gap-1">
+                        <span
+                            class="pt-4p pb-4p px-1 bg-grey-100 border-r-3p fs-12p fw-500">Prof. Dr. Selçuk Şahin</span>
+                        <span
+                            class="pt-4p pb-4p px-1 bg-grey-100 border-r-3p fs-12p fw-500">@DateTime.Now.ToString("dd.MM.yyyy hh:mm")</span>
+                        <SfButton IconCss="fas fa-edit" CssClass="e-flat e-small"></SfButton>
+                        <SfButton IconCss="fas fa-trash" CssClass="e-flat e-small"></SfButton>
+                    </div>
+                </div>
+            </ChildContent>
+        </HcCard>
+    </div>
+</div>
+
+@code{
+
+    private string Pain { get; set; }
+
+}
