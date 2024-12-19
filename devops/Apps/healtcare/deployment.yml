@@ -13,15 +13,23 @@ services:
     networks:
       - frontend
     deploy:
-      replicas: 2
+      replicas: 4
       update_config:
         parallelism: 1
         delay: 10s
         order: start-first
       restart_policy:
-        condition: on-failure
-      placement:
-        constraints: [node.role==manager]
+        condition: any
+        delay: 5s
+        max_attempts: 5
+        window: 60s
+      resources:
+        limits:
+          memory: 512M   
+          cpus: "0.5"   
+        reservations:
+          memory: 256M  
+          cpus: "0.2"    
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.healthcare-blazor.rule=Host(`team3-pusula-healthcare.pusulayazilim.com.tr`)"

@@ -1,98 +1,129 @@
 version: "3.9"
-
 services:
   redis-node-1:
     image: redis:latest
-    command: ["redis-server", "--requirepass", "pusulateam3node", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--appendonly", "yes"]
-    volumes:
-      - redisdata1:/data
+    ports:
+      - "6379:6379"
     networks:
       - frontend
+    environment:
+      - REDIS_PASSWORD=pusulateam3node
+    command: >
+      redis-server --appendonly yes --requirepass pusulateam3node
+      --masterauth pusulateam3node --cluster-enabled yes
+      --cluster-config-file nodes.conf --cluster-node-timeout 5000
+      --port 6379
     deploy:
+      restart_policy:
+        condition: on-failure
       placement:
         constraints: [node.role == worker]
+    volumes:
+      - redisdata-1:/data
 
   redis-node-2:
     image: redis:latest
-    command: ["redis-server", "--requirepass", "pusulateam3node", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--appendonly", "yes"]
-    volumes:
-      - redisdata2:/data
     networks:
       - frontend
+    environment:
+      - REDIS_PASSWORD=pusulateam3node
+    command: >
+      redis-server --appendonly yes --requirepass pusulateam3node
+      --masterauth pusulateam3node --cluster-enabled yes
+      --cluster-config-file nodes.conf --cluster-node-timeout 5000
+      --port 6379
     deploy:
+      restart_policy:
+        condition: on-failure
       placement:
         constraints: [node.role == worker]
+    volumes:
+      - redisdata-2:/data
 
   redis-node-3:
     image: redis:latest
-    command: ["redis-server", "--requirepass", "pusulateam3node", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--appendonly", "yes"]
-    volumes:
-      - redisdata3:/data
     networks:
       - frontend
+    environment:
+      - REDIS_PASSWORD=pusulateam3node
+    command: >
+      redis-server --appendonly yes --requirepass pusulateam3node
+      --masterauth pusulateam3node --cluster-enabled yes
+      --cluster-config-file nodes.conf --cluster-node-timeout 5000
+      --port 6379
     deploy:
+      restart_policy:
+        condition: on-failure
       placement:
         constraints: [node.role == worker]
+    volumes:
+      - redisdata-3:/data
 
   redis-node-4:
     image: redis:latest
-    command: ["redis-server", "--requirepass", "pusulateam3node", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--appendonly", "yes"]
-    volumes:
-      - redisdata4:/data
     networks:
       - frontend
+    environment:
+      - REDIS_PASSWORD=pusulateam3node
+    command: >
+      redis-server --appendonly yes --requirepass pusulateam3node
+      --masterauth pusulateam3node --cluster-enabled yes
+      --cluster-config-file nodes.conf --cluster-node-timeout 5000
+      --port 6379
     deploy:
+      restart_policy:
+        condition: on-failure
       placement:
         constraints: [node.role == worker]
+    volumes:
+      - redisdata-4:/data
 
   redis-node-5:
     image: redis:latest
-    command: ["redis-server", "--requirepass", "pusulateam3node", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--appendonly", "yes"]
-    volumes:
-      - redisdata5:/data
     networks:
       - frontend
+    environment:
+      - REDIS_PASSWORD=pusulateam3node
+    command: >
+      redis-server --appendonly yes --requirepass pusulateam3node
+      --masterauth pusulateam3node --cluster-enabled yes
+      --cluster-config-file nodes.conf --cluster-node-timeout 5000
+      --port 6379
     deploy:
+      restart_policy:
+        condition: on-failure
       placement:
         constraints: [node.role == worker]
+    volumes:
+      - redisdata-5:/data
 
   redis-node-6:
     image: redis:latest
-    command: ["redis-server", "--requirepass", "pusulateam3node", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--appendonly", "yes"]
-    volumes:
-      - redisdata6:/data
     networks:
       - frontend
+    environment:
+      - REDIS_PASSWORD=pusulateam3node
+    command: >
+      redis-server --appendonly yes --requirepass pusulateam3node
+      --masterauth pusulateam3node --cluster-enabled yes
+      --cluster-config-file nodes.conf --cluster-node-timeout 5000
+      --port 6379
     deploy:
+      restart_policy:
+        condition: on-failure
       placement:
         constraints: [node.role == worker]
-
-  redis-cluster-init:
-    image: redis:latest
-    networks:
-      - frontend
-    command: >
-      bash -c "sleep 30 &&
-               echo yes | redis-cli --cluster create 
-               redis-node-1:6379 redis-node-2:6379 redis-node-3:6379 
-               redis-node-4:6379 redis-node-5:6379 redis-node-6:6379 
-               --cluster-replicas 1 --password pusulateam3node"
-    depends_on:
-      - redis-node-1
-      - redis-node-2
-      - redis-node-3
-      - redis-node-4
-      - redis-node-5
-      - redis-node-6
+    volumes:
+      - redisdata-6:/data
 
 networks:
   frontend:
     external: true
 
 volumes:
-  redisdata1:
-  redisdata2:
-  redisdata3:
-  redisdata4:
-  redisdata5:
-  redisdata6:
+  redisdata-1: {}
+  redisdata-2: {}
+  redisdata-3: {}
+  redisdata-4: {}
+  redisdata-5: {}
+  redisdata-6: {}
