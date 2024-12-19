@@ -13,11 +13,14 @@ services:
     networks:
       - frontend
     deploy:
-      replicas: 4
+      replicas: 2
       update_config:
         parallelism: 1
         delay: 10s
         order: start-first
+      restart_policy:
+        condition: on-failure
+      placement:
         constraints: [node.role==manager]
     labels:
       - "traefik.enable=true"
