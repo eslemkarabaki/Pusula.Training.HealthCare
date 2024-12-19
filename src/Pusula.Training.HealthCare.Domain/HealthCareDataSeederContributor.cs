@@ -65,7 +65,9 @@ public class HealthCareDataSeederContributor(
         await SeedUserAsync("Selçuk", "Şahin", "prm_selcuk", "selcuk@gmail.com", "1q2w3E*", "prm");
         await SeedUserAsync("Berfin", "Tek", "prm_berfin", "berfin@gmail.com", "1q2w3E*", "prm");
         await SeedUserAsync("Yusuf", "Altunsoy", "prm_yusuf", "yusuf@gmail.com", "1q2w3E*", "prm");
-        
+        await SeedUserAsync("Zeynep", "Salihoğlu", "prm_zeynep", "zeynep@gmail.com", "1q2w3E*", "prm");
+        await SeedUserAsync("Eslem", "Karabaki", "prm_eslem", "eslem@gmail.com", "1q2w3E*", "prm");
+ 
         var countries = await SeedCountriesAsync();
         var cityIds = await SeedCitiesAsync(countries);
         var districtIds = await SeedDistrictsAsync(cityIds);
@@ -557,6 +559,7 @@ public class HealthCareDataSeederContributor(
                     var departmentId = f.PickRandom(departmentIds);
                     var protocolTypeId = f.PickRandom(protocolTypeIds);
                     var protocolStartDate = f.Date.Past(3);
+                    var status = f.PickRandomWithout<EnumProtocolStatus>(EnumProtocolStatus.None);
                     return new Protocol(
                         guidGenerator.Create(),
                         f.PickRandom(patientIds),
@@ -565,9 +568,11 @@ public class HealthCareDataSeederContributor(
                         protocolTypeId,
                         f.PickRandom(protocolTypeActions.Where(e => e.ProtocolTypeId == protocolTypeId)).Id,
                         null,
-                        f.PickRandomWithout<EnumProtocolStatus>(EnumProtocolStatus.None),
+                        status,
                         protocolStartDate,
-                        f.Date.Between(protocolStartDate, protocolStartDate.AddMonths(1))
+                        status == EnumProtocolStatus.Completed ?
+                            f.Date.Between(protocolStartDate, protocolStartDate.AddMonths(1)) :
+                            null
                     );
                 }
             );

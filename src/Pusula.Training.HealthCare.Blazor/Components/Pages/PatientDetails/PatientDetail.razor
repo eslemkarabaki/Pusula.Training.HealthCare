@@ -10,32 +10,32 @@
 
 <div class="d-flex gap-2">
     <div class="w-50 d-flex flex-column gap-2">
-        <PatientDetailCard TitleIcon="far fa-hourglass" Title="@L["WaitingAppointments"]"
-                           NoContent="@(!Appointments.Any())">
+        <HcCard CardIcon="far fa-hourglass" Title="@L["WaitingAppointments"]"
+                NoContent="@(!Appointments.Any())">
             <ChildContent>
                 <PatientAppointmentList Appointments="@Appointments"/>
             </ChildContent>
-        </PatientDetailCard>
+        </HcCard>
 
-        <PatientDetailCard TitleIcon="fas fa-history" Title="@L["LastVisits"]">
+        <HcCard CardIcon="fas fa-history" Title="@L["LastVisits"]">
             <ChildContent>
                 Test
             </ChildContent>
-        </PatientDetailCard>
+        </HcCard>
     </div>
     <div class="w-50 d-flex flex-column gap-2">
-        <PatientDetailCard TitleIcon="far fa-sticky-note" Title="@L["Notes"]"
-                           NoContent="@(!Patient.PatientNotes.Any())">
+        <HcCard CardIcon="far fa-sticky-note" Title="@L["Notes"]"
+                NoContent="@(!Patient.PatientNotes.Any())">
             <ChildContent>
                 <PatientNoteList Notes="@Patient.PatientNotes"/>
             </ChildContent>
-        </PatientDetailCard>
-        <PatientDetailCard TitleIcon="far fa-address-book" Title="@L["Addresses"]"
-                           NoContent="@(!Patient.Patient.Addresses.Any())">
+        </HcCard>
+        <HcCard CardIcon="far fa-address-book" Title="@L["Addresses"]"
+                NoContent="@(!Patient.Patient.Addresses.Any())">
             <ChildContent>
                 <PatientAddressList Addresses="@Patient.Patient.Addresses"/>
             </ChildContent>
-        </PatientDetailCard>
+        </HcCard>
     </div>
 </div>
 

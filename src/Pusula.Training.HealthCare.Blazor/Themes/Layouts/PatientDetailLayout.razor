@@ -7,9 +7,10 @@
 @using Syncfusion.Blazor.Popups
 @using Volo.Abp
 @using Position = Syncfusion.Blazor.Popups.Position
-@attribute [Authorize(HealthCarePermissions.Patients.Default)]
+
 @layout MainLayout
 @inherits LayoutComponentBase
+
 @inject IPatientAppService PatientAppService
 @inject IStringLocalizer<HealthCareResource> L
 
@@ -92,7 +93,10 @@
 
 
 @code{
-   [CascadingParameter] RouteData RouteData { get; set; } = null!;
+
+   [CascadingParameter]
+   RouteData RouteData { get; set; } = null!;
+
    private PatientWithNavigationPropertiesDto? Patient { get; set; }
    private string BaseAddress => $"prm/management/patient-detail/{PatientNo}";
    private int PatientNo { get; set; }
