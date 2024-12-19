@@ -2,14 +2,17 @@ using System;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Patients;
+using Pusula.Training.HealthCare.ProtocolTypeActions;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 
 namespace Pusula.Training.HealthCare.Protocols;
 
-public class ProtocolDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IProtocol
+public class ProtocolDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp
 {
+    public int ProtocolNo { get; set; }
+
     public Guid PatientId { get; set; }
     public PatientDto Patient { get; set; } = null!;
 
@@ -21,6 +24,10 @@ public class ProtocolDto : FullAuditedEntityDto<Guid>, IHasConcurrencyStamp, IPr
 
     public Guid ProtocolTypeId { get; set; }
     public ProtocolTypeDto ProtocolType { get; set; } = null!;
+
+    public Guid ProtocolTypeActionId { get; set; }
+    public ProtocolTypeActionDto ProtocolTypeAction { get; set; } = null!;
+
     public EnumProtocolStatus Status { get; set; }
     public string? Description { get; set; }
     public DateTime StartTime { get; set; }

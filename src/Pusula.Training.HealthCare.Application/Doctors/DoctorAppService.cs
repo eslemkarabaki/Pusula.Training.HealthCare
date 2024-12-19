@@ -2,14 +2,14 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using MiniExcelLibs;
-using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+using Pusula.Training.HealthCare.GlobalExceptions;
 using Pusula.Training.HealthCare.Users;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -25,12 +25,12 @@ namespace Pusula.Training.HealthCare.Doctors;
 public class DoctorAppService(
     IDoctorRepository doctorRepository,
     DoctorManager doctorManager,
+    IdentityUserManager userManager,
     IDistributedCache<DoctorDownloadTokenCacheItem, string> downloadTokenCache,
     ILogger<DoctorAppService> logger,
     IUserRules userRules
 ) : HealthCareAppService, IDoctorAppService
 {
-
     //For Appointment
     public async Task<List<DoctorDto>> GetListDoctorsAsync() =>
         ObjectMapper.Map<List<Doctor>, List<DoctorDto>>(await doctorRepository.GetListAsync());
@@ -42,11 +42,11 @@ public class DoctorAppService(
     public virtual async Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input)
     {
         var totalCount = await doctorRepository.GetCountAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
         var items = await doctorRepository.GetListAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
 
@@ -62,11 +62,11 @@ public class DoctorAppService(
     )
     {
         var totalCount = await doctorRepository.GetCountAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
         var items = await doctorRepository.GetListWithNavigationPropertiesAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
 
@@ -79,10 +79,17 @@ public class DoctorAppService(
         };
     }
 
-    public virtual async Task<DoctorDto> GetAsync(Guid id)
+    public virtual async Task<DoctorDto> GetAsync(GetDoctorInput input)
     {
-        var doctor = await doctorRepository.GetAsync(id);
+        var doctor = await doctorRepository.GetAsync(input.DoctorId, input.UserId);
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
+    }
+
+    public async Task<IdentityUserDto?> GetDoctorUserAsync(Guid userId)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        GlobalException.ThrowIf(user == null, "Doctor user not found");
+        return ObjectMapper.Map<IdentityUser, IdentityUserDto>(user!);
     }
 
     [Authorize(HealthCarePermissions.Doctors.Delete)]
@@ -99,11 +106,11 @@ public class DoctorAppService(
     {
         await userRules.EnsureUsernameNotExistAsync(input.User.UserName);
         await userRules.EnsureEmailNotExistAsync(input.User.Email);
-        
+
         var doctor = await doctorManager.CreateAsync(
             input.FirstName,
             input.LastName,
-            input.WorkingHours,
+            input.AppointmentTime,
             input.TitleId!.Value,
             input.DepartmentId!.Value,
             input.HospitalId!.Value,
@@ -118,21 +125,49 @@ public class DoctorAppService(
     public virtual async Task<DoctorDto> UpdateAsync(Guid id, DoctorUpdateDto input)
     {
         var doctor = await doctorManager.UpdateAsync(
-            id, input.FirstName, input.LastName, input.WorkingHours, input.TitleId!.Value,input.DepartmentId!.Value,  input.ConcurrencyStamp
+            id, input.FirstName, input.LastName, input.AppointmentTime, input.TitleId!.Value, input.DepartmentId!.Value,
+            input.ConcurrencyStamp
         );
         return ObjectMapper.Map<Doctor, DoctorDto>(doctor);
+    }
+
+    [Authorize(HealthCarePermissions.Doctors.Edit)]
+    public async Task<bool> ChangePasswordAsync(Guid userId, DoctorUserPasswordUpdateDto input)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        GlobalException.ThrowIf(
+            !await userManager.CheckPasswordAsync(user!, input.CurrentPassword), "Current password is incorrect."
+        );
+
+        var result = await userManager.ChangePasswordAsync(user!, input.CurrentPassword, input.NewPassword);
+        GlobalException.ThrowIf(!result.Succeeded, result.Errors.Select(e => e.Description));
+        return result.Succeeded;
+    }
+
+    [Authorize(HealthCarePermissions.Doctors.Edit)]
+    public async Task<bool> UpdateUserAsync(Guid userId, DoctorUserInformationUpdateDto input)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+
+        await userRules.EnsureUsernameNotExistForOthersAsync(input.UserName, userId);
+        await userRules.EnsureEmailNotExistForOthersAsync(input.Email, userId);
+
+        var result = await userManager.SetUserNameAsync(user!, input.UserName);
+        GlobalException.ThrowIf(!result.Succeeded, result.Errors.Select(e => e.Description));
+
+        result = await userManager.SetEmailAsync(user!, input.Email);
+        GlobalException.ThrowIf(!result.Succeeded, result.Errors.Select(e => e.Description));
+
+        return result.Succeeded;
     }
 
     public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(DoctorExcelDownloadDto input)
     {
         var downloadToken = await downloadTokenCache.GetAsync(input.DownloadToken);
-        if (downloadToken == null || input.DownloadToken != downloadToken.Token)
-        {
-            throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
-        }
+        GlobalException.ThrowIf(downloadToken is null, "Invalid download token: " + input.DownloadToken);
 
         var items = await doctorRepository.GetListAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId,
             input.DepartmentId, input.HospitalId
         );
 
@@ -146,24 +181,12 @@ public class DoctorAppService(
     }
 
     [Authorize(HealthCarePermissions.Doctors.Delete)]
-    public async Task DeleteByIdsAsync(List<Guid> doctorIds)
-    {
-        try
-        {
-            await doctorRepository.DeleteManyAsync(doctorIds);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error occurred while deleting doctors");
-            throw new UserFriendlyException("Doktorları silerken bir hata oluştu.");
-        }
-    }
+    public async Task DeleteByIdsAsync(List<Guid> doctorIds) => await doctorRepository.DeleteManyAsync(doctorIds);
 
     [Authorize(HealthCarePermissions.Doctors.Delete)]
     public virtual async Task DeleteAllAsync(GetDoctorsInput input) =>
         await doctorRepository.DeleteAllAsync(
-            input.FilterText, input.FirstName, input.LastName, input.FullName, input.WorkingHours, input.TitleId,
-            input.DepartmentId
+            input.FilterText, input.FullName, input.AppointmentTime, input.TitleId, input.DepartmentId
         );
 
     public async Task<DownloadTokenResultDto> GetDownloadTokenAsync()

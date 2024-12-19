@@ -11,9 +11,10 @@
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Charts
-@using LabelPosition = Syncfusion.Blazor.Charts.LabelPosition
 @using Theme = Syncfusion.Blazor.Theme
+@using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.Layouts
+@using GridColumns = Syncfusion.EJ2.Grids.GridColumns
 
 @inherits HealthCareComponentBase
 
@@ -21,6 +22,7 @@
 @inject IDoctorAppService DoctorAppService
 @inject IDepartmentsAppService DepartmentsAppService
 @inject IProtocolTypeAppService ProtocolTypeAppService
+@inject SfDialogService DialogService
 
 @* ************************* SEARCH ************************* *@
 <div class="bg-white mb-3">
@@ -201,7 +203,24 @@
                                     }
                                 </Template>
                             </GridColumn>
-                            <GridColumn Field="@nameof(ProtocolDto.Description)"></GridColumn>
+                            <GridColumn HeaderText="@L["ProtocolTypeAction"]">
+                                <Template>
+                                    @{
+                                        var dto = (context as ProtocolDto)!;
+                                        @(dto.ProtocolTypeAction.Name)
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="@L["Description"]">
+                                <Template>
+                                    @{
+                                        var description = (context as ProtocolDto)!.Description;
+                                    }
+                                    <SfButton Disabled="@description.IsNullOrWhiteSpace()" CssClass="e-flat e-small"
+                                              IconCss="fas fa-file-alt"
+                                              OnClick="@(() => DialogService.AlertAsync(description))"></SfButton>
+                                </Template>
+                            </GridColumn>
                             <GridColumn HeaderText="@L["Patient"]">
                                 <Template>
                                     @{

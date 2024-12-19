@@ -14,6 +14,7 @@ using FilteringEventArgs = Syncfusion.Blazor.DropDowns.FilteringEventArgs;
 using Pusula.Training.HealthCare.Protocols;
 using Microsoft.AspNetCore.Authorization;
 using Pusula.Training.HealthCare.Permissions;
+using Syncfusion.Blazor.Navigations;
 
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages
@@ -34,7 +35,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages
 
         private IEnumerable<AppointmentTypeDto> AppointmentTypeList { get; set; } = [];
         private IReadOnlyList<AppointmentWithNavigationPropertiesDto> AppointmentList { get; set; } = [];
-        private SfGrid<AppointmentWithNavigationPropertiesDto> SfGrid { get; set; } = null!; 
+        private SfGrid<AppointmentWithNavigationPropertiesDto> Grid { get; set; } = null!; 
         private GetAppointmentsInput Filter { get; set; }
 
         public AppointmentReports()
@@ -110,7 +111,6 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages
             DepartmentList = departments.Items;
             await DepartmentFilterAutoComplete.FilterAsync(DepartmentList);
         }
-    }
-    #endregion
-
+        #endregion        
+    }    
 }

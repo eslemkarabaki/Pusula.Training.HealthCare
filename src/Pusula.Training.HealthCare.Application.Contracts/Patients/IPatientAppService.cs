@@ -11,10 +11,8 @@ namespace Pusula.Training.HealthCare.Patients;
 
 public interface IPatientAppService : IApplicationService
 {
-    Task<PatientDto> GetAsync(string number);
-    Task<PatientDto> GetAsync(Guid id);
-    Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id);
-    Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(int patientNo);
+    Task<PatientDto> GetAsync(GetPatientInput input);
+    Task<PatientWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(GetPatientInput input);
 
     Task<PagedResultDto<PatientDto>> GetListAsync(GetPatientsInput input);
 

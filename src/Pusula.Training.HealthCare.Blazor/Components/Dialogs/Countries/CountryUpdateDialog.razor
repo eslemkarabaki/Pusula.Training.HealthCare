@@ -10,17 +10,17 @@
 @inject ICountryAppService CountryAppService
 
 <SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@(() => EditingCountry = new CountryUpdateDto())"></DialogEvents>
     <DialogTemplates>
-        <Header>@L["NewCountry"]</Header>
+        <Header>@L["EditCountry"]</Header>
         <Content>
             <SfDataForm ID="NewCountryForm"
-                        EditContext="@EditingCountryEditContext"
+                        Model="@EditingCountry"
                         ButtonsAlignment="FormButtonsAlignment.Right"
                         OnValidSubmit="@OnSaveClickAsync"
                         ValidationDisplayMode="FormValidationDisplay.Tooltip">
                 <FormValidator>
-                    <FluentValidationValidator
-                        Validator="@EditingCountryValidator"></FluentValidationValidator>
+                    <DataAnnotationsValidator/>
                 </FormValidator>
                 <FormTemplate>
                     <div class="d-flex flex-column gap-2">
@@ -51,11 +51,7 @@
 
     private SfDialog Dialog { get; set; } = null!;
 
-    private EditContext EditingCountryEditContext { get; set; } = null!;
-
     private CountryUpdateDto EditingCountry { get; set; } = new();
-
-    private CountryUpdateDtoValidator EditingCountryValidator { get; set; } = null!;
 
     private async Task OnSaveClickAsync(EditContext context)
     {
@@ -67,14 +63,8 @@
     {
         var country = await CountryAppService.GetAsync(countryId);
         ObjectMapper.Map(country, EditingCountry);
-        EditingCountryEditContext = new EditContext(EditingCountry);
         await Dialog.ShowAsync();
     }
 
-    public async Task HideAsync()
-    {
-        EditingCountry = new CountryUpdateDto();
-        await Dialog.HideAsync();
-    }
-
+    public async Task HideAsync() => await Dialog.HideAsync();
 }

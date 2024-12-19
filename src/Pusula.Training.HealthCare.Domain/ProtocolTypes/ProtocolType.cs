@@ -5,7 +5,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.ProtocolTypes;
 
-public class ProtocolType : AuditedAggregateRoot<Guid>
+public class ProtocolType : FullAuditedAggregateRoot<Guid>
 {
     public string Name { get; private set; }
 

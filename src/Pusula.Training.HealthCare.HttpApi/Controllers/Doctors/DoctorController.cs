@@ -17,7 +17,7 @@ namespace Pusula.Training.HealthCare.Controllers.Doctors;
 [Area("app")]
 [ControllerName("Doctor")]
 [Route("api/app/doctors")]
-public class DoctorController : HealthCareController, IDoctorAppService
+public class DoctorController : HealthCareController
 {
     private readonly IDoctorAppService _doctorAppService;
 
@@ -33,18 +33,19 @@ public class DoctorController : HealthCareController, IDoctorAppService
     public virtual Task<List<DoctorDto>> GetListDoctorsAsync(Guid id) => _doctorAppService.GetListDoctorsAsync(id);
 
     // Get list of doctors with pagination
-    [HttpGet]
+    [HttpGet("all")]
     public virtual Task<PagedResultDto<DoctorDto>> GetListAsync(GetDoctorsInput input) =>
         _doctorAppService.GetListAsync(input);
 
+    [HttpGet("all/with-navigation-properties")]
     public async Task<PagedResultDto<DoctorWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(
         GetDoctorsInput input
     ) =>
         await _doctorAppService.GetListWithNavigationPropertiesAsync(input);
 
     // Get a single doctor by ID
-    [HttpGet("{id}")]
-    public virtual Task<DoctorDto> GetAsync(Guid id) => _doctorAppService.GetAsync(id);
+    [HttpGet]
+    public virtual Task<DoctorDto> GetAsync(GetDoctorInput input) => _doctorAppService.GetAsync(input);
 
     // Create a new doctor
     [HttpPost]

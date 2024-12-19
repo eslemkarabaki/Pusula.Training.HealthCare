@@ -5,7 +5,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Addresses;
 
-public sealed class Address : AuditedEntity<Guid>, IAddress
+public sealed class Address : FullAuditedAggregateRoot<Guid>
 {
     public Guid PatientId { get; private set; }
     public Guid DistrictId { get; private set; }

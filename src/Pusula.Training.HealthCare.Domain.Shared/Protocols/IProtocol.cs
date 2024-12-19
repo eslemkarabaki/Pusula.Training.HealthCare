@@ -9,6 +9,7 @@ public interface IProtocol
     public Guid DoctorId { get; }
     public Guid DepartmentId { get; }
     public Guid ProtocolTypeId { get; }
+    public Guid ProtocolTypeActionId { get; }
     public EnumProtocolStatus Status { get; }
     public string? Description { get; }
     public DateTime StartTime { get; }

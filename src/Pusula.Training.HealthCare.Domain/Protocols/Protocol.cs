@@ -2,22 +2,32 @@ using System;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Patients;
+using Pusula.Training.HealthCare.ProtocolTypeActions;
 using Pusula.Training.HealthCare.ProtocolTypes;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Pusula.Training.HealthCare.Protocols;
 
-public sealed class Protocol : FullAuditedAggregateRoot<Guid>, IProtocol
+public class Protocol : FullAuditedAggregateRoot<Guid>
 {
+    public int ProtocolNo { get; private set; }
+
     public Guid PatientId { get; private set; }
     public Patient Patient { get; set; }
+
     public Guid DoctorId { get; private set; }
     public Doctor Doctor { get; set; }
+
     public Guid DepartmentId { get; private set; }
     public Department Department { get; set; }
+
     public Guid ProtocolTypeId { get; private set; }
     public ProtocolType ProtocolType { get; set; }
+
+    public Guid ProtocolTypeActionId { get; private set; }
+    public ProtocolTypeAction ProtocolTypeAction { get; set; }
+
     public EnumProtocolStatus Status { get; private set; }
     public string? Description { get; private set; }
     public DateTime StartTime { get; private set; }
@@ -30,7 +40,8 @@ public sealed class Protocol : FullAuditedAggregateRoot<Guid>, IProtocol
         Guid patientId,
         Guid doctorId,
         Guid departmentId,
-        Guid typeId,
+        Guid protocolTypeId,
+        Guid protocolTypeActionId,
         string? description,
         EnumProtocolStatus status,
         DateTime startTime,
@@ -40,7 +51,8 @@ public sealed class Protocol : FullAuditedAggregateRoot<Guid>, IProtocol
         SetPatientId(patientId);
         SetDoctorId(doctorId);
         SetDepartmentId(departmentId);
-        SetTypeId(typeId);
+        SetProtocolTypeId(protocolTypeId);
+        SetProtocolTypeActionId(protocolTypeActionId);
         SetDescription(description);
         SetStatus(status);
         SetStartTime(startTime);
@@ -53,7 +65,12 @@ public sealed class Protocol : FullAuditedAggregateRoot<Guid>, IProtocol
     public void SetDepartmentId(Guid departmentId) =>
         DepartmentId = Check.NotDefaultOrNull<Guid>(departmentId, nameof(departmentId));
 
-    public void SetTypeId(Guid typeId) => ProtocolTypeId = Check.NotDefaultOrNull<Guid>(typeId, nameof(typeId));
+    public void SetProtocolTypeId(Guid protocolTypeId) =>
+        ProtocolTypeId = Check.NotDefaultOrNull<Guid>(protocolTypeId, nameof(protocolTypeId));
+
+    public void SetProtocolTypeActionId(Guid protocolTypeActionId) =>
+        ProtocolTypeActionId = Check.NotDefaultOrNull<Guid>(protocolTypeActionId, nameof(protocolTypeActionId));
+
     public void SetStatus(EnumProtocolStatus status) => Status = status;
 
     public void SetDescription(string? description) =>

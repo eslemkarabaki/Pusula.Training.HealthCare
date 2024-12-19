@@ -1,80 +1,69 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Volo.Abp.Domain.Services;
 using Volo.Abp;
-using Pusula.Training.HealthCare.Examinations;
-using Volo.Abp.Data;
-public class ExaminationManager(IExaminationRepository examinationRepository) : DomainService
+using Volo.Abp.Domain.Services;
+
+namespace Pusula.Training.HealthCare.Examinations
 {
-    public virtual async Task<Examination> CreateAsync(Guid doctorId, Guid patientId, string notes, string chronicDiseases,
-        DateTime visitDate,
-        string identityNumber,
-        string allergies, string medications, string diagnosis, string prescription, string? imagingResults = null)
+    public class ExaminationManager : DomainService
     {
-        Check.NotDefaultOrNull<Guid>(doctorId, nameof(doctorId));
-        Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
-        Check.NotNullOrWhiteSpace(notes, nameof(notes), ExaminationConsts.NotesNumberMaxLength);
-        Check.NotNullOrWhiteSpace(chronicDiseases, nameof(chronicDiseases), ExaminationConsts.ChronicDiseasesNumberMaxLength);
-        Check.NotNullOrWhiteSpace(identityNumber, nameof(identityNumber), ExaminationConsts.IdentityNumberMaxLength);
-        Check.NotNullOrWhiteSpace(allergies, nameof(allergies), ExaminationConsts.AllergiesNumberMaxLength);
-        Check.NotNullOrWhiteSpace(medications, nameof(medications), ExaminationConsts.MedicationsNumberMaxLength);
-        Check.NotNullOrWhiteSpace(diagnosis, nameof(diagnosis), ExaminationConsts.MedicationsNumberMaxLength);
-        Check.NotNullOrWhiteSpace(prescription, nameof(prescription), ExaminationConsts.MedicationsNumberMaxLength);
-        if (!string.IsNullOrWhiteSpace(imagingResults))
+        private readonly IExaminationRepository _examinationRepository;
+
+        public ExaminationManager(IExaminationRepository examinationRepository)
         {
-            Check.Length(imagingResults, nameof(imagingResults), ExaminationConsts.ImagingResultsNumberMaxLength);
+            _examinationRepository = examinationRepository;
         }
-        var examination = new Examination(  
-           identityNumber:identityNumber,
-           patientId:patientId,
-           doctorId:doctorId,
-           notes:notes,
-           visitDate:visitDate,
-           chronicDiseases:chronicDiseases,
-           allergies:allergies,
-           medications:medications,
-           diagnosis:diagnosis,
-           prescription:prescription,
-           imagingResults: imagingResults
-        );
-        return await examinationRepository.InsertAsync(examination,autoSave:true);
-    }
-    public virtual async Task<Examination> UpdateAsync(
-        Guid id,
-        Guid doctorId, Guid patientId, string chronicDiseases, string allergies, string medications, string diagnosis, string prescription,
-        DateTime visitDate,
-        string identityNumber,
-        string notes,string imagingResults,
-        [CanBeNull] string? concurrencyStamp = null
-    )
-    {
-        Check.NotDefaultOrNull<Guid>(id, nameof(id));
-        Check.NotDefaultOrNull<Guid>(doctorId, nameof(doctorId));
-        Check.NotDefaultOrNull<Guid>(patientId, nameof(patientId));
-        Check.NotNullOrWhiteSpace(notes, nameof(notes), ExaminationConsts.NotesNumberMaxLength);
-        Check.NotNullOrWhiteSpace(chronicDiseases, nameof(chronicDiseases), ExaminationConsts.ChronicDiseasesNumberMaxLength);
-        Check.NotNullOrWhiteSpace(identityNumber, nameof(identityNumber), ExaminationConsts.IdentityNumberMaxLength);
-        Check.NotNullOrWhiteSpace(allergies, nameof(allergies), ExaminationConsts.AllergiesNumberMaxLength);
-        Check.NotNullOrWhiteSpace(medications, nameof(medications), ExaminationConsts.MedicationsNumberMaxLength);
-        Check.NotNullOrWhiteSpace(diagnosis, nameof(diagnosis), ExaminationConsts.MedicationsNumberMaxLength);
-        Check.NotNullOrWhiteSpace(prescription, nameof(prescription), ExaminationConsts.MedicationsNumberMaxLength);
-        if (!string.IsNullOrWhiteSpace(imagingResults))
+
+        // Create a new Examination
+        public async Task<Examination> CreateAsync(
+            Guid protocolId,
+            Guid doctorId,
+            Guid patientId,
+            string summaryDocument,
+            DateTime startDate)
         {
-            Check.Length(imagingResults, nameof(imagingResults), ExaminationConsts.ImagingResultsNumberMaxLength);
+            Check.NotNullOrWhiteSpace(summaryDocument, nameof(summaryDocument));
+
+            var examination = new Examination(
+                GuidGenerator.Create(),
+                protocolId,
+                doctorId,
+                patientId,
+                summaryDocument,
+                startDate
+            );
+
+            return await _examinationRepository.InsertAsync(examination);
         }
-        var examination = await examinationRepository.GetAsync(id);
-        //examination.DoctorId = doctorId;
-        examination.PatientId = patientId;
-        examination.Notes = notes;
-        examination.ChronicDiseases = chronicDiseases;
-        examination.IdentityNumber = identityNumber;
-        examination.Allergies = allergies;
-        examination.Medications = medications;
-        examination.Diagnosis = diagnosis;
-        examination.Prescription = prescription;
-        examination.ImagingResults = imagingResults;
-        //examination.SetConcurrencyStampIfNotNull(concurrencyStamp);
-        return await examinationRepository.UpdateAsync(examination, autoSave:true);
+
+        // Get a single Examination
+        public async Task<Examination> GetAsync(Guid id)
+        {
+            return await _examinationRepository.GetAsync(id);
+        }
+
+        // Update an existing Examination
+        public async Task<Examination> UpdateAsync(
+            Guid id,
+            string summaryDocument,
+            DateTime startDate)
+        {
+            Check.NotNullOrWhiteSpace(summaryDocument, nameof(summaryDocument));
+
+            var examination = await _examinationRepository.GetAsync(id);
+
+            examination.SummaryDocument = summaryDocument;
+            examination.StartDate = startDate;
+
+            return await _examinationRepository.UpdateAsync(examination);
+        }
+
+        // Delete an Examination
+        public async Task DeleteAsync(Guid id)
+        {
+            await _examinationRepository.DeleteAsync(id);
+        }
+        
     }
 }

@@ -1,13 +1,8 @@
 ﻿using JetBrains.Annotations;
-using Pusula.Training.HealthCare.AppointmentTypes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Volo.Abp;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Pusula.Training.HealthCare.Appointments
@@ -19,7 +14,7 @@ namespace Pusula.Training.HealthCare.Appointments
             Guid appointmentTypeId,Guid departmentId, 
             Guid doctorId, Guid patientId, 
             DateTime startTime, DateTime endTime,
-            EnumStatus status, string? note = null)
+            EnumAppointmentStatus status, string? note = null)
         {           
 
             var appointment = new Appointment(
@@ -35,7 +30,7 @@ namespace Pusula.Training.HealthCare.Appointments
             Guid appointmentTypeId, Guid departmentId,
             Guid doctorId, Guid patientId,
             DateTime startTime, DateTime endTime,
-            EnumStatus status, string? note = null, 
+            EnumAppointmentStatus status, string? note = null, 
             [CanBeNull] string? concurrencyStamp = null)
         {           
             var appointment = await appointmentRepository.GetAsync(id);

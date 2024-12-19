@@ -1,0 +1,44 @@
+@using Syncfusion.Blazor.Buttons
+
+<div class="hc-card">
+    <div class="hc-card-header">
+       <span class="hc-card-icon">
+            <SfIcon IconCss="@CardIcon"/>
+        </span>
+        <div class="hc-card-header-content">
+            <span class="hc-card-title">@Title</span>
+            @if (NoContent)
+            {
+                <span class="hc-card-nocontent-text">@(NoContentText ?? "Kayıt bulunamadı")</span>
+            } else if (HeaderContent != null)
+            {
+                @HeaderContent
+            }
+        </div>
+    </div>
+    <div class="hc-card-body">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = null!;
+
+    [Parameter]
+    public string CardIcon { get; set; } = null!;
+
+    [Parameter]
+    public bool NoContent { get; set; }
+
+    [Parameter]
+    public string? NoContentText { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
+
+}

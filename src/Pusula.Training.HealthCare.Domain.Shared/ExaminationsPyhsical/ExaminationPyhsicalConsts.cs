@@ -1,6 +1,6 @@
-﻿namespace Pusula.Training.HealthCare.Examinations
+﻿namespace Pusula.Training.HealthCare.ExaminationsPhysical
 {
-    public static class ExaminationPyhsicalConsts
+    public static class ExaminationPhysicalConsts
     {
         private const string DefaultSorting = "{0}Weight asc";
 
@@ -8,9 +8,6 @@
         {
             return string.Format(DefaultSorting, withEntityName ? "ExaminationPhysical." : string.Empty);
         }
-       
-    
-        public const int IdentityNumberMaxLength = 11;
 
         public const int WeightMaxLength = 3;
         public const int WeightMinLength = 0;
@@ -23,5 +20,8 @@
 
         public const int PulseMaxLength = 3;
         public const int PulseMinLength = 0;
+
+        public const int PhysicalNoteMaxLength = 60;
+        public const int PhysicalNoteMinLength = 3;
     }   
 }

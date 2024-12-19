@@ -18,12 +18,16 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
     {
     }
 
+    public async Task<Doctor> GetAsync(Guid? doctorId, Guid? userId, CancellationToken cancellationToken = default) =>
+        await (await GetQueryableAsync())
+              .WhereIf(doctorId.HasValue, x => x.Id == doctorId!.Value)
+              .WhereIf(userId.HasValue, x => x.UserId == userId!.Value)
+              .FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
+
     public virtual async Task DeleteAllAsync(
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
         string? fullname = null,
-        int? workingHours = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -34,7 +38,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
 
         // Apply filters to the query
         query = ApplyFilter(
-            query, filterText, firstName, lastName, fullname, workingHours, titleId, departmentId, hospitalId
+            query, filterText, fullname, appointmentTime, titleId, departmentId, hospitalId
         );
 
         // Select doctor IDs to delete
@@ -46,10 +50,8 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
 
     public virtual async Task<List<Doctor>> GetListAsync(
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
         string? fullname = null,
-        int? workingHours = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -60,7 +62,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
     )
     {
         var query = ApplyFilter(
-            await GetQueryableAsync(), filterText, firstName, lastName, fullname, workingHours, titleId, departmentId,
+            await GetQueryableAsync(), filterText, fullname, appointmentTime, titleId, departmentId,
             hospitalId
         );
 
@@ -73,10 +75,8 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
 
     public virtual async Task<List<DoctorWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
         string? fullname = null,
-        int? workingHours = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -87,7 +87,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
     )
     {
         var query = ApplyFilter(
-            await GetQueryForNavigationPropertiesAsync(), filterText, firstName, lastName, fullname, workingHours,
+            await GetQueryForNavigationPropertiesAsync(), filterText, fullname, appointmentTime,
             titleId, departmentId, hospitalId
         );
 
@@ -100,10 +100,8 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
 
     public virtual async Task<long> GetCountAsync(
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
         string? fullname = null,
-        int? workingHours = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null,
@@ -111,7 +109,7 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
     )
     {
         var query = ApplyFilter(
-            await GetQueryableAsync(), filterText, firstName, lastName, fullname, workingHours, titleId, departmentId,
+            await GetQueryableAsync(), filterText, fullname, appointmentTime, titleId, departmentId,
             hospitalId
         );
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
@@ -142,10 +140,8 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
     private IQueryable<Doctor> ApplyFilter(
         IQueryable<Doctor> query,
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
-        string? fullname = null,
-        int? workingHours = null,
+        string? fullName = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null
@@ -153,16 +149,10 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => e.FirstName.Contains(filterText!) ||
-                    e.LastName.Contains(filterText!) ||
-                    e.TitleId.ToString().Contains(filterText!) ||
-                    e.DepartmentId.ToString().Contains(filterText!) ||
-                    e.HospitalId.ToString().Contains(filterText!)
+                e => EF.Functions.ILike(e.FullName, filterText!)
             )
-            .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.FirstName.Contains(firstName!))
-            .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.LastName.Contains(lastName!))
-            .WhereIf(!fullname.IsNullOrWhiteSpace(), e => e.FullName.Contains(fullname!))
-            .WhereIf(workingHours.HasValue, e => e.WorkingHours == workingHours!.Value)
+            .WhereIf(!string.IsNullOrWhiteSpace(fullName), e => EF.Functions.ILike(e.FullName, fullName!))
+            .WhereIf(appointmentTime.HasValue, e => e.AppointmentTime == appointmentTime!.Value)
             .WhereIf(titleId.HasValue, e => e.TitleId == titleId!.Value)
             .WhereIf(departmentId.HasValue, e => e.DepartmentId == departmentId!.Value)
             .WhereIf(hospitalId.HasValue, e => e.HospitalId == hospitalId!.Value);
@@ -170,10 +160,8 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
     private IQueryable<DoctorWithNavigationProperties> ApplyFilter(
         IQueryable<DoctorWithNavigationProperties> query,
         string? filterText = null,
-        string? firstName = null,
-        string? lastName = null,
-        string? fullname = null,
-        int? workingHours = null,
+        string? fullName = null,
+        int? appointmentTime = null,
         Guid? titleId = null,
         Guid? departmentId = null,
         Guid? hospitalId = null
@@ -181,16 +169,10 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => e.Doctor.FirstName.Contains(filterText!) ||
-                    e.Doctor.LastName.Contains(filterText!) ||
-                    e.Doctor.TitleId.ToString().Contains(filterText!) ||
-                    e.Doctor.DepartmentId.ToString().Contains(filterText!) ||
-                    e.Doctor.HospitalId.ToString().Contains(filterText!)
+                e => EF.Functions.ILike(e.Doctor.FullName, filterText!)
             )
-            .WhereIf(!string.IsNullOrWhiteSpace(firstName), e => e.Doctor.FirstName.Contains(firstName!))
-            .WhereIf(!string.IsNullOrWhiteSpace(lastName), e => e.Doctor.LastName.Contains(lastName!))
-            .WhereIf(!fullname.IsNullOrWhiteSpace(), e => e.Doctor.FullName.Contains(fullname!))
-           .WhereIf(workingHours.HasValue, e => e.Doctor.WorkingHours == workingHours!.Value)
+            .WhereIf(!string.IsNullOrWhiteSpace(fullName), e => EF.Functions.ILike(e.Doctor.FullName, fullName!))
+            .WhereIf(appointmentTime.HasValue, e => e.Doctor.AppointmentTime == appointmentTime!.Value)
             .WhereIf(titleId.HasValue, e => e.Doctor.TitleId == titleId!.Value)
             .WhereIf(departmentId.HasValue, e => e.Doctor.DepartmentId == departmentId!.Value)
             .WhereIf(hospitalId.HasValue, e => e.Doctor.HospitalId == hospitalId!.Value);

@@ -14,9 +14,11 @@ public class Doctor : FullAuditedAggregateRoot<Guid>
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public string FullName { get; private set; }
-    public int WorkingHours { get; private set; }
+    public int AppointmentTime { get; private set; }
 
     public Guid TitleId { get; private set; }
+    public Title Title { get; set; }
+
     public Guid DepartmentId { get; private set; }
     public Guid HospitalId { get; private set; }
     public Guid UserId { get; private set; }
@@ -32,32 +34,30 @@ public class Doctor : FullAuditedAggregateRoot<Guid>
         Guid id,
         string firstName,
         string lastName,
-        int workingHours,
+        int appointmentTime,
         Guid titleId,
         Guid departmentId,
         Guid hospitalId
     ) : base(id)
     {
         SetName(firstName, lastName);
-        SetWorkingHours(workingHours);
+        SetAppointmentTime(appointmentTime);
         SetTitleId(titleId);
         SetDepartmentId(departmentId);
         SetHospitalId(hospitalId);
     }
-    
+
     public Doctor(
         Guid id,
         string firstName,
         string lastName,
-        int workingHours,
+        int appointmentTime,
         Guid titleId,
         Guid departmentId,
         Guid hospitalId,
         Guid userId
-    ) : this(id, firstName, lastName, workingHours, titleId, departmentId, hospitalId)
-    {
+    ) : this(id, firstName, lastName, appointmentTime, titleId, departmentId, hospitalId) =>
         SetUserId(userId);
-    }
 
     private void SetFirstName(string firstName) =>
         FirstName = Check.NotNullOrWhiteSpace(firstName, nameof(firstName), DoctorConsts.FirstNameMaxLength);
@@ -74,10 +74,12 @@ public class Doctor : FullAuditedAggregateRoot<Guid>
         SetFullName(firstName, lastName);
     }
 
-    public void SetWorkingHours(int workingHours)
+    public void SetAppointmentTime(int appointmentTime)
     {
-        Check.NotDefaultOrNull<int>(workingHours, nameof(workingHours));
-        WorkingHours = Check.Range(workingHours, nameof(workingHours), DoctorConsts.WorkingHoursMin, DoctorConsts.WorkingHoursMax);
+        Check.NotDefaultOrNull<int>(appointmentTime, nameof(appointmentTime));
+        AppointmentTime = Check.Range(
+            appointmentTime, nameof(appointmentTime), DoctorConsts.AppointmentTimeMin, DoctorConsts.AppointmentTimeMax
+        );
     }
 
     public void SetTitleId(Guid titleId) => TitleId = Check.NotDefaultOrNull<Guid>(titleId, nameof(titleId));

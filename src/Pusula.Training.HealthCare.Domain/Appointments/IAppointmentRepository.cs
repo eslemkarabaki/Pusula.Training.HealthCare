@@ -13,7 +13,7 @@ public interface IAppointmentRepository:IRepository<Appointment, Guid>
     Task DeleteAllAsync(
         string? filterText = null, 
         DateTime? startTime=null, DateTime? endTime =null,
-        string? note = null, EnumStatus? status=null,  
+        string? note = null, EnumAppointmentStatus? status=null,  
         Guid? appointmentTypeId=null, Guid? departmentId=null, 
         Guid? doctorId =null, Guid? patientId=null, 
         CancellationToken cancellationToken=default);
@@ -23,10 +23,21 @@ public interface IAppointmentRepository:IRepository<Appointment, Guid>
     CancellationToken cancellationToken = default
 );
 
+    Task<List<AppointmentWithNavigationProperties>> GetDoctorAppointmentListWithNavigationPropertiesAsync(
+        Guid doctorId,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        ICollection<EnumAppointmentStatus>? statuses = null,
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        CancellationToken cancellationToken = default
+    );
+
     Task<List<AppointmentWithNavigationProperties>> GetListWithNavigationPropertiesAsync(
         string? filterText = null,
         DateTime? startTime = null, DateTime? endTime = null,
-        string? note = null, EnumStatus? status = null,
+        string? note = null, EnumAppointmentStatus? status = null,
         Guid? appointmentTypeId = null, Guid? departmentId = null,
         Guid? doctorId = null, Guid? patientId = null,
         string? sorting=null, int maxResultCount=int.MaxValue,
@@ -35,17 +46,30 @@ public interface IAppointmentRepository:IRepository<Appointment, Guid>
     Task<List<Appointment>> GetListAsync(
         string? filterText = null,
         DateTime? startTime = null, DateTime? endTime = null,
-        string? note = null, EnumStatus? status = null,
+        string? note = null, EnumAppointmentStatus? status = null,
         Guid? appointmentTypeId = null, Guid? departmentId = null,
         Guid? doctorId = null, Guid? patientId = null,
         string? sorting =null, int maxResultCount = int.MaxValue,
         int skipCount = 0, CancellationToken cancellationToken = default);
 
     Task<long> GetCountAsync(
-       string? filterText = null,
-        DateTime? startTime = null, DateTime? endTime = null,
-        string? note = null, EnumStatus? status = null,
-        Guid? appointmentTypeId = null, Guid? departmentId = null,
-        Guid? doctorId = null, Guid? patientId = null,
-        CancellationToken cancellationToken = default);
+        string? filterText = null,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        string? note = null,
+        EnumAppointmentStatus? status = null,
+        Guid? appointmentTypeId = null,
+        Guid? departmentId = null,
+        Guid? doctorId = null,
+        Guid? patientId = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<long> GetCountForDoctorAppointmentListAsync(
+        Guid doctorId,
+        DateTime? startTime = null,
+        DateTime? endTime = null,
+        ICollection<EnumAppointmentStatus>? statuses = null,
+        CancellationToken cancellationToken = default
+    );
 }
