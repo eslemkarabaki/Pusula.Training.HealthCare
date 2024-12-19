@@ -551,7 +551,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Diagnoses");
+                    b.ToTable("Diagnoses", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.Districts.District", b =>
@@ -732,7 +732,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExaminationDiagnoses");
+                    b.ToTable("ExaminationDiagnoses", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.Examinations.Examination", b =>
@@ -827,7 +827,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExaminationAnamnez");
+                    b.ToTable("ExaminationAnamnez", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.ExaminationsPhysical.ExaminationPhysical", b =>
@@ -890,7 +890,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExaminationPhysical");
+                    b.ToTable("ExaminationPhysical", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.HospitalDepartments.HospitalDepartment", b =>
@@ -2010,7 +2010,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestGroups");
+                    b.ToTable("TestGroups", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.TestProcesses.TestProcess", b =>
@@ -2087,7 +2087,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("TestProcesses");
+                    b.ToTable("TestProcesses", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.TestTypes.TestType", b =>
@@ -2143,7 +2143,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestTypes");
+                    b.ToTable("TestTypes", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.Tests.Test", b =>
@@ -2216,7 +2216,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasIndex("TestTypeId");
 
-                    b.ToTable("Tests");
+                    b.ToTable("Tests", (string)null);
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.Titles.Title", b =>
@@ -2333,7 +2333,7 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("WorkLists");
+                    b.ToTable("WorkLists", (string)null);
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

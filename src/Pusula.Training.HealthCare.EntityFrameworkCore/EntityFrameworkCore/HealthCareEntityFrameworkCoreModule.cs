@@ -42,6 +42,7 @@ using Pusula.Training.HealthCare.ProtocolTypeActions;
 using Pusula.Training.HealthCare.ExaminationsPhysical;
 
 using Pusula.Training.HealthCare.ExaminationDiagnoses;
+using Pusula.Training.HealthCare.Examinations;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -94,7 +95,6 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<ProtocolType, EfCoreProtocolTypeRepository>();
                 options.AddRepository<Insurance, EfCoreInsuranceRepository>();
                 options.AddRepository<Diagnosis, EfCoreDiagnosisRepository>();
-                options.AddRepository<ExaminationPhysical, EfCoreExaminationPhysicalRepository>();
                 options.AddRepository<Test, EfCoreTestRepository>();
                 options.AddRepository<TestType, EfCoreTestTypeRepository>();
                 options.AddRepository<TestGroup, EfCoreTestGroupRepository>();
@@ -106,6 +106,8 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<RadiologyExaminationGroup, EfCoreRadiologyExaminationGroupRepository>();
                 options.AddRepository<ProtocolTypeAction, EfCoreProtocolTypeActionRepository>();
                 options.AddRepository<ExaminationDiagnosis, EfCoreExaminationDiagnosisRepository>();
+                options.AddRepository<ExaminationAnamnez, EfCoreExaminationAnamnezRepository>();
+                options.AddRepository<ExaminationPhysical, EfCoreExaminationPhysicalRepository>();
             }
         );
 

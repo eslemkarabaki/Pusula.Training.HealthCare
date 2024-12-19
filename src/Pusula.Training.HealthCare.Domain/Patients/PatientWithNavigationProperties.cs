@@ -4,6 +4,7 @@ using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 
+
 namespace Pusula.Training.HealthCare.Patients;
 
 public class PatientWithNavigationProperties
