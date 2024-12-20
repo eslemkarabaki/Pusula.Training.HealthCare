@@ -24,11 +24,11 @@ namespace Pusula.Training.HealthCare.Configurations
             b.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(RadiologyExaminationConsts.NameMaxLength);
+            b.HasIndex(e => e.Name).IsUnique();
 
             b.Property(x => x.ExaminationCode)
                 .IsRequired()
                 .HasMaxLength(RadiologyExaminationConsts.MaxCodeLength);
-
             b.Property(re => re.GroupId)
                    .IsRequired();
 
