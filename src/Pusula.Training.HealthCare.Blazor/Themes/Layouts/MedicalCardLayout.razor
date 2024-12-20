@@ -71,8 +71,8 @@
          <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("examination")" class="nav-link">
             Muayene
          </NavLink>
-         <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("appointment-history")" class="nav-link">
-            Muayene Geçmişi
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link"
+                  @onclick="@(() => NavigateTo("appointment-history"))">Randevu Geçmişi
          </NavLink>
       </div>
    </div>

@@ -50,22 +50,7 @@ public class AppointmentController : HealthCareController, IAppointmentsAppServi
     [HttpGet]
     [Route("{id}")]
     public virtual Task<AppointmentDto> GetAsync(Guid id) => _appointmentsAppService.GetAsync(id);
-
-    [HttpGet]
-    [Route("hospital-lookup")]
-    public virtual Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input) =>
-        _appointmentsAppService.GetAppointmentTypeLookupAsync(input);
-
-    [HttpGet]
-    [Route("department-lookup")]
-    public virtual Task<PagedResultDto<LookupDto<Guid>>> GetDepartmentLookupAsync(LookupRequestDto input) =>
-        _appointmentsAppService.GetDepartmentLookupAsync(input);
-
-    [HttpGet]
-    [Route("doctor-lookup")]
-    public virtual Task<PagedResultDto<LookupDto<Guid>>> GetDoctorLookupAsync(LookupRequestDto input) =>
-        _appointmentsAppService.GetDoctorLookupAsync(input);
-
+    
     [HttpGet]
     [Route("patient-lookup")]
     public virtual Task<PagedResultDto<LookupDto<Guid>>> GetPatientLookupAsync(LookupRequestDto input) =>

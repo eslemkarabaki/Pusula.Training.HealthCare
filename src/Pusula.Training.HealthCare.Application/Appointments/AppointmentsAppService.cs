@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using MiniExcelLibs;
 using Pusula.Training.HealthCare.AppointmentTypes;
-using Pusula.Training.HealthCare.Departments;
-using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
@@ -28,8 +26,6 @@ public class AppointmentsAppService(
     AppointmentManager appointmentManager,
     IDistributedCache<AppointmentDownloadTokenCacheItem, string> downloadTokenCache,
     IAppointmentTypeRepository appointmentTypeRepository,
-    IDepartmentRepository departmentRepository,
-    IDoctorRepository doctorRepository,
     IPatientRepository patientRepository
 ) : HealthCareAppService, IAppointmentsAppService
 {
@@ -38,11 +34,11 @@ public class AppointmentsAppService(
     public virtual async Task<PagedResultDto<AppointmentDto>> GetListAsync(GetAppointmentsInput input)
     {
         var totalCount = await appointmentRepository.GetCountAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Statuses, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId
         );
         var items = await appointmentRepository.GetListAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Statuses, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
 
@@ -64,7 +60,7 @@ public class AppointmentsAppService(
         );
         return ObjectMapper
             .Map<List<AppointmentWithNavigationProperties>, List<AppointmentWithNavigationPropertiesDto>>(items);
-    }
+    }    
 
     public virtual async Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id) =>
         ObjectMapper.Map<AppointmentWithNavigationProperties, AppointmentWithNavigationPropertiesDto>
@@ -75,12 +71,12 @@ public class AppointmentsAppService(
     )
     {
         var items = await appointmentRepository.GetListWithNavigationPropertiesAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Statuses, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId, input.Sorting, input.MaxResultCount, input.SkipCount
         );
 
         var count = await appointmentRepository.GetCountAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Statuses, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId
         );
 
@@ -114,48 +110,6 @@ public class AppointmentsAppService(
         {
             TotalCount = totalCount,
             Items = ObjectMapper.Map<List<AppointmentType>, List<LookupDto<Guid>>>(lookupData)
-        };
-    }
-
-#endregion
-
-#region GetDepartmentLookup
-
-    public virtual async Task<PagedResultDto<LookupDto<Guid>>> GetDepartmentLookupAsync(LookupRequestDto input)
-    {
-        var query = (await departmentRepository.GetQueryableAsync())
-            .WhereIf(
-                !string.IsNullOrWhiteSpace(input.Filter),
-                x => x.Name != null && x.Name.Contains(input.Filter!)
-            );
-
-        var lookupData = await query.PageBy(input.SkipCount, input.MaxResultCount).ToDynamicListAsync<Department>();
-        var totalCount = query.Count();
-        return new PagedResultDto<LookupDto<Guid>>
-        {
-            TotalCount = totalCount,
-            Items = ObjectMapper.Map<List<Department>, List<LookupDto<Guid>>>(lookupData)
-        };
-    }
-
-#endregion
-
-#region GetDoctorLookup
-
-    public virtual async Task<PagedResultDto<LookupDto<Guid>>> GetDoctorLookupAsync(LookupRequestDto input)
-    {
-        var query = (await doctorRepository.GetQueryableAsync())
-            .WhereIf(
-                !string.IsNullOrWhiteSpace(input.Filter),
-                x => x.FirstName != null && x.FirstName.Contains(input.Filter!)
-            );
-
-        var lookupData = await query.PageBy(input.SkipCount, input.MaxResultCount).ToDynamicListAsync<Doctor>();
-        var totalCount = query.Count();
-        return new PagedResultDto<LookupDto<Guid>>
-        {
-            TotalCount = totalCount,
-            Items = ObjectMapper.Map<List<Doctor>, List<LookupDto<Guid>>>(lookupData)
         };
     }
 
@@ -239,7 +193,7 @@ public class AppointmentsAppService(
         }
 
         var appointments = await appointmentRepository.GetListWithNavigationPropertiesAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Notes, input.Statuses, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId
         );
         var items = appointments.Select(
@@ -278,7 +232,7 @@ public class AppointmentsAppService(
     [Authorize(HealthCarePermissions.Appointments.Delete)]
     public virtual async Task DeleteAllAsync(GetAppointmentsInput input) =>
         await appointmentRepository.DeleteAllAsync(
-            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Status, input.AppointmentTypeId,
+            input.FilterText, input.StartTime, input.EndTime, input.Note, input.Statuses, input.AppointmentTypeId,
             input.DepartmentId, input.DoctorId, input.PatientId
         );
 
@@ -328,4 +282,6 @@ public class AppointmentsAppService(
     }
 
 #endregion
+
+
 }
