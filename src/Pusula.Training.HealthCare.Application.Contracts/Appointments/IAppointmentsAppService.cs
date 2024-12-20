@@ -14,16 +14,9 @@ public interface IAppointmentsAppService : IApplicationService
     Task<List<AppointmentDto>> GetListAppointmentsAsync(Guid id);
     Task<List<AppointmentWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(GetAppointmentsInput input);
     Task<List<AppointmentWithNavigationPropertiesDto>> GetPatientWaitingAppointmentsAsync(Guid patientId);
-
-    Task<PagedResultDto<AppointmentWithNavigationPropertiesDto>> GetDoctorAppointmentListWithNavigationPropertiesAsync(
-        GetDoctorAppointmentListInput input
-    );
-
+    Task<PagedResultDto<AppointmentWithNavigationPropertiesDto>> GetDoctorAppointmentListWithNavigationPropertiesAsync(GetDoctorAppointmentListInput input);
     Task<AppointmentWithNavigationPropertiesDto> GetWithNavigationPropertiesAsync(Guid id);
     Task<AppointmentDto> GetAsync(Guid id);
-    Task<PagedResultDto<LookupDto<Guid>>> GetAppointmentTypeLookupAsync(LookupRequestDto input);
-    Task<PagedResultDto<LookupDto<Guid>>> GetDepartmentLookupAsync(LookupRequestDto input);
-    Task<PagedResultDto<LookupDto<Guid>>> GetDoctorLookupAsync(LookupRequestDto input);
     Task<PagedResultDto<LookupDto<Guid>>> GetPatientLookupAsync(LookupRequestDto input);
     Task DeleteAsync(Guid id);
     Task<AppointmentDto> CreateAsync(AppointmentCreateDto input);

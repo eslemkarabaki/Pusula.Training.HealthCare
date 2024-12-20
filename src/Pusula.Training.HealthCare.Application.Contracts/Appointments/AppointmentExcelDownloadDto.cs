@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Pusula.Training.HealthCare.Appointments
 {
@@ -9,7 +10,7 @@ namespace Pusula.Training.HealthCare.Appointments
 
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public EnumAppointmentStatus? Status { get; set; }
+        public ICollection<EnumAppointmentStatus>? Statuses { get; set; }
         public string? Notes { get; set; }
         public Guid? AppointmentTypeId { get; set; }
         public Guid? DepartmentId { get; set; }

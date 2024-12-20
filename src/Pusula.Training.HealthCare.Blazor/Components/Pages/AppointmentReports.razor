@@ -85,13 +85,18 @@
                     <DropDownListFieldSettings Text="Name" Value="Id" />
                 </SfDropDownList>
 
-                <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumAppointmentStatus"
+                @* <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumAppointmentStatus" 
                                 TItem="string" Placeholder="@L["Status"]"
                                 DataSource="@Enum.GetNames(typeof(EnumAppointmentStatus))" ShowClearButton>
                     <DropDownListEvents TItem="string" TValue="EnumAppointmentStatus"
                                         ValueChange="@SearchAsync"></DropDownListEvents>
                     <DropDownListFieldSettings Text="string" Value="EnumStatus" />
-                </SfDropDownList>
+                </SfDropDownList> *@
+
+                <SfMultiSelect DataSource="@Enum.GetNames(typeof(EnumAppointmentStatus))" TValue="string[]" TItem="string"
+                               Mode="VisualMode.Box" Placeholder="@L["Status"]">
+                    <MultiSelectEvents ValueChange="@StatusChanged" TValue="string[]" TItem="string"></MultiSelectEvents>
+            </SfMultiSelect>
 
                 <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
             </div>

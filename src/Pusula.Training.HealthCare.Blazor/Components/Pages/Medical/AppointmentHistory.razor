@@ -1,6 +1,56 @@
-@page "/AppointmentHistory"
-<h3>AppointmentHistory</h3>
+@page "/medical/medical-card/{ProtocolNo:int}/appointment-history/"
+@using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Appointments
+@using Pusula.Training.HealthCare.AppointmentTypes
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Blazor.Models
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.SplitButtons
+@using GridColumns = Syncfusion.EJ2.Grids.GridColumns
+@using SelectionMode = Syncfusion.Blazor.SplitButtons.SelectionMode
 
-@code {
-    
-}
+@attribute [Authorize(Roles = HealthCareRoles.Doctor)]
+
+@layout MedicalCardLayout
+@inherits HealthCareComponentBase
+
+@inject IAppointmentsAppService AppointmentAppService
+@inject IAppointmentTypesAppService AppointmentTypeAppService
+@inject IDoctorAppService DoctorAppService
+@inject IDepartmentsAppService DepartmentsAppService
+@inject IPatientAppService PatientAppService
+
+<SfGrid TValue="AppointmentWithNavigationPropertiesDto" Height="100%" Width="100%" DataSource="@AppointmentList" EnableHover EnableStickyHeader
+        AllowPaging="false">
+    <GridColumns>
+        <GridColumn HeaderText="@L["StartDate"]">
+            <Template>
+                @((context as AppointmentWithNavigationPropertiesDto)!.Appointment.StartTime.ToString("dd.MM.yyyy hh:mm"))
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Doctor Name"]">
+            <Template>
+                @((context as AppointmentWithNavigationPropertiesDto)!.Doctor.FullName)
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Department"]">
+            <Template>
+                @((context as AppointmentWithNavigationPropertiesDto)!.Department.Name)
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Appointment Type"]">
+            <Template>
+                @((context as AppointmentWithNavigationPropertiesDto)!.AppointmentType.Name)
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Status"]">
+            <Template>
+                <AppointmentStatusBadge Status="@((context as AppointmentWithNavigationPropertiesDto)!.Appointment.Status)" />
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
