@@ -34,9 +34,14 @@
 @inject IProtocolTypeAppService ProtocolTypeAppService
 @inject IPatientAppService PatientAppService
 
+<h2 class="page-title">Radiology Raporları</h2>
+
 <div class="bg-white mb-3">
 
-    <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync" ButtonsAlignment="FormButtonsAlignment.Stretch">
+    <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync"
+                ButtonsAlignment="FormButtonsAlignment.Stretch"
+                ValidationDisplayMode="FormValidationDisplay.Tooltip">
+
         <FormValidator>
             <DataAnnotationsValidator />
         </FormValidator>
@@ -64,7 +69,7 @@
                                         Filtering="@FilterDepartmentAsync" ValueChange="@SearchAsync" />
                     <AutoCompleteFieldSettings Text="Name" Value="Id" />
                 </SfAutoComplete>
-@* 
+
                 <SfAutoComplete @ref="PatientFilterAutoComplete"
                                 @bind-Value="@Filter.PatientId" TValue="Guid?"
                                 TItem="PatientDto" Placeholder="@L["Patient"]"
@@ -82,13 +87,15 @@
                                 DataSource="@RadiologyExaminationList" AllowFiltering Autofill Highlight
                                 EnableVirtualization ShowClearButton
                                 PopupHeight="300px">
-                    <AutoCompleteEvents TValue="Guid?" TItem="PatientDto"
+                    <AutoCompleteEvents TValue="Guid?" TItem="RadiologyExaminationDto"
                                         Filtering="@FilterRadiologyExaminationAsync" ValueChange="@SearchAsync" />
                     <AutoCompleteFieldSettings Text="Name" Value="Id" />
-                </SfAutoComplete> *@
-                  
+                </SfAutoComplete>
+                <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
+
             </div>
         </FormTemplate>
+        <FormButtons></FormButtons>
     </SfDataForm>
 
 
@@ -99,9 +106,25 @@
             <GridColumn Field="Department.Name" HeaderText="Department Name" Width="150"></GridColumn>
             <GridColumn Field="Doctor.FullName" HeaderText="Doctor Name" Width="150"></GridColumn>
             <GridColumn Field="Patient.FullName" HeaderText="Patient Name" Width="150"></GridColumn>
-            <GridColumn Field="RadiologyRequestItem.ResultDate" HeaderText="Result Date" Format="d" Width="150"></GridColumn>
-            <GridColumn Field="RadiologyRequestItem.Result" HeaderText="Result" Width="150"></GridColumn>
-            <GridColumn Field="RadiologyRequestItem.State" HeaderText="State" Width="150"></GridColumn>
+            <GridColumn Field="RadiologyRequestItem.ResultDate" HeaderText="Result Date" Format="d" Width="150"></GridColumn> 
+            <GridColumn HeaderText="Result" Width="150">
+                <Template Context="itemContext">
+                    @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
+                    {
+                        <span>
+                            @(StripHtml(dto.RadiologyRequestItem.Result))
+                        </span>
+                    }
+                </Template>
+            </GridColumn> 
+            <GridColumn HeaderText="State" Width="150">
+                <Template Context="itemContext">
+                    @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
+                    { 
+                        <RadiologyRequestItemBadge Status="@(dto.RadiologyRequestItem.State ?? RadiologyRequestItemState.Pending)" /> 
+                    }
+                </Template>
+            </GridColumn>
         </GridColumns>
     </SfGrid>
 </div>

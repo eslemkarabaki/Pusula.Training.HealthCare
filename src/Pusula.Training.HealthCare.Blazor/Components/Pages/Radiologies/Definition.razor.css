@@ -2,13 +2,7 @@
     background-color: #f4f6f9; /* Yumuşak gri ton */
     color: #333; /* Koyu metin rengi */
 }
-
-.page-title {
-    color: #007bff; /* Başlık için mavi renk */
-    font-size: 24px;
-    font-weight: bold;
-}
-
+  
 .e-grid {
     background-color: #fff;
     border-radius: 8px;

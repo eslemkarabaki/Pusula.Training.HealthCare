@@ -145,13 +145,13 @@ public class HealthCareMenuContributor : IMenuContributor
             )
             .AddItem(new ApplicationMenuItem(
                 HealthCareMenus.RadiologyDefinitions,
-                l["Radiology Definition"],
+                l["Definition"],
                 "/radiology-definitions",
                 requiredPermissionName: HealthCarePermissions.RadiologyDefinitions.Default)
             )
             .AddItem(new ApplicationMenuItem(
                 HealthCareMenus.RadiologyTransactions,
-                l["Radiology Transactions"],
+                l["Transactions"],
                 "/radiology-transaction",
                 requiredPermissionName: HealthCarePermissions.RadiologyTransactions.Default)
             )
@@ -163,7 +163,7 @@ public class HealthCareMenuContributor : IMenuContributor
             )
             .AddItem(new ApplicationMenuItem(
                 HealthCareMenus.RadiologyExaminationRequests,
-                l["Radiology Requests"],
+                l["Requests"],
                 "/radiology-requests",
                 requiredPermissionName: HealthCarePermissions.RadiologyRequestItems.Default)
             )

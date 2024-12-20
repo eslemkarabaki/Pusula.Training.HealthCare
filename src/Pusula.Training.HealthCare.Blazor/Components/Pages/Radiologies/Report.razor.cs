@@ -109,7 +109,7 @@ public partial class Report
     {
         args.PreventDefaultAction = true;
         GetPatientsInput.FullName = args.Text;
-        var patients = await PatientAppService.GetListAsync(new GetPatientsInput { FullName = args.Text });
+        var patients = await PatientAppService.GetListAsync(GetPatientsInput);
         PatientList = patients.Items;
         await PatientFilterAutoComplete.FilterAsync(PatientList);
     }
@@ -150,6 +150,10 @@ public partial class Report
     }
 
     #endregion
-
+    private static string StripHtml(string? input)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+        return System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
+    }
 
 }
