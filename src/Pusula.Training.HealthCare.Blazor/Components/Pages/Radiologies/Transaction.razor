@@ -33,9 +33,8 @@
 @inject IRadiologyExaminationAppService RadiologyExaminationAppService
 @inject IProtocolTypeAppService ProtocolTypeAppService
 
-<div class="page-header">
-    <h2>@L["Radiology Transactions"]</h2>
-</div>
+ 
+<h2 class="page-title">Radyoloji İşlemleri</h2>
 
 <div class="search-container">
     <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync"
@@ -142,7 +141,7 @@
                                         <Template>
                                             @{
                                                 var dto = (context as ProtocolDto)!;
-                                                <span style="color: #007bff; font-weight: bold;">@(dto.StartTime.ToString("dd.MM.yyyy HH:mm"))</span>
+                                                <span>@(dto.StartTime.ToString("dd.MM.yyyy HH:mm"))</span>
                                             }
                                         </Template>
                                     </GridColumn>
@@ -160,25 +159,16 @@
                                         <Template>
                                             @{
                                                 var dto = (context as ProtocolDto)!;
-                                                <span style="font-style: italic; color: #28a745;">@(dto.ProtocolType.Name)</span>
+                                                <span>@(dto.ProtocolType.Name)</span>
                                             }
                                         </Template>
                                     </GridColumn>
-
-                                    <GridColumn HeaderText="@L["Description"]">
-                                        <Template>
-                                            @{
-                                                var dto = (context as ProtocolDto)!;
-                                                <span>@dto.Description</span>
-                                            }
-                                        </Template>
-                                    </GridColumn>
-
+ 
                                     <GridColumn HeaderText="@L["Patient"]">
                                         <Template>
                                             @{
                                                 var dto = (context as ProtocolDto)!;
-                                                <span style="color: #17a2b8;">@(dto.Patient.FullName)</span>
+                                                <span>@(dto.Patient.FullName)</span>
                                             }
                                         </Template>
                                     </GridColumn>
@@ -187,7 +177,7 @@
                                         <Template>
                                             @{
                                                 var dto = (context as ProtocolDto)!;
-                                                <span style="color: #ffc107;">@(dto.Doctor.FullName)</span>
+                                                <span>@(dto.Doctor.FullName)</span>
                                             }
                                         </Template>
                                     </GridColumn>
@@ -196,7 +186,7 @@
                                         <Template>
                                             @{
                                                 var dto = (context as ProtocolDto)!;
-                                                <span style="font-weight: bold; color: #dc3545;">@(dto.Department.Name)</span>
+                                                <span>@(dto.Department.Name)</span>
                                             }
                                         </Template>
                                     </GridColumn>
