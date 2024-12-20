@@ -17,6 +17,8 @@ public class Doctor : FullAuditedAggregateRoot<Guid>
     public int AppointmentTime { get; private set; }
 
     public Guid TitleId { get; private set; }
+    public Title Title { get; set; }
+
     public Guid DepartmentId { get; private set; }
     public Guid HospitalId { get; private set; }
     public Guid UserId { get; private set; }

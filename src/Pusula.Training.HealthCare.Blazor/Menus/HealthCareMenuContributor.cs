@@ -135,6 +135,41 @@ public class HealthCareMenuContributor : IMenuContributor
                 requiredPermissionName: HealthCarePermissions.Diagnosis.Menu
             )
         );
+
+        #region Radiologies
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                HealthCareMenus.Radiologies,
+                l["Menu:Radiologies"],
+                icon: "fa fa-calendar-check"
+            )
+            .AddItem(new ApplicationMenuItem(
+                HealthCareMenus.RadiologyDefinitions,
+                l["Radiology Definition"],
+                "/radiology-definitions",
+                requiredPermissionName: HealthCarePermissions.RadiologyDefinitions.Default)
+            )
+            .AddItem(new ApplicationMenuItem(
+                HealthCareMenus.RadiologyTransactions,
+                l["Radiology Transactions"],
+                "/radiology-transaction",
+                requiredPermissionName: HealthCarePermissions.RadiologyTransactions.Default)
+            )
+            .AddItem(new ApplicationMenuItem(
+                HealthCareMenus.RadiologyReports,
+                l["Reports"],
+                "/radiology-reports",
+                requiredPermissionName: HealthCarePermissions.RadiologyReports.Default)
+            )
+            .AddItem(new ApplicationMenuItem(
+                HealthCareMenus.RadiologyExaminationRequests,
+                l["Radiology Requests"],
+                "/radiology-requests",
+                requiredPermissionName: HealthCarePermissions.RadiologyRequestItems.Default)
+            )
+        );
+        #endregion
+
         return Task.CompletedTask;
     }
 

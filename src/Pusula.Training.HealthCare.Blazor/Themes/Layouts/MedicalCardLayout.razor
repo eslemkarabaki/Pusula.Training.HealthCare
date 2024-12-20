@@ -7,76 +7,69 @@
 @using Syncfusion.Blazor.Popups
 @using Position = Syncfusion.Blazor.Popups.Position
 
-@attribute [Authorize(HealthCarePermissions.Patients.Default)]
-
 @layout MainLayout
 @inherits LayoutComponentBase
 
 @inject IProtocolAppService ProtocolAppService
 @inject IStringLocalizer<HealthCareResource> L
-@inject NavigationManager NavigationManager
 
 @if (Protocol != null)
 {
-   <SfCard ID="MedicalCard" CssClass="position-relative">
-      <CardContent>
-         <div class="d-flex justify-content-between align-items-center">
-            <div>
-               <div class="d-flex gap-1 align-items-center mb-1">
-                  <h5 class="mb-0">@Protocol.Patient.FullName</h5>
-                  @* <span class="badge text-bg-secondary">@Protocol.Patient.PatientType.Name</span> *@
-                  @* <span class="fs-12p color-grey-700">@Protocol.Patient.Country.Name</span> *@
-               </div>
+   <PageTitle>@Protocol.Patient.FullName</PageTitle>
 
+   <SfCard ID="MedicalCard" CssClass="position-relative mb-1">
+      <CardContent>
+         <div class="d-flex gap-1">
+            <div class="d-flex flex-column gap-1 pe-3">
                <div class="d-flex gap-1 align-items-center">
-                  <PatientGenderIcon Gender="@Protocol.Patient.Gender"/>
-                  <div>
-                     <span>Hasta No:</span>
-                     <span>@Protocol.Patient.No</span>
-                  </div>
-                  <span class="vr"></span>
-                  <div>
-                     <div class="d-flex gap-1 align-items-end">
-                        <span>@Protocol.Patient.BirthDate.ToString("dd.MM.yyyy")</span>
-                        <span class="fs-12p">(@Protocol.Patient.Age.Item1 @Protocol.Patient.Age.Item2)</span>
-                     </div>
-                  </div>
-                  <span class="vr"></span>
-                  <div>
-                     @Protocol.Patient.EmailAddress
-                  </div>
-                  <span class="vr"></span>
-                  <div>
-                     @($"+{Protocol.Patient.MobilePhoneNumberCode} {Protocol.Patient.MobilePhoneNumber}")
-                  </div>
+                  <span class="fs-20p fw-500">@Protocol.Patient.FullName</span>
+                  <span class="badge bg-primary fs-11p">@Protocol.Patient.PatientType?.Name</span>
                </div>
-            </div>
-            <div class="d-flex align-items-center flex-column gap-1">
                <div class="d-flex gap-1">
-                  <SfTooltip Position="Position.BottomCenter" Content="@L["SendMessage"]">
-                     <SfButton CssClass="e-outline" IconCss="far fa-comment" Disabled/>
-                  </SfTooltip>
-                  <SfTooltip Position="Position.BottomCenter" Content="@L["SendMail"]">
-                     <SfButton CssClass="e-outline" IconCss="far fa-envelope" Disabled/>
-                  </SfTooltip>
+                  <PatientGenderIcon Gender="@Protocol.Patient.Gender"/>
+                  <div class="d-flex gap-1">
+                     <span>@Protocol.Patient.BirthDate.ToString("dd.MM.yyyy")</span>
+                     <span>(@Protocol.Patient.Age.Item1 @Protocol.Patient.Age.Item2)</span>
+                  </div>
+                  <span class="vr"></span>
+                  <span class="fw-500 color-blue-grey-500">@Protocol.Patient.Country?.Iso</span>
+               </div>
+               <div class="d-flex gap-1">
+                  <div class="d-flex gap-1">
+                     <span>Hasta No:</span>
+                     <span class="fw-500">@Protocol.Patient.No</span>
+                  </div>
                </div>
             </div>
+            <div class="vr"></div>
+            <div class="d-flex flex-column gap-1">
+               <div class="d-flex gap-1">
+                  <span>Protokol No:</span>
+                  <span class="fw-500">@Protocol.ProtocolNo</span>
+               </div>
+               <div class="d-flex gap-1">
+                  <span>@Protocol.Department.Name</span>
+                  <span class="vr"></span>
+                  <span>@Protocol.Doctor.Title.Name @Protocol.Doctor.FullName</span>
+               </div>
+            </div>
+
          </div>
       </CardContent>
    </SfCard>
 
    <div class="d-flex">
-      <div class="flex-fill p-1">
+      <div class="flex-fill">
          <CascadingValue Value="@Protocol">
             @Body
          </CascadingValue>
       </div>
-      <div class="nav flex-column bg-white">
-         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link"
-                  @onclick="@(() => NavigateTo("dashboard"))">Kontrol Paneli
+      <div class="nav flex-column border-1 border-grey-300 fs-12p bg-white">
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("dashboard")" class="nav-link">
+            Kontrol Paneli
          </NavLink>
-         <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link"
-                  @onclick="@(() => NavigateTo("examination"))">Muayene
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("examination")" class="nav-link">
+            Muayene
          </NavLink>
          <NavLink ActiveClass="active" Match="NavLinkMatch.All" class="nav-link"
                   @onclick="@(() => NavigateTo("appointment-history"))">Randevu Geçmişi
@@ -108,6 +101,20 @@
       }
    }
 
-   private void NavigateTo(string? page, bool forceLoad = false) => NavigationManager.NavigateTo($"{BaseAddress}/{page}", forceLoad);
-
+   private string Href(string page) => $"{BaseAddress}/{page}";
 }
+
+<style>
+   .nav-link {
+      color: var(--material-grey-900);
+   }
+
+   .nav-link:not(.active):hover {
+      color: var(--material-grey-500) !important;
+   }
+
+   .nav-link.active {
+      background-color: var(--material-blue-500);
+      color: white;
+   }
+</style>

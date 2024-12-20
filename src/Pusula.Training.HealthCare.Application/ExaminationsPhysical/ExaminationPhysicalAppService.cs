@@ -57,7 +57,7 @@ namespace Pusula.Training.HealthCare.ExaminationsPhysical
                 input.SPO2,
                 input.PhysicalNote
             );
-
+            
             await _repository.InsertAsync(entity);
 
             return ObjectMapper.Map<ExaminationPhysical, ExaminationPhysicalDto>(entity);

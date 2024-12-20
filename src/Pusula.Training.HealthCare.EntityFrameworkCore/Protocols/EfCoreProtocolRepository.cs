@@ -17,9 +17,9 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
     : EfCoreRepository<HealthCareDbContext, Protocol, Guid>(dbContextProvider), IProtocolRepository
 {
     public async Task<Protocol> GetWithDetailsAsync(int protocolNo, CancellationToken cancellationToken = default) =>
-        await (await WithDetailsAsync(
-            e => e.Patient, e => e.Department, e => e.Doctor, e => e.ProtocolType, e => e.ProtocolTypeAction
-        )).FirstOrDefaultAsync(e => e.ProtocolNo == protocolNo, GetCancellationToken(cancellationToken));
+        await (await GetQueryableWithDetailsAsync()).FirstOrDefaultAsync(
+            e => e.ProtocolNo == protocolNo, GetCancellationToken(cancellationToken)
+        );
 
     public async Task<List<Protocol>> GetListAsync(
         Guid? patientId = null,
@@ -59,9 +59,7 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
         CancellationToken cancellationToken = default
     ) =>
         await ApplyFilter(
-                  await WithDetailsAsync(
-                      e => e.Patient, e => e.Department, e => e.Doctor, e => e.ProtocolType, e => e.ProtocolTypeAction
-                  ),
+                  await GetQueryableWithDetailsAsync(),
                   string.Empty, patientId, doctorId, departmentId, protocolTypeId, protocolTypeActionId, status,
                   startTime, endTime
               )
@@ -163,6 +161,18 @@ public class EfCoreProtocolRepository(IDbContextProvider<HealthCareDbContext> db
             .WhereIf(endTime.HasValue, e => !e.EndTime.HasValue || e.EndTime <= endTime!.Value);
 
 #endregion
+
+    protected virtual async Task<IQueryable<Protocol>> GetQueryableWithDetailsAsync() =>
+        await WithDetailsAsync(
+            e => e.Patient,
+            e => e.Patient.PatientType,
+            e => e.Patient.Country,
+            e => e.Department,
+            e => e.Doctor,
+            e => e.Doctor.Title,
+            e => e.ProtocolType,
+            e => e.ProtocolTypeAction
+        );
 
     protected virtual string GetSorting(string? sorting, bool withEntityName) =>
         sorting.IsNullOrWhiteSpace() ?

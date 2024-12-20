@@ -6,6 +6,7 @@ using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -34,6 +35,22 @@ namespace Pusula.Training.HealthCare.RadiologyExaminations
                 Items = ObjectMapper.Map<List<RadiologyExamination>, List<RadiologyExaminationDto>>(items)
             };
         }
+
+        public virtual async Task<PagedResultDto<RadiologyExaminationDto>> GetListByGruopIdAsync(GetRadiologyExaminationsInput input, Guid id)
+        {
+            var totalCount = await radiologyExaminationRepository.GetCountAsync(input.FilterText, input.Name, input.ExaminationCode, input.GroupId);
+            var items = await radiologyExaminationRepository.GetListAsync(input.FilterText, input.Name, input.ExaminationCode, input.GroupId, input.Sorting, input.MaxResultCount, input.SkipCount);
+             
+            var filteredItems = items.Where(item => item.GroupId == id).ToList();
+
+            return new PagedResultDto<RadiologyExaminationDto>
+            {
+                TotalCount = filteredItems.Count,
+                Items = ObjectMapper.Map<List<RadiologyExamination>, List<RadiologyExaminationDto>>(filteredItems)
+            };
+        }
+
+
         public virtual async Task<RadiologyExaminationDto> GetAsync(Guid id)
         {
             return ObjectMapper.Map<RadiologyExamination, RadiologyExaminationDto>(await radiologyExaminationRepository.GetAsync(id));

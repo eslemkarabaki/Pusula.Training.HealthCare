@@ -1,0 +1,161 @@
+﻿/* Genel Sayfa Stilleri */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.sf-dialog-content {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sf-dialog-header {
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 18px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+}
+
+.sf-dialog-close-btn {
+    color: #ffffff;
+}
+
+.sf-dialog-footer {
+    background-color: #f1f1f1;
+    text-align: right;
+    padding: 15px;
+}
+
+/* Custom Selected Items Styles */
+.selected-items-container {
+    margin-bottom: 20px;
+}
+
+.selected-items h4 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.selected-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.selected-item {
+    background-color: #e6f7ff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 123, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 200px;
+    max-width: 250px;
+}
+
+    .selected-item span {
+        color: #333;
+        font-size: 14px;
+    }
+
+    .selected-item .btn-remove {
+        background-color: transparent;
+        border: none;
+        color: #007bff;
+        font-size: 8px;
+        cursor: pointer;
+    }
+
+        .selected-item .btn-remove:hover {
+            color: #0056b3;
+        }
+
+/* Custom Dropdown and Grid Styling */
+.sf-dropdownlist .e-dropdownbase {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #ffffff;
+}
+
+    .sf-dropdownlist .e-dropdownbase:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+.sf-grid .e-gridheader {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.sf-grid .e-gridcontent {
+    padding: 10px;
+}
+
+.sf-grid .e-rowcell {
+    padding: 12px;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+    .sf-grid .e-rowcell:hover {
+        background-color: #f7f7f7;
+    }
+
+.sf-grid .e-checkselect {
+    text-align: center;
+}
+
+.sf-btn-primary {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+}
+
+    .sf-btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .sf-btn-primary:disabled {
+        background-color: #d6d6d6;
+        cursor: not-allowed;
+    }
+
+@media (max-width: 768px) {
+    .sf-dialog-content {
+        padding: 15px;
+    }
+
+    .sf-dropdownlist,
+    .sf-btn-primary {
+        width: 100%;
+    }
+
+    .sf-grid .e-gridheader,
+    .sf-grid .e-rowcell {
+        font-size: 14px;
+    }
+}

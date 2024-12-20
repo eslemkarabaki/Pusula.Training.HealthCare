@@ -31,6 +31,8 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetRadiologyPermissions(myGroup);
         SetPatientNotesPermissions(myGroup);
 
+
+
         var appointmentPermission =
             myGroup.AddPermission(HealthCarePermissions.Appointments.Default, L("Permission:Appointments"));
         appointmentPermission.AddChild(HealthCarePermissions.Appointments.Menu, L("Permission:Menu"));
@@ -130,7 +132,11 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
             group, HealthCarePermissions.RadiologyExaminationDocuments.Default, "RadiologyExaminationDocuments"
         );
         SetStandardPermissions(group, HealthCarePermissions.RadiologyRequests.Default, "RadiologyRequests");
-        SetStandardPermissions(group, RadiologyRequestItems.Default, "RadiologyRequestItems");
+        SetStandardPermissions(group, HealthCarePermissions.RadiologyRequestItems.Default, "RadiologyRequestItems");
+        SetStandardPermissions(group, HealthCarePermissions.Radiologies.Default, "Radiologies");
+        SetStandardPermissions(group, HealthCarePermissions.RadiologyReports.Default, "RadiologyReports");
+        SetStandardPermissions(group, HealthCarePermissions.RadiologyDefinitions.Default, "RadiologyDefinitions");
+        SetStandardPermissions(group, HealthCarePermissions.RadiologyTransactions.Default, "RadiologyTransactions");
     }
 
 #endregion

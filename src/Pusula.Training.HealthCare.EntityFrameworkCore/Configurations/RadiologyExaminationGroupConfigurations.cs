@@ -13,7 +13,9 @@ namespace Pusula.Training.HealthCare.Configurations
             b.HasIndex(e => e.Id);
 
             b.Property(e => e.Name).HasColumnName(nameof(RadiologyExaminationGroup.Name)).IsRequired();
+            b.HasIndex(e => e.Name).IsUnique();
             b.Property(e => e.Description).HasColumnName(nameof(RadiologyExaminationGroup.Description));
+
         }
     }
 }

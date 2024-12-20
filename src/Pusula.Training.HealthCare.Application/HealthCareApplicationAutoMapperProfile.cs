@@ -96,7 +96,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
 
         CreateMap<Protocol, ProtocolDto>();
         CreateMap<Protocol, ProtocolExcelDto>();
-        CreateMap<ProtocolWithNavigationProperties, ProtocolWithNavigationPropertiesDto>();
+
         CreateMap<Department, DepartmentDto>();
         CreateMap<Department, DepartmentExcelDto>();
         CreateMap<DepartmentDto, DepartmentUpdateDto>();
@@ -156,7 +156,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<TestGroup, LookupDto<Guid>>()
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
-#region Radiology
+        #region Radiology
 
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupDto>();
         CreateMap<RadiologyExaminationGroup, RadiologyExaminationGroupExcelDto>();
@@ -186,11 +186,18 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<RadiologyRequestDto, RadiologyRequestUpdateDto>();
         CreateMap<RadiologyRequestWithNavigationProperties, RadiologyRequestWithNavigationPropertiesDto>();
 
-        CreateMap<RadiologyRequestItem, RadiologyRequestItemDto>();
         CreateMap<RadiologyRequestItem, RadiologyRequestItemExcelDownloadDto>();
-        CreateMap<RadiologyRequestItemDto, RadiologyRequestItemUpdateDto>();
-        CreateMap<RadiologyRequestItemWithNavigationProperties, RadiologyRequestItemWithNavigationPropertiesDto>();
+        CreateMap<RadiologyRequestItemDto, RadiologyRequestItemUpdateDto>(); 
+        CreateMap<RadiologyRequestItem, RadiologyRequestItemDto>();
+        CreateMap<RadiologyRequestItemWithNavigationProperties, RadiologyRequestItemWithNavigationPropertiesDto>()
+          .ForMember(dest => dest.RadiologyRequestItem, opt => opt.MapFrom(src => src.RadiologyRequestItem))
+          .ForMember(dest => dest.RadiologyExamination, opt => opt.MapFrom(src => src.RadiologyExamination))
+          .ForMember(dest => dest.RadiologyRequest, opt => opt.MapFrom(src => src.RadiologyRequest))
+          .ForMember(dest => dest.Protocol, opt => opt.MapFrom(src => src.Protocol))
+          .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
+          .ForMember(dest => dest.Doctor, opt => opt.MapFrom(src => src.Doctor))
+          .ForMember(dest => dest.Patient, opt => opt.MapFrom(src => src.Patient));
 
-#endregion
+        #endregion
     }
 }

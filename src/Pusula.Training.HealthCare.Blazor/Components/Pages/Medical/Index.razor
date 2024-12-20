@@ -111,15 +111,16 @@
             <Template>
                 @{
                     var dto = (context as ProtocolDto)!;
-                    <span>@dto.Patient.FullName (@dto.Patient.BirthDate.ToString("dd.MM.yyyy") | @dto.Patient.Age.Item1 @dto.Patient.Age.Item2) </span>
+                    <span
+                        class="fw-500">@dto.Patient.FullName (@dto.Patient.BirthDate.ToString("dd.MM.yyyy") | @dto.Patient.Age.Item1 @dto.Patient.Age.Item2) </span>
                 }
             </Template>
         </GridColumn>
-        <GridColumn HeaderText="@L["ProtocolTypeAction"]" AutoFit>
+        <GridColumn HeaderText="@L["Protocol"]" AutoFit>
             <Template>
                 @{
                     var dto = (context as ProtocolDto)!;
-                    @(dto.ProtocolTypeAction.Name)
+                    <span>@(dto.ProtocolType.Name) | @(dto.ProtocolTypeAction.Name)</span>
                 }
             </Template>
         </GridColumn>
@@ -139,9 +140,19 @@
                 }
             </Template>
         </GridColumn>
+        <GridColumn HeaderText="@L["EndDate"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    @dto.EndTime?.ToString("dd.MM.yyyy hh:mm")
+                }
+            </Template>
+        </GridColumn>
         <GridColumn AutoFit>
             <Template>
-                <SfButton OnClick="@(() => NavigateToMedicalCard((context as ProtocolDto)!.ProtocolNo))">Göreve Git
+                <SfButton CssClass="e-flat fs-13p" IconCss="fas fa-external-link-alt" IconPosition="IconPosition.Left"
+                          IsPrimary OnClick="@(() => NavigateToMedicalCard((context as ProtocolDto)!.ProtocolNo))">
+                    Göreve Git
                 </SfButton>
             </Template>
         </GridColumn>

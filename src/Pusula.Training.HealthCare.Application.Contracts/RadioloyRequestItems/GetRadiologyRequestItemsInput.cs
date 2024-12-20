@@ -10,6 +10,10 @@ public class GetRadiologyRequestItemsInput : PagedAndSortedResultRequestDto
     public string? Result { get; set; }
     public DateTime? ResultDate { get; set; }
     public RadiologyRequestItemState? State { get; set; }
+    public Guid? ProtocolId { get; set; }
+    public Guid? DepartmentId { get; set; }
+    public Guid? DoctorId { get; set; }
+    public Guid? PatientId { get; set; }  
 
-    public GetRadiologyRequestItemsInput() { }
+public GetRadiologyRequestItemsInput() { }
 }

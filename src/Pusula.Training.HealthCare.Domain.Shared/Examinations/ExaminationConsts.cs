@@ -2,7 +2,7 @@
 {
     public static class ExaminationConsts
     {
-        private const string DefaultSorting = "{0}ChronicDiseases asc";
+        private const string DefaultSorting = "{0}CreationTime asc";
         public static string GetDefaultSorting(bool withEntityName)
         {
             return string.Format(DefaultSorting, withEntityName ? "Examination." : string.Empty);

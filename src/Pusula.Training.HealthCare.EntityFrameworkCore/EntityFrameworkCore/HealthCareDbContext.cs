@@ -83,7 +83,7 @@ public class HealthCareDbContext :
     public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
 
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
-    public DbSet<Examination> Examinations { get; set; } = null!;
+    
     public DbSet<Insurance> Insurances { get; set; } = null!;
     public DbSet<AppDefault> AppDefaults { get; set; } = null!;
     public DbSet<TestGroup> TestGroups { get; set; } = null!;
@@ -92,11 +92,14 @@ public class HealthCareDbContext :
     public DbSet<TestProcess> TestProcesses { get; set; } = null!;
     public DbSet<WorkList> WorkLists { get; set; } = null!;
     public DbSet<Diagnosis> Diagnoses { get; set; } = null!;
+    #region Examinations
+    public DbSet<Examination> Examinations { get; set; } = null!;
     public DbSet<ExaminationPhysical> ExaminationPhysical { get; set; } = null!;
-    public DbSet<ExaminationDiagnosis> ExaminationDiagnoses { get; set; }
-    public DbSet<ExaminationAnamnez> ExaminationAnamnez { get; set; }
+    public DbSet<ExaminationDiagnosis> ExaminationDiagnoses { get; set; } = null!;
+    public DbSet<ExaminationAnamnez> ExaminationAnamnez { get; set; } = null!;
+    #endregion
 
-#region Radiology
+    #region Radiology
 
     public DbSet<RadiologyExaminationGroup> RadiologyExaminationGroups { get; set; } = null!;
     public DbSet<RadiologyExamination> RadiologyExaminations { get; set; } = null!;

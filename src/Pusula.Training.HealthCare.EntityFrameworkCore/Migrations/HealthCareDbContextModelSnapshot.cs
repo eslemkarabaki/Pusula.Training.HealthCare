@@ -1663,6 +1663,9 @@ namespace Pusula.Training.HealthCare.Migrations
 
                     b.HasIndex("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("AppRadiologyExaminationGroups", (string)null);
                 });
 
@@ -4205,7 +4208,7 @@ namespace Pusula.Training.HealthCare.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Pusula.Training.HealthCare.Titles.Title", null)
+                    b.HasOne("Pusula.Training.HealthCare.Titles.Title", "Title")
                         .WithMany()
                         .HasForeignKey("TitleId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -4216,6 +4219,8 @@ namespace Pusula.Training.HealthCare.Migrations
                         .HasForeignKey("Pusula.Training.HealthCare.Doctors.Doctor", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Title");
                 });
 
             modelBuilder.Entity("Pusula.Training.HealthCare.HospitalDepartments.HospitalDepartment", b =>
