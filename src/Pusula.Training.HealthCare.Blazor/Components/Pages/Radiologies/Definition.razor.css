@@ -1,0 +1,93 @@
+﻿body {
+    background-color: #f4f6f9; /* Yumuşak gri ton */
+    color: #333; /* Koyu metin rengi */
+}
+
+.page-title {
+    color: #007bff; /* Başlık için mavi renk */
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.e-grid {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .e-grid .e-row:hover {
+        background-color: #f0f8ff; /* Hover efekti için mavi tonları */
+    }
+
+.e-button {
+    transition: transform 0.2s ease-in-out;
+}
+
+    .e-button:hover {
+        background-color: #28a745; /* Buton hover için yeşil renk */
+        color: white;
+        transform: scale(1.05); /* Hafif büyütme efekti */
+    }
+
+    .e-button.e-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .e-button.e-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .e-button.e-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+.modal-enter {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.modal-leave {
+    animation: fadeOut 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.p-3 {
+    padding: 1rem !important;
+}
+
+.rounded {
+    border-radius: 0.25rem !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+.e-icons {
+    font-family: 'FontAwesome';
+}

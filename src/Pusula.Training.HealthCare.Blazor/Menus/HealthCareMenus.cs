@@ -7,7 +7,7 @@ public class HealthCareMenus
 
     //Add your menu items here...
 
-#region PatientRegistration
+    #region PatientRegistration
 
     public const string PatientRegistration = Prefix + ".PatientRegistration";
 
@@ -24,7 +24,7 @@ public class HealthCareMenus
     public const string PatientRegistrationReports = PatientRegistration + ".Reports";
     public const string PatientProtocols = PatientRegistrationReports + ".PatientProtocols";
 
-#endregion
+    #endregion
 
     public const string Doctors = Prefix + ".Doctors";
     public const string Medical = Prefix + ".Medicals";
@@ -40,4 +40,12 @@ public class HealthCareMenus
     public const string AppointmentTypes = Appointments + ".AppointmentTypes";
     public const string Reports = Appointments + ".Reports";
     public const string Diagnoses = Prefix + ".Diagnosis";
+
+    #region Radiologies
+    public const string Radiologies = Prefix + ".Radiologies";
+    public const string RadiologyTransactions = Radiologies + ".Transactions";
+    public const string RadiologyDefinitions = Radiologies + ".Definitions";
+    public const string RadiologyReports = Radiologies + ".Reports";
+    public const string RadiologyExaminationRequests = Radiologies + ".Requests";
+    #endregion
 }

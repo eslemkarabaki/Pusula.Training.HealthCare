@@ -12,6 +12,8 @@ using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
+using Pusula.Training.HealthCare.Patients;
+using Pusula.Training.HealthCare.ProtocolTypes;
 
 public class EfCoreRadiologyRequestRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
     : EfCoreRepository<HealthCareDbContext, RadiologyRequest, Guid>(dbContextProvider), IRadiologyRequestRepository
@@ -75,21 +77,19 @@ public class EfCoreRadiologyRequestRepository(IDbContextProvider<HealthCareDbCon
     #region GetListRadiologyRequestWithNavigationPropertiesAsync
     public virtual async Task<List<RadiologyRequestWithNavigationProperties>> GetListRadiologyRequestWithNavigationPropertiesAsync
         (
-            string? filterText = null, 
-            DateTime? requestDate = null, 
-            Guid? protocolId = null, 
-            Guid? departmentId = null, 
-            Guid? doctorId = null, 
-            string? sorting = null, 
+            string? filterText = null,
+            DateTime? requestDate = null,
+            Guid? protocolId = null,
+            Guid? departmentId = null,
+            Guid? doctorId = null,
+            string? sorting = null,
             int maxResultCount = int.MaxValue,
-            int skipCount = 0, 
+            int skipCount = 0,
             CancellationToken cancellationToken = default
         )
     {
-        var query = ApplyFilter(await GetQueryForNavigationPropertiesAsync(), filterText, requestDate, protocolId, departmentId, doctorId);
-
-        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? RadiologyRequestConsts.GetDefaultSorting(false) : sorting);
-
+        var query =  await GetQueryForNavigationPropertiesAsync(); 
+        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? RadiologyRequestConsts.GetDefaultSorting(false) : sorting); 
         return await query.ToListAsync(GetCancellationToken(cancellationToken));
     }
     #endregion
@@ -112,25 +112,6 @@ public class EfCoreRadiologyRequestRepository(IDbContextProvider<HealthCareDbCon
     }
     #endregion
 
-    //#region GetQueryForNavigationProperties
-    //protected virtual async Task<IQueryable<RadiologyRequestWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()
-    //{
-    //    return from requestItem in (await GetDbSetAsync())
-    //           join protocol in (await GetDbContextAsync()).Set<Protocol>() on requestItem.ProtocolId equals protocol.Id into protocols
-    //           from protocol in protocols.DefaultIfEmpty()
-    //           join department in (await GetDbContextAsync()).Set<Department>() on requestItem.DepartmentId equals department.Id into departments
-    //           from department in departments.DefaultIfEmpty()
-    //           join doctor in (await GetDbContextAsync()).Set<Doctor>() on requestItem.DoctorId equals doctor.Id into doctors
-    //           from doctor in doctors.DefaultIfEmpty()
-    //           select new RadiologyRequestWithNavigationProperties
-    //           {
-    //               RadiologyRequest = requestItem,
-    //               Protocol = protocol,
-    //               Department = department,
-    //               Doctor = doctor
-    //           };
-    //}
-    //#endregion
 
     #region GetQueryForNavigationPropertiesAsync
     protected virtual async Task<IQueryable<RadiologyRequestWithNavigationProperties>> GetQueryForNavigationPropertiesAsync()
@@ -138,21 +119,31 @@ public class EfCoreRadiologyRequestRepository(IDbContextProvider<HealthCareDbCon
         var dbContext = await GetDbContextAsync();
         var dbSet = await GetDbSetAsync();
 
-        return from requestItem in dbSet
-               join protocol in dbContext.Set<Protocol>() on requestItem.ProtocolId equals protocol.Id into protocols
-               from protocol in protocols.DefaultIfEmpty()
-               join department in dbContext.Set<Department>() on requestItem.DepartmentId equals department.Id into departments
-               from department in departments.DefaultIfEmpty()
-               join doctor in dbContext.Set<Doctor>() on requestItem.DoctorId equals doctor.Id into doctors
-               from doctor in doctors.DefaultIfEmpty()
-               select new RadiologyRequestWithNavigationProperties
-               {
-                   RadiologyRequest = requestItem,
-                   Protocol = protocol,
-                   Department = department,
-                   Doctor = doctor
-               };
+        var query = from requestItem in dbSet
+                    join protocol in dbContext.Set<Protocol>() on requestItem.ProtocolId equals protocol.Id into protocols
+                    from protocol in protocols.DefaultIfEmpty()
+                    join department in dbContext.Set<Department>() on requestItem.DepartmentId equals department.Id into departments
+                    from department in departments.DefaultIfEmpty()
+                    join doctor in dbContext.Set<Doctor>() on requestItem.DoctorId equals doctor.Id into doctors
+                    from doctor in doctors.DefaultIfEmpty()
+                    join patient in dbContext.Set<Patient>() on protocol.PatientId equals patient.Id into patients
+                    from patient in patients.DefaultIfEmpty()
+                    join protocolType in dbContext.Set<ProtocolType>() on protocol.ProtocolTypeId equals protocolType.Id into protocolTypes
+                    from protocolType in protocolTypes.DefaultIfEmpty()
+                    select new RadiologyRequestWithNavigationProperties
+                    {
+                        RadiologyRequest = requestItem,
+                        Protocol = protocol,
+                        Department = department,
+                        Doctor = doctor,
+                        Patient = patient,
+                        ProtocolType = protocolType
+                    };
+
+        var result = await query.ToListAsync();
+        return query;
     }
+
     #endregion
 
 
@@ -165,13 +156,21 @@ public class EfCoreRadiologyRequestRepository(IDbContextProvider<HealthCareDbCon
         Guid? departmentId = null,
         Guid? doctorId = null)
     {
-        return query
-            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.RadiologyRequest.RequestDate.ToString().Contains(filterText))
-            .WhereIf(requestDate != null, e => e.RadiologyRequest.RequestDate == requestDate)
-            .WhereIf(protocolId != null, e => e.RadiologyRequest.ProtocolId == protocolId)
-            .WhereIf(departmentId != null, e => e.RadiologyRequest.DepartmentId == departmentId)
-            .WhereIf(doctorId != null, e => e.RadiologyRequest.DoctorId == doctorId);
+        query = query
+            .WhereIf(!string.IsNullOrWhiteSpace(filterText),
+                x => x.RadiologyRequest.RequestDate.ToString().Contains(filterText!))  
+            .WhereIf(requestDate.HasValue,
+                x => x.RadiologyRequest.RequestDate == requestDate!.Value)  
+            .WhereIf(protocolId.HasValue,
+                e => e.RadiologyRequest.ProtocolId == protocolId!.Value) 
+            .WhereIf(departmentId.HasValue,
+                e => e.RadiologyRequest.DepartmentId == departmentId!.Value)  
+            .WhereIf(doctorId.HasValue,
+                e => e.RadiologyRequest.DoctorId == doctorId!.Value);    
+
+        return query;
     }
+
     #endregion
 
     #region ApplyFilter
@@ -183,7 +182,7 @@ public class EfCoreRadiologyRequestRepository(IDbContextProvider<HealthCareDbCon
         Guid? departmentId = null,
         Guid? doctorId = null)
     {
-        return query; 
+        return query;
     }
     #endregion
 }

@@ -33,7 +33,11 @@ public class RadiologyRequestController : HealthCareController, IRadiologyReques
     [HttpGet]
     [Route("with-navigation-properties/{id}")]
     public virtual async Task<RadiologyRequestWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id) => await _radiologyRequestsAppService.GetNavigationPropertiesAsync(id);
-    
+
+    [HttpGet]
+    [Route("with-navigation-properties")]
+    public virtual async Task<PagedResultDto<RadiologyRequestWithNavigationPropertiesDto>> GetListNavigationPropertiesAsync(GetRadiologyRequestsInput input) => await _radiologyRequestsAppService.GetListNavigationPropertiesAsync(input);
+
     [HttpPost]
     public virtual async Task<RadiologyRequestDto> CreateAsync(RadiologyRequestCreateDto input) => await _radiologyRequestsAppService.CreateAsync(input);
 

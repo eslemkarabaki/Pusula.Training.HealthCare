@@ -1,0 +1,89 @@
+﻿@page "/radiology-requests"
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.RadiologyRequests
+@using Pusula.Training.HealthCare.RadioloyRequestItems
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.DropDowns
+@using Pusula.Training.HealthCare.Blazor.Components.Shared
+
+@attribute [Authorize(HealthCarePermissions.RadiologyDefinitions.Default)]
+@inherits HealthCareComponentBase
+@inject IRadiologyRequestItemsAppService RadiologyRequestItemAppService
+@inject IRadiologyRequestsAppService RadiologyRequestAppService
+
+<h2 class="page-title">Radiology Sonuçları</h2>
+
+
+<SfGrid @ref="SfGrid" TValue="RadiologyRequestWithNavigationPropertiesDto" DataSource="@RequestList"
+        AllowSelection EnableHover AllowSorting AllowFiltering>
+    <GridPageSettings PageSize="100" />
+    <GridColumns>
+        <GridColumn Field="Protocol.Patient.FullName" HeaderText="Patient Name" Width="200" />
+        <GridColumn Field="Protocol.ProtocolType.Name" HeaderText="Protocol Type" Width="200" />
+        <GridColumn Field="Department.Name" HeaderText="Bölüm" Width="200" />
+        <GridColumn Field="Doctor.FullName" HeaderText="Doktor" Width="200" />
+        <GridColumn Field="RadiologyRequest.RequestDate" HeaderText="İstek Tarihi" Format="d" Width="200" />
+    </GridColumns>
+
+    <GridTemplates>
+        <DetailTemplate>
+            @if (DetailItems.TryGetValue(((RadiologyRequestWithNavigationPropertiesDto)context).RadiologyRequest.Id, out var requestItems))
+            {
+                <SfGrid TValue="RadiologyRequestItemWithNavigationPropertiesDto" DataSource="@requestItems"
+                        AllowPaging="true" AllowSorting="true">
+                    <GridPageSettings PageSize="5" />
+                    <GridColumns>
+                        <GridColumn Field="RadiologyExamination.Name" HeaderText="Tetkik İsmi" Width="200" />
+                 
+                        <GridColumn HeaderText="Sonuç" Width="200">
+                            <Template Context="itemContext">
+                                @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
+                                {
+                                    <span @onclick="() => OpenResultDialog(dto)"
+                                          style="cursor: pointer; text-decoration: underline; color: blue;">
+                                        @(StripHtml(dto.RadiologyRequestItem.Result)?.Length > 20
+                                            ? StripHtml(dto.RadiologyRequestItem.Result).Substring(0, 20) + "..."
+                                            : StripHtml(dto.RadiologyRequestItem.Result))
+                                    </span>
+
+                                }
+                            </Template>
+                        </GridColumn>
+
+                        <GridColumn Field="RadiologyRequestItem.ResultDate" HeaderText="Sonuç Tarihi" Format="d" Width="200" />
+                  
+                        <GridColumn HeaderText="Durum" Width="200">
+                            <Template Context="itemContext">
+                                @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
+                                {
+                                    <div @onclick="() => ToggleDropDown(dto.RadiologyRequestItem.Id)">
+                                        <RadiologyRequestItemBadge Status="@(dto.RadiologyRequestItem.State ?? RadiologyRequestItemState.Pending)" />
+                                    </div>
+
+                                    @if (IsDropDownVisibleForItem(dto.RadiologyRequestItem.Id))
+                                    {
+                                        <SfDropDownList TItem="RadiologyRequestItemState" TValue="RadiologyRequestItemState"
+                                                        Value="@(dto.RadiologyRequestItem.State ?? RadiologyRequestItemState.Pending)"
+                                                        Placeholder="Durum Seçin"
+                                                        DataSource="@(Enum.GetValues(typeof(RadiologyRequestItemState)).Cast<RadiologyRequestItemState>())"
+                                                        ValueChanged="@(async args => await StatusChanged(dto, (RadiologyRequestItemState?)args))">
+                                        </SfDropDownList>
+                                    }
+                                }
+                            </Template>
+                        </GridColumn>
+                    </GridColumns>
+                </SfGrid>
+            }
+            else
+            {
+                <div class="no-results">Sonuç bulunamadı.</div>
+            }
+        </DetailTemplate>
+    </GridTemplates>
+</SfGrid>
+
+@* ************************* UPDATE MODAL EXAMINATION ************************* *@
+<RadiologyRequestResultDialog @ref="ResultDialog" OnSave="@OnResultDialogSave" />
