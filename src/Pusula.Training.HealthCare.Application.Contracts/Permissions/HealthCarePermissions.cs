@@ -275,5 +275,37 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-#endregion
+    public static class Radiologies
+    {
+        public const string Default = GroupName + ".Radiologies";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyReports
+    {
+        public const string Default = GroupName + ".RadiologyReports";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyDefinitions
+    {
+        public const string Default = GroupName + ".RadiologyDefinitions";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class RadiologyTransactions
+    {
+        public const string Default = GroupName + ".RadiologyTransactions";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+    #endregion
 }
+

@@ -1,7 +1,7 @@
 ﻿namespace Pusula.Training.HealthCare.RadioloyRequestItems;
 public static class RadiologyRequestItemConsts
 {
-    private const string DefaultSorting = "{0}ResultDate desc";
+    private const string DefaultSorting = "{0}RadiologyRequest.RequestDate desc";
 
     public static string GetDefaultSorting(bool withEntityName)
     {

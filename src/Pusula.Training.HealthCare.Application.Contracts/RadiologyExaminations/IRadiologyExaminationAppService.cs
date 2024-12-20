@@ -10,7 +10,7 @@ namespace Pusula.Training.HealthCare.RadiologyExaminations
     public interface IRadiologyExaminationAppService : IApplicationService
     {
         Task<PagedResultDto<RadiologyExaminationDto>> GetListAsync(GetRadiologyExaminationsInput input);
-
+        Task<PagedResultDto<RadiologyExaminationDto>> GetListByGruopIdAsync(GetRadiologyExaminationsInput input, Guid id);
         Task<RadiologyExaminationDto> GetAsync(Guid id);
 
         Task DeleteAsync(Guid id);

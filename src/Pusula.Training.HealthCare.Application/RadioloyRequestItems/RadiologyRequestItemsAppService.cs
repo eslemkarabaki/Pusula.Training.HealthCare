@@ -5,12 +5,12 @@ using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Caching;
 using Volo.Abp.Content;
+using Volo.Abp.Domain.Repositories;
 
 namespace Pusula.Training.HealthCare.RadioloyRequestItems;
 
@@ -39,6 +39,73 @@ public class RadiologyRequestItemsAppService
 
     #region GetNavigationPropertiesAsync
     public virtual async Task<RadiologyRequestItemWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id) => ObjectMapper.Map<RadiologyRequestItemWithNavigationProperties, RadiologyRequestItemWithNavigationPropertiesDto>(await radiologyRequestItemRepository.GetWithNavigationPropertiesAsync(id));
+    #endregion
+
+    #region GetListNavigationPropertiesAsync
+    public virtual async Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListNavigationPropertiesAsync(GetRadiologyRequestItemsInput input)
+    {
+        var totalCount = await radiologyRequestItemRepository.GetCountAsync(
+            input.FilterText,
+            input.RequestId,
+            input.ExaminationId,
+            input.Result,
+            input.ResultDate,
+            input.State);
+
+        var items = await radiologyRequestItemRepository.GetListWithNavigationPropertiesAsync(
+            input.FilterText,
+            input.RequestId,
+            input.ExaminationId,
+            input.Result,
+            input.ResultDate,
+            input.State,
+            input.ProtocolId,
+            input.DepartmentId,
+            input.DoctorId,
+            input.PatientId,
+            input.Sorting,
+            input.MaxResultCount,
+            input.SkipCount);
+
+        var itemsDto = ObjectMapper.Map<List<RadiologyRequestItemWithNavigationProperties>, List<RadiologyRequestItemWithNavigationPropertiesDto>>(items);
+
+        return new PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>(totalCount, itemsDto);
+    }
+    #endregion
+
+    #region GetListWithNavigationPropertiesByRequestItemAsync 
+    public virtual async Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByRequestItemAsync(GetRadiologyRequestItemsInput input, Guid id)
+    {
+        var totalCount = await radiologyRequestItemRepository.GetCountAsync(
+            input.FilterText,
+            input.RequestId,
+            input.ExaminationId,
+            input.Result,
+            input.ResultDate,
+            input.State);
+
+        var items = await radiologyRequestItemRepository.GetListWithNavigationPropertiesAsync(
+            input.FilterText,
+            input.RequestId,
+            input.ExaminationId,
+            input.Result,
+            input.ResultDate,
+            input.State,
+            input.ProtocolId,
+            input.DepartmentId,
+            input.DoctorId,
+            input.PatientId,
+            input.Sorting,
+            input.MaxResultCount,
+            input.SkipCount);
+
+        var filteredItems = items.Where(item => item.RadiologyRequest.Id == id).ToList();
+
+        return new PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>(
+            totalCount,
+            ObjectMapper.Map<List<RadiologyRequestItemWithNavigationProperties>, List<RadiologyRequestItemWithNavigationPropertiesDto>>(filteredItems)
+        );
+    }
     #endregion
 
     #region CreateAsync

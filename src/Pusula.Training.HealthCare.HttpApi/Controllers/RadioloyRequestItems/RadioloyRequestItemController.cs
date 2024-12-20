@@ -37,6 +37,14 @@ public class RadioloyRequestItemController : HealthCareController, IRadiologyReq
     [Route("with-navigation-properties/{id}")]
     public virtual async Task<RadiologyRequestItemWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id) => await _radiologyRequestItemsAppService.GetNavigationPropertiesAsync(id);
 
+    [HttpGet]
+    [Route("with-navigation-properties/all")]
+    public virtual async Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListNavigationPropertiesAsync(GetRadiologyRequestItemsInput input) => await _radiologyRequestItemsAppService.GetListNavigationPropertiesAsync(input);
+
+    [HttpGet]
+    [Route("with-navigation-properties-by-request-item/{id}")]
+    public virtual async Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByRequestItemAsync(GetRadiologyRequestItemsInput input, Guid Id) => await _radiologyRequestItemsAppService.GetListWithNavigationPropertiesByRequestItemAsync(input, Id);
+
     [HttpPost]
     public virtual async Task<RadiologyRequestItemDto> CreateAsync(RadiologyRequestItemCreateDto input) => await _radiologyRequestItemsAppService.CreateAsync(input);
 
@@ -70,5 +78,5 @@ public class RadioloyRequestItemController : HealthCareController, IRadiologyReq
     [Route("download-token")]
     public virtual async Task<DownloadTokenResultDto> GetDownloadTokenAsync() => await _radiologyRequestItemsAppService.GetDownloadTokenAsync();
 
-
+ 
 }

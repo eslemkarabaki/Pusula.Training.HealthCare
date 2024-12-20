@@ -60,6 +60,23 @@ public class RadiologyRequestsAppService
     }
     #endregion
 
+    #region GetRadiologyRequestsWithNavigationPropertiesAsync
+    [Authorize(HealthCarePermissions.RadiologyRequests.Default)]
+    public virtual async Task<PagedResultDto<RadiologyRequestWithNavigationPropertiesDto>> GetListNavigationPropertiesAsync(GetRadiologyRequestsInput input)
+    { 
+        var totalCount = await radiologyRequestRepository.GetCountAsync(input.FilterText, input.RequestDate, input.ProtocolId, input.DepartmentId, input.DoctorId);
+         
+        var items = await radiologyRequestRepository.GetListRadiologyRequestWithNavigationPropertiesAsync(input.FilterText, input.RequestDate, input.ProtocolId, input.DepartmentId, input.DoctorId, input.Sorting, input.MaxResultCount, input.SkipCount);
+         
+        return new PagedResultDto<RadiologyRequestWithNavigationPropertiesDto>(
+            totalCount,
+            ObjectMapper.Map<List<RadiologyRequestWithNavigationProperties>, List<RadiologyRequestWithNavigationPropertiesDto>>(items)
+        );
+    }
+    #endregion
+
+
+
     #region UpdateAsync
     [Authorize(HealthCarePermissions.RadiologyRequests.Edit)]
     public virtual async Task<RadiologyRequestDto> UpdateAsync(Guid id, RadiologyRequestUpdateDto input)

@@ -11,6 +11,8 @@ public interface IRadiologyRequestItemsAppService : IApplicationService
     Task<RadiologyRequestItemDto> GetAsync(Guid id);
     Task<PagedResultDto<RadiologyRequestItemDto>> GetListAsync(GetRadiologyRequestItemsInput input);
     Task<RadiologyRequestItemWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id);
+    Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListNavigationPropertiesAsync(GetRadiologyRequestItemsInput input);
+    Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByRequestItemAsync(GetRadiologyRequestItemsInput input, Guid id);
     Task<RadiologyRequestItemDto> CreateAsync(RadiologyRequestItemCreateDto input);
     Task<RadiologyRequestItemDto> UpdateAsync(Guid id, RadiologyRequestItemUpdateDto input);
     Task DeleteAsync(Guid id);

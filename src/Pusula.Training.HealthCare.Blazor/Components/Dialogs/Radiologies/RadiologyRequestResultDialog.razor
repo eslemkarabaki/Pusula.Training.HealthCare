@@ -1,0 +1,37 @@
+﻿@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.RichTextEditor
+<SfDialog @ref="Dialog" Width="600px" IsModal="true" Visible="false" ShowCloseIcon="true" Header="Sonuç Düzenle">
+    <ChildContent>
+        <SfRichTextEditor @bind-Value="EditingResult" Placeholder="Sonucu düzenleyin..." Height="300px"></SfRichTextEditor>
+        <div class="dialog-actions">
+            <SfButton OnClick="OnSaveClickAsync" CssClass="e-primary">Kaydet</SfButton>
+            <SfButton OnClick="HideAsync">İptal</SfButton>
+        </div>
+    </ChildContent>
+</SfDialog>
+
+@code {
+    private SfDialog Dialog { get; set; } = null!;
+    private string EditingResult { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnSave { get; set; }
+
+    public async Task ShowAsync(string currentResult)
+    {
+        EditingResult = currentResult;
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        await Dialog.HideAsync();
+    }
+
+    private async Task OnSaveClickAsync()
+    {
+        await OnSave.InvokeAsync(EditingResult);
+        await HideAsync();
+    }
+}
