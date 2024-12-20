@@ -85,26 +85,28 @@ public class HealthCareDataSeederContributor(
             );
         }
 
-        var radiologyExaminationGroups = await SeedRadiologyExaminationGroupsAsync();
-        await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
+        if (!await radiologyExaminationRepository.AnyAsync())
+        {
+            var radiologyExaminationGroups = await SeedRadiologyExaminationGroupsAsync(); 
+            var radiologyExaminations = await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
 
-        var departments = await SeedDepartmentsAsync();
-        var hospital = await SeedHospitalsAsync();
-        var titles = await SeedTitlesAsync();
-        var doctors = await SeedDoctorsAsync(departments, hospital, titles);
+            var departments = await SeedDepartmentsAsync();
+            var hospital = await SeedHospitalsAsync();
+            var titles = await SeedTitlesAsync();
+            var doctors = await SeedDoctorsAsync(departments, hospital, titles);
 
-        await SeedAppointmentTypesAsync();
-        var protocolTypeIds = await SeedProtocolTypesAsync();
-        var protocolTypeActions = await SeedProtocolTypeActionsAsync(protocolTypeIds);
-        var prtocolIds = await SeedProtocolsAsync(
-            patientIds, doctors, departments, protocolTypeIds, protocolTypeActions
-        );
+            await SeedAppointmentTypesAsync();
+            var protocolTypeIds = await SeedProtocolTypesAsync();
+            var protocolTypeActions = await SeedProtocolTypeActionsAsync(protocolTypeIds);
+            var prtocolIds = await SeedProtocolsAsync(
+                patientIds, doctors, departments, protocolTypeIds, protocolTypeActions
+            );
 
-        var radiologyRequests = await SeedRadiologyRequestsAsync(
-            prtocolIds, departments, doctors.Select(d => d.Id).ToList()
-        );
-        var radiologyExaminations = await SeedRadiologyExaminationsAsync(radiologyExaminationGroups);
-        await SeedRadiologyRequestItemsAsync(radiologyRequests, radiologyExaminations);
+            var radiologyRequests = await SeedRadiologyRequestsAsync(
+                prtocolIds, departments, doctors.Select(d => d.Id).ToList()
+            );
+        }
+
     }
 
     // Country
