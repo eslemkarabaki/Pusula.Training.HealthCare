@@ -16,7 +16,7 @@ variables:
   SONARQUBE_SERVICE_CONNECTION: 'Sonarqube'  
 
 steps:
-- task: SonarQubePrepare@5
+- task: SonarQubePrepare@6
   inputs:
     SonarQube: $(SONARQUBE_SERVICE_CONNECTION)   
     scannerMode: 'MSBuild'
@@ -29,11 +29,11 @@ steps:
     dotnet build src/Pusula.Training.HealthCare.Blazor/Pusula.Training.HealthCare.Blazor.csproj --configuration Release
   displayName: 'Build Project'
 
-- task: SonarQubeAnalyze@5
+- task: SonarQubeAnalyze@6
   inputs:
     SonarQube: $(SONARQUBE_SERVICE_CONNECTION)  
 
-- task: SonarQubePublish@5
+- task: SonarQubePublish@6
   inputs:
     SonarQube: $(SONARQUBE_SERVICE_CONNECTION)  
     pollingTimeoutSec: '300'
