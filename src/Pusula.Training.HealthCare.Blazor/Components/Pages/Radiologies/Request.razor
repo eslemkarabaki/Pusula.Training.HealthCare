@@ -12,6 +12,7 @@
 
 @attribute [Authorize(HealthCarePermissions.RadiologyDefinitions.Default)]
 @inherits HealthCareComponentBase
+@inject IJSRuntime JS
 @inject IRadiologyRequestItemsAppService RadiologyRequestItemAppService
 @inject IRadiologyRequestsAppService RadiologyRequestAppService
 @inject IRadiologyExaminationDocumentAppService RadiologyExaminationDocumentAppService
@@ -102,3 +103,4 @@
 @* ************************* UPDATE MODAL EXAMINATION ************************* *@
 <RadiologyRequestResultDialog @ref="ResultDialog" OnSave="@OnResultDialogSave" />
 <RadiologyDocumentDialog @ref="DocumentDialog" />
+ 
