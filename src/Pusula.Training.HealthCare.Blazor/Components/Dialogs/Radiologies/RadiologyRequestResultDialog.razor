@@ -1,9 +1,21 @@
 ﻿@using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.RichTextEditor
+@using Syncfusion.Blazor.Inputs
+@using Microsoft.AspNetCore.Http
+@using System.IO
+@using Pusula.Training.HealthCare.Blazor.Models;
+
 <SfDialog @ref="Dialog" Width="600px" IsModal="true" Visible="false" ShowCloseIcon="true" Header="Sonuç Düzenle">
     <ChildContent>
-        <SfRichTextEditor @bind-Value="EditingResult" Placeholder="Sonucu düzenleyin..." Height="300px"></SfRichTextEditor>
+        <SfRichTextEditor @bind-Value="EditingResult" Placeholder="Sonucu düzenleyin..." Height="300px" CssClass="custom-richtext-editor">
+            <RichTextEditorToolbarSettings Items="@ToolbarItems"></RichTextEditorToolbarSettings>
+        </SfRichTextEditor>
+        <div class="upload-section">
+            <SfUploader AutoUpload="true" AllowedExtensions=".pdf,.jpg,.jpeg,.png">
+                <UploaderEvents ValueChange="@OnChange"></UploaderEvents>
+            </SfUploader>
+        </div>
         <div class="dialog-actions">
             <SfButton OnClick="OnSaveClickAsync" CssClass="e-primary">Kaydet</SfButton>
             <SfButton OnClick="HideAsync">İptal</SfButton>
@@ -11,12 +23,67 @@
     </ChildContent>
 </SfDialog>
 
+<style>
+    .custom-richtext-editor {
+        margin-bottom: 20px; /* Rich Text Editor ile diğer elementler arasında boşluk */
+    }
+
+    .upload-section {
+        margin-bottom: 20px; /* Yükleme alanı ile butonlar arasında boşluk */
+        text-align: center; /* Orta hizalama */
+        border: 1px dashed #ccc; /* Çevresine ince bir çerçeve */
+        padding: 15px; /* İç boşluk */
+        border-radius: 8px; /* Köşe yuvarlama */
+        background-color: #f9f9f9; /* Hafif bir arka plan rengi */
+    }
+
+    .dialog-actions {
+        display: flex; /* Düğmeleri hizalamak için flex */
+        justify-content: flex-end; /* Sağ tarafa hizalama */
+        gap: 10px; /* Düğmeler arasında boşluk */
+    }
+
+        .dialog-actions .e-btn {
+            min-width: 100px; /* Düğmelerin genişliğini eşitlemek için minimum genişlik */
+            font-size: 14px; /* Daha iyi okunabilirlik için font boyutu */
+        }
+
+</style>
 @code {
     private SfDialog Dialog { get; set; } = null!;
     private string EditingResult { get; set; } = string.Empty;
+    private IFormFile? SelectedFile { get; set; } = null;
+
+    private List<ToolbarItemModel> ToolbarItems { get; set; } = new List<ToolbarItemModel>
+    {
+        new ToolbarItemModel { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel { Command = ToolbarCommand.StrikeThrough },
+        new ToolbarItemModel { Command = ToolbarCommand.FontName },
+        new ToolbarItemModel { Command = ToolbarCommand.FontSize },
+        new ToolbarItemModel { Command = ToolbarCommand.FontColor },
+        new ToolbarItemModel { Command = ToolbarCommand.BackgroundColor },
+        new ToolbarItemModel { Command = ToolbarCommand.LowerCase },
+        new ToolbarItemModel { Command = ToolbarCommand.UpperCase },
+        new ToolbarItemModel { Command = ToolbarCommand.SuperScript },
+        new ToolbarItemModel { Command = ToolbarCommand.SubScript },
+        new ToolbarItemModel { Command = ToolbarCommand.Formats },
+        new ToolbarItemModel { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel { Command = ToolbarCommand.OrderedList },
+        new ToolbarItemModel { Command = ToolbarCommand.UnorderedList },
+        new ToolbarItemModel { Command = ToolbarCommand.Outdent },
+        new ToolbarItemModel { Command = ToolbarCommand.Indent },
+        new ToolbarItemModel { Command = ToolbarCommand.CreateLink },
+        new ToolbarItemModel { Command = ToolbarCommand.ClearFormat },
+        new ToolbarItemModel { Command = ToolbarCommand.SourceCode },
+        new ToolbarItemModel { Command = ToolbarCommand.FullScreen },
+        new ToolbarItemModel { Command = ToolbarCommand.Undo },
+        new ToolbarItemModel { Command = ToolbarCommand.Redo }
+    };
 
     [Parameter]
-    public EventCallback<string> OnSave { get; set; }
+    public EventCallback<RequestItemWithDocumentModel> OnSave { get; set; }
 
     public async Task ShowAsync(string currentResult)
     {
@@ -31,7 +98,38 @@
 
     private async Task OnSaveClickAsync()
     {
-        await OnSave.InvokeAsync(EditingResult);
+        var requestItemWithDocumentModel = new RequestItemWithDocumentModel
+            {
+                Result = EditingResult,
+                File = SelectedFile
+            };
+        await OnSave.InvokeAsync(requestItemWithDocumentModel);
         await HideAsync();
+    }
+
+    private async Task OnChange(UploadChangeEventArgs args)
+    {
+        try
+        {
+            foreach (var file in args.Files)
+            {
+                var fileName = file.FileInfo.Name;
+                var contentType = file.FileInfo.Type;
+
+                var memoryStream = new MemoryStream();
+                await file.File.OpenReadStream().CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+
+                SelectedFile = new FormFile(memoryStream, 0, memoryStream.Length, fileName, fileName)
+                    {
+                        Headers = new HeaderDictionary(),
+                        ContentType = contentType
+                    };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }

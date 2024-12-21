@@ -3,15 +3,18 @@
 @using Pusula.Training.HealthCare.Permissions
 @using Pusula.Training.HealthCare.RadiologyRequests
 @using Pusula.Training.HealthCare.RadioloyRequestItems
+@using Pusula.Training.HealthCare.RadiologyExaminationDocuments
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.DropDowns
 @using Pusula.Training.HealthCare.Blazor.Components.Shared
+@using Syncfusion.Blazor 
 
 @attribute [Authorize(HealthCarePermissions.RadiologyDefinitions.Default)]
 @inherits HealthCareComponentBase
 @inject IRadiologyRequestItemsAppService RadiologyRequestItemAppService
 @inject IRadiologyRequestsAppService RadiologyRequestAppService
+@inject IRadiologyExaminationDocumentAppService RadiologyExaminationDocumentAppService
 
 <h2 class="page-title">Radiology Sonuçları</h2>
 
@@ -74,7 +77,18 @@
                                 }
                             </Template>
                         </GridColumn>
-                    </GridColumns>
+ 
+                        <GridColumn HeaderText="Documents" Width="200">
+                            <Template Context="itemContext">
+                                @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
+                                {
+                                    <button @onclick="() => ShowDocumentsAsync(dto.RadiologyRequestItem.Id)">
+                                        Dokümanları Görüntüle
+                                    </button>
+                                }
+                            </Template>
+                        </GridColumn>
+                    </GridColumns> 
                 </SfGrid>
             }
             else
@@ -87,3 +101,4 @@
 
 @* ************************* UPDATE MODAL EXAMINATION ************************* *@
 <RadiologyRequestResultDialog @ref="ResultDialog" OnSave="@OnResultDialogSave" />
+<RadiologyDocumentDialog @ref="DocumentDialog" />

@@ -177,9 +177,7 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Result));
 
         CreateMap<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>();
-        CreateMap<RadiologyExaminationDocumentDto, RadiologyExaminationDocumentUpdateDto>();
-        CreateMap<RadiologyExaminationDocument, LookupDto<Guid>>()
-            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DocumentName));
+        CreateMap<RadiologyExaminationDocumentDto, RadiologyExaminationDocumentUpdateDto>(); 
 
         CreateMap<RadiologyRequest, RadiologyRequestDto>();
         CreateMap<RadiologyRequest, RadiologyRequestExcelDownloadDto>();
