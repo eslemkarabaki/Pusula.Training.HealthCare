@@ -10,52 +10,58 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
     public class RadiologyExaminationDocumentManager(IRadiologyExaminationDocumentRepository radiologyExaminationDocumentRepository) : DomainService
     {
         public virtual async Task<RadiologyExaminationDocument> CreateAsync(
-            string documentName,
-            string documentPath,
+            string path,
             DateTime uploadDate,
-            Guid RadiologyExaminationProcedureId
+            Guid itemId
            )
         {
-            Check.NotNullOrWhiteSpace(documentName, nameof(documentName));
-            Check.Length(documentName, nameof(documentName), RadiologyExaminationDocumentConsts.DocumentNameMaxLength);
-            Check.NotNullOrWhiteSpace(documentPath, nameof(documentPath));
-            Check.Length(documentPath, nameof(documentPath), RadiologyExaminationDocumentConsts.DocumentPathMaxLength);
+            Check.NotNullOrWhiteSpace(path, nameof(path));
+            Check.Length(path, nameof(path), RadiologyExaminationDocumentConsts.DocumentPathMaxLength);
 
-            var radiologyExaminationDocument = new RadiologyExaminationDocument(
-            GuidGenerator.Create(),
-            documentName,
-            documentPath,
-            uploadDate,
-            RadiologyExaminationProcedureId
-             );
+            try
+            {
+                var radiologyExaminationDocument = new RadiologyExaminationDocument(
+                    GuidGenerator.Create(),
+                    path,
+                    uploadDate,
+                    itemId
+                );
 
-            var uniqueFileName = radiologyExaminationDocument.GenerateUniqueFileName(documentName);
-            var updatedPath = Path.Combine("uploads", uniqueFileName);  
-
-            return await radiologyExaminationDocumentRepository.InsertAsync(radiologyExaminationDocument);
+                return await radiologyExaminationDocumentRepository.InsertAsync(radiologyExaminationDocument);
+            }
+            catch (Exception ex)
+            { 
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new UserFriendlyException("An error occurred while creating the radiology examination document.");
+            }
         }
 
         public virtual async Task<RadiologyExaminationDocument> UpdateAsync(
             Guid id,
-            string documentName,
-            string documentPath,
+            string path,
             DateTime uploadDate,
-            Guid RadiologyExaminationProcedureId,
+            Guid itemId,
             [CanBeNull] string? concurrencyStamp = null)
         {
-            Check.NotNullOrWhiteSpace(documentName, nameof(documentName));
-            Check.Length(documentName, nameof(documentName), RadiologyExaminationDocumentConsts.DocumentNameMaxLength);
-            Check.NotNullOrWhiteSpace(documentPath, nameof(documentPath));
-            Check.Length(documentPath, nameof(documentPath), RadiologyExaminationDocumentConsts.DocumentPathMaxLength);
+            Check.NotNullOrWhiteSpace(path, nameof(path));
+            Check.Length(path, nameof(path), RadiologyExaminationDocumentConsts.DocumentPathMaxLength);
 
-            var RadiologyExaminationDocument = await radiologyExaminationDocumentRepository.FindAsync(id);
+            try
+            {
+                var radiologyExaminationDocument = await radiologyExaminationDocumentRepository.FindAsync(id);
 
-            RadiologyExaminationDocument!.DocumentName = documentName;
-            RadiologyExaminationDocument.DocumentPath = documentPath;
-            RadiologyExaminationDocument.UploadDate = uploadDate;
-            RadiologyExaminationDocument.RadiologyExaminationProcedureId = RadiologyExaminationProcedureId;
+                radiologyExaminationDocument.Path = path;
+                radiologyExaminationDocument.UploadDate = uploadDate;
+                radiologyExaminationDocument.ItemId = itemId;
 
-            return await radiologyExaminationDocumentRepository.UpdateAsync(RadiologyExaminationDocument);
+                return await radiologyExaminationDocumentRepository.UpdateAsync(radiologyExaminationDocument);
+            }
+            catch (Exception ex)
+            { 
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new UserFriendlyException("An error occurred while updating the radiology examination document.");
+            }
         }
     }
+
 }

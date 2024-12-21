@@ -7,40 +7,27 @@ using Volo.Abp.Domain.Entities.Auditing;
 namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
 {
     public class RadiologyExaminationDocument : AuditedAggregateRoot<Guid>
-    {
+    { 
         [NotNull]
-        public string DocumentName { get; set; }
-        [NotNull]
-        public string DocumentPath { get; set; }
+        public string Path { get; set; }
         [NotNull]
         public DateTime UploadDate { get; set; }
-        public Guid RadiologyExaminationProcedureId { get; set; }
+        public Guid ItemId { get; set; }
 
         protected RadiologyExaminationDocument()
-        {
-            DocumentName = string.Empty;
-            DocumentPath = string.Empty;
+        { 
+            Path = string.Empty;
             UploadDate = DateTime.Now;
         }
 
-        public RadiologyExaminationDocument(Guid id, string documentName, string documentPath, DateTime uploadDate, Guid RadiologyExaminationProcedureId)
+        public RadiologyExaminationDocument(Guid id, string path, DateTime uploadDate, Guid itemId)
         {
-            Id = id;
-            Check.NotNull(documentName, nameof(documentName));
-            Check.Length(documentName, nameof(documentName), RadiologyExaminationDocumentConsts.DocumentNameMaxLength, 0);
-            DocumentName = documentName;
-            Check.NotNull(documentPath, nameof(documentPath));
-            Check.Length(documentPath, nameof(documentPath), RadiologyExaminationDocumentConsts.DocumentPathMaxLength, 0);
-            DocumentPath = documentPath;
+            Id = id; 
+            Check.NotNull(path, nameof(path));
+            Check.Length(path, nameof(path), RadiologyExaminationDocumentConsts.DocumentPathMaxLength, 0);
+            Path = path;
             UploadDate = uploadDate;
-            RadiologyExaminationProcedureId = RadiologyExaminationProcedureId;
-        }
-
-        public string GenerateUniqueFileName(string fileName)
-        {
-            var uniqueName = $"{Guid.NewGuid()}_{Path.GetFileName(fileName)}";
-            return uniqueName;
-        }
-
+            ItemId = itemId;
+        }  
     }
 }

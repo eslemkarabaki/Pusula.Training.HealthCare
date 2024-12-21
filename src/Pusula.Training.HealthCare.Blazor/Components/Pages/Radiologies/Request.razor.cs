@@ -1,9 +1,11 @@
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Radiologies;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Http;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies;
+using Pusula.Training.HealthCare.Blazor.Models;
 using Pusula.Training.HealthCare.Permissions;
+using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Syncfusion.Blazor.Grids;
@@ -11,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
+using Volo.Abp;
 
 public partial class Request
 {
@@ -20,14 +24,14 @@ public partial class Request
 
     protected override async Task OnInitializedAsync()
     {
-        await SetPermissionsAsync(); 
+        await SetPermissionsAsync();
         await LoadRequestsAsync();
     }
 
     private async Task LoadRequestsAsync()
     {
         await GetRequestsAsync();
-        StateHasChanged();  
+        StateHasChanged();
     }
 
     private async Task GetRequestsAsync()
@@ -38,6 +42,11 @@ public partial class Request
         {
             var requestItemsResult = await RadiologyRequestItemAppService.GetListWithNavigationPropertiesByRequestItemAsync(new GetRadiologyRequestItemsInput(), request.RadiologyRequest.Id);
             DetailItems[request.RadiologyRequest.Id] = requestItemsResult.Items.ToList();
+          
+            foreach (var item in DetailItems[request.RadiologyRequest.Id])
+            {
+                await GetDocumentByItemId(item.RadiologyRequestItem.Id);
+            }
         }
 
         StateHasChanged();
@@ -68,43 +77,57 @@ public partial class Request
         await ResultDialog.ShowAsync(dto.RadiologyRequestItem.Result ?? string.Empty);
     }
 
-    private async Task OnResultDialogSave(string newResult)
+    private async Task OnResultDialogSave(RequestItemWithDocumentModel newResult)
     {
         if (EditingDto == null) return;
-
-        EditingDto.RadiologyRequestItem.Result = newResult;
-        await OnResultChange(EditingDto.RadiologyRequestItem, newResult);  
+        EditingDto.RadiologyRequestItem.Result = newResult.Result;
+        await OnResultChange(EditingDto.RadiologyRequestItem, EditingDto.RadiologyRequestItem.Result, newResult.File);
     }
 
-    private async Task OnResultChange(RadiologyRequestItemDto dto, string newValue)
+    private async Task OnResultChange(RadiologyRequestItemDto dto, string newValue, IFormFile? selectedFile)
     {
         if (string.IsNullOrWhiteSpace(newValue) || newValue.Length < 3)
         {
             return;
         }
 
-        dto.Result = newValue;
-        dto.ResultDate = DateTime.Now;
-        dto.State = RadiologyRequestItemState.Completed;
-
-        var updateDto = new RadiologyRequestItemUpdateDto
-        {
-            RequestId = dto.RequestId ?? throw new InvalidOperationException("State cannot be null"),
-            ExaminationId = dto.ExaminationId ?? throw new InvalidOperationException("ExaminationId cannot be null"),
-            Result = dto.Result,
-            ResultDate = dto.ResultDate ?? throw new InvalidOperationException("ResultDate cannot be null"),
-            State = dto.State ?? throw new InvalidOperationException("State cannot be null"),
-            ConcurrencyStamp = dto.ConcurrencyStamp
-        };
-
         try
         {
+
+            dto.Result = newValue;
+            dto.ResultDate = DateTime.Now;
+            dto.State = RadiologyRequestItemState.Completed;
+
+            var updateDto = new RadiologyRequestItemUpdateDto
+            {
+                RequestId = dto.RequestId ?? throw new InvalidOperationException("State cannot be null"),
+                ExaminationId = dto.ExaminationId ?? throw new InvalidOperationException("ExaminationId cannot be null"),
+                Result = dto.Result,
+                ResultDate = dto.ResultDate ?? throw new InvalidOperationException("ResultDate cannot be null"),
+                State = dto.State ?? throw new InvalidOperationException("State cannot be null")
+            };
+             
+            if (selectedFile != null)
+            {
+                var input = new RadiologyExaminationDocumentCreateDto
+                {
+                    File = selectedFile,
+                    ItemId = dto.Id
+                };
+                await RadiologyExaminationDocumentAppService.CreateAsync(input);
+                await GetDocumentByItemId(dto.Id);
+            }
+
             await RadiologyRequestItemAppService.UpdateAsync(dto.Id, updateDto);
+            StateHasChanged();
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Error: {ex.Message}");
+            throw new UserFriendlyException("An error occurred while saving the result or file. The operation was rolled back.");
         }
     }
+
 
     private static string StripHtml(string? input)
     {
@@ -117,9 +140,9 @@ public partial class Request
     #region State Change      
 
     private Dictionary<Guid, bool> dropDownVisibilityState = new();
-     
+
     private void ToggleDropDown(Guid itemId)
-    { 
+    {
         if (dropDownVisibilityState.ContainsKey(itemId))
         {
             dropDownVisibilityState[itemId] = !dropDownVisibilityState[itemId];
@@ -128,7 +151,7 @@ public partial class Request
         {
             dropDownVisibilityState[itemId] = true;
         }
-         
+
         foreach (var key in dropDownVisibilityState.Keys.ToList())
         {
             if (key != itemId)
@@ -137,7 +160,7 @@ public partial class Request
             }
         }
     }
-     
+
     private bool IsDropDownVisibleForItem(Guid itemId)
     {
         return dropDownVisibilityState.ContainsKey(itemId) && dropDownVisibilityState[itemId];
@@ -177,9 +200,29 @@ public partial class Request
         {
             Console.WriteLine($"An error occurred while updating state: {ex.Message}");
         }
-         
+
         dropDownVisibilityState[dto.RadiologyRequestItem.Id] = false;
     }
     #endregion
 
+    #region GetDocumentByItemId
+     
+    private RadiologyDocumentDialog DocumentDialog { get; set; } = null!;
+    private Dictionary<Guid, List<RadiologyExaminationDocumentDto>> ItemDocuments { get; set; } = new();
+
+    private async Task ShowDocumentsAsync(Guid itemId)
+    {
+        if (ItemDocuments.TryGetValue(itemId, out var documents) && documents.Any())
+        {
+            await DocumentDialog.ShowAsync(documents);
+        }
+    }
+
+
+    private async Task GetDocumentByItemId(Guid itemId)
+    {
+        var result = await RadiologyExaminationDocumentAppService.GetListAsync(new GetRadiologyExaminationDocumentsInput { ItemId = itemId });
+        ItemDocuments[itemId] = result.Items.ToList();
+    }
+    #endregion
 }
