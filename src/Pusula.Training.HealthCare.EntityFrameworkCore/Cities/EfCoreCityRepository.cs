@@ -5,7 +5,6 @@ using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Pusula.Training.HealthCare.Countries;
 using Pusula.Training.HealthCare.EntityFrameworkCore;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -71,8 +70,8 @@ public class EfCoreCityRepository(IDbContextProvider<HealthCareDbContext> dbCont
         Guid? countryId = null
     ) =>
         query
-            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => EF.Functions.ILike(e.Name, filterText!))
-            .WhereIf(!string.IsNullOrWhiteSpace(name), e => EF.Functions.ILike(e.Name, name!))
+            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => EF.Functions.ILike(e.Name, $"{filterText!}%"))
+            .WhereIf(!string.IsNullOrWhiteSpace(name), e => EF.Functions.ILike(e.Name, $"{name}%"))
             .WhereIf(countryId.HasValue, e => e.CountryId == countryId!.Value);
 
     protected virtual string GetSorting(string? sorting, bool withEntityName) =>
