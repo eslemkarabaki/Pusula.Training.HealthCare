@@ -1,4 +1,4 @@
-@page "/prm/definitions/districts"
+@page "/definition/districts"
 
 @attribute [Authorize(HealthCarePermissions.Districts.Default)]
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
@@ -19,7 +19,7 @@
 @inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
 @inject NavigationManager NavigationManager
 
-<PageHeader Title="" BreadcrumbItems="BreadcrumbItems" />
+<PageHeader Title="" BreadcrumbItems="BreadcrumbItems"/>
 
 @* ************************* DATA GRID ************************* *@
 
@@ -38,9 +38,9 @@
     </SfToolbar>
     <GridEvents TValue="DistrictDto"
                 RowSelected="@SelectedDistrictRowChangedAsync"
-                RowDeselected="@SelectedDistrictRowChangedAsync" />
-    <GridPageSettings PageSize="10" />
-    <GridSelectionSettings CheckboxOnly PersistSelection />
+                RowDeselected="@SelectedDistrictRowChangedAsync"/>
+    <GridPageSettings PageSize="10"/>
+    <GridSelectionSettings CheckboxOnly PersistSelection/>
     <GridSortSettings>
         <GridSortColumns>
             <GridSortColumn Field="@nameof(DistrictDto.Name)"></GridSortColumn>
@@ -48,7 +48,7 @@
     </GridSortSettings>
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
-        <GridColumn Field="@nameof(DistrictDto.Name)" HeaderText="@L["District"]" />
+        <GridColumn Field="@nameof(DistrictDto.Name)" HeaderText="@L["District"]"/>
         <GridColumn HeaderText="@L["City"]">
             <Template>
                 @{

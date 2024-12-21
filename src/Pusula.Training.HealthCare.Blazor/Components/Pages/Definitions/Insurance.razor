@@ -1,7 +1,5 @@
-﻿@page "/prm/definitions/insurances"
+﻿@page "/definition/insurances"
 @attribute [Authorize(HealthCarePermissions.Insurances.Default)]
-@using Polly
-@using Pusula.Training.HealthCare.Insurances
 @using Pusula.Training.HealthCare.Permissions
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
@@ -16,7 +14,7 @@
         <span class="e-icons fas fa-plus"></span> New Protocol Type
     </SfButton>
 </div>
-<br />
+<br/>
 
 <SfDialog Width="400px" IsModal="true" ShowCloseIcon="true" Visible="@IsDialogVisible" Header="New Insurance">
     <DialogTemplates>
@@ -28,11 +26,12 @@
                         @ErrorMessage
                     </div>
                 }
-    <DataAnnotationsValidator></DataAnnotationsValidator>
-        <Blazorise.ValidationSummary></Blazorise.ValidationSummary>
-    <SfTextBox @bind-Value="InsuranceModel.Name" Placeholder="Enter Insurance name" Label="Name" TValue="string"></SfTextBox>
-    <ValidationMessage For="() => InsuranceModel.Name"></ValidationMessage>
-</EditForm>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <Blazorise.ValidationSummary></Blazorise.ValidationSummary>
+                <SfTextBox @bind-Value="InsuranceModel.Name" Placeholder="Enter Insurance name" Label="Name"
+                           TValue="string"></SfTextBox>
+                <ValidationMessage For="() => InsuranceModel.Name"></ValidationMessage>
+            </EditForm>
         </Content>
         <FooterTemplate>
             <div class="dialog-footer">
@@ -53,8 +52,9 @@
                         @ErrorMessage
                     </div>
                 }
-                    <DataAnnotationsValidator></DataAnnotationsValidator>
-                 <SfTextBox @bind-Value="EditingInsurance.Name" Placeholder="Enter insurance name" Label="Name" TValue="string"></SfTextBox>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <SfTextBox @bind-Value="EditingInsurance.Name" Placeholder="Enter insurance name" Label="Name"
+                           TValue="string"></SfTextBox>
             </EditForm>
         </Content>
         <FooterTemplate>
@@ -69,10 +69,10 @@
         <GridColumn Field="@nameof(InsuranceDto.Name)" HeaderText="Name" Width="150"></GridColumn>
         <GridColumn TextAlign="TextAlign.Right">
             <Template>
-                <SfButton OnClick="@(() => OpenEditInsurancesModalAsync((context as InsuranceDto)))"
+                <SfButton OnClick="@(() => OpenEditInsurancesModalAsync(context as InsuranceDto))"
                           CssClass="e-flat"
                           IconCss="e-icons fas fa-edit"></SfButton>
-                <SfButton  OnClick="@(() => DeleteInsuranceAsync((context as InsuranceDto)))"
+                <SfButton OnClick="@(() => DeleteInsuranceAsync(context as InsuranceDto))"
                           CssClass="e-flat button e-custom delete"
                           IconCss="e-icons fas fa-trash-alt">
                 </SfButton>
@@ -83,15 +83,15 @@
 
 
 <style>
-    .e-custom{
-        background-color:blue;
-       
+    .e-custom {
+        background-color: blue;
+
     }
 
-        .e-custom, .e-custom:hover, .e-custom:focus, .e-custom:active .delete {
-            background-color: reds;
-            color: #fff;
-        }
-    
-   
+    .e-custom, .e-custom:hover, .e-custom:focus, .e-custom:active .delete {
+        background-color: reds;
+        color: #fff;
+    }
+
+
 </style>

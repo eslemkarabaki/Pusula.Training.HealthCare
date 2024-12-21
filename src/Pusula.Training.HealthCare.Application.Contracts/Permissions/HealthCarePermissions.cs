@@ -14,56 +14,65 @@ public static class HealthCarePermissions
     //Add your own permission names. Example:
     //public const string MyPermission1 = GroupName + ".MyPermission1";
 
-#region PatientRegistration
+#region Definitions
 
-    public static class Patients
+    public static class Allergies
     {
-        public const string Default = GroupName + ".Patients";
+        public const string Default = GroupName + ".Allergies";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
 
-    public static class Protocols
+    public static class Medicines
     {
-        public const string Default = GroupName + ".Protocols";
+        public const string Default = GroupName + ".Medicines";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
 
-    public static class PatientProtocols
+    public static class Operations
     {
-        public const string Default = GroupName + ".PatientProtocols";
+        public const string Default = GroupName + ".Operations";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
 
-    public static class PatientTypes
+    public static class Vaccines
     {
-        public const string Default = GroupName + ".PatientTypes";
+        public const string Default = GroupName + ".Vaccines";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
 
-    public static class PatientNotes
+    public static class BloodTransfusions
     {
-        public const string Default = GroupName + ".PatientNotes";
+        public const string Default = GroupName + ".BloodTransfusions";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
 
-    public static class ProtocolTypes
+    public static class Jobs
     {
-        public const string Default = GroupName + ".ProtocolTypes";
+        public const string Default = GroupName + ".Jobs";
+        public const string Menu = Default + ".Menu";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Educations
+    {
+        public const string Default = GroupName + ".Educations";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
@@ -106,20 +115,27 @@ public static class HealthCarePermissions
         public const string Delete = Default + ".Delete";
     }
 
-#endregion
-
-    public static class Departments
+    public static class PatientTypes
     {
-        public const string Default = GroupName + ".Departments";
+        public const string Default = GroupName + ".PatientTypes";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
 
-    public static class Appointments
+    public static class ProtocolTypes
     {
-        public const string Default = GroupName + ".Appointments";
+        public const string Default = GroupName + ".ProtocolTypes";
+        public const string Menu = Default + ".Menu";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Departments
+    {
+        public const string Default = GroupName + ".Departments";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
@@ -156,6 +172,66 @@ public static class HealthCarePermissions
     public static class Titles
     {
         public const string Default = GroupName + ".Titles";
+        public const string Menu = Default + ".Menu";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Diagnosis
+    {
+        public const string Default = GroupName + ".Diagnosis";
+        public const string Menu = Default + ".Menu";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+#endregion
+
+#region PatientRegistration
+
+    public static class Patients
+    {
+        public const string Default = GroupName + ".Patients";
+        public const string Menu = Default + ".Menu";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Protocols
+    {
+        public const string Default = GroupName + ".Protocols";
+        public const string Menu = Default + ".Menu";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class PatientProtocols
+    {
+        public const string Default = GroupName + ".PatientProtocols";
+        public const string Menu = Default + ".Menu";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class PatientNotes
+    {
+        public const string Default = GroupName + ".PatientNotes";
+        public const string Menu = Default + ".Menu";
+        public const string Edit = Default + ".Edit";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+#endregion
+
+    public static class Appointments
+    {
+        public const string Default = GroupName + ".Appointments";
         public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
@@ -210,15 +286,6 @@ public static class HealthCarePermissions
     public static class WorkLists
     {
         public const string Default = GroupName + ".WorkLists";
-        public const string Menu = Default + ".Menu";
-        public const string Create = Default + ".Create";
-        public const string Edit = Default + ".Edit";
-        public const string Delete = Default + ".Delete";
-    }
-
-    public static class Diagnosis
-    {
-        public const string Default = GroupName + ".Diagnosis";
         public const string Menu = Default + ".Menu";
         public const string Create = Default + ".Create";
         public const string Edit = Default + ".Edit";
@@ -306,6 +373,6 @@ public static class HealthCarePermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
-    #endregion
-}
 
+#endregion
+}

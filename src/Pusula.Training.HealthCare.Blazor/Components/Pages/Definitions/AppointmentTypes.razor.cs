@@ -9,7 +9,7 @@ using Syncfusion.Blazor.Grids;
 using Pusula.Training.HealthCare.AppointmentTypes;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.AppointmentTypes;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Definitions;
 
 public partial class AppointmentTypes
 {
@@ -29,31 +29,35 @@ public partial class AppointmentTypes
         await SetPermissionsAsync();
         await GetTypesAsync();
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await SetBreadcrumbItemsAsync();
             await InvokeAsync(StateHasChanged);
-
         }
     }
+
     protected virtual ValueTask SetBreadcrumbItemsAsync()
     {
         BreadcrumbItems.Add(new Volo.Abp.BlazoriseUI.BreadcrumbItem(L["AppointmentTypes"]));
         return ValueTask.CompletedTask;
     }
+
     private async Task GetTypesAsync()
     {
         TypeList = await AppointmentTypeAppService.GetListAsync();
         await ClearSelection();
     }
+
     private Task ClearSelection()
     {
         AllTypesSelected = false;
         SfGrid.SelectedRecords.Clear();
         return Task.CompletedTask;
     }
+
     private Task SelectedTypeRowChangedAsync()
     {
         AllTypesSelected = SfGrid.SelectedRecords.Count == TypeList.Count;
@@ -103,6 +107,7 @@ public partial class AppointmentTypes
             await GetTypesAsync();
         }
     }
+
     private async Task DeleteSelectedTypesAsync()
     {
         var message = AllTypesSelected ?

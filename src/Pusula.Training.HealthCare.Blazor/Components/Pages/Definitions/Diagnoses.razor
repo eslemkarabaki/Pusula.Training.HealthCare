@@ -1,4 +1,4 @@
-﻿@page "/diagnosis"
+﻿@page "/definition/diagnosis"
 @using Pusula.Training.HealthCare.Permissions
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Buttons
@@ -7,12 +7,13 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Popups
 @using Pusula.Training.HealthCare.Diagnoses
-@namespace Pusula.Training.HealthCare.Blazor.Components.Pages
+
 @attribute [Authorize(HealthCarePermissions.Diagnosis.Default)]
+
+@inherits HealthCareComponentBase
+
 @inject IDiagnosisAppService DiagnosisAppService
 @inject SfDialogService DialogService
-
-
 
 <div class="container">
     <h3>Diagnosis Management</h3>
@@ -23,37 +24,40 @@
     <!-- Diagnosis List Table -->
     <table class="table table-bordered">
         <thead>
-            <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Actions</th>
-            </tr>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var diagnosis in DiagnosisList)
-            {
-                <tr>
-                    <td>@diagnosis.Code</td>
-                    <td>@diagnosis.Name</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning" @onclick="() => OpenEditDiagnosisModalAsync(diagnosis)">Edit</button>
-                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteDiagnosisAsync(diagnosis)">Delete</button>
-                    </td>
-                </tr>
-            }
+        @foreach (var diagnosis in DiagnosisList)
+        {
+            <tr>
+                <td>@diagnosis.Code</td>
+                <td>@diagnosis.Name</td>
+                <td>
+                    <button class="btn btn-sm btn-warning" @onclick="() => OpenEditDiagnosisModalAsync(diagnosis)">
+                        Edit
+                    </button>
+                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteDiagnosisAsync(diagnosis)">Delete
+                    </button>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 
     <!-- Create Dialog -->
-    <SfDialog Width="450px" @ref="CreateDialog" ShowCloseIcon="true" Visible="false"  IsModal="true">
+    <SfDialog Width="450px" @ref="CreateDialog" ShowCloseIcon="true" Visible="false" IsModal="true">
         <DialogTemplates>
             <Header>New Diagnosis</Header>
             <Content>
                 <div>
                     <label>Code</label>
-                    <input class="form-control" @bind="DiagnosisModel.Code" />
+                    <input class="form-control" @bind="DiagnosisModel.Code"/>
                     <label>Name</label>
-                    <input class="form-control" @bind="DiagnosisModel.Name" />
+                    <input class="form-control" @bind="DiagnosisModel.Name"/>
                     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
                     {
                         <p class="text-danger">@ErrorMessage</p>
@@ -65,7 +69,7 @@
                 <SfButton OnClick="CloseDialog">Cancel</SfButton>
             </FooterTemplate>
         </DialogTemplates>
-        
+
     </SfDialog>
 
     <!-- Update Dialog -->
@@ -75,9 +79,9 @@
             <Content>
                 <div>
                     <label>Code</label>
-                    <input class="form-control" @bind="EditingDiagnosis.Code" />
+                    <input class="form-control" @bind="EditingDiagnosis.Code"/>
                     <label>Name</label>
-                    <input class="form-control" @bind="EditingDiagnosis.Name" />
+                    <input class="form-control" @bind="EditingDiagnosis.Name"/>
                     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
                     {
                         <p class="text-danger">@ErrorMessage</p>
@@ -89,6 +93,6 @@
                 <SfButton OnClick="CloseUpdateDialog">Cancel</SfButton>
             </FooterTemplate>
         </DialogTemplates>
-        
+
     </SfDialog>
 </div>
