@@ -1,145 +1,27 @@
 version: "3.9"
 services:
-  redis-node-1:
+  redis:
     image: redis:latest
+    container_name: c_redis
     ports:
       - "6379:6379"
-      - "16379:16379"
     networks:
       - frontend
     environment:
-      - REDIS_PASSWORD=pusulateam3node
-    command: >
-      redis-server --appendonly yes --requirepass pusulateam3node
-      --masterauth pusulateam3node --cluster-enabled yes
-      --cluster-config-file nodes.conf --cluster-node-timeout 5000
-      --port 6379 --cluster-announce-ip 64.226.68.43
+      - REDIS_PASSWORD=pusulateam3node  
+    command: ["redis-server", "--requirepass", "pusulateam3node"]  
+    volumes:
+      - redisdata:/data
     deploy:
+      replicas: 1
       restart_policy:
-        condition: on-failure
+        condition: on-failure     
       placement:
         constraints: [node.role == worker]
-    volumes:
-      - redisdata-1:/data
-
-  redis-node-2:
-    image: redis:latest
-    ports:
-      - "6380:6379"
-      - "16380:16379"
-    networks:
-      - frontend
-    environment:
-      - REDIS_PASSWORD=pusulateam3node
-    command: >
-      redis-server --appendonly yes --requirepass pusulateam3node
-      --masterauth pusulateam3node --cluster-enabled yes
-      --cluster-config-file nodes.conf --cluster-node-timeout 5000
-      --port 6380 --cluster-announce-ip 64.226.68.43
-    deploy:
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints: [node.role == worker]
-    volumes:
-      - redisdata-2:/data
-
-  redis-node-3:
-    image: redis:latest
-    ports:
-      - "6381:6379"
-      - "16381:16379"
-    networks:
-      - frontend
-    environment:
-      - REDIS_PASSWORD=pusulateam3node
-    command: >
-      redis-server --appendonly yes --requirepass pusulateam3node
-      --masterauth pusulateam3node --cluster-enabled yes
-      --cluster-config-file nodes.conf --cluster-node-timeout 5000
-      --port 6381 --cluster-announce-ip 64.226.68.43
-    deploy:
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints: [node.role == worker]
-    volumes:
-      - redisdata-3:/data
-
-  redis-node-4:
-    image: redis:latest
-    ports:
-      - "6382:6379"
-      - "16382:16379"
-    networks:
-      - frontend
-    environment:
-      - REDIS_PASSWORD=pusulateam3node
-    command: >
-      redis-server --appendonly yes --requirepass pusulateam3node
-      --masterauth pusulateam3node --cluster-enabled yes
-      --cluster-config-file nodes.conf --cluster-node-timeout 5000
-      --port 6382 --cluster-announce-ip 64.226.68.43
-    deploy:
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints: [node.role == worker]
-    volumes:
-      - redisdata-4:/data
-
-  redis-node-5:
-    image: redis:latest
-    ports:
-      - "6383:6379"
-      - "16383:16379"
-    networks:
-      - frontend
-    environment:
-      - REDIS_PASSWORD=pusulateam3node
-    command: >
-      redis-server --appendonly yes --requirepass pusulateam3node
-      --masterauth pusulateam3node --cluster-enabled yes
-      --cluster-config-file nodes.conf --cluster-node-timeout 5000
-      --port 6383 --cluster-announce-ip 64.226.68.43
-    deploy:
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints: [node.role == worker]
-    volumes:
-      - redisdata-5:/data
-
-  redis-node-6:
-    image: redis:latest
-    ports:
-      - "6384:6379"
-      - "16384:16379"
-    networks:
-      - frontend
-    environment:
-      - REDIS_PASSWORD=pusulateam3node
-    command: >
-      redis-server --appendonly yes --requirepass pusulateam3node
-      --masterauth pusulateam3node --cluster-enabled yes
-      --cluster-config-file nodes.conf --cluster-node-timeout 5000
-      --port 6384 --cluster-announce-ip 64.226.68.43
-    deploy:
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints: [node.role == worker]
-    volumes:
-      - redisdata-6:/data
 
 networks:
   frontend:
     external: true
 
 volumes:
-  redisdata-1: {}
-  redisdata-2: {}
-  redisdata-3: {}
-  redisdata-4: {}
-  redisdata-5: {}
-  redisdata-6: {}
+  redisdata:
