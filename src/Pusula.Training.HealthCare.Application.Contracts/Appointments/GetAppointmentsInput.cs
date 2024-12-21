@@ -7,8 +7,8 @@ namespace Pusula.Training.HealthCare.Appointments
     public class GetAppointmentsInput:PagedAndSortedResultRequestDto
     {
         public string? FilterText { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
         public ICollection<EnumAppointmentStatus>? Statuses { get; set; }
         public string? Note { get; set; }
         public Guid? AppointmentTypeId { get; set; }
