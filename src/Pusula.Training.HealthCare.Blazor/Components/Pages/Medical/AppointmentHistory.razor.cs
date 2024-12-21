@@ -21,7 +21,7 @@ public partial class AppointmentHistory
     [Parameter]
     public int ProtocolNo { get; set; }
 
-    private IReadOnlyList<AppointmentWithNavigationPropertiesDto> AppointmentList = [];    
+    private List<AppointmentWithNavigationPropertiesDto> AppointmentList = [];    
 
     [CascadingParameter]
     private ProtocolDto Protocol { get; set; } = null!;
@@ -33,8 +33,17 @@ public partial class AppointmentHistory
 
     private async Task GetAppointmentsAsync()
     {
-        AppointmentList = await AppointmentAppService.GetPatientWaitingAppointmentsAsync(Protocol.PatientId);
-                
+        AppointmentList = await AppointmentAppService.GetListWithNavigationPropertiesAsync(new GetAppointmentsInput
+        {
+            PatientId = Protocol.PatientId,
+            Statuses = new List<EnumAppointmentStatus>
+            {
+                EnumAppointmentStatus.Scheduled,
+                EnumAppointmentStatus.Cancelled,
+                EnumAppointmentStatus.Completed
+            }
+        });
+
     }
 
 }
