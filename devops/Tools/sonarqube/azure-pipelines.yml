@@ -19,7 +19,7 @@ steps:
 - task: SonarQubePrepare@7
   inputs:
     SonarQube: $(SONARQUBE_SERVICE_CONNECTION)   
-    scannerMode: 'MSBuild'
+    scannerMode: 'dotnet'
     projectKey: $(SONARQUBE_PROJECT_KEY)
     projectName: $(SONARQUBE_PROJECT_NAME)
     projectVersion: $(SONARQUBE_PROJECT_VERSION)
