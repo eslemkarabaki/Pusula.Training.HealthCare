@@ -16,12 +16,15 @@
             }
         </div>
     </div>
-    <div class="hc-card-body">
+    <div class="hc-card-body @Class">
         @ChildContent
     </div>
 </div>
 
 @code {
+
+    [Parameter]
+    public string? Class { get; set; }
 
     [Parameter]
     public string Title { get; set; } = null!;

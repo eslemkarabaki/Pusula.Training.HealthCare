@@ -1,0 +1,25 @@
+<div class="@Class" style="grid-area: @YStart / @XStart / @YEnd / @XEnd">
+    @ChildContent
+</div>
+
+@code {
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public int XStart { get; set; }
+
+    [Parameter]
+    public int XEnd { get; set; }
+
+    [Parameter]
+    public int YStart { get; set; }
+
+    [Parameter]
+    public int YEnd { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+}
