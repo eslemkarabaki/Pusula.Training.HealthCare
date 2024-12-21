@@ -10,7 +10,7 @@ using Syncfusion.Blazor.Grids;
 using Pusula.Training.HealthCare.Cities;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Cities;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientRegistrations.Definitions.Address;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Definitions.Address;
 
 public partial class Cities
 {

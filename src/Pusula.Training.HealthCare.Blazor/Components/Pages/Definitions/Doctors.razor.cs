@@ -15,7 +15,7 @@ using Pusula.Training.HealthCare.Permissions;
 using Syncfusion.Blazor.Grids;
 using Syncfusion.Blazor.SplitButtons;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Definitions;
 
 public partial class Doctors
 {

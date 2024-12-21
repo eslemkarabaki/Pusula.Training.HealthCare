@@ -1,4 +1,4 @@
-﻿@page "/hospitals"
+﻿@page "/definition/hospitals"
 
 @attribute [Authorize(HealthCarePermissions.Hospitals.Default)]
 @using Pusula.Training.HealthCare.Hospitals
@@ -57,21 +57,22 @@
 
         <Row Class="mt-3 mb-3">
             <div class="col-md-12">
-                <a href="javascript:;" class="text-decoration-none" @onclick="() => ShowAdvancedFilters = !ShowAdvancedFilters">@L["SeeAdvancedFilters"]</a>
+                <a href="javascript:;" class="text-decoration-none"
+                   @onclick="() => ShowAdvancedFilters = !ShowAdvancedFilters">@L["SeeAdvancedFilters"]</a>
             </div>
         </Row>
- 
+
 
         <div style="display: @(!ShowAdvancedFilters ? "none" : "block")">
             <Row>
                 <Column ColumnSize="ColumnSize.Is3">
                     <Field>
                         <FieldLabel>@L["Name"]</FieldLabel>
-                        <TextEdit Text="@Filter.Name" TextChanged="@OnNameChangedAsync" />
+                        <TextEdit Text="@Filter.Name" TextChanged="@OnNameChangedAsync"/>
                     </Field>
                     <Field>
                         <FieldLabel>@L["Address"]</FieldLabel>
-                        <TextEdit Text="@Filter.Address" TextChanged="@OnNameChangedAsync" />
+                        <TextEdit Text="@Filter.Address" TextChanged="@OnNameChangedAsync"/>
                     </Field>
                 </Column>
             </Row>
@@ -94,15 +95,13 @@
                     <p class="lead mb-0">
                         @L["AllItemsAreSelected", TotalCount]
                     </p>
-                }
-                else
+                } else
                 {
                     <p class="lead mb-0">
                         @if (SelectedHospitals.Count > 1)
                         {
                             @L["NumberOfItemsOnThisPageAreSelected", SelectedHospitals.Count]
-                        }
-                        else
+                        } else
                         {
                             @L["OneItemOnThisPageIsSelected"]
                         }
@@ -114,21 +113,22 @@
                     {
                         if (!AllHospitalsSelected)
                         {
-                            <Button Clicked="SelectAllItems" Class="mx-1 btn-outline-secondary">@L["SelectAllItems", TotalCount]</Button>
-                        }
-                        else
+                            <Button Clicked="SelectAllItems"
+                                    Class="mx-1 btn-outline-secondary">@L["SelectAllItems", TotalCount]</Button>
+                        } else
                         {
-                            <Button Clicked="ClearSelection" Class="mx-1 btn-outline-secondary">@L["ClearSelection"]</Button>
+                            <Button Clicked="ClearSelection"
+                                    Class="mx-1 btn-outline-secondary">@L["ClearSelection"]</Button>
                         }
                     }
 
                     <Button Color="Color.Danger" Class="mx-1" Size="Size.Medium" Clicked="DeleteSelectedHospitalsAsync">
-                        <Icon Name="@IconName.Delete" /> @L["Delete"]
+                        <Icon Name="@IconName.Delete"/> @L["Delete"]
                     </Button>
                 </div>
             </div>
 
-            <hr class="my-1 mx-0" />
+            <hr class="my-1 mx-0"/>
         }
 
         <DataGrid TItem="HospitalDto"
@@ -146,21 +146,23 @@
             <LoadingTemplate>
                 <Row Class=" w-100 align-items-center" Style="height: 150px;">
                     <Column>
-                        <RadarSpinner />
+                        <RadarSpinner/>
                     </Column>
                 </Row>
             </LoadingTemplate>
             <EmptyTemplate>
                 <Row Class="w-100 align-items-center" Style="height: 150px;">
                     <Column>
-                        <Heading Size="HeadingSize.Is4" TextAlignment="TextAlignment.Center">@L["NoDataAvailable"]</Heading>
+                        <Heading Size="HeadingSize.Is4"
+                                 TextAlignment="TextAlignment.Center">@L["NoDataAvailable"]</Heading>
                     </Column>
                 </Row>
             </EmptyTemplate>
             <DataGridColumns>
                 @if (CanDeleteHospital && HospitalList.Any())
                 {
-                    <DataGridMultiSelectColumn TItem="HospitalDto" DisplayOrder="-1" Width="30px"></DataGridMultiSelectColumn>
+                    <DataGridMultiSelectColumn TItem="HospitalDto" DisplayOrder="-1"
+                                               Width="30px"></DataGridMultiSelectColumn>
                 }
 
                 <DataGridEntityActionsColumn TItem="HospitalDto" @ref="@EntityActionsColumn">
@@ -173,7 +175,7 @@
                             <EntityAction TItem="HospitalDto"
                                           Visible="@CanDeleteHospital"
                                           Clicked="() => DeleteHospitalAsync(context)"
-                                          ConfirmationMessage="@(()=> L["DeleteConfirmationMessage"])"
+                                          ConfirmationMessage="@(() => L["DeleteConfirmationMessage"])"
                                           Text="@L["Delete"]"></EntityAction>
                             @*//<suite-custom-code-block-4>*@
                             @*//</suite-custom-code-block-4>*@
@@ -199,7 +201,7 @@
         <Form id="CreateHospitalForm">
             <ModalHeader>
                 <ModalTitle>@L["New Hospital"]</ModalTitle>
-                <CloseButton Clicked="CloseCreateHospitalModalAsync" />
+                <CloseButton Clicked="CloseCreateHospitalModalAsync"/>
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="@NewHospitalValidations"
@@ -212,7 +214,7 @@
                             <FieldLabel>@L["Name"] *</FieldLabel>
                             <TextEdit @bind-Text="@NewHospital.Name" MaxLength="HospitalConsts.NameMaxLength">
                                 <Feedback>
-                                    <ValidationError />
+                                    <ValidationError/>
                                 </Feedback>
                             </TextEdit>
                         </Field>
@@ -223,28 +225,28 @@
                             <FieldLabel>@L["Address"] *</FieldLabel>
                             <TextEdit @bind-Text="@NewHospital.Address" MaxLength="HospitalConsts.AddressMaxLength">
                                 <Feedback>
-                                    <ValidationError />
+                                    <ValidationError/>
                                 </Feedback>
                             </TextEdit>
                         </Field>
                     </Validation>
-                     
-                        <Field>
-                            <FieldLabel>@L["Departments"] *</FieldLabel>
- 
 
-                            <DropdownList TItem="DepartmentDto" TValue="string"
-                                          Data="@DepartmentList"
-                                          TextField="@((item)=>item.Name)"
-                                          ValueField="@((item)=>item.Name)"
-                                          @bind-SelectedValues="@DepartmentNameList"
-                                          SelectionMode="DropdownListSelectionMode.Checkbox"
-                                          Color="Color.Primary"
-                                          MaxMenuHeight="200px">
-                                Departman Seçiniz
-                            </DropdownList>
+                    <Field>
+                        <FieldLabel>@L["Departments"] *</FieldLabel>
 
-                        </Field> 
+
+                        <DropdownList TItem="DepartmentDto" TValue="string"
+                                      Data="@DepartmentList"
+                                      TextField="@((item) => item.Name)"
+                                      ValueField="@((item) => item.Name)"
+                                      @bind-SelectedValues="@DepartmentNameList"
+                                      SelectionMode="DropdownListSelectionMode.Checkbox"
+                                      Color="Color.Primary"
+                                      MaxMenuHeight="200px">
+                            Departman Seçiniz
+                        </DropdownList>
+
+                    </Field>
 
                 </Validations>
             </ModalBody>
@@ -253,7 +255,7 @@
                         Clicked="CloseCreateHospitalModalAsync">
                     @L["Cancel"]
                 </Button>
-                <SubmitButton Form="CreateHospitalForm" Clicked="CreateHospitalAsync" />
+                <SubmitButton Form="CreateHospitalForm" Clicked="CreateHospitalAsync"/>
             </ModalFooter>
         </Form>
     </ModalContent>
@@ -264,7 +266,7 @@
         <Form id="EditHospitalForm">
             <ModalHeader>
                 <ModalTitle>@L["Update"]</ModalTitle>
-                <CloseButton Clicked="CloseEditHospitalModalAsync" />
+                <CloseButton Clicked="CloseEditHospitalModalAsync"/>
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="@EditingHospitalValidations"
@@ -277,7 +279,7 @@
                             <FieldLabel>@L["Name"] *</FieldLabel>
                             <TextEdit @bind-Text="@EditingHospital.Name" MaxLength="HospitalConsts.NameMaxLength">
                                 <Feedback>
-                                    <ValidationError />
+                                    <ValidationError/>
                                 </Feedback>
                             </TextEdit>
                         </Field>
@@ -288,25 +290,25 @@
                             <FieldLabel>@L["Address"] *</FieldLabel>
                             <TextEdit @bind-Text="@EditingHospital.Address" MaxLength="HospitalConsts.AddressMaxLength">
                                 <Feedback>
-                                    <ValidationError />
+                                    <ValidationError/>
                                 </Feedback>
                             </TextEdit>
                         </Field>
-                    </Validation> 
+                    </Validation>
 
-                        <Field>
-                            <FieldLabel>@L["Departments"] *</FieldLabel>
-                            <DropdownList TItem="DepartmentDto" TValue="string"
-                                          Data="@DepartmentList"
-                                          TextField="@((item)=>item.Name)"
-                                          ValueField="@((item)=>item.Name)"
-                                          @bind-SelectedValues="@DepartmentNameList"
-                                          SelectionMode="DropdownListSelectionMode.Checkbox"
-                                          Color="Color.Primary"
-                                          MaxMenuHeight="200px">
-                                Departman Seçiniz
-                            </DropdownList>
-                        </Field> 
+                    <Field>
+                        <FieldLabel>@L["Departments"] *</FieldLabel>
+                        <DropdownList TItem="DepartmentDto" TValue="string"
+                                      Data="@DepartmentList"
+                                      TextField="@((item) => item.Name)"
+                                      ValueField="@((item) => item.Name)"
+                                      @bind-SelectedValues="@DepartmentNameList"
+                                      SelectionMode="DropdownListSelectionMode.Checkbox"
+                                      Color="Color.Primary"
+                                      MaxMenuHeight="200px">
+                            Departman Seçiniz
+                        </DropdownList>
+                    </Field>
 
                 </Validations>
             </ModalBody>
@@ -315,7 +317,7 @@
                         Clicked="CloseEditHospitalModalAsync">
                     @L["Cancel"]
                 </Button>
-                <SubmitButton Form="EditHospitalForm" Clicked="UpdateHospitalAsync" />
+                <SubmitButton Form="EditHospitalForm" Clicked="UpdateHospitalAsync"/>
             </ModalFooter>
         </Form>
     </ModalContent>

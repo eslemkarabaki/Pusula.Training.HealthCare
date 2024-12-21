@@ -14,15 +14,12 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
 using Volo.Abp.BlazoriseUI.Components;
 
-
-
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Definitions;
 
 public partial class Departments
 {
-
     protected List<Volo.Abp.BlazoriseUI.BreadcrumbItem> BreadcrumbItems = [];
-    protected PageToolbar Toolbar { get; } = new PageToolbar();
+    protected PageToolbar Toolbar { get; } = new();
     protected bool ShowAdvancedFilters { get; set; }
     private IReadOnlyList<DepartmentDto> DepartmentList { get; set; }
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
@@ -44,8 +41,6 @@ public partial class Departments
     protected string SelectedCreateTab = "department-create-tab";
     protected string SelectedEditTab = "department-edit-tab";
 
-
-
     private List<DepartmentDto> SelectedDepartments { get; set; } = [];
     private bool AllDepartmentsSelected { get; set; }
 
@@ -60,21 +55,14 @@ public partial class Departments
             Sorting = CurrentSorting
         };
         DepartmentList = [];
-
-
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await SetPermissionsAsync();
-
-    }
+    protected override async Task OnInitializedAsync() => await SetPermissionsAsync();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-
             await SetBreadcrumbItemsAsync();
             await SetToolbarItemsAsync();
             await InvokeAsync(StateHasChanged);
@@ -91,7 +79,10 @@ public partial class Departments
     {
         Toolbar.AddButton(L["ExportToExcel"], DownloadAsExcelAsync, IconName.Download);
 
-        Toolbar.AddButton(L["NewDepartment"], OpenCreateDepartmentModalAsync, IconName.Add, requiredPolicyName: HealthCarePermissions.Departments.Create);
+        Toolbar.AddButton(
+            L["NewDepartment"], OpenCreateDepartmentModalAsync, IconName.Add,
+            requiredPolicyName: HealthCarePermissions.Departments.Create
+        );
 
         return ValueTask.CompletedTask;
     }
@@ -101,11 +92,9 @@ public partial class Departments
         CanCreateDepartment = await AuthorizationService
             .IsGrantedAsync(HealthCarePermissions.Departments.Create);
         CanEditDepartment = await AuthorizationService
-                        .IsGrantedAsync(HealthCarePermissions.Departments.Edit);
+            .IsGrantedAsync(HealthCarePermissions.Departments.Edit);
         CanDeleteDepartment = await AuthorizationService
-                        .IsGrantedAsync(HealthCarePermissions.Departments.Delete);
-
-
+            .IsGrantedAsync(HealthCarePermissions.Departments.Delete);
     }
 
     private async Task GetDepartmentsAsync()
@@ -131,22 +120,28 @@ public partial class Departments
     private async Task DownloadAsExcelAsync()
     {
         var token = (await DepartmentsAppService.GetDownloadTokenAsync()).Token;
-        var remoteService = await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("HealthCare") ?? await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
+        var remoteService =
+            await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("HealthCare") ??
+            await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
         var culture = CultureInfo.CurrentUICulture.Name ?? CultureInfo.CurrentCulture.Name;
         if (!culture.IsNullOrEmpty())
         {
             culture = "&culture=" + culture;
         }
+
         await RemoteServiceConfigurationProvider.GetConfigurationOrDefaultOrNullAsync("Default");
-        NavigationManager.NavigateTo($"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/departments/as-excel-file?DownloadToken={token}&FilterText={HttpUtility.UrlEncode(Filter.FilterText)}{culture}&Name={HttpUtility.UrlEncode(Filter.Name)}", forceLoad: true);
+        NavigationManager.NavigateTo(
+            $"{remoteService?.BaseUrl.EnsureEndsWith('/') ?? string.Empty}api/app/departments/as-excel-file?DownloadToken={token}&FilterText={HttpUtility.UrlEncode(Filter.FilterText)}{culture}&Name={HttpUtility.UrlEncode(Filter.Name)}",
+            true
+        );
     }
 
     private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<DepartmentDto> e)
     {
         CurrentSorting = e.Columns
-            .Where(c => c.SortDirection != SortDirection.Default)
-            .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
-            .JoinAsString(",");
+                          .Where(c => c.SortDirection != SortDirection.Default)
+                          .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
+                          .JoinAsString(",");
         CurrentPage = e.Page;
         await GetDepartmentsAsync();
         await InvokeAsync(StateHasChanged);
@@ -154,14 +149,9 @@ public partial class Departments
 
     private async Task OpenCreateDepartmentModalAsync()
     {
-        NewDepartment = new DepartmentCreateDto
-        {
-
-
-        };
+        NewDepartment = new DepartmentCreateDto { };
 
         SelectedCreateTab = "department-create-tab";
-
 
         await NewDepartmentValidations.ClearAll();
         await CreateDepartmentModal.Show();
@@ -169,18 +159,13 @@ public partial class Departments
 
     private async Task CloseCreateDepartmentModalAsync()
     {
-        NewDepartment = new DepartmentCreateDto
-        {
-
-
-        };
+        NewDepartment = new DepartmentCreateDto { };
         await CreateDepartmentModal.Hide();
     }
 
     private async Task OpenEditDepartmentModalAsync(DepartmentDto input)
     {
         SelectedEditTab = "department-edit-tab";
-
 
         var department = await DepartmentsAppService.GetAsync(input.Id);
 
@@ -216,10 +201,7 @@ public partial class Departments
         }
     }
 
-    private async Task CloseEditDepartmentModalAsync()
-    {
-        await EditDepartmentModal.Hide();
-    }
+    private async Task CloseEditDepartmentModalAsync() => await EditDepartmentModal.Hide();
 
     private async Task UpdateDepartmentAsync()
     {
@@ -240,22 +222,15 @@ public partial class Departments
         }
     }
 
-    private void OnSelectedCreateTabChanged(string name)
-    {
-        SelectedCreateTab = name;
-    }
+    private void OnSelectedCreateTabChanged(string name) => SelectedCreateTab = name;
 
-    private void OnSelectedEditTabChanged(string name)
-    {
-        SelectedEditTab = name;
-    }
+    private void OnSelectedEditTabChanged(string name) => SelectedEditTab = name;
 
     protected virtual async Task OnNameChangedAsync(string? name)
     {
         Filter.Name = name;
         await SearchAsync();
     }
-
 
     private Task SelectAllItems()
     {
@@ -284,7 +259,9 @@ public partial class Departments
 
     private async Task DeleteSelectedDepartmentsAsync()
     {
-        var message = AllDepartmentsSelected ? L["DeleteAllRecords"].Value : L["DeleteSelectedRecords", SelectedDepartments.Count].Value;
+        var message = AllDepartmentsSelected ?
+            L["DeleteAllRecords"].Value :
+            L["DeleteSelectedRecords", SelectedDepartments.Count].Value;
 
         if (!await UiMessageService.Confirm(message))
         {
@@ -294,8 +271,7 @@ public partial class Departments
         if (AllDepartmentsSelected)
         {
             await DepartmentsAppService.DeleteAllAsync(Filter);
-        }
-        else
+        } else
         {
             await DepartmentsAppService.DeleteByIdsAsync(SelectedDepartments.Select(x => x.Id).ToList());
         }
@@ -305,6 +281,4 @@ public partial class Departments
 
         await GetDepartmentsAsync();
     }
-
-
 }

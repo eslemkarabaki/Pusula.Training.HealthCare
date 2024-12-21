@@ -1,4 +1,4 @@
-@page "/prm/definitions/cities"
+@page "/definition/cities"
 
 @attribute [Authorize(HealthCarePermissions.Cities.Default)]
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
@@ -14,7 +14,7 @@
 @using SortDirection = Syncfusion.Blazor.Grids.SortDirection
 @inherits HealthCareComponentBase
 @inject ICountryAppService CountryAppService
-@inject ICityAppService CityAppService 
+@inject ICityAppService CityAppService
 @inject SfDialogService DialogService
 @inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
 @inject NavigationManager NavigationManager
@@ -48,15 +48,16 @@
     </GridSortSettings>
     <GridColumns>
         <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
-        <GridColumn Field="@nameof(CityDto.Name)" HeaderText="@L["City"]"/>       
-        <GridColumn  HeaderText="@L["Country"]"> 
+        <GridColumn Field="@nameof(CityDto.Name)" HeaderText="@L["City"]"/>
+        <GridColumn HeaderText="@L["Country"]">
             <Template>
                 @{
                     var dto = context as CityDto;
-                    @dto.Country.Name;
+                    @dto.Country.Name
+                    ;
                 }
             </Template>
-        </GridColumn>      
+        </GridColumn>
         <GridColumn TextAlign="TextAlign.Right">
             <Template>
                 <SfButton

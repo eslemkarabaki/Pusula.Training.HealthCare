@@ -8,7 +8,7 @@ using Syncfusion.Blazor.Grids;
 using Pusula.Training.HealthCare.Districts;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Districts;
 
-namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientRegistrations.Definitions.Address;
+namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Definitions.Address;
 
 public partial class Districts
 {
