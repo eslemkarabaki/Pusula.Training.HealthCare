@@ -70,8 +70,8 @@ public class EfCoreDistrictRepository(IDbContextProvider<HealthCareDbContext> db
         Guid? cityId = null
     ) =>
         query
-            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => EF.Functions.ILike(e.Name, filterText!))
-            .WhereIf(!string.IsNullOrWhiteSpace(name), e => EF.Functions.ILike(e.Name, name!))
+            .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => EF.Functions.ILike(e.Name, $"{filterText!}%"))
+            .WhereIf(!string.IsNullOrWhiteSpace(name), e => EF.Functions.ILike(e.Name, $"{name!}%"))
             .WhereIf(cityId.HasValue, e => e.CityId == cityId!.Value);
 
     protected virtual string GetSorting(string? sorting, bool withEntityName) =>

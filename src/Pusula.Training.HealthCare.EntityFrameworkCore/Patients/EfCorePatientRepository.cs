@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -29,7 +28,8 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         CancellationToken cancellationToken = default
     ) =>
         await ApplyFilter(
-                await GetQueryForNavigationPropertiesAsync(), patientId, patientNo)
+                await GetQueryForNavigationPropertiesAsync(), patientId, patientNo
+            )
             .FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
 
     public virtual async Task<List<Patient>> GetListAsync(
@@ -239,9 +239,9 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => EF.Functions.ILike(e.FullName, filterText!) ||
-                    EF.Functions.ILike(e.IdentityNumber, filterText!) ||
-                    EF.Functions.ILike(e.PassportNumber, filterText!)
+                e => EF.Functions.ILike(e.FullName, $"{filterText}%") ||
+                    EF.Functions.ILike(e.IdentityNumber, $"{filterText!}%") ||
+                    EF.Functions.ILike(e.PassportNumber, $"{filterText!}%")
             )
             .WhereIf(
                 no.HasValue, e => e.No == no!.Value
@@ -254,23 +254,23 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
             .WhereIf(birthDateMax.HasValue, e => e.BirthDate <= birthDateMax!.Value)
             .WhereIf(
                 !string.IsNullOrWhiteSpace(identityNumber),
-                e => EF.Functions.ILike(e.IdentityNumber, identityNumber!)
+                e => EF.Functions.ILike(e.IdentityNumber, $"{identityNumber!}%")
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(passportNumber),
-                e => EF.Functions.ILike(e.PassportNumber, passportNumber!)
+                e => EF.Functions.ILike(e.PassportNumber, $"{passportNumber!}%")
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(emailAddress),
-                e => EF.Functions.ILike(e.EmailAddress, emailAddress!)
+                e => EF.Functions.ILike(e.EmailAddress, $"{emailAddress!}%")
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(mobilePhoneNumber),
-                e => EF.Functions.ILike(e.MobilePhoneNumber, mobilePhoneNumber!)
+                e => EF.Functions.ILike(e.MobilePhoneNumber, $"{mobilePhoneNumber!}%")
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(homePhoneNumber),
-                e => EF.Functions.ILike(e.HomePhoneNumber, homePhoneNumber!)
+                e => EF.Functions.ILike(e.HomePhoneNumber, $"{homePhoneNumber!}%")
             )
             .WhereIf(gender != EnumGender.None, e => e.Gender == gender)
             .WhereIf(bloodType != EnumBloodType.None, e => e.BloodType == bloodType)
@@ -308,9 +308,9 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => EF.Functions.ILike(e.Patient.FullName, filterText!) ||
-                    EF.Functions.ILike(e.Patient.IdentityNumber, filterText!) ||
-                    EF.Functions.ILike(e.Patient.PassportNumber, filterText!)
+                e => EF.Functions.ILike(e.Patient.FullName, $"{filterText!}%") ||
+                    EF.Functions.ILike(e.Patient.IdentityNumber, $"{filterText!}%") ||
+                    EF.Functions.ILike(e.Patient.PassportNumber, $"{filterText!}%")
             )
             .WhereIf(
                 no.HasValue, e => e.Patient.No == no!.Value
@@ -323,23 +323,23 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
             .WhereIf(birthDateMax.HasValue, e => e.Patient.BirthDate <= birthDateMax!.Value)
             .WhereIf(
                 !string.IsNullOrWhiteSpace(identityNumber),
-                e => EF.Functions.ILike(e.Patient.IdentityNumber, identityNumber!)
+                e => EF.Functions.ILike(e.Patient.IdentityNumber, $"{identityNumber!}%")
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(passportNumber),
-                e => EF.Functions.ILike(e.Patient.PassportNumber, passportNumber!)
+                e => EF.Functions.ILike(e.Patient.PassportNumber, $"{passportNumber!}%")
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(emailAddress),
-                e => EF.Functions.ILike(e.Patient.EmailAddress, emailAddress!)
+                e => EF.Functions.ILike(e.Patient.EmailAddress, $"{emailAddress!}%")
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(mobilePhoneNumber),
-                e => EF.Functions.ILike(e.Patient.MobilePhoneNumber, mobilePhoneNumber!)
+                e => EF.Functions.ILike(e.Patient.MobilePhoneNumber, $"{mobilePhoneNumber!}%")
             )
             .WhereIf(
                 !string.IsNullOrWhiteSpace(homePhoneNumber),
-                e => EF.Functions.ILike(e.Patient.HomePhoneNumber, homePhoneNumber!)
+                e => EF.Functions.ILike(e.Patient.HomePhoneNumber, $"{homePhoneNumber!}%")
             )
             .WhereIf(gender != EnumGender.None, e => e.Patient.Gender == gender)
             .WhereIf(bloodType != EnumBloodType.None, e => e.Patient.BloodType == bloodType)
