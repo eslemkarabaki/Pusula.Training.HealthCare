@@ -131,7 +131,7 @@
 
         <HcCard Title="Psikolojik Durum" CardIcon="">
             <HeaderContent>
-                <div class="d-flex gap-3 p-2">
+                <div class="d-flex gap-3">
                     <SfButtonGroup Mode="Syncfusion.Blazor.SplitButtons.SelectionMode.Multiple">
                         <ButtonGroupButton CssClass="e-small">Sakin</ButtonGroupButton>
                         <ButtonGroupButton CssClass="e-small">Üzgün</ButtonGroupButton>
@@ -141,6 +141,27 @@
                     </SfButtonGroup>
                     <SfTextBox Placeholder="Açıklama" FloatLabelType="FloatLabelType.Never"
                                CssClass="e-small"></SfTextBox>
+                </div>
+            </HeaderContent>
+        </HcCard>
+
+        <HcCard Title="Düşme Riski" CardIcon="">
+            <HeaderContent>
+                <div class="d-flex gap-1">
+                    <div class="d-flex gap-1">
+                        <SfTextBox Placeholder="Açıklama" FloatLabelType="FloatLabelType.Never"
+                                   CssClass="e-small"></SfTextBox>
+                        <span class="fs-13p color-grey-700">Skor</span>
+                        <div class="input-group flex-nowrap">
+                            <SfTextBox FloatLabelType="FloatLabelType.Never"
+                                       CssClass="e-small"></SfTextBox>
+                            <SfButton IconCss="fas fa-external-link-alt" CssClass="e-outline e-flat e-small"></SfButton>
+                        </div>
+                    </div>
+                    <SfButtonGroup Mode="Syncfusion.Blazor.SplitButtons.SelectionMode.Single">
+                        <ButtonGroupButton CssClass="e-small">Var</ButtonGroupButton>
+                        <ButtonGroupButton CssClass="e-small">Yok</ButtonGroupButton>
+                    </SfButtonGroup>
                 </div>
             </HeaderContent>
         </HcCard>
@@ -155,7 +176,7 @@
             <ChildContent>
                 <div class="d-flex flex-column gap-2 p-2">
                     <div>
-                        <div class="fs-13p">Ağrının Niteliği</div>
+                        <div class="fs-13p color-grey-700">Ağrının Niteliği</div>
                         <div class="d-flex gap-1">
                             <SfButton IsToggle CssClass="e-outline e-primary">Basdırıcı</SfButton>
                             <SfButton IsToggle CssClass="e-outline e-primary">Dolgunluk</SfButton>
@@ -170,14 +191,14 @@
                     </div>
                     <div class="d-flex gap-3">
                         <div>
-                            <div class="fs-13p">Ağrı Ritmi / Ağrı Sıklığı</div>
+                            <div class="fs-13p color-grey-700">Ağrı Ritmi / Ağrı Sıklığı</div>
                             <SfButtonGroup Mode="Syncfusion.Blazor.SplitButtons.SelectionMode.Single">
                                 <ButtonGroupButton CssClass="e-outline e-primary">Daimi</ButtonGroupButton>
                                 <ButtonGroupButton CssClass="e-outline e-primary">Aralıklı</ButtonGroupButton>
                             </SfButtonGroup>
                         </div>
                         <div>
-                            <div class="fs-13p">Ağrı Başlangıcı</div>
+                            <div class="fs-13p color-grey-700">Ağrı Başlangıcı</div>
                             <div class="input-group flex-nowrap">
                                 <SfDropDownList TItem="string" TValue="string" PopupHeight="230px"  @bind-Value="@Pain" DataSource="@(new string[]{"Süre","Tarih"})">
                                     <DropDownListFieldSettings Text="Text"/>

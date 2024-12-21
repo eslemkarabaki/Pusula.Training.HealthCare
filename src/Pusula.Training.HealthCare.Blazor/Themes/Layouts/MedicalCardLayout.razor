@@ -17,7 +17,7 @@
 {
    <PageTitle>@Protocol.Patient.FullName</PageTitle>
 
-   <SfCard ID="MedicalCard" CssClass="position-relative mb-1">
+   <SfCard ID="MedicalCard" CssClass="position-relative mb-2">
       <CardContent>
          <div class="d-flex gap-1">
             <div class="d-flex flex-column gap-1 pe-3">
@@ -58,7 +58,7 @@
       </CardContent>
    </SfCard>
 
-   <div class="d-flex">
+   <div class="d-flex flex-fill gap-2">
       <div class="flex-fill">
          <CascadingValue Value="@Protocol">
             @Body
@@ -105,6 +105,11 @@
 }
 
 <style>
+   .lpx-content{
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 1.25rem;
+   }
    .nav-link {
       color: var(--material-grey-900);
    }
