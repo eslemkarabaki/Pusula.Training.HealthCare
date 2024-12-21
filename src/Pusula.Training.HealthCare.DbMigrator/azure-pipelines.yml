@@ -41,7 +41,7 @@ steps:
 
 - bash: |
     # Build the Docker image
-    docker build -t $(imageName):$(imageTag) -f $(dockerFilePath) .
+    docker build --no-cache -t $(imageName):$(imageTag) -f $(dockerFilePath) .
   displayName: 'Build Docker Image'
 
 - bash: |
