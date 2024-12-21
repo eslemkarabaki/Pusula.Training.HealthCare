@@ -1,4 +1,4 @@
-﻿using Localization.Resources.AbpUi;
+using Localization.Resources.AbpUi;
 using Pusula.Training.HealthCare.Localization;
 using Volo.Abp.Account;
 using Volo.Abp.AspNetCore.ExceptionHandling;
@@ -9,6 +9,10 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
+using Volo.Abp.AspNetCore.SignalR;
+using Volo.Abp;
+using Microsoft.AspNetCore.Builder;
+using Pusula.Training.HealthCare.Hub;
 
 namespace Pusula.Training.HealthCare;
 
@@ -21,12 +25,31 @@ namespace Pusula.Training.HealthCare;
     typeof(AbpFeatureManagementHttpApiModule),
     typeof(AbpSettingManagementHttpApiModule)
     )]
-public class HealthCareHttpApiModule : AbpModule
+[DependsOn(typeof(AbpAspNetCoreSignalRModule))]
+    public class HealthCareHttpApiModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         ConfigureLocalization();
     }
+
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+        var app = context.GetApplicationBuilder();
+
+        app.UseRouting(); // Ensure this is called first
+
+        app.UseAuthentication(); // Ensure authentication middleware is added
+        app.UseAuthorization();  // Ensure authorization middleware is added
+
+        app.UseAntiforgery(); // Add this line between UseRouting and UseEndpoints
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHub<NotificationHub>("/notification-hub");
+        });
+    }
+
 
     private void ConfigureLocalization()
     {

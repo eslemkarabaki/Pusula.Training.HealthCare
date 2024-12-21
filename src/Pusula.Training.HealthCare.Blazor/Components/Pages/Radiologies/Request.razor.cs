@@ -2,6 +2,7 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Radiologies;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.JSInterop;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies;
 using Pusula.Training.HealthCare.Blazor.Models;
 using Pusula.Training.HealthCare.Permissions;
@@ -119,6 +120,7 @@ public partial class Request
             }
 
             await RadiologyRequestItemAppService.UpdateAsync(dto.Id, updateDto);
+            await SendNotification();
             StateHasChanged();
         }
         catch (Exception ex)
@@ -127,14 +129,29 @@ public partial class Request
             throw new UserFriendlyException("An error occurred while saving the result or file. The operation was rolled back.");
         }
     }
+    #endregion
 
 
+    #region ScriptHtml
     private static string StripHtml(string? input)
     {
         if (string.IsNullOrEmpty(input)) return string.Empty;
         return System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
     }
+    #endregion
 
+    #region Hub
+    private async Task SendNotification()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("SendNotificationToDoctor", EditingDto.Patient.FullName + "adlý hastanýn sonucu çýktý.", EditingDto.Doctor.UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+        }
+    }
     #endregion
 
     #region State Change      

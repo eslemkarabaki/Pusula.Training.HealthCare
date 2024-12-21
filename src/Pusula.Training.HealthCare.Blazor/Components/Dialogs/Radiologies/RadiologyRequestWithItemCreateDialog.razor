@@ -12,6 +12,8 @@
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Buttons
 @using Volo.Abp.Uow
+@inject IJSRuntime JS
+
 
 <SfDialog Width="800px" IsModal="true" @ref="Dialog" ShowCloseIcon="true" Header="Tetkik Talep" Visible="false" CssClass="custom-dialog">
     <div class="dialog-content">
@@ -189,6 +191,7 @@
 
                 await uow.CompleteAsync();
                 await HideAsync();
+                await SendNotification();
             }
             catch (Exception ex)
             {
@@ -197,4 +200,17 @@
             }
         }
     }
+    #region Hub
+    private async Task SendNotification()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("SendNotificationToRadiologyTechnicians", "Yeni bir tetkik isteği var");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+        }
+    }
+    #endregion
 }
