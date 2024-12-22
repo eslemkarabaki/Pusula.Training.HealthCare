@@ -33,10 +33,10 @@
 @inject IRadiologyExaminationAppService RadiologyExaminationAppService
 @inject IProtocolTypeAppService ProtocolTypeAppService
 
- 
+
 <h2 class="page-title">Radyoloji İşlemleri</h2>
 
-<div class="search-container">
+<div class="search-container bg-white mb-3">
     <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync"
                 ButtonsAlignment="FormButtonsAlignment.Stretch"
                 ValidationDisplayMode="FormValidationDisplay.Tooltip">
@@ -115,89 +115,90 @@
     </SfDataForm>
 </div>
 
-<div>
-    <div class="d-flex justify-content-between">
-        <SfButton IsPrimary="true" OnClick="OpenCreateDialogForSelectedProtocol"
-                  Disabled="@(selectedProtocol == null)" CssClass="mb-2 mt-2">
-            Tetkik İste
-        </SfButton>
-    </div>
-    <div>
-        <SfDashboardLayout Columns="12" CellSpacing="@_spacing" AllowDragging="false">
-            <DashboardLayoutPanels>
-                <DashboardLayoutPanel Row="3" Column="0" SizeX="12" SizeY="5">
-                    <HeaderTemplate>
-                        <span>@L["Protocols"]</span>
-                    </HeaderTemplate>
-                    <ContentTemplate>
-                        <div class="protocol-grid">
-                            <SfGrid @ref="SfGrid" TValue="ProtocolDto" Height="100%" Width="100%" DataSource="@ProtocolList"
-                                    EnableHover EnableStickyHeader AllowPaging="false">
-                                <GridEvents RowSelected="RowSelected" TValue="ProtocolDto" RowDeselected="RowDeselected"></GridEvents>
-                                <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single" PersistSelection="false" />
+<div> 
+    <SfDashboardLayout Columns="12" CellSpacing="@_spacing" AllowDragging="false">
+        <DashboardLayoutPanels>
+            <DashboardLayoutPanel Row="3" Column="0" SizeX="12" SizeY="5">
+                <HeaderTemplate>
+                    <span>@L["Protocols"]</span>
+                </HeaderTemplate>
+                <ContentTemplate>
+                    <div class="protocol-grid">
+                        <SfGrid @ref="SfGrid" TValue="ProtocolDto" Height="100%" Width="100%" DataSource="@ProtocolList"
+                                EnableHover EnableStickyHeader AllowPaging="false">   
+                            <GridColumns>
+                                <GridColumn HeaderText="@L["StartTime"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.StartTime.ToString("dd.MM.yyyy HH:mm"))</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
 
-                                <GridColumns>
-                                    <GridColumn HeaderText="@L["StartTime"]">
-                                        <Template>
-                                            @{
-                                                var dto = (context as ProtocolDto)!;
-                                                <span>@(dto.StartTime.ToString("dd.MM.yyyy HH:mm"))</span>
-                                            }
-                                        </Template>
-                                    </GridColumn>
+                                <GridColumn HeaderText="@L["Status"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <ProtocolStatusBadge Status="@dto.Status" />
+                                        }
+                                    </Template>
+                                </GridColumn>
 
-                                    <GridColumn HeaderText="@L["Status"]">
-                                        <Template>
-                                            @{
-                                                var dto = (context as ProtocolDto)!;
-                                                <ProtocolStatusBadge Status="@dto.Status" />
-                                            }
-                                        </Template>
-                                    </GridColumn>
+                                <GridColumn HeaderText="@L["ProtocolType"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.ProtocolType.Name)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
 
-                                    <GridColumn HeaderText="@L["ProtocolType"]">
-                                        <Template>
-                                            @{
-                                                var dto = (context as ProtocolDto)!;
-                                                <span>@(dto.ProtocolType.Name)</span>
-                                            }
-                                        </Template>
-                                    </GridColumn>
- 
-                                    <GridColumn HeaderText="@L["Patient"]">
-                                        <Template>
-                                            @{
-                                                var dto = (context as ProtocolDto)!;
-                                                <span>@(dto.Patient.FullName)</span>
-                                            }
-                                        </Template>
-                                    </GridColumn>
+                                <GridColumn HeaderText="@L["Patient"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.Patient.FullName)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
 
-                                    <GridColumn HeaderText="@L["Doctor"]">
-                                        <Template>
-                                            @{
-                                                var dto = (context as ProtocolDto)!;
-                                                <span>@(dto.Doctor.FullName)</span>
-                                            }
-                                        </Template>
-                                    </GridColumn>
+                                <GridColumn HeaderText="@L["Doctor"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.Doctor.FullName)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
 
-                                    <GridColumn HeaderText="@L["Department"]">
-                                        <Template>
-                                            @{
-                                                var dto = (context as ProtocolDto)!;
-                                                <span>@(dto.Department.Name)</span>
-                                            }
-                                        </Template>
-                                    </GridColumn>
-                                </GridColumns>
-                            </SfGrid>
-                        </div>
-                    </ContentTemplate>
-                </DashboardLayoutPanel>
-            </DashboardLayoutPanels>
-        </SfDashboardLayout>
-    </div>
+                                <GridColumn HeaderText="@L["Department"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.Department.Name)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
+
+                                <GridColumn HeaderText="Tetkik İste">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                        } 
+                                        <SfButton CssClass="e-danger" OnClick="() => OpenCreateDialogForSelectedProtocol(dto.Id, dto.Department.Id, dto.DoctorId, dto.Patient)">
+                                            <SfIcon IconCss="e-icons fas fa-plus" style="color: white"></SfIcon>
+                                        </SfButton>
+                                    </Template>
+                                </GridColumn>
+
+                            </GridColumns>
+                        </SfGrid>
+                    </div>
+                </ContentTemplate>
+            </DashboardLayoutPanel>
+        </DashboardLayoutPanels>
+    </SfDashboardLayout>
 </div>
 
 <RadiologyRequestWithItemCreateDialog @ref="CreateExaminationDialog" OnValidSaveAsync="HandleValidSaveAsync" />

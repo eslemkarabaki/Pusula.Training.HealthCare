@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
+using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Protocols;
 using Pusula.Training.HealthCare.ProtocolTypes; 
@@ -138,36 +139,17 @@ public partial class Transaction
     #endregion
 
     #region SelectedProtocol
-    private ProtocolDto selectedProtocol;
     private RadiologyRequestWithItemCreateDialog CreateExaminationDialog;
+ 
 
-    private void RowSelected(RowSelectEventArgs<ProtocolDto> args)
-    {
-        selectedProtocol = args.Data;
-        Console.WriteLine($"Selected protocol ID: {selectedProtocol?.Id}");
+    private async Task OpenCreateDialogForSelectedProtocol(Guid protcolId, Guid departmentId, Guid doctorId, PatientDto patient)
+    { 
+        await CreateExaminationDialog.ShowAsync(protcolId, departmentId, doctorId, patient);
     }
 
-    private void RowDeselected(RowDeselectEventArgs<ProtocolDto> args)
-    {
-        selectedProtocol = null;
-        Console.WriteLine("Deselected protocol");
-    }
-
-    private async Task OpenCreateDialogForSelectedProtocol()
-    {
-        if (selectedProtocol == null)
-        {
-            Console.WriteLine("No protocol selected.");  
-            return;
-        }
-         
-        await CreateExaminationDialog.ShowAsync(selectedProtocol.Id, selectedProtocol.DepartmentId, selectedProtocol.DoctorId);
-    }
-
-    private async Task OpenCreateDialogAsync(ProtocolDto protocol)
-    {
-        selectedProtocol = protocol;
-        await CreateExaminationDialog.ShowAsync(selectedProtocol.Id, selectedProtocol.DepartmentId, selectedProtocol.DoctorId);
+    private async Task OpenCreateDialogAsync(ProtocolDto protocol, PatientDto patient)
+    { 
+        await CreateExaminationDialog.ShowAsync(protocol.Id, protocol.DepartmentId, protocol.DoctorId, protocol.Patient);
     }
 
     private async Task HandleValidSaveAsync()
