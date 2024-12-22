@@ -229,7 +229,7 @@ public partial class Request
 
     private async Task ShowDocumentsAsync(Guid itemId)
     {
-        if (ItemDocuments.TryGetValue(itemId, out var documents) && documents.Any())
+        if (ItemDocuments.TryGetValue(itemId, out var documents))
         {
             await DocumentDialog.ShowAsync(documents);
         }

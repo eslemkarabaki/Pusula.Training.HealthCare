@@ -1,15 +1,19 @@
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages.Radiologies;
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Forms; 
+using Microsoft.AspNetCore.Components.Forms;
+using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies;
 using Pusula.Training.HealthCare.Departments;
 using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.Patients;
-using Pusula.Training.HealthCare.Permissions; 
+using Pusula.Training.HealthCare.Permissions;
+using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 using Pusula.Training.HealthCare.RadiologyExaminations;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
+using StackExchange.Redis;
 using Syncfusion.Blazor.DropDowns;
 using Syncfusion.Blazor.Grids;
 using FilteringEventArgs = Syncfusion.Blazor.DropDowns.FilteringEventArgs;
@@ -150,10 +154,30 @@ public partial class Report
     }
 
     #endregion
+
+    #region ScriptHtml
     private static string StripHtml(string? input)
     {
         if (string.IsNullOrEmpty(input)) return string.Empty;
         return System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
     }
+    #endregion
+
+    #region Document
+
+    private RadiologyDocumentDialog DocumentDialog { get; set; } = null!;
+
+    private async Task ShowDocumentsAsync(Guid itemId , string result)
+    {
+        var documents = await GetDocumentByItemId(itemId);
+        await DocumentDialog.ShowAsync(documents, StripHtml(result));
+    }
+
+    private async Task<List<RadiologyExaminationDocumentDto>> GetDocumentByItemId(Guid itemId)
+    {
+        var result = await RadiologyExaminationDocumentAppService.GetListAsync(new GetRadiologyExaminationDocumentsInput { ItemId = itemId });
+        return result.Items.ToList();
+    }
+    #endregion
 
 }

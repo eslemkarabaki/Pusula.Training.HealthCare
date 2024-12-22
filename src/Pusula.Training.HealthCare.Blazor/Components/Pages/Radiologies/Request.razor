@@ -83,12 +83,13 @@
                             <Template Context="itemContext">
                                 @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
                                 {
-                                    <button @onclick="() => ShowDocumentsAsync(dto.RadiologyRequestItem.Id)">
-                                        Dokümanları Görüntüle
+                                    <button @onclick="() => ShowDocumentsAsync(dto.RadiologyRequestItem.Id)" class="e-btn e-flat mx-auto my-auto" style="border: none; background-color: transparent;">
+                                        <i class="fas fa-eye" style="font-size: 18px; color: #007bff;"></i>
                                     </button>
                                 }
                             </Template>
                         </GridColumn>
+                    
                     </GridColumns> 
                 </SfGrid>
             }
