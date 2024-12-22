@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Pusula.Training.HealthCare.Patients;
-using System.Threading.Tasks;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.DependencyInjection;
 
-namespace Pusula.Training.HealthCare.Jobs;
+namespace Pusula.Training.HealthCare.BackgroundJobs;
 
 public class LogViewedPatientJob() : AsyncBackgroundJob<PatientViewLogArgs>, ITransientDependency
 {
