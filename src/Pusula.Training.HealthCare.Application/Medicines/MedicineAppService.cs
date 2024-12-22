@@ -9,7 +9,7 @@ namespace Pusula.Training.HealthCare.Medicines;
 
 [RemoteService(false)]
 [Authorize(HealthCarePermissions.Medicines.Default)]
-public class MedicinesAppService(IMedicineRepository medicineRepository, MedicineManager medicineManager)
+public class MedicineAppService(IMedicineRepository medicineRepository, MedicineManager medicineManager)
     : HealthCareAppService, IMedicineAppService
 {
     public async Task<MedicineDto> GetAsync(Guid id) =>
