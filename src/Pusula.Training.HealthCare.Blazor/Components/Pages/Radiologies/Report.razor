@@ -4,6 +4,7 @@
 @using Pusula.Training.HealthCare.Patients
 @using Pusula.Training.HealthCare.Permissions
 @using Pusula.Training.HealthCare.ProtocolTypes
+@using Pusula.Training.HealthCare.RadiologyExaminationDocuments
 @using Pusula.Training.HealthCare.RadiologyExaminationGroups
 @using Pusula.Training.HealthCare.RadiologyExaminations
 @using Pusula.Training.HealthCare.RadiologyRequests
@@ -33,6 +34,8 @@
 @inject IRadiologyExaminationAppService RadiologyExaminationAppService
 @inject IProtocolTypeAppService ProtocolTypeAppService
 @inject IPatientAppService PatientAppService
+@inject IRadiologyExaminationDocumentAppService RadiologyExaminationDocumentAppService
+
 
 <h2 class="page-title">Radiology Raporları</h2>
 
@@ -106,17 +109,19 @@
             <GridColumn Field="Department.Name" HeaderText="Department Name" Width="150"></GridColumn>
             <GridColumn Field="Doctor.FullName" HeaderText="Doctor Name" Width="150"></GridColumn>
             <GridColumn Field="Patient.FullName" HeaderText="Patient Name" Width="150"></GridColumn>
-            <GridColumn Field="RadiologyRequestItem.ResultDate" HeaderText="Result Date" Format="d" Width="150"></GridColumn> 
-            <GridColumn HeaderText="Result" Width="150">
+            <GridColumn Field="RadiologyRequestItem.ResultDate" HeaderText="Result Date" Format="d" Width="150"></GridColumn>
+            <GridColumn HeaderText="Sonuç" Width="200">
                 <Template Context="itemContext">
                     @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
                     {
-                        <span>
-                            @(StripHtml(dto.RadiologyRequestItem.Result))
-                        </span>
+                        <button @onclick="() => ShowDocumentsAsync(dto.RadiologyRequestItem.Id, dto.RadiologyRequestItem.Result)"
+                                class="e-btn e-flat" style="padding: 5px; border: none; background-color: transparent;">
+                            <i class="fas fa-eye" style="font-size: 18px; color: #007bff;"></i>
+                        </button>
                     }
                 </Template>
-            </GridColumn> 
+            </GridColumn>
+
             <GridColumn HeaderText="State" Width="150">
                 <Template Context="itemContext">
                     @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
@@ -129,4 +134,4 @@
     </SfGrid>
 </div>
 
- 
+<RadiologyDocumentDialog @ref="DocumentDialog" />
