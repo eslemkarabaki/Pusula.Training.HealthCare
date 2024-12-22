@@ -48,6 +48,23 @@ public interface IRadiologyRequestItemRepository : IRepository<RadiologyRequestI
 );
     #endregion
 
+    Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsyncByRequestId(
+     string? filterText = null,
+     Guid? requestId = null,
+     Guid? examinationId = null,
+     string? result = null,
+     DateTime? resultDate = null,
+     RadiologyRequestItemState? state = null,
+     Guid? protocolId = null,
+     Guid? departmentId = null,
+     Guid? doctorId = null,
+     Guid? patientId = null,
+     string? sorting = null,
+     int maxResultCount = int.MaxValue,
+     int skipCount = 0,
+     CancellationToken cancellationToken = default
+ );
+
     #region GetListAsync
     Task<List<RadiologyRequestItem>> GetListAsync
         (

@@ -55,8 +55,7 @@
                 <SfAutoComplete @ref="DoctorFilterAutoComplete" @bind-Value="@Filter.DoctorId"
                                 TValue="Guid?" TItem="DoctorDto" Placeholder="@L["Doctor"]"
                                 DataSource="@DoctorList" AllowFiltering Autofill Highlight
-                                EnableVirtualization ShowClearButton
-                                PopupHeight="300px">
+                                EnableVirtualization ShowClearButton >
                     <AutoCompleteEvents TValue="Guid?" TItem="DoctorDto" Filtering="@FilterDoctorAsync"
                                         ValueChange="@SearchAsync" />
                     <AutoCompleteFieldSettings Text="FullName" Value="Id" />
@@ -66,8 +65,7 @@
                                 @bind-Value="@Filter.DepartmentId" TValue="Guid?"
                                 TItem="DepartmentDto" Placeholder="@L["Department"]"
                                 DataSource="@DepartmentList" AllowFiltering Autofill Highlight
-                                EnableVirtualization ShowClearButton
-                                PopupHeight="300px">
+                                EnableVirtualization ShowClearButton >
                     <AutoCompleteEvents TValue="Guid?" TItem="DepartmentDto"
                                         Filtering="@FilterDepartmentAsync" ValueChange="@SearchAsync" />
                     <AutoCompleteFieldSettings Text="Name" Value="Id" />
@@ -77,25 +75,30 @@
                                 @bind-Value="@Filter.PatientId" TValue="Guid?"
                                 TItem="PatientDto" Placeholder="@L["Patient"]"
                                 DataSource="@PatientList" AllowFiltering Autofill Highlight
-                                EnableVirtualization ShowClearButton
-                                PopupHeight="300px">
+                                EnableVirtualization ShowClearButton>
                     <AutoCompleteEvents TValue="Guid?" TItem="PatientDto"
                                         Filtering="@FilterPatientAsync" ValueChange="@SearchAsync" />
-                    <AutoCompleteFieldSettings Text="Name" Value="Id" />
+                    <AutoCompleteFieldSettings Text="FullName" Value="Id" />
                 </SfAutoComplete>
-
+                 
                 <SfAutoComplete @ref="RadiologyExaminationFilterAutoComplete"
                                 @bind-Value="@Filter.ExaminationId" TValue="Guid?"
                                 TItem="RadiologyExaminationDto" Placeholder="@L["RadiologyExamination"]"
                                 DataSource="@RadiologyExaminationList" AllowFiltering Autofill Highlight
-                                EnableVirtualization ShowClearButton
-                                PopupHeight="300px">
+                                EnableVirtualization ShowClearButton  >
                     <AutoCompleteEvents TValue="Guid?" TItem="RadiologyExaminationDto"
                                         Filtering="@FilterRadiologyExaminationAsync" ValueChange="@SearchAsync" />
                     <AutoCompleteFieldSettings Text="Name" Value="Id" />
                 </SfAutoComplete>
-                <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
 
+                <SfDropDownList @bind-Value="@Filter.State" TValue="RadiologyRequestItemState?" TItem="string" Placeholder="@L["State"]"
+                                DataSource="@Enum.GetNames(typeof(RadiologyRequestItemState))" CssClass="dropdown-list" ShowClearButton="true">
+                    <DropDownListEvents TItem="string" TValue="RadiologyRequestItemState?" ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="string" Value="RadiologyRequestItemState?" />
+                </SfDropDownList>
+
+                <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton> 
+                 
             </div>
         </FormTemplate>
         <FormButtons></FormButtons>
@@ -113,7 +116,8 @@
             <GridColumn HeaderText="Sonuç" Width="200">
                 <Template Context="itemContext">
                     @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
-                    {
+                    { 
+                        Console.WriteLine(dto.Patient.FullName);
                         <button @onclick="() => ShowDocumentsAsync(dto.RadiologyRequestItem.Id, dto.RadiologyRequestItem.Result)"
                                 class="e-btn e-flat" style="padding: 5px; border: none; background-color: transparent;">
                             <i class="fas fa-eye" style="font-size: 18px; color: #007bff;"></i>
