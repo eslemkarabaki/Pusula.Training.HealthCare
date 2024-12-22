@@ -8,7 +8,7 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.DropDowns
 @using Pusula.Training.HealthCare.Blazor.Components.Shared
-@using Syncfusion.Blazor 
+@using Syncfusion.Blazor
 
 @attribute [Authorize(HealthCarePermissions.RadiologyDefinitions.Default)]
 @inherits HealthCareComponentBase
@@ -19,10 +19,9 @@
 
 <h2 class="page-title">Radiology Sonuçları</h2>
 
-
 <SfGrid @ref="SfGrid" TValue="RadiologyRequestWithNavigationPropertiesDto" DataSource="@RequestList"
-        AllowSelection EnableHover AllowSorting AllowFiltering>
-    <GridPageSettings PageSize="100" />
+        AllowSelection EnableHover AllowSorting AllowFiltering AllowPaging="true">
+    <GridPageSettings PageSize="10" />
     <GridColumns>
         <GridColumn Field="Protocol.Patient.FullName" HeaderText="Patient Name" Width="200" />
         <GridColumn Field="Protocol.ProtocolType.Name" HeaderText="Protocol Type" Width="200" />
@@ -40,7 +39,7 @@
                     <GridPageSettings PageSize="5" />
                     <GridColumns>
                         <GridColumn Field="RadiologyExamination.Name" HeaderText="Tetkik İsmi" Width="200" />
-                 
+
                         <GridColumn HeaderText="Sonuç" Width="200">
                             <Template Context="itemContext">
                                 @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
@@ -57,7 +56,7 @@
                         </GridColumn>
 
                         <GridColumn Field="RadiologyRequestItem.ResultDate" HeaderText="Sonuç Tarihi" Format="d" Width="200" />
-                  
+
                         <GridColumn HeaderText="Durum" Width="200">
                             <Template Context="itemContext">
                                 @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
@@ -78,7 +77,7 @@
                                 }
                             </Template>
                         </GridColumn>
- 
+
                         <GridColumn HeaderText="Documents" Width="200">
                             <Template Context="itemContext">
                                 @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
@@ -89,8 +88,8 @@
                                 }
                             </Template>
                         </GridColumn>
-                    
-                    </GridColumns> 
+
+                    </GridColumns>
                 </SfGrid>
             }
             else
@@ -104,4 +103,3 @@
 @* ************************* UPDATE MODAL EXAMINATION ************************* *@
 <RadiologyRequestResultDialog @ref="ResultDialog" OnSave="@OnResultDialogSave" />
 <RadiologyDocumentDialog @ref="DocumentDialog" />
- 

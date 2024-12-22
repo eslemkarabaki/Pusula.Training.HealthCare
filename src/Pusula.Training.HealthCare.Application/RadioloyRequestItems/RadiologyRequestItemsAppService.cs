@@ -73,20 +73,21 @@ public class RadiologyRequestItemsAppService
     }
     #endregion
 
-    #region GetListWithNavigationPropertiesByRequestItemAsync 
+    #region GetListWithNavigationPropertiesByRequestItemAsync
     public virtual async Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByRequestItemAsync(GetRadiologyRequestItemsInput input, Guid id)
-    {
+    { 
         var totalCount = await radiologyRequestItemRepository.GetCountAsync(
             input.FilterText,
-            input.RequestId,
+            id,  
             input.ExaminationId,
             input.Result,
             input.ResultDate,
-            input.State);
-
-        var items = await radiologyRequestItemRepository.GetListWithNavigationPropertiesAsync(
+            input.State
+        );
+         
+        var items = await radiologyRequestItemRepository.GetListWithNavigationPropertiesAsyncByRequestId(
             input.FilterText,
-            input.RequestId,
+            id, 
             input.ExaminationId,
             input.Result,
             input.ResultDate,
@@ -97,16 +98,16 @@ public class RadiologyRequestItemsAppService
             input.PatientId,
             input.Sorting,
             input.MaxResultCount,
-            input.SkipCount);
-
-        var filteredItems = items.Where(item => item.RadiologyRequest.Id == id).ToList();
-
+            input.SkipCount
+        );
+         
         return new PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>(
             totalCount,
-            ObjectMapper.Map<List<RadiologyRequestItemWithNavigationProperties>, List<RadiologyRequestItemWithNavigationPropertiesDto>>(filteredItems)
+            ObjectMapper.Map<List<RadiologyRequestItemWithNavigationProperties>, List<RadiologyRequestItemWithNavigationPropertiesDto>>(items)
         );
     }
     #endregion
+
 
     #region CreateAsync
     [Authorize(HealthCarePermissions.RadiologyRequestItems.Create)]

@@ -24,29 +24,29 @@ public partial class Report
     private int PageSize => 100;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; } = string.Empty;
-    private int TotalCount { get; set; } 
-    private IReadOnlyList<RadiologyRequestItemWithNavigationPropertiesDto> RadiologyRequestItemList { get; set; } = []; 
-    private SfGrid<RadiologyRequestItemDto> SfGrid { get; set; } = null!;  
+    private int TotalCount { get; set; }
+    private IReadOnlyList<RadiologyRequestItemWithNavigationPropertiesDto> RadiologyRequestItemList { get; set; } = [];
+    private SfGrid<RadiologyRequestItemDto> SfGrid { get; set; } = null!;
 
     public Report()
-    { 
+    {
 
         Filter = new GetRadiologyRequestItemsInput
         {
             MaxResultCount = PageSize,
             SkipCount = (CurrentPage - 1) * PageSize,
-            Sorting = CurrentSorting 
+            Sorting = CurrentSorting
         };
         FilterContext = new EditContext(Filter);
     }
-     
+
     protected override async Task OnInitializedAsync()
     {
         await GetRadiologyRequestItemsAsync();
     }
-     
+
     private async Task SearchAsync()
-    { 
+    {
         CurrentPage = 1;
         await GetRadiologyRequestItemsAsync();
         await InvokeAsync(StateHasChanged);
@@ -71,9 +71,9 @@ public partial class Report
 
     #region Doctor
 
-    private IEnumerable<DoctorDto> DoctorList { get; set; } = new List<DoctorDto>(); 
+    private IEnumerable<DoctorDto> DoctorList { get; set; } = new List<DoctorDto>();
     private SfAutoComplete<Guid?, DoctorDto> DoctorFilterAutoComplete { get; set; } = null!;
-    private GetDoctorsInput GetDoctorsInput { get; set; } = new() { MaxResultCount = 10 };
+    private GetDoctorsInput GetDoctorsInput { get; set; } = new() { MaxResultCount = 20 };
 
     private async Task FilterDoctorAsync(FilteringEventArgs args)
     {
@@ -90,7 +90,7 @@ public partial class Report
 
     private IEnumerable<DepartmentDto> DepartmentList { get; set; } = new List<DepartmentDto>();
     private SfAutoComplete<Guid?, DepartmentDto> DepartmentFilterAutoComplete { get; set; } = null!;
-    private GetDepartmentsInput GetDepartmentsInput { get; set; } = new() { MaxResultCount = 10 };
+    private GetDepartmentsInput GetDepartmentsInput { get; set; } = new() { MaxResultCount = 20 };
 
     private async Task FilterDepartmentAsync(FilteringEventArgs args)
     {
@@ -107,15 +107,23 @@ public partial class Report
 
     private IEnumerable<PatientDto> PatientList { get; set; } = new List<PatientDto>();
     private SfAutoComplete<Guid?, PatientDto> PatientFilterAutoComplete { get; set; } = null!;
-    private GetPatientsInput GetPatientsInput { get; set; } = new() { MaxResultCount = 10 };
+    private GetPatientsInput GetPatientsInput { get; set; } = new() { MaxResultCount = 100 };
 
     private async Task FilterPatientAsync(FilteringEventArgs args)
     {
-        args.PreventDefaultAction = true;
-        GetPatientsInput.FullName = args.Text;
-        var patients = await PatientAppService.GetListAsync(GetPatientsInput);
-        PatientList = patients.Items;
-        await PatientFilterAutoComplete.FilterAsync(PatientList);
+        try
+        {
+            args.PreventDefaultAction = true;
+            GetPatientsInput.FullName = args.Text;
+            var patients = await PatientAppService.GetListAsync(GetPatientsInput);
+            PatientList = patients.Items;
+            await PatientFilterAutoComplete.FilterAsync(PatientList);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"An error occurred while fetching radiology request items: {ex.Message}");
+
+        }
     }
 
     #endregion
@@ -124,7 +132,7 @@ public partial class Report
 
     private IEnumerable<RadiologyExaminationDto> RadiologyExaminationList { get; set; } = new List<RadiologyExaminationDto>();
     private SfAutoComplete<Guid?, RadiologyExaminationDto> RadiologyExaminationFilterAutoComplete { get; set; } = null!;
-    private GetRadiologyExaminationsInput GetRadiologyExaminationsInput { get; set; } = new() { MaxResultCount = 10 };
+    private GetRadiologyExaminationsInput GetRadiologyExaminationsInput { get; set; } = new() { MaxResultCount = 20 };
 
     private async Task FilterRadiologyExaminationAsync(FilteringEventArgs args)
     {
@@ -136,7 +144,7 @@ public partial class Report
     }
 
     #endregion
-     
+
     #region Permission
 
     private bool CanCreateRadiologyRequestItem { get; set; }
@@ -167,7 +175,7 @@ public partial class Report
 
     private RadiologyDocumentDialog DocumentDialog { get; set; } = null!;
 
-    private async Task ShowDocumentsAsync(Guid itemId , string result)
+    private async Task ShowDocumentsAsync(Guid itemId, string result)
     {
         var documents = await GetDocumentByItemId(itemId);
         await DocumentDialog.ShowAsync(documents, StripHtml(result));
