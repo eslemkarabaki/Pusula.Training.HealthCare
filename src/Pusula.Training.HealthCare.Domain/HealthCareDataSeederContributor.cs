@@ -31,6 +31,16 @@ using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Volo.Abp.Identity;
 using Volo.Abp.Uow;
+using Pusula.Training.HealthCare.Allergies;
+using Pusula.Training.HealthCare.BloodTransfusions;
+using Pusula.Training.HealthCare.Diagnoses;
+using Bogus.DataSets;
+using Pusula.Training.HealthCare.Insurances;
+using Pusula.Training.HealthCare.Medicines;
+using Pusula.Training.HealthCare.Operations;
+using Pusula.Training.HealthCare.Vaccines;
+using Pusula.Training.HealthCare.Jobs;
+using Pusula.Training.HealthCare.Educations;
 
 namespace Pusula.Training.HealthCare;
 
@@ -55,6 +65,15 @@ public class HealthCareDataSeederContributor(
     IProtocolTypeActionRepository protocolTypeActionRepository,
     IRadiologyRequestRepository radiologyRequestRepository,
     IRadiologyRequestItemRepository radiologyRequestItemRepository,
+    IAllergyRepository allergyRepository,
+    IBloodTransfusionRepository bloodTransfusionRepository,
+    IDiagnosisRepository diagnosisRepository,
+    IInsuranceRepository insuranceRepository,
+    IMedicineRepository medicineRepository,
+    IOperationRepository operationRepository,
+    IVaccineRepository vaccineRepository,
+    IJobRepository jobRepository,
+    IEducationRepository educationRepository,
     UserManager<IdentityUser> userManager,
     RoleManager<IdentityRole> roleManager
 )
@@ -87,6 +106,16 @@ public class HealthCareDataSeederContributor(
         var departments = await SeedDepartmentsAsync();
         var hospital = await SeedHospitalsAsync();
         var titles = await SeedTitlesAsync();
+        var allergies = await SeedAllergiesAsync();
+        var bloodTransfusions = await SeedBloodTransfusionsAsync();
+        var diagnoses = await SeedDiagnosesAsync();
+        var insurances = await SeedInsurancesAsync();
+        var medicines = await SeedMedicinesAsync();
+        var operations = await SeedOperationsAsync();
+        var vaccines = await SeedVaccinesAsync();
+        var jobs = await SeedJobsAsync();
+        var educations = await SeedEducationsAsync();
+
         var doctors = await SeedDoctorsAsync(departments, hospital, titles);
 
         await SeedAppointmentTypesAsync();
@@ -110,6 +139,203 @@ public class HealthCareDataSeederContributor(
             await SeedRadiologyRequestItemsAsync(radiologyRequests, radiologyExaminations);
         }
 
+    }
+
+    // Educations
+    private async Task<IEnumerable<Education>> SeedEducationsAsync()
+    {
+        if (await educationRepository.AnyAsync())
+        {
+            return await educationRepository.GetListAsync();
+        }
+        IEnumerable<Education> educations = [
+            new(guidGenerator.Create(), "Tıp Fakültesi"),
+            new(guidGenerator.Create(), "Hemşirelik"),
+            new(guidGenerator.Create(), "Eczacılık"),
+            new(guidGenerator.Create(), "Sağlık Memurluğu"),
+            new(guidGenerator.Create(), "Fizyoterapi"),
+            new(guidGenerator.Create(), "Psikoloji"),
+            new(guidGenerator.Create(), "Diş Hekimliği"),
+            new(guidGenerator.Create(), "Radyoloji"),
+            new(guidGenerator.Create(), "Laborant")
+            ];
+        await educationRepository.InsertManyAsync(educations, true);
+        return educations;
+    }
+
+    // Jobs
+    private async Task<IEnumerable<Job>> SeedJobsAsync()
+    {
+        if (await jobRepository.AnyAsync())
+        {
+            return await jobRepository.GetListAsync();
+        }
+        IEnumerable<Job> jobs = [
+            new(guidGenerator.Create(), "Doktor"),
+            new(guidGenerator.Create(), "Hemşire"),
+            new(guidGenerator.Create(), "Eczacı"),
+            new(guidGenerator.Create(), "Sağlık Memuru"),
+            new(guidGenerator.Create(), "Fizyoterapist"),
+            new(guidGenerator.Create(), "Psikolog"),
+            new(guidGenerator.Create(), "Diş Hekimi"),
+            new(guidGenerator.Create(), "Radyolog"),
+            new(guidGenerator.Create(), "Laborant"),
+            new(guidGenerator.Create(), "Acil Tıp Teknisyeni")
+            ];
+        await jobRepository.InsertManyAsync(jobs, true);
+        return jobs;
+    }
+
+    // Vaccines
+    private async Task<IEnumerable<Vaccine>> SeedVaccinesAsync()
+    {
+        if (await vaccineRepository.AnyAsync())
+        {
+            return await vaccineRepository.GetListAsync();
+        }
+        IEnumerable<Vaccine> vaccines = [
+            new(guidGenerator.Create(), "Bcg Aşısı"),
+            new(guidGenerator.Create(), "Hepatit B Aşısı"),
+            new(guidGenerator.Create(), "Difteri Aşısı"),
+            new(guidGenerator.Create(), "Tetanoz Aşısı"),
+            new(guidGenerator.Create(), "Kızamık Aşısı"),
+            new(guidGenerator.Create(), "Kabakulak Aşısı"),
+            new(guidGenerator.Create(), "Suçiçeği Aşısı"),
+            new(guidGenerator.Create(), "Hepatit A Aşısı"),
+            new(guidGenerator.Create(), "Hepatit B Aşısı"),
+            new(guidGenerator.Create(), "Grip Aşısı")
+            ];
+        await vaccineRepository.InsertManyAsync(vaccines, true);
+        return vaccines;
+    }
+
+    // Operations
+    private async Task<IEnumerable<Operation>> SeedOperationsAsync()
+    {
+        if (await operationRepository.AnyAsync())
+        {
+            return await operationRepository.GetListAsync();
+        }
+        IEnumerable<Operation> operations = [
+            new(guidGenerator.Create(), "Apandisit Ameliyatı"),
+            new(guidGenerator.Create(), "Katarakt Ameliyatı"),
+            new(guidGenerator.Create(), "Varis Ameliyatı"),
+            new(guidGenerator.Create(), "Kolonoskopi"),
+            new(guidGenerator.Create(), "Laparoskopik Safra Kesesi Ameliyatı"),
+            new(guidGenerator.Create(), "Kemik İliği Nakli"),
+            new(guidGenerator.Create(), "Kardiyak Kateterizasyon"),
+            new(guidGenerator.Create(), "Kemik Kanseri Ameliyatı")
+            ];
+        await operationRepository.InsertManyAsync(operations, true);
+        return operations;
+    }
+
+    // Medicines
+    private async Task<IEnumerable<Medicine>> SeedMedicinesAsync()
+    {
+        if (await medicineRepository.AnyAsync())
+        {
+            return await medicineRepository.GetListAsync();
+        }
+        IEnumerable<Medicine> medicines = [
+            new(guidGenerator.Create(), "Parol"),
+            new(guidGenerator.Create(), "Aspirin"),
+            new(guidGenerator.Create(), "Nurofen"),
+            new(guidGenerator.Create(), "Voltaren"),
+            new(guidGenerator.Create(), "Panadol"),
+            new(guidGenerator.Create(), "Majezik"),
+            new(guidGenerator.Create(), "Novalgin"),
+            new(guidGenerator.Create(), "Dolorex")
+            ];
+        await medicineRepository.InsertManyAsync(medicines, true);
+        return medicines;
+    }
+
+    // Insurances
+    private async Task<IEnumerable<Insurance>> SeedInsurancesAsync()
+    {
+        if (await insuranceRepository.AnyAsync())
+        {
+            return await insuranceRepository.GetListAsync();
+        }
+        IEnumerable<Insurance> insurances =
+        [
+            new(guidGenerator.Create(), "Anadolu Sigorta"),
+            new(guidGenerator.Create(), "Axa Sigorta"),
+            new(guidGenerator.Create(), "Allianz Sigorta"),
+            new(guidGenerator.Create(), "Ergo Sigorta"),
+            new(guidGenerator.Create(), "Sompo Sigorta"),
+            new(guidGenerator.Create(), "Zurich Sigorta")
+        ];
+        await insuranceRepository.InsertManyAsync(insurances, true);
+        return insurances;
+    }
+    // Diagnosis
+    private async Task<IEnumerable<Diagnosis>> SeedDiagnosesAsync()
+    {
+        if (await diagnosisRepository.AnyAsync())
+        {
+            return await diagnosisRepository.GetListAsync();
+        }
+        IEnumerable<Diagnosis> diagnosis = [
+            new(guidGenerator.Create(), "D001", "Migren"),
+            new(guidGenerator.Create(), "D002", "Baş Ağrısı"),
+            new(guidGenerator.Create(), "D003", "Grip"),
+            new(guidGenerator.Create(), "D004", "Soğuk Algınlığı"),
+            new(guidGenerator.Create(), "D005", "Kanser"),
+            new(guidGenerator.Create(), "D006", "Kalp Hastalıkları"),
+            new(guidGenerator.Create(), "D007", "Diyabet"),
+            new(guidGenerator.Create(), "D008", "Hipertansiyon"),
+            new(guidGenerator.Create(), "D009", "Astım"),
+            new(guidGenerator.Create(), "D010", "Bronşit"),
+            ];
+        await diagnosisRepository.InsertManyAsync(diagnosis, true);
+        return diagnosis;
+    }
+
+        // Allergy
+        private async Task<IEnumerable<Allergy>> SeedAllergiesAsync()
+    {
+        if (await allergyRepository.AnyAsync())
+        {
+            return await allergyRepository.GetListAsync();
+        }
+        IEnumerable<Allergy> allergies =
+        [
+            new(guidGenerator.Create(), "Yiyecek Alerjisi"),
+            new(guidGenerator.Create(), "İlaç Alerjisi"),
+            new(guidGenerator.Create(), "Hayvan Alerjisi"),
+            new(guidGenerator.Create(), "Polen Alerjisi"),
+            new(guidGenerator.Create(), "Toz Alerjisi"),
+            new(guidGenerator.Create(), "Mantar Alerjisi"),
+            new(guidGenerator.Create(), "Güneş Alerjisi"),
+            new(guidGenerator.Create(), "Soğan Alerjisi"),
+            new(guidGenerator.Create(), "Balık Alerjisi"),
+            new(guidGenerator.Create(), "Süt Alerjisi")
+
+            ];
+        await allergyRepository.InsertManyAsync(allergies, true);
+        return allergies;
+    }
+
+    // BlodTransfusion
+    private async Task<IEnumerable<Guid>> SeedBloodTransfusionsAsync()
+    {
+        if (await bloodTransfusionRepository.AnyAsync())
+        {
+            return (await bloodTransfusionRepository.GetListAsync()).Select(e => e.Id);
+        }
+
+        IEnumerable<BloodTransfusion> bloodTransfusions =
+        [
+            new(guidGenerator.Create(), "A Grubu Kan Nakli"),
+            new(guidGenerator.Create(), "B Grubu Kan Nakli"),
+            new(guidGenerator.Create(), "AB Grubu Kan Nakli"),
+            new(guidGenerator.Create(), "0 Grubu Kan Nakli"),
+            new(guidGenerator.Create(), "Rh+ Kan Nakli"),
+        ];
+
+        return await SeedEntitiesAsync(bloodTransfusions, e => bloodTransfusionRepository.InsertManyAsync(e, true));
     }
 
     // Country
@@ -254,21 +480,6 @@ public class HealthCareDataSeederContributor(
     }
 
     // Department
-    //private async Task<List<Guid>> SeedDepartmentsAsync()
-    //{
-    //    var faker = new Faker<Department>("tr")
-    //        .CustomInstantiator(
-    //            f => new Department(
-    //                guidGenerator.Create(),
-    //                f.Company.CompanyName(),
-    //                f.Random.Words(3),
-    //                f.Random.Number(5, 60)
-    //            )
-    //        );
-
-    //    return await SeedEntitiesAsync(faker.Generate(25), e => departmentRepository.InsertManyAsync(e, true));
-    //}
-
     private async Task<IEnumerable<Guid>> SeedDepartmentsAsync()
     {
         if (await departmentRepository.AnyAsync())
@@ -284,25 +495,14 @@ public class HealthCareDataSeederContributor(
             new(guidGenerator.Create(), "Dahiliye", "İç hastalıklarının teşhis ve tedavisi.", 30),
             new(guidGenerator.Create(), "Pediatri", "Çocuk sağlığı ve hastalıklarının teşhis ve tedavisi.", 20),
             new(guidGenerator.Create(), "Göz Hastalıkları", "Gözle ilgili hastalıkların tanı ve tedavisi.", 15),
-            new(
-                guidGenerator.Create(), "Kulak Burun Boğaz (KBB)", "Kulak, burun ve boğaz hastalıklarının tedavisi.", 15
-            ),
-            new(
-                guidGenerator.Create(), "Kadın Hastalıkları ve Doğum",
-                "Kadın sağlığı ve doğumla ilgili hastalıkların tanı ve tedavisi.", 30
-            ),
+            new(guidGenerator.Create(), "Kulak Burun Boğaz (KBB)", "Kulak, burun ve boğaz hastalıklarının tedavisi.", 15),
+            new(guidGenerator.Create(), "Kadın Hastalıkları ve Doğum", "Kadın sağlığı ve doğumla ilgili hastalıkların tanı ve tedavisi.", 30),
             new(guidGenerator.Create(), "Üroloji", "İdrar yolları ve üreme organlarının hastalıklarının tedavisi.", 30),
             new(guidGenerator.Create(), "Dermatoloji", "Cilt hastalıklarının tanı ve tedavisi.", 15),
             new(guidGenerator.Create(), "Onkoloji", "Kanser hastalıklarının teşhis ve tedavisi.", 30),
             new(guidGenerator.Create(), "Psikiyatri", "Ruh sağlığı ve psikolojik hastalıkların tedavisi.", 45),
-            new(
-                guidGenerator.Create(), "Fizik Tedavi ve Rehabilitasyon",
-                "Fiziksel hareket kabiliyetini artırmaya yönelik tedavi.", 60
-            ),
-            new(
-                guidGenerator.Create(), "Endokrinoloji ve Metabolizma Hastalıkları",
-                "Hormon ve metabolizma hastalıklarının tanı ve tedavisi.", 30
-            )
+            new(guidGenerator.Create(), "Fizik Tedavi ve Rehabilitasyon", "Fiziksel hareket kabiliyetini artırmaya yönelik tedavi.", 60),
+            new(guidGenerator.Create(), "Endokrinoloji ve Metabolizma Hastalıkları", "Hormon ve metabolizma hastalıklarının tanı ve tedavisi.", 30)
         ];
         return await SeedEntitiesAsync(departments, e => departmentRepository.InsertManyAsync(e, true));
     }
