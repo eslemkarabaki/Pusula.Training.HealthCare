@@ -123,23 +123,8 @@
                                         Placeholder="Randevu türü seç" FloatLabelType="FloatLabelType.Always"
                                         @bind-Value="@AppointmentCreateDto.AppointmentTypeId">
                             <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
-                        </SfDropDownList>
-
-                        @* <SfDropDownList TValue="EnumAppointmentStatus" TItem="string"
-                                        DataSource="@Enum.GetNames(typeof(EnumAppointmentStatus))"
-                                        Placeholder="Randevu statüsü seç" FloatLabelType="FloatLabelType.Always"
-                                        @bind-Value="@AppointmentCreateDto.Status">
-                            <DropDownListFieldSettings Text="string" Value="EnumStatus"></DropDownListFieldSettings>
-                        </SfDropDownList> *@
-                        <div>
-                            <SfTextBox Value="@AppointmentCreateDto.Status.ToString()" Readonly></SfTextBox>
-                        </div>
-
-                        @* <div class="d-flex gap-2">
-                            <SfTextBox Value="@AppointmentCreateDto.StartTime.ToString()" Readonly></SfTextBox>
-                            <SfTextBox Value="@AppointmentCreateDto.EndTime.ToString()" Readonly></SfTextBox>
-                        </div> *@
-
+                        </SfDropDownList>                      
+                                           
                         <SfTextBox Multiline @bind-Value="@AppointmentCreateDto.Notes" Placeholder="Not" FloatLabelType="FloatLabelType.Always"></SfTextBox>
                     </div>
                 </EditForm>
@@ -154,8 +139,7 @@
                         <p><strong><i class='fa fa-user-md'></i> Doktor:</strong> @Doctors.FirstOrDefault(d => d.Id == AppointmentCreateDto.DoctorId)?.FullName</p>
                         <p><strong><i class='fa fa-list-ul'></i> Statü:</strong> @AppointmentCreateDto.Status</p>
                         <p><strong><i class='far fa-clock'></i> Randevu Saati:</strong> @AppointmentCreateDto.StartTime.ToString()</p>
-@*                         <p><strong><i class='far fa-clock'></i> Bitiş:</strong> @AppointmentCreateDto.EndTime.ToString()</p>
- *@                        <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentCreateDto.Notes</p>
+                        <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentCreateDto.Notes</p>
                         </div>
                     
                 </div>
@@ -203,20 +187,7 @@
                                                                    Value="EnumStatus"></DropDownListFieldSettings>
                                     </SfDropDownList>
                                 </td>
-                            </tr>
-                            @* <tr>
-
-                                <td class="e-textlabel">Başlangıç</td>
-                                <td colspan="4">
-                                    <SfTextBox Value="@AppointmentUpdateDto.StartTime.ToString()" Readonly></SfTextBox>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="e-textlabel">Bitiş</td>
-                                <td colspan="4">
-                                    <SfTextBox Value="@AppointmentUpdateDto.EndTime.ToString()" Readonly></SfTextBox>
-                                </td>
-                            </tr> *@
+                            </tr>                            
                             <tr>
                                 <td class="e-textlabel">Not</td>
                                 <td colspan="4">
@@ -238,8 +209,7 @@
                         <p><strong><i class='fa fa-user-md'></i> Doktor:</strong> @Doctors.FirstOrDefault(d => d.Id == AppointmentUpdateDto.DoctorId)?.FullName</p>
                         <p><strong><i class='fa fa-list-ul'></i> Statü:</strong> @AppointmentUpdateDto.Status</p>
                         <p><strong><i class='far fa-clock'></i> Randevu Saati:</strong> @AppointmentUpdateDto.StartTime.ToString()</p>
-@*                         <p><strong><i class='far fa-clock'></i> Bitiş:</strong> @AppointmentUpdateDto.EndTime.ToString()</p>
- *@                        <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentUpdateDto.Notes</p>
+                        <p class="text-break"><strong><i class='fa fa-pencil-alt'></i> Not:</strong> @AppointmentUpdateDto.Notes</p>
                 </div>
                 </div>
 
