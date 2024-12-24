@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Pusula.Training.HealthCare.ExaminationDiagnoses;
 using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.ExaminationsPhysical;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace Pusula.Training.HealthCare.Configurations;
@@ -11,6 +13,19 @@ public class ExaminationConfigurations : IEntityTypeConfiguration<Examination>
     {
         b.ToTable(HealthCareConsts.DbTablePrefix + "Examination", HealthCareConsts.DbSchema);
         b.ConfigureByConvention();
+
+        b.HasOne(e => e.ExaminationAnamnez)
+        .WithOne()
+        .HasForeignKey<ExaminationAnamnez>(e => e.ExaminationId);
+
+        b.HasOne(e => e.ExaminationPhysical)
+         .WithOne()
+         .HasForeignKey<ExaminationPhysical>(e => e.ExaminationId);
+
+        b.HasOne(e => e.ExaminationDiagnoses)
+        .WithOne()
+        .HasForeignKey<ExaminationDiagnosis>(e => e.ExaminationId);
+    }
         //b.Property(x => x.IdentityNumber).HasColumnName(nameof(Examination.IdentityNumber)).IsRequired()
         //    .HasMaxLength(ExaminationConsts.IdentityNumberMaxLength);
         //b.Property(x => x.VisitDate).HasColumnName(nameof(Examination.VisitDate));
@@ -34,4 +49,3 @@ public class ExaminationConfigurations : IEntityTypeConfiguration<Examination>
         //b.HasOne<Doctor>().WithMany().IsRequired().HasForeignKey(e => e.DoctorId)
         //    .OnDelete(DeleteBehavior.NoAction);
     }
-}

@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.ExaminationDiagnoses;
 using Pusula.Training.HealthCare.ExaminationsPhysical;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,11 @@ namespace Pusula.Training.HealthCare.Examinations
         public string SummaryDocument { get; set; }
         public DateTime StartDate { get; set; }
 
+       
 
+        public virtual ExaminationAnamnez ExaminationAnamnez { get; set; }
+        public virtual ExaminationDiagnosis ExaminationDiagnoses { get; set; }
+        public virtual ExaminationPhysical ExaminationPhysical { get; set; }
         public Examination(
             Guid id,
             Guid protocolId,
@@ -31,6 +36,7 @@ namespace Pusula.Training.HealthCare.Examinations
             PatientId = patientId;
             SummaryDocument = summaryDocument;
             StartDate = startDate;
+            
         }
     }
 }

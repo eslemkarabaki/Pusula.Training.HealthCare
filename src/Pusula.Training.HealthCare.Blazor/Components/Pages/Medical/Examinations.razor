@@ -1,11 +1,26 @@
 ﻿@page "/medical/medical-card/{ProtocolNo:int}/examination"
 @using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+@using Pusula.Training.HealthCare.Examinations
+@using Pusula.Training.HealthCare.Protocols;
+@using Pusula.Training.HealthCare.Diagnoses;
 @using Pusula.Training.HealthCare.Permissions
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.RichTextEditor
 @using Syncfusion.Blazor.SplitButtons
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.DropDowns
-
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.InPlaceEditor
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Data
+@using System.Data
+@using System.Dynamic
+@using System.Collections
+@inject IExaminationAppService ExaminationAppService
+@inject IDiagnosisAppService DiagnosisAppService
 @attribute [Authorize(Roles = HealthCareRoles.Doctor)]
 
 @layout MedicalCardLayout
@@ -16,7 +31,7 @@
         width: 100%;
         margin-bottom: 6px;
     }
-    table.family-history-table,
+    table.family-history-table, 
     table.family-history-table td,
     table.family-history-table th{
         border: 1px solid var(--material-grey-300);
@@ -27,13 +42,13 @@
         max-width: 5vw;
         overflow: hidden;
         padding: 6px;
-        text-overflow: ellipsis;
+        text-overfdolow: ellipsis;
         white-space: nowrap;
         font-size: 13px;
         transition: all 300ms;
     }
     table.family-history-table td{
-        cursor: pointer;
+        cursor: pointer;    
     }
     
     table.family-history-table td.active{
@@ -48,12 +63,99 @@
     table.family-history-table td:has(input){
         padding: 0;
     }
+
+    .msg-default-section .content-section {
+        margin: 0 auto;
+        max-width: 520px;
+        padding-top: 10px;
+    }
+
+    .msg-default-section .e-message {
+        margin: 10px 0;
+    }
 </style>
 
+    <!-- Examination Header and Date in One Row -->
+
+<div class="d-flex align-items-center justify-content-between">
+    <!-- Examination Header and Date in One Row -->
+    <div class="d-flex align-items-center">
+        <h1 class="font-weight-bold mr-2">Examination</h1>
+        <div class="d-flex align-items-center mr-2r">
+            <span class="mr-2">Examination Date:</span>
+            <span class="font-weight-bold">
+                <span>@ExaminationDto?.Examination?.StartDate.ToString("yyyy-MM-dd HH:mm")</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- Save Button (Aligned Left) -->
+    <div class="d-flex align-items-center ml-auto">
+        <SfProgressButton ID="zoomOutButton" Content="Save All Changes" EnableProgress="true" CssClass="e-primary custom-button" @onclick="OnSaveAllChanges" IconCss="far fa-save">
+            <ProgressButtonSpinSettings Position="SpinPosition.Center"></ProgressButtonSpinSettings>
+            <ProgressButtonAnimationSettings Effect="Syncfusion.Blazor.SplitButtons.AnimationEffect.ZoomOut"></ProgressButtonAnimationSettings>
+        </SfProgressButton>
+    </div>
+</div>
+
+    <!-- Confirmation Dialog -->
+    <SfDialog Width="335px" IsModal="true" @bind-Visible="ConfirmationDialogVisibility">
+        <DialogTemplates>
+            <Header> Confirm Changes </Header>
+            <Content>
+                <p>Save Your Examination Changes?</p>
+            </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton Content="Yes" IsPrimary="true" OnClick="@OnConfirmYes" />
+            <DialogButton Content="No" OnClick="@OnConfirmNo" />
+        </DialogButtons>
+    </SfDialog>
+
+    <!-- Success Dialog -->
+    <SfDialog Width="335px" IsModal="true" @bind-Visible="Visibility">
+        <DialogTemplates>
+            <Header> Confirm Changes </Header>
+            <Content>
+                @if (showSuccessMessage)
+                {
+                    <SfMessage Severity="MessageSeverity.Success" CssClass="ml-2">
+                        All changes saved successfully.
+                    </SfMessage>
+                }
+                else if (showErrorMessage)
+                {
+                    <SfMessage Severity="MessageSeverity.Error" CssClass="ml-2">
+                        An error occurred while saving, please contact the administrator.
+                    </SfMessage>
+                }
+            </Content>
+        </DialogTemplates>
+        <DialogButtons>
+            <DialogButton Content="OK" IsPrimary="true" OnClick="@DialogButtonClick" />
+        </DialogButtons>
+        <DialogEvents OnOpen="@DialogOpen" Closed="@DialogClose" OnOverlayModalClick="@OverlayClick"></DialogEvents>
+        <DialogAnimationSettings Effect="@DialogEffect.None"></DialogAnimationSettings>
+    </SfDialog>
+    <!-- TextBox for Examination Details (this will appear below everything else) -->
+    
+
+
+<div class="mb-1">
+    <SfTextBox Placeholder="Enter Examination Details"
+               @bind-Value="@UpdateExaminationDto.SummaryDocument"
+               CssClass="w-100 h-10 mt-2" />
+</div>
+
+@* <SfRichTextEditor  ShowTooltip="false" >
+    <p>Rich Text Editor allows to insert images from online source as well as local computer where you want to insert the image in your content.</p>
+    <p><b>Get started Quick Toolbar to click on the image</b></p>
+    <p>It is possible to add custom style on the selected image inside the Rich Text Editor through quick toolbar.</p>
+</SfRichTextEditor> *@
 <div class="d-flex gap-1">
     <div class="d-flex w-50 gap-2 flex-column">
         <PatientHistory></PatientHistory>
-
+            
         <HcCard Title="Soygeçmiş" CardIcon="">
             <HeaderContent>
                 <SfButton IsToggle CssClass="e-outline rounded-pill e-primary e-small">Özellik Yok</SfButton>
@@ -242,10 +344,170 @@
             </ChildContent>
         </HcCard>
     </div>
+   <div class="d-flex w-50 gap-2 flex-column">
+    <HcCard Title="Yakınması" CardIcon="fas fa-edit">
+        <HeaderContent>
+                <div class="d-flex justify-content-between ">
+                <SfButton IconCss="fas fa-external-link-alt " CssClass="e-flat e-small bg-primary text-white">Hasta Ön Beyanı</SfButton>
+                </div>  
+        </HeaderContent>
+        <ChildContent>
+
+                <div class="d-flex gap-3 align-items-start p-2">
+                <SfTextBox Placeholder="Şikayeti" FloatLabelType="FloatLabelType.Never" CssClass="e-small" ></SfTextBox>
+            </div>
+
+            
+            <div class="d-flex gap-2 align-items-center p-2">
+                
+                <SfNumericTextBox TValue="int" CssClass="e-small" Format="N0" Placeholder="0"></SfNumericTextBox>
+
+                
+                <SfButtonGroup Mode="Syncfusion.Blazor.SplitButtons.SelectionMode.Single" CssClass="e-outline e-small">
+                    <ButtonGroupButton CssClass="e-small">saat</ButtonGroupButton>
+                    <ButtonGroupButton CssClass="e-small e-primary">gün</ButtonGroupButton>
+                    <ButtonGroupButton CssClass="e-small">hafta</ButtonGroupButton>
+                    <ButtonGroupButton CssClass="e-small">ay</ButtonGroupButton>
+                    <ButtonGroupButton CssClass="e-small">yıl</ButtonGroupButton>
+                </SfButtonGroup>
+
+                <span>Önce</span>
+
+                <!-- Tarih Seçici -->
+                    <SfDateTimePicker TValue="DateTime" FullScreen ShowClearButton="false" CssClass="e-small"></SfDateTimePicker>
+            </div>
+
+            <!-- Öykü Alanı -->
+            <div class="p-2">
+                <SfTextBox Placeholder="Öykü" FloatLabelType="FloatLabelType.Never" CssClass="e-small"></SfTextBox>
+            </div>
+        </ChildContent>
+    </HcCard>
+    <HcCard Title="Fizik Muayene Bulguları" CardIcon="fas fa-edit">
+        <HeaderContent>
+                    <SfButton IconCss="fas fa-external-link-alt" CssClass="e-flat e-small bg-primary text-white">
+                    Öykü ve Fizik Muayene Formu
+                </SfButton>
+        </HeaderContent>
+        <ChildContent>
+            <!-- Girdi Alanları -->
+            <div class="row p-2">
+                <div class="col-6 col-md-3">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="Kilo (kg)" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+                <div class="col-6 col-md-3">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="Boy (cm)" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+                <div class="col-6 col-md-3">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="VKI" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+                <div class="col-6 col-md-3">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="VYA" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col-6 col-md-2">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="Ateş" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+                <div class="col-6 col-md-2">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="Nabız" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+                <div class="col-6 col-md-2">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="KB-S" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+                <div class="col-6 col-md-2">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="KB-D" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+                <div class="col-6 col-md-2">
+                    <SfNumericTextBox TValue="decimal?" CssClass="e-small" Placeholder="SPO2" FloatLabelType="FloatLabelType.Always"></SfNumericTextBox>
+                </div>
+            </div>
+            <!-- Not Alanı -->
+            <div class="p-2">
+                <SfTextBox Placeholder="Muayene Notu" FloatLabelType="FloatLabelType.Never" CssClass="e-small" Multiline="true" Rows="3"></SfTextBox>
+            </div>
+        </ChildContent>
+    </HcCard>
+    
+        <HcCard Title="Tanılar (ICD - 10)" CardIcon="fas fa-search" Class="">
+            <HeaderContent>
+                <div class="d-flex justify-content-between align-items-center">
+                    <!-- Sekmeler -->
+                    <div class="d-flex gap-3">
+                        <SfButtonGroup Mode="Syncfusion.Blazor.SplitButtons.SelectionMode.Single" CssClass="e-outline e-small">
+                            <ButtonGroupButton CssClass="e-small e-primary">Protokol</ButtonGroupButton>
+                            <ButtonGroupButton CssClass="e-small">Tıbbi Bölüm</ButtonGroupButton>
+                            <ButtonGroupButton CssClass="e-small">Tümü</ButtonGroupButton>
+                        </SfButtonGroup>
+                    </div>
+
+                    <!-- Yeni Ekle Butonu -->
+                    <SfButton IconCss="fas fa-plus" CssClass="e-flat e-small bg-primary text-white">
+                        Yeni Ekle
+                    </SfButton>
+                </div>
+            </HeaderContent>
+            
+            
+            <ChildContent>
+             
+                <div class="w-30">
+    
+                        <SfAutoComplete TValue="Guid" TItem="DiagnosisDto" Placeholder="Diagnosis Types" FloatLabelType="FloatLabelType.Always" DataSource="@DiagnosisType?.Items">
+            <AutoCompleteFieldSettings Value="Id" Text="FullName"/>
+                         </SfAutoComplete>
+    
+</div>
+                <div class="col-lg-12 control-section">
+                    <div class="content-wrapper">
+                        <div class="row">
+                            <SfGrid TValue="DiagnosisDto" ID="Grid" AllowSorting="true" AllowGrouping="true" AllowPaging="true" AllowFiltering="true">
+    <SfDataManager Json="@DiagnosisType.Items"></SfDataManager>
+    <GridEditSettings AllowEditing="true" AllowDeleting="true" AllowAdding="true" Mode="@EditMode.Normal"></GridEditSettings>
+    <GridPageSettings PageSize="8"></GridPageSettings>
+    <GridGroupSettings ShowGroupedColumn="true"></GridGroupSettings>
+    <GridAggregates>
+        <GridAggregate>
+            <GridAggregateColumns>
+                <GridAggregateColumn Field="Freight" Type="AggregateType.Sum" Format="C2">
+                    <FooterTemplate>
+                        @{
+                            var aggregate = (context as AggregateTemplateContext);
+                            <div>
+                                <p>Sum: @aggregate.Sum</p>
+                            </div>
+                        }
+                    </FooterTemplate>
+                </GridAggregateColumn>
+            </GridAggregateColumns>
+        </GridAggregate>
+        <GridAggregate>
+            <GridAggregateColumns>
+                <GridAggregateColumn Field="Freight" Type="AggregateType.Average" Format="C2">
+                    <FooterTemplate>
+                        @{
+                            var aggregate = (context as AggregateTemplateContext);
+                            <div>
+                                <p>Average: @aggregate.Average</p>
+                            </div>
+                        }
+                    </FooterTemplate>
+                </GridAggregateColumn>
+            </GridAggregateColumns>
+        </GridAggregate>
+    </GridAggregates>
+    <GridColumns>
+        <GridColumn Field="Id" HeaderText="Tanı ID" IsPrimaryKey="true" TextAlign="TextAlign.Right" Type="ColumnType.Integer" Width="120"></GridColumn>
+        <GridColumn Field="Name" HeaderText="Tanı Adı" ValidationRules="@(new ValidationRules { Required = true })" Width="150"></GridColumn>
+        <GridColumn Field="Name" HeaderText="Tanı Tipi" ValidationRules="@(new ValidationRules { Required = true })" Width="150"></GridColumn>
+        <GridColumn Field="Name" HeaderText="Kayıt Tarihi" ValidationRules="@(new ValidationRules { Required = true })" Width="150"></GridColumn>
+    </GridColumns>
+</SfGrid>
+                        </div>
+                    </div>
+                </div>
+            </ChildContent>
+        </HcCard>
+   </div>
 </div>
 
-@code{
-
-    private string Pain { get; set; }
-
-}

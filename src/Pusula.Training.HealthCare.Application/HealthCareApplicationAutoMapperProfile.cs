@@ -131,10 +131,11 @@ public class HealthCareApplicationAutoMapperProfile : Profile
         CreateMap<Examination, ExaminationDto>();
         CreateMap<Examination, ExaminationExcelDto>();
         CreateMap<ExaminationDto, ExaminationUpdateDto>();
-
+        CreateMap<ExaminationWithNavigationPropertiesDto, ExaminationUpdateDto>();
+        CreateMap<ExaminationWithNavigationProperties, ExaminationWithNavigationPropertiesDto>();
+        CreateMap<ExaminationUpdateDto, ExaminationWithNavigationPropertiesDto>();
         CreateMap<ExaminationPhysical, ExaminationPhysicalDto>();
         CreateMap<ExaminationPhysicalDto, ExaminationPhysicalUpdateDto>();
-
         CreateMap<Doctor, DoctorDto>();
         CreateMap<Doctor, DoctorExcelDto>();
         CreateMap<DoctorDto, DoctorUpdateDto>();

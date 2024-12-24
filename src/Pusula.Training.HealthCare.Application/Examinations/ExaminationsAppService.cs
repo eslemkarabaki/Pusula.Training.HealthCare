@@ -1,3 +1,5 @@
+using Pusula.Training.HealthCare.ExaminationDiagnoses;
+using Pusula.Training.HealthCare.ExaminationsPhysical;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -67,9 +69,11 @@ namespace Pusula.Training.HealthCare.Examinations
         public async Task<ExaminationDto> UpdateAsync(Guid id, ExaminationUpdateDto input)
         {
             var examination = await _examinationManager.UpdateAsync(
-                id,
-                input.SummaryDocument,
-                input.StartDate
+                  id,
+                  input.SummaryDocument,
+                  ObjectMapper.Map<ExaminationDiagnosisUpdateDto, ExaminationDiagnosis>(input.DiagnosisUpdateDto),
+                  ObjectMapper.Map<ExaminationAnamnezUpdateDto, ExaminationAnamnez>(input.AnamnezUpdateDto),
+                  ObjectMapper.Map<ExaminationPhysicalUpdateDto, ExaminationPhysical>(input.PhysicalUpdateDto)
             );
 
             return ObjectMapper.Map<Examination, ExaminationDto>(examination);
@@ -79,6 +83,13 @@ namespace Pusula.Training.HealthCare.Examinations
         public async Task DeleteAsync(Guid id)
         {
             await _examinationManager.DeleteAsync(id);
+        }
+            
+        public async Task<ExaminationWithNavigationPropertiesDto> GetWithProtocolNoAsync(GetExaminationsInput input)
+        {
+           var response = await _examinationRepository.GetWithNavigationPropertiesAsync(input.ProtocolNo);
+
+            return ObjectMapper.Map<ExaminationWithNavigationProperties, ExaminationWithNavigationPropertiesDto>(response);
         }
     }
 }
