@@ -1,5 +1,6 @@
 ﻿using Pusula.Training.HealthCare.Shared;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -13,6 +14,7 @@ public interface IRadiologyRequestItemsAppService : IApplicationService
     Task<RadiologyRequestItemWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id);
     Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListNavigationPropertiesAsync(GetRadiologyRequestItemsInput input);
     Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByRequestItemAsync(GetRadiologyRequestItemsInput input, Guid id);
+    Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByPatientIdAsync(Guid patientId);
     Task<RadiologyRequestItemDto> CreateAsync(RadiologyRequestItemCreateDto input);
     Task<RadiologyRequestItemDto> UpdateAsync(Guid id, RadiologyRequestItemUpdateDto input);
     Task DeleteAsync(Guid id);

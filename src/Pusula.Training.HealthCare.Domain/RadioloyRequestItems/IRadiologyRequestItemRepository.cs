@@ -48,6 +48,7 @@ public interface IRadiologyRequestItemRepository : IRepository<RadiologyRequestI
 );
     #endregion
 
+    #region GetListWithNavigationPropertiesAsyncByRequestId
     Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsyncByRequestId(
      string? filterText = null,
      Guid? requestId = null,
@@ -64,6 +65,15 @@ public interface IRadiologyRequestItemRepository : IRepository<RadiologyRequestI
      int skipCount = 0,
      CancellationToken cancellationToken = default
  );
+    #endregion
+
+    #region GetListWithNavigationPropertiesAsyncByPatientId
+    Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsyncByPatientId
+    (
+        Guid patientId,
+        CancellationToken cancellationToken = default
+    );
+    #endregion
 
     #region GetListAsync
     Task<List<RadiologyRequestItem>> GetListAsync

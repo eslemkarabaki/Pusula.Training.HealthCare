@@ -16,7 +16,6 @@ using Volo.Abp.Content;
 namespace Pusula.Training.HealthCare.RadiologyExaminationProcedures
 {
     [RemoteService(IsEnabled = false)]
-    [Authorize(HealthCarePermissions.RadiologyExaminationProcedures.Default)]
     public class RadiologyExaminationProcedureAppService(
         IRadiologyExaminationProcedureRepository radiologyExaminationProcedureRepository,
         RadiologyExaminationProcedureManager radiologyExaminationProcedureManager,
@@ -36,19 +35,17 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationProcedures
             return ObjectMapper.Map<RadiologyExaminationProcedure, RadiologyExaminationProcedureDto>(radiologyExaminationProcedure);
         }
 
-        [Authorize(HealthCarePermissions.RadiologyExaminationProcedures.Delete)]
         public virtual async Task DeleteAllAsync(GetRadiologyExaminationProceduresInput input)
         {
             await radiologyExaminationProcedureRepository.DeleteAllAsync(input.FilterText, input.Result, input.ResultDate, input.DoctorId, input.ProtocolId, input.RadiologyExaminationId);
         }
 
-        [Authorize(HealthCarePermissions.RadiologyExaminationProcedures.Delete)]
+
         public virtual async Task DeleteAsync(Guid id)
         {
             await radiologyExaminationProcedureRepository.DeleteAsync(id);
         }
 
-        [Authorize(HealthCarePermissions.RadiologyExaminationProcedures.Delete)]
         public virtual async Task DeleteByIdsAsync(List<Guid> RadiologyExaminationProcedureIds)
         {
             await radiologyExaminationProcedureRepository.DeleteManyAsync(RadiologyExaminationProcedureIds);
@@ -72,7 +69,6 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationProcedures
             };
         }
 
-        [Authorize(HealthCarePermissions.RadiologyExaminationProcedures.Edit)]
         public virtual async Task<RadiologyExaminationProcedureDto> UpdateAsync(Guid id, RadiologyExaminationProcedureUpdateDto input)
         {
             var radiologyExaminationProcedure = await radiologyExaminationProcedureRepository.GetAsync(id);

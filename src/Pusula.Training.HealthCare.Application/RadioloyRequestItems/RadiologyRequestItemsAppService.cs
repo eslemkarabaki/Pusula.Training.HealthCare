@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
-using Pusula.Training.HealthCare.Permissions; 
+using Pusula.Training.HealthCare.Permissions;
 using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
@@ -75,19 +75,19 @@ public class RadiologyRequestItemsAppService
 
     #region GetListWithNavigationPropertiesByRequestItemAsync
     public virtual async Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByRequestItemAsync(GetRadiologyRequestItemsInput input, Guid id)
-    { 
+    {
         var totalCount = await radiologyRequestItemRepository.GetCountAsync(
             input.FilterText,
-            id,  
+            id,
             input.ExaminationId,
             input.Result,
             input.ResultDate,
             input.State
         );
-         
+
         var items = await radiologyRequestItemRepository.GetListWithNavigationPropertiesAsyncByRequestId(
             input.FilterText,
-            id, 
+            id,
             input.ExaminationId,
             input.Result,
             input.ResultDate,
@@ -100,12 +100,24 @@ public class RadiologyRequestItemsAppService
             input.MaxResultCount,
             input.SkipCount
         );
-         
+
         return new PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>(
             totalCount,
             ObjectMapper.Map<List<RadiologyRequestItemWithNavigationProperties>, List<RadiologyRequestItemWithNavigationPropertiesDto>>(items)
         );
     }
+    #endregion
+
+    #region GetListWithNavigationPropertiesByPatientIdAsync
+    public virtual async Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByPatientIdAsync(Guid patientId)
+    {
+        var items = await radiologyRequestItemRepository.GetListWithNavigationPropertiesAsyncByPatientId(patientId);
+
+        var itemsDto = ObjectMapper.Map<List<RadiologyRequestItemWithNavigationProperties>, List<RadiologyRequestItemWithNavigationPropertiesDto>>(items);
+
+        return new PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>(itemsDto.Count, itemsDto);
+    }
+
     #endregion
 
 

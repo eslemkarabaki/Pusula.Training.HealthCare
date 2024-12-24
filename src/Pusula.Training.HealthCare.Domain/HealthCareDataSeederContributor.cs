@@ -84,7 +84,7 @@ public class HealthCareDataSeederContributor(
         await SeedUserAsync("Selçuk", "Şahin", "prm_selcuk", "selcuk@gmail.com", "1q2w3E*", "prm");
         await SeedUserAsync("Berfin", "Tek", "prm_berfin", "berfin@gmail.com", "1q2w3E*", "prm");
         await SeedUserAsync("Yusuf", "Altunsoy", "prm_yusuf", "yusuf@gmail.com", "1q2w3E*", "prm");
-        await SeedUserAsync("Zeynep", "Salihoğlu", "prm_zeynep", "zeynep@gmail.com", "1q2w3E*", "prm");
+        await SeedUserAsync("Zeynep", "Salihoğlu", "zeynep", "zeynep@gmail.com", "1q2w3E*", "technician");
         await SeedUserAsync("Eslem", "Karabaki", "prm_eslem", "eslem@gmail.com", "1q2w3E*", "prm");
 
         var countries = await SeedCountriesAsync();

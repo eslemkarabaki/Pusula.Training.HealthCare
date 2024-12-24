@@ -75,7 +75,7 @@
                                 @bind-Value="@Filter.PatientId" TValue="Guid?"
                                 TItem="PatientDto" Placeholder="@L["Patient"]"
                                 DataSource="@PatientList" AllowFiltering Autofill Highlight
-                                EnableVirtualization ShowClearButton>
+                                EnableVirtualization ShowClearButton PopupHeight="300px">
                     <AutoCompleteEvents TValue="Guid?" TItem="PatientDto"
                                         Filtering="@FilterPatientAsync" ValueChange="@SearchAsync" />
                     <AutoCompleteFieldSettings Text="FullName" Value="Id" />

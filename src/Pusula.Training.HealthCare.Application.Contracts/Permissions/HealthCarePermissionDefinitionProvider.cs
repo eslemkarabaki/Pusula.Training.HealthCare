@@ -125,20 +125,12 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
 #region Radiology
 
     private void SetRadiologyPermissions(PermissionGroupDefinition group)
-    {
-        SetStandardPermissions(
-            group, HealthCarePermissions.RadiologyExaminationGroups.Default, "RadiologyExaminationGroups"
-        );
+    {   
+        SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminationGroups.Default, "RadiologyExaminationGroups");
         SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminations.Default, "RadiologyExaminations");
-        SetStandardPermissions(
-            group, HealthCarePermissions.RadiologyExaminationProcedures.Default, "RadiologyExaminationProcedures"
-        );
-        SetStandardPermissions(
-            group, HealthCarePermissions.RadiologyExaminationDocuments.Default, "RadiologyExaminationDocuments"
-        );
+        SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminationDocuments.Default, "RadiologyExaminationDocuments");
         SetStandardPermissions(group, HealthCarePermissions.RadiologyRequests.Default, "RadiologyRequests");
-        SetStandardPermissions(group, RadiologyRequestItems.Default, "RadiologyRequestItems");
-        SetStandardPermissions(group, Radiologies.Default, "Radiologies");
+        SetStandardPermissions(group, RadiologyRequestItems.Default, "RadiologyRequestItems"); 
         SetStandardPermissions(group, RadiologyReports.Default, "RadiologyReports");
         SetStandardPermissions(group, RadiologyDefinitions.Default, "RadiologyDefinitions");
         SetStandardPermissions(group, RadiologyTransactions.Default, "RadiologyTransactions");
@@ -402,10 +394,12 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
 
     private void AddStandardChildPermissions(PermissionDefinition permission)
     {
+        permission.AddChild(permission.Name + ".Menu", L("Permission:Menu"));
         permission.AddChild(permission.Name + ".Create", L("Permission:Create"));
         permission.AddChild(permission.Name + ".Edit", L("Permission:Edit"));
         permission.AddChild(permission.Name + ".Delete", L("Permission:Delete"));
     }
 
-#endregion
+
+    #endregion
 }
