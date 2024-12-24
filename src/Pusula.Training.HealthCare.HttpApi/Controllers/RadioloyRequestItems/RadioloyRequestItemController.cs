@@ -78,5 +78,8 @@ public class RadioloyRequestItemController : HealthCareController, IRadiologyReq
     [Route("download-token")]
     public virtual async Task<DownloadTokenResultDto> GetDownloadTokenAsync() => await _radiologyRequestItemsAppService.GetDownloadTokenAsync();
 
- 
+    public Task<PagedResultDto<RadiologyRequestItemWithNavigationPropertiesDto>> GetListWithNavigationPropertiesByPatientIdAsync(Guid patientId)
+    {
+        throw new NotImplementedException();
+    }
 }

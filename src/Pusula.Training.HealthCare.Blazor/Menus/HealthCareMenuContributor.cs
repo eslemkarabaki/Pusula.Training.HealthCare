@@ -101,7 +101,7 @@ public class HealthCareMenuContributor : IMenuContributor
                         HealthCareMenus.RadiologyDefinitions,
                         l["Definition"],
                         "/radiology-definitions",
-                        requiredPermissionName: HealthCarePermissions.RadiologyDefinitions.Default
+                        requiredPermissionName: HealthCarePermissions.RadiologyDefinitions.Menu
                     )
                 )
                 .AddItem(
@@ -109,7 +109,7 @@ public class HealthCareMenuContributor : IMenuContributor
                         HealthCareMenus.RadiologyTransactions,
                         l["Transactions"],
                         "/radiology-transaction",
-                        requiredPermissionName: HealthCarePermissions.RadiologyTransactions.Default
+                        requiredPermissionName: HealthCarePermissions.RadiologyTransactions.Menu
                     )
                 )
                 .AddItem(
@@ -117,7 +117,7 @@ public class HealthCareMenuContributor : IMenuContributor
                         HealthCareMenus.RadiologyReports,
                         l["Reports"],
                         "/radiology-reports",
-                        requiredPermissionName: HealthCarePermissions.RadiologyReports.Default
+                        requiredPermissionName: HealthCarePermissions.RadiologyReports.Menu
                     )
                 )
                 .AddItem(
@@ -125,7 +125,7 @@ public class HealthCareMenuContributor : IMenuContributor
                         HealthCareMenus.RadiologyExaminationRequests,
                         l["Requests"],
                         "/radiology-requests",
-                        requiredPermissionName: HealthCarePermissions.RadiologyRequestItems.Default
+                        requiredPermissionName: HealthCarePermissions.RadiologyRequests.Menu
                     )
                 )
         );

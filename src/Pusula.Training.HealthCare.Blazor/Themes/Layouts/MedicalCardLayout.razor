@@ -74,6 +74,18 @@
             <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("appointment-history")" class="nav-link">
                 Randevu Geçmişi
          </NavLink>
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="izlemDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    İzlem
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="izlemDropdown">
+                    <li>
+                        <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@HrefWithPatientId("radiology-document")" class="dropdown-item">
+                            Radiology
+                        </NavLink>
+                    </li> 
+                </ul>
+            </div>
       </div>
    </div>
 } else
@@ -83,26 +95,29 @@
 
 
 
-@code{
+@code {
 
-   [CascadingParameter]
-   RouteData RouteData { get; set; } = null!;
+    [CascadingParameter]
+    RouteData RouteData { get; set; } = null!;
 
-   private ProtocolDto? Protocol { get; set; }
-   private string BaseAddress => $"medical/medical-card/{ProtocolNo}";
-   private int ProtocolNo { get; set; }
+    private ProtocolDto? Protocol { get; set; }
+    private string BaseAddress => $"medical/medical-card/{ProtocolNo}";
+    private int ProtocolNo { get; set; }
 
-   protected override async Task OnInitializedAsync()
-   {
-      if (RouteData.RouteValues.TryGetValue("ProtocolNo", out var protocolNo))
-      {
-         ProtocolNo = Convert.ToInt32(protocolNo);
-         Protocol = await ProtocolAppService.GetWithDetailsAsync(ProtocolNo);
-      }
-   }
+    protected override async Task OnInitializedAsync()
+    {
+        if (RouteData.RouteValues.TryGetValue("ProtocolNo", out var protocolNo))
+        {
+            ProtocolNo = Convert.ToInt32(protocolNo);
+            Protocol = await ProtocolAppService.GetWithDetailsAsync(ProtocolNo);
+        }
+    }
 
-   private string Href(string page) => $"{BaseAddress}/{page}";
+    private string Href(string page) => $"{BaseAddress}/{page}";
+
+    private string HrefWithPatientId(string page) => $"{BaseAddress}/{page}?patientId={Protocol?.Patient.Id}";
 }
+
 
 <style>
    .lpx-content{

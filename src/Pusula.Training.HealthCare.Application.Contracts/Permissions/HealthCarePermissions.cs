@@ -297,6 +297,7 @@ public static class HealthCarePermissions
     public static class RadiologyExaminationGroups
     {
         public const string Default = GroupName + ".RadiologyExaminationGroups";
+        public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
@@ -305,22 +306,16 @@ public static class HealthCarePermissions
     public static class RadiologyExaminations
     {
         public const string Default = GroupName + ".RadiologyExaminations";
+        public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
-
-    public static class RadiologyExaminationProcedures
-    {
-        public const string Default = GroupName + ".RadiologyExaminationProcedures";
-        public const string Edit = Default + ".Edit";
-        public const string Create = Default + ".Create";
-        public const string Delete = Default + ".Delete";
-    }
-
+     
     public static class RadiologyExaminationDocuments
     {
         public const string Default = GroupName + ".RadiologyExaminationDocuments";
+        public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
@@ -329,6 +324,7 @@ public static class HealthCarePermissions
     public static class RadiologyRequests
     {
         public const string Default = GroupName + ".RadiologyRequests";
+        public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
@@ -337,22 +333,16 @@ public static class HealthCarePermissions
     public static class RadiologyRequestItems
     {
         public const string Default = GroupName + ".RadiologyRequestItems";
+        public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
-
-    public static class Radiologies
-    {
-        public const string Default = GroupName + ".Radiologies";
-        public const string Edit = Default + ".Edit";
-        public const string Create = Default + ".Create";
-        public const string Delete = Default + ".Delete";
-    }
-
+      
     public static class RadiologyReports
     {
         public const string Default = GroupName + ".RadiologyReports";
+        public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
@@ -361,6 +351,7 @@ public static class HealthCarePermissions
     public static class RadiologyDefinitions
     {
         public const string Default = GroupName + ".RadiologyDefinitions";
+        public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
@@ -369,6 +360,7 @@ public static class HealthCarePermissions
     public static class RadiologyTransactions
     {
         public const string Default = GroupName + ".RadiologyTransactions";
+        public const string Menu = Default + ".Menu";
         public const string Edit = Default + ".Edit";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
