@@ -55,7 +55,7 @@ public class HealthCareMenuContributor : IMenuContributor
                     HealthCareMenus.Medical,
                     l["Menu:Medical"],
                     "/medical",
-                    "fa fa-file-alt"
+                    "fas fa-user-md"
                 )
             );
         }
