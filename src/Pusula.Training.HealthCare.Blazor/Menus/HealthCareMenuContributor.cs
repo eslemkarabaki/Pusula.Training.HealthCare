@@ -94,7 +94,7 @@ public class HealthCareMenuContributor : IMenuContributor
             new ApplicationMenuItem(
                     HealthCareMenus.Radiologies,
                     l["Menu:Radiologies"],
-                    icon: "fa fa-calendar-check"
+                    icon: "fa-solid fa-radiation"
                 )
                 .AddItem(
                     new ApplicationMenuItem(
