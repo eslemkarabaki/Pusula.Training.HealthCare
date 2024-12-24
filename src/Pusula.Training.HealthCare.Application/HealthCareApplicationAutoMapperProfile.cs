@@ -37,6 +37,8 @@ using Pusula.Training.HealthCare.ExaminationsPhysical;
 using Pusula.Training.HealthCare.Jobs;
 using Pusula.Training.HealthCare.Medicines;
 using Pusula.Training.HealthCare.Operations;
+using Pusula.Training.HealthCare.PatientHistories;
+using Pusula.Training.HealthCare.PatientHistoryMedicines;
 using Pusula.Training.HealthCare.Vaccines;
 
 namespace Pusula.Training.HealthCare;
@@ -204,6 +206,10 @@ public class HealthCareApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Patient, opt => opt.MapFrom(src => src.Patient));
 
 #endregion
+
+        CreateMap<PatientHistory, PatientHistoryDto>();
+        CreateMap<PatientHistoryDto, PatientHistoryUpdateDto>();
+        CreateMap<PatientHistoryMedicine, PatientHistoryMedicineDto>();
 
         CreateMap<Allergy, AllergyDto>();
         CreateMap<Medicine, MedicineDto>();

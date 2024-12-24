@@ -163,13 +163,15 @@ public class EfCorePatientRepository(IDbContextProvider<HealthCareDbContext> dbC
                .Include(e => e.PatientType)
                .Include(e => e.PatientNotes)
                .ThenInclude(e => e.Creator)
+               .Include(e => e.Insurance)
                .Select(
                    p => new PatientWithNavigationProperties()
                    {
                        Patient = p,
                        Country = p.Country,
                        PatientType = p.PatientType,
-                       PatientNotes = p.PatientNotes
+                       PatientNotes = p.PatientNotes,
+                       Insurance = p.Insurance
                    }
                );
     }

@@ -7,10 +7,7 @@
 
 <div class="hc-grid"
      style="grid-template-columns: repeat(@X,1fr);grid-template-rows: repeat(@Y,1fr);gap: @(Gap)px">
-    @foreach (var content in _contents)
-    {
-        @content
-    }
+    @ChildContent
 </div>
 
 @code {
@@ -25,7 +22,6 @@
     public int Gap { get; set; } = 10;
 
     [Parameter]
-    public RenderFragment ChildContent { set => _contents.Add(value); }
+    public RenderFragment? ChildContent { get; set; }
 
-    private List<RenderFragment> _contents = [];
 }

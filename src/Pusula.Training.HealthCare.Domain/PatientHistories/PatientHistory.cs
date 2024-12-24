@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Pusula.Training.HealthCare.Educations;
 using Pusula.Training.HealthCare.Jobs;
@@ -17,16 +16,22 @@ public class PatientHistory : FullAuditedAggregateRoot<Guid>
 {
     public Guid PatientId { get; private set; }
 
-    public Guid JobId { get; private set; }
-    public Job Job { get; set; }
+    public Guid? JobId { get; private set; }
+    public Job? Job { get; set; }
 
-    public Guid EducationId { get; private set; }
-    public Education Education { get; set; }
+    public Guid? EducationId { get; private set; }
+    public Education? Education { get; set; }
 
-    public ICollection<EnumPatientHabit> Habits { get; private set; }
-    public ICollection<EnumSpecialCase> SpecialCases { get; private set; }
-    public ICollection<EnumBodyDevice> BodyDevices { get; private set; }
-    public ICollection<EnumTherapy> Therapies { get; private set; }
+    public IList<EnumPatientHabit> Habits { get; private set; }
+    public IList<EnumSpecialCase> SpecialCases { get; private set; }
+    public IList<EnumBodyDevice> BodyDevices { get; private set; }
+    public IList<EnumTherapy> Therapies { get; private set; }
+
+    public bool MedicinesNotExist { get; private set; }
+    public bool OperationsNotExist { get; private set; }
+    public bool VaccinesNotExist { get; private set; }
+    public bool BloodTransfusionsNotExist { get; private set; }
+    public bool AllergiesNotExist { get; private set; }
 
     public ICollection<PatientHistoryAllergy> Allergies { get; set; }
     public ICollection<PatientHistoryBloodTransfusion> BloodTransfusions { get; set; }
@@ -49,14 +54,10 @@ public class PatientHistory : FullAuditedAggregateRoot<Guid>
 
     public PatientHistory(
         Guid id,
-        Guid patientId,
-        Guid jobId,
-        Guid educationId
+        Guid patientId
     ) : base(id)
     {
         SetPatientId(patientId);
-        SetJobId(jobId);
-        SetEducationId(educationId);
         Habits = [];
         SpecialCases = [];
         BodyDevices = [];
@@ -74,11 +75,41 @@ public class PatientHistory : FullAuditedAggregateRoot<Guid>
     public void SetEducationId(Guid educationId) =>
         EducationId = Check.NotDefaultOrNull<Guid>(educationId, nameof(educationId));
 
-    public void SetHabits(ICollection<EnumPatientHabit> habits) => Habits = habits;
+    public void SetHabits(IList<EnumPatientHabit> habits) => Habits = habits;
 
-    public void SetSpecialCases(ICollection<EnumSpecialCase> specialCases) => SpecialCases = specialCases;
+    public void SetSpecialCases(IList<EnumSpecialCase> specialCases) => SpecialCases = specialCases;
 
-    public void SetBodyDevices(ICollection<EnumBodyDevice> bodyDevices) => BodyDevices = bodyDevices;
+    public void SetBodyDevices(IList<EnumBodyDevice> bodyDevices) => BodyDevices = bodyDevices;
 
-    public void SetTherapies(ICollection<EnumTherapy> therapies) => Therapies = therapies;
+    public void SetTherapies(IList<EnumTherapy> therapies) => Therapies = therapies;
+
+    public void MedicineNotExist()
+    {
+        MedicinesNotExist = true;
+        Medicines = [];
+    }
+
+    public void AllergyNotExist()
+    {
+        AllergiesNotExist = true;
+        Allergies = [];
+    }
+
+    public void BloodTransfusionNotExist()
+    {
+        BloodTransfusionsNotExist = true;
+        BloodTransfusions = [];
+    }
+
+    public void VaccineNotExist()
+    {
+        VaccinesNotExist = true;
+        Vaccines = [];
+    }
+
+    public void OperationNotExist()
+    {
+        OperationsNotExist = true;
+        Operations = [];
+    }
 }

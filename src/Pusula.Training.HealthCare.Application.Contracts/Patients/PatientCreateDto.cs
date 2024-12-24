@@ -28,6 +28,7 @@ public class PatientCreateDto
     public EnumMaritalStatus MaritalStatus { get; set; }
     public Guid CountryId { get; set; }
     public Guid PatientTypeId { get; set; }
+    public Guid InsuranceId { get; set; }
 
     public ICollection<AddressCreateDto> Addresses { get; set; } = [];
     public ICollection<PatientNoteCreateDto> Notes { get; set; } = [];

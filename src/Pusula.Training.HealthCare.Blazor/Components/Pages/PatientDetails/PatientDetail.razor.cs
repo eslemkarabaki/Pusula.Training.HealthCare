@@ -1,20 +1,13 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Patients;
 
 namespace Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails;
 
 public partial class PatientDetail
 {
-    [Parameter] public int PatientNo { get; set; }
-    [CascadingParameter] private PatientWithNavigationPropertiesDto Patient { get; set; } = null!;
+    [Parameter]
+    public int PatientNo { get; set; }
 
-    private IReadOnlyList<AppointmentWithNavigationPropertiesDto> Appointments { get; set; } = [];
-
-    protected override async Task OnInitializedAsync() => await GetPatientWaitingAppointmentsAsync();
-
-    private async Task GetPatientWaitingAppointmentsAsync() =>
-        Appointments = await AppointmentsAppService.GetPatientWaitingAppointmentsAsync(Patient.Patient.Id);
+    [CascadingParameter]
+    private PatientWithNavigationPropertiesDto Patient { get; set; } = null!;
 }

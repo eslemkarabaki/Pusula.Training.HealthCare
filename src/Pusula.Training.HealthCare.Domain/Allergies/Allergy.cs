@@ -9,18 +9,15 @@ namespace Pusula.Training.HealthCare.Allergies;
 public class Allergy : FullAuditedAggregateRoot<Guid>
 {
     public string Name { get; private set; }
-    public ICollection<PatientHistoryAllergy> Allergies { get; set; }
 
     protected Allergy()
     {
         Name = string.Empty;
-        Allergies = [];
     }
 
     public Allergy(Guid id, string name) : base(id)
     {
         SetName(name);
-        Allergies = [];
     }
 
     public void SetName(string name) =>

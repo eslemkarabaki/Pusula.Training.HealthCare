@@ -24,6 +24,7 @@
                   <h5 class="mb-0">@Patient.Patient.FullName</h5>
                   <span class="badge text-bg-secondary">@Patient.PatientType.Name</span>
                   <span class="fs-12p color-grey-700">@Patient.Country.Name</span>
+
                </div>
 
                <div class="d-flex gap-1 align-items-center">
@@ -47,6 +48,8 @@
                   <div>
                      @($"+{Patient.Patient.MobilePhoneNumberCode} {Patient.Patient.MobilePhoneNumber}")
                   </div>
+                  <span class="vr"></span>
+                  <span>@Patient.Insurance.Name</span>
                </div>
             </div>
             <div class="d-flex align-items-center flex-column gap-1">

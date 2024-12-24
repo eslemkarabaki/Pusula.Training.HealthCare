@@ -36,10 +36,10 @@
             <div class="d-flex gap-2 p-2 align-items-end">
                 <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]"/>
 
-                <SfDateRangePicker TValue="DateTime" @bind-StartDate="@Filter.StartTime"
+                <SfDateRangePicker TValue="DateTime?" @bind-StartDate="@Filter.StartTime"
                                    @bind-EndDate="@Filter.EndTime" FullScreen Format="dd.MM.yyyy"
                                    FirstDayOfWeek="@((int)DayOfWeek.Monday)">
-                    <DateRangePickerEvents TValue="DateTime" ValueChange="@SearchAsync"></DateRangePickerEvents>
+                    <DateRangePickerEvents TValue="DateTime?" ValueChange="@SearchAsync"></DateRangePickerEvents>
                     <DateRangePickerPresets>
                         <DateRangePickerPreset Label="@L["Today"]" Start="@_today" End="@_tomorrow"/>
                         <DateRangePickerPreset Label="@L["ThisWeek"]" Start="@_thisWeekStart"

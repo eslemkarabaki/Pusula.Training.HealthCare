@@ -9,24 +9,22 @@ public class PatientHistoryBloodTransfusion : Entity
 {
     public Guid PatientHistoryId { get; set; }
     public Guid BloodTransfusionId { get; set; }
-    public string Explanation { get; set; }
-    public bool NotExist { get; set; }
+    public virtual BloodTransfusion BloodTransfusion { get; set; }
+    public string? Explanation { get; set; }
 
     protected PatientHistoryBloodTransfusion() => Explanation = string.Empty;
 
     public PatientHistoryBloodTransfusion(
         Guid patientHistoryId,
         Guid bloodTransfusionId,
-        string explanation,
-        bool notExist
+        string? explanation
     )
     {
         PatientHistoryId = Check.NotDefaultOrNull<Guid>(patientHistoryId, nameof(patientHistoryId));
         BloodTransfusionId = Check.NotDefaultOrNull<Guid>(bloodTransfusionId, nameof(bloodTransfusionId));
-        Explanation = Check.NotNullOrWhiteSpace(
+        Explanation = Check.Length(
             explanation, nameof(explanation), BloodTransfusionConsts.ExplanationMaxLength
         );
-        NotExist = notExist;
     }
 
     public override object?[] GetKeys() => [PatientHistoryId, BloodTransfusionId];

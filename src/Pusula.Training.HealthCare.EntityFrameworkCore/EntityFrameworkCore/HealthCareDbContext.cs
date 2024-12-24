@@ -53,6 +53,7 @@ using Pusula.Training.HealthCare.ExaminationDiagnoses;
 using Pusula.Training.HealthCare.Jobs;
 using Pusula.Training.HealthCare.Medicines;
 using Pusula.Training.HealthCare.Operations;
+using Pusula.Training.HealthCare.PatientHistories;
 using Pusula.Training.HealthCare.Vaccines;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
