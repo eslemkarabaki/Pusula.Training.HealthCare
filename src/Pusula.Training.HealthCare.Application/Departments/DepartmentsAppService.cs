@@ -65,9 +65,8 @@ namespace Pusula.Training.HealthCare.Departments
 
         [Authorize(HealthCarePermissions.Departments.Edit)]
         public virtual async Task<DepartmentDto> UpdateAsync(Guid id, DepartmentUpdateDto input)
-        {
-            var department = await departmentRepository.GetAsync(id);
-            await departmentManager.UpdateAsync(
+        { 
+            var department = await departmentManager.UpdateAsync(
             id,
             input.Name,
             input.Description,

@@ -60,10 +60,16 @@ namespace Pusula.Training.HealthCare.Hospitals
         [Authorize(HealthCarePermissions.Hospitals.Edit)]
         public virtual async Task<HospitalDto> UpdateAsync(Guid id, HospitalUpdateDto input)
         {
-            var hospital = await hospitalRepository.GetAsync(id);
-            await hospitalManager.UpdateAsync(id, input.Name, input.Address, input.DepartmentNames, input.ConcurrencyStamp); 
-            return ObjectMapper.Map<HospitalWithDepartment, HospitalDto>(hospital);
+            if (input.DepartmentNames == null)
+            {
+                input.DepartmentNames = Array.Empty<string>();
+            }
+
+            var hospital = await hospitalManager.UpdateAsync(id, input.Name, input.Address, input.DepartmentNames, input.ConcurrencyStamp);
+
+            return ObjectMapper.Map<Hospital, HospitalDto>(hospital);
         }
+
 
         public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(HospitalExcelDownloadDto input)
         {

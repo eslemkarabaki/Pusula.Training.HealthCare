@@ -74,13 +74,21 @@ namespace Pusula.Training.HealthCare.RadiologyExaminations
         [Authorize(HealthCarePermissions.RadiologyExaminations.Edit)]
         public virtual async Task<RadiologyExaminationDto> UpdateAsync(Guid id, RadiologyExaminationUpdateDto input)
         {
-            var RadiologyExamination = await radiologyExaminationRepository.GetAsync(id);
-            RadiologyExamination.Name = input.Name;
-            RadiologyExamination.ExaminationCode = input.ExaminationCode;
-            RadiologyExamination.GroupId = input.GroupId;
-
-            await radiologyExaminationRepository.UpdateAsync(RadiologyExamination);
-            return ObjectMapper.Map<RadiologyExamination, RadiologyExaminationDto>(RadiologyExamination);
+            try
+            {
+                var radiologyExamination = await radiologyExaminationManager.UpdateAsync(
+                    id,
+                    input.Name,
+                    input.ExaminationCode,
+                    input.GroupId,
+                    input.ConcurrencyStamp
+                );
+                return ObjectMapper.Map<RadiologyExamination, RadiologyExaminationDto>(radiologyExamination);
+            }
+            catch (Exception ex)
+            {
+                throw new UserFriendlyException("An error occurred while updating the radiology examination. Please try again.", ex.Message);
+            }
         }
 
         [AllowAnonymous]
