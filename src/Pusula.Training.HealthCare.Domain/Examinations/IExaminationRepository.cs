@@ -6,7 +6,7 @@ using Volo.Abp.Domain.Repositories;
 namespace Pusula.Training.HealthCare.Examinations;
 public interface IExaminationRepository : IRepository<Examination, Guid>
 {
-    Task<ExaminationWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id);
+    Task<ExaminationWithNavigationProperties> GetWithNavigationPropertiesAsync(int id);
 
     Task DeleteAllAsync(
     CancellationToken cancellationToken = default);
@@ -17,7 +17,7 @@ public interface IExaminationRepository : IRepository<Examination, Guid>
      DateTime? StartDate = null,
      string? sorting = null,
         int maxResultCount = int.MaxValue,
-        int skipCount = 0,
+        int skipCount = 0, 
         CancellationToken cancellationToken = default);
     Task<long> GetCountAsync(
         Guid? ProtocolId = null,

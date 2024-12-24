@@ -64,7 +64,7 @@ public class HealthCareApplicationModule : AbpModule
             options.DefaultTimeout = 86400;
         });
             
-        var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]!);
+            var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]!);
 
         context.Services
                .AddDataProtection()

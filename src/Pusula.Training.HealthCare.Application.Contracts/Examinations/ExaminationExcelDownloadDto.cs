@@ -18,6 +18,7 @@ public class ExaminationExcelDownloadDto
     public Guid? PatientId { get; set; }
     public Guid? DoctorId { get; set; }
 
+    public int ProtocolNo { get; set; }
 
     public ExaminationExcelDownloadDto()
     {

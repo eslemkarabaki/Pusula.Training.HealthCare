@@ -1,5 +1,7 @@
 using JetBrains.Annotations;
+using Pusula.Training.HealthCare.Examinations;
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Data;
@@ -7,7 +9,7 @@ using Volo.Abp.Domain.Services;
 
 namespace Pusula.Training.HealthCare.Protocols;
 
-public class ProtocolManager(IProtocolRepository protocolRepository) : DomainService
+public class ProtocolManager(IProtocolRepository protocolRepository, ExaminationManager examinationManager) : DomainService
 {
     public virtual async Task<Protocol> CreateAsync(
         Guid patientId,
@@ -19,12 +21,15 @@ public class ProtocolManager(IProtocolRepository protocolRepository) : DomainSer
         EnumProtocolStatus status
     )
     {
-        var protocol = new Protocol(
+        
+        var protocol = await protocolRepository.InsertAsync(new Protocol(
             GuidGenerator.Create(), patientId, doctorId, departmentId, protocolTypeId, protocolTypeActionId,
             description, status, DateTime.Now
-        );
-
-        return await protocolRepository.InsertAsync(protocol);
+        ));
+        
+        await examinationManager.CreateAsync(protocol.Id, doctorId, patientId, string.Empty, protocol.StartTime);
+        return protocol;
+       
     }
 
     public virtual async Task<Protocol> UpdateAsync(

@@ -10,6 +10,8 @@ namespace Pusula.Training.HealthCare.Examinations
         Task<ExaminationDto> CreateAsync(ExaminationCreateDto input);
         Task<ExaminationDto> GetAsync(Guid id);
         Task<PagedResultDto<ExaminationWithNavigationPropertiesDto>> GetListWithNavigationPropertiesAsync(GetExaminationsInput input);
+        Task<ExaminationWithNavigationPropertiesDto> GetWithProtocolNoAsync(GetExaminationsInput input);
+
         Task<ExaminationDto> UpdateAsync(Guid id, ExaminationUpdateDto input);
         Task DeleteAsync(Guid id);
     }

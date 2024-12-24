@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Pusula.Training.HealthCare.ExaminationDiagnoses;
+using Pusula.Training.HealthCare.ExaminationsPhysical;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -23,8 +25,6 @@ namespace Pusula.Training.HealthCare.Examinations
             string summaryDocument,
             DateTime startDate)
         {
-            Check.NotNullOrWhiteSpace(summaryDocument, nameof(summaryDocument));
-
             var examination = new Examination(
                 GuidGenerator.Create(),
                 protocolId,
@@ -32,6 +32,7 @@ namespace Pusula.Training.HealthCare.Examinations
                 patientId,
                 summaryDocument,
                 startDate
+                
             );
 
             return await _examinationRepository.InsertAsync(examination);
@@ -47,15 +48,19 @@ namespace Pusula.Training.HealthCare.Examinations
         public async Task<Examination> UpdateAsync(
             Guid id,
             string summaryDocument,
-            DateTime startDate)
+            ExaminationDiagnosis examinationDiagnoses,
+            ExaminationAnamnez examinationAnamnez,
+            ExaminationPhysical examinationPhysical)
+            
         {
             Check.NotNullOrWhiteSpace(summaryDocument, nameof(summaryDocument));
 
             var examination = await _examinationRepository.GetAsync(id);
-
+            id = examination.Id;
             examination.SummaryDocument = summaryDocument;
-            examination.StartDate = startDate;
-
+            examination.ExaminationAnamnez = examinationAnamnez;
+            examination.ExaminationDiagnoses = examinationDiagnoses;
+            examination.ExaminationPhysical = examinationPhysical;
             return await _examinationRepository.UpdateAsync(examination);
         }
 
@@ -64,6 +69,5 @@ namespace Pusula.Training.HealthCare.Examinations
         {
             await _examinationRepository.DeleteAsync(id);
         }
-        
     }
 }
