@@ -13,8 +13,6 @@ public class GetProtocolsInput : PagedAndSortedResultRequestDto
     public Guid? ProtocolTypeId { get; set; }
     public Guid? ProtocolTypeActionId { get; set; }
     public EnumProtocolStatus Status { get; set; } = EnumProtocolStatus.None;
-    public DateTime StartTime { get; set; } = DateTime.Today;
-    public DateTime EndTime { get; set; }
-
-    public GetProtocolsInput() { }
+    public DateTime? StartTime { get; set; }
+    public DateTime? EndTime { get; set; }
 }

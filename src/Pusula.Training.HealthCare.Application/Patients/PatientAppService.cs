@@ -110,7 +110,7 @@ public class PatientAppService(
         await patientRules.EnsurePassportNumberNotExistsAsync(input.PassportNumber);
 
         var patient = await patientManager.CreateAsync(
-            input.CountryId, input.PatientTypeId, input.FirstName, input.LastName, input.BirthDate,
+            input.CountryId, input.PatientTypeId, input.InsuranceId, input.FirstName, input.LastName, input.BirthDate,
             input.IdentityNumber, input.PassportNumber, input.EmailAddress, input.MobilePhoneNumberCode,
             input.MobilePhoneNumber, input.HomePhoneNumberCode, input.HomePhoneNumber, input.Gender, input.BloodType,
             input.MaritalStatus,
@@ -128,7 +128,8 @@ public class PatientAppService(
     public virtual async Task<PatientDto> UpdateAsync(Guid id, PatientUpdateDto input)
     {
         var patient = await patientManager.UpdateAsync(
-            id, input.CountryId, input.PatientTypeId, input.FirstName, input.LastName, input.BirthDate,
+            id, input.CountryId, input.PatientTypeId, input.InsuranceId, input.FirstName, input.LastName,
+            input.BirthDate,
             input.EmailAddress, input.MobilePhoneNumberCode, input.MobilePhoneNumber, input.HomePhoneNumberCode,
             input.HomePhoneNumber, input.Gender, input.BloodType,
             input.MaritalStatus, ObjectMapper.Map<ICollection<AddressUpdateDto>, ICollection<Address>>(input.Addresses),

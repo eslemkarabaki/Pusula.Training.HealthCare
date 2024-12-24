@@ -25,6 +25,7 @@
 @inject ICountryAppService CountryAppService
 @inject ICityAppService CityAppService
 @inject IDistrictAppService DistrictAppService
+@inject IInsurancesAppService InsurancesAppService
 
 <SfDialog @ref="Dialog" Target="#target" Width="1000px" IsModal ShowCloseIcon Visible="false">
     <DialogTemplates>
@@ -148,6 +149,15 @@
                                             </div>
                                         </div>
 
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["Insurance"]</label>
+                                            <SfDropDownList TItem="InsuranceDto" TValue="Guid"
+                                                            @bind-Value="@NewPatient.InsuranceId" PopupHeight="150px"
+                                                            Placeholder="@L["Insurance"]"
+                                                            DataSource="@InsuranceList">
+                                                <DropDownListFieldSettings Value="Id" Text="Name"/>
+                                            </SfDropDownList>
+                                        </div>
 
                                         <div class="col-4">
                                             <label class="e-form-label">@L["BloodType"]</label>
@@ -436,7 +446,7 @@
     public EventCallback<PatientDto> PatientCreatedAsync { get; set; }
 
     private PatientCreateDtoValidator PatientCreateValidator { get; set; } = new();
-    
+
     private SfDialog Dialog { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> PatientCountryListAutoComplete { get; set; } = null!;
     private SfAutoComplete<Guid, CountryDto> AddressCountryListAutoComplete { get; set; } = null!;
@@ -468,6 +478,7 @@
     private IEnumerable<CountryDto> CountryList { get; set; } = [];
     private IEnumerable<CityDto> CityList { get; set; } = [];
     private IEnumerable<DistrictDto> DistrictList { get; set; } = [];
+    private IEnumerable<InsuranceDto> InsuranceList { get; set; } = [];
 
     private Guid SelectedAddressCountryId { get; set; } = Guid.Empty;
     private Guid SelectedAddressCityId { get; set; } = Guid.Empty;
@@ -478,6 +489,7 @@
         PatientTypeList = await PatientTypeAppService.GetListAsync();
         CountryList = await CountryAppService.GetListAsync(new GetCountriesInput());
         CurrentCountry = await AppDefaultAppService.GetCurrentCountryAsync();
+        InsuranceList = await InsurancesAppService.GetListInsurancesAsync();
     }
 
     private async Task DefaultAutoCompleteFilterAsync<TDto>(

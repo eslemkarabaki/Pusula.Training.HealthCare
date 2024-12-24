@@ -37,6 +37,7 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetBloodTransfusionsPermissions(myGroup);
         SetJobsPermissions(myGroup);
         SetEducationsPermissions(myGroup);
+        SetPatientHistoryPermissions(myGroup);
 
         var appointmentPermission =
             myGroup.AddPermission(HealthCarePermissions.Appointments.Default, L("Permission:Appointments"));
@@ -382,6 +383,16 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.Educations.Create, L("Permission:Create"));
         permission.AddChild(HealthCarePermissions.Educations.Edit, L("Permission:Edit"));
         permission.AddChild(HealthCarePermissions.Educations.Delete, L("Permission:Delete"));
+    }
+
+    private void SetPatientHistoryPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            PatientHistory.Default, L("Permission:PatientHistory")
+        );
+        permission.AddChild(PatientHistory.Create, L("Permission:Create"));
+        permission.AddChild(PatientHistory.Edit, L("Permission:Edit"));
+        permission.AddChild(PatientHistory.Delete, L("Permission:Delete"));
     }
 
 #region StandardPermissions

@@ -81,5 +81,11 @@ public class PatientConfigurations : IEntityTypeConfiguration<Patient>
          .IsRequired()
          .HasForeignKey(e => e.PatientTypeId)
          .OnDelete(DeleteBehavior.NoAction);
+
+        b.HasOne(e => e.Insurance)
+         .WithMany()
+         .IsRequired()
+         .HasForeignKey(e => e.InsuranceId)
+         .OnDelete(DeleteBehavior.NoAction);
     }
 }

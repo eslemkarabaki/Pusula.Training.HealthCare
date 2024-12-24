@@ -10,18 +10,15 @@ public class Vaccine : FullAuditedAggregateRoot<Guid>
 {
     public string Name { get; private set; }
 
-    public ICollection<PatientHistoryVaccine> Vaccines { get; set; }
 
     protected Vaccine()
     {
         Name = string.Empty;
-        Vaccines = [];
     }
 
     public Vaccine(Guid id, string name) : base(id)
     {
         SetName(name);
-        Vaccines = [];
     }
 
     public void SetName(string name) =>

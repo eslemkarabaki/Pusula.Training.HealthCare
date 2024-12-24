@@ -1,0 +1,44 @@
+@using Microsoft.Extensions.Localization
+@using Pusula.Training.HealthCare.Localization
+@using Pusula.Training.HealthCare.Protocols
+@using Volo.Abp.Application.Dtos
+
+@inject IStringLocalizer<HealthCareResource> L
+@inject IProtocolAppService ProtocolAppService
+
+<HcCard CardIcon="fas fa-history" Title="@L["LastVisits"]" NoContent="@(!Protocols.Items.Any())" Class="p-2">
+    <ChildContent>
+        @if (Protocols.Items.Any())
+        {
+            <div class="row row-cols-2 g-2">
+                @foreach (var protocol in Protocols.Items)
+                {
+                    <div class="col">
+                        <div class="border-1 border-grey-300 border-r-6p fs-13p p-8p d-flex flex-column">
+                            <span class="fw-700 color-blue-500">@protocol.ProtocolTypeAction.Name</span>
+                            <div class="fw-700 d-flex gap-1">
+                                <span>@protocol.Doctor.FullName</span>
+                                <span>@protocol.StartTime.ToString("dd.MM.yyyy hh:mm")</span>
+                            </div>
+                            <span>@protocol.ProtocolType.Name</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </ChildContent>
+</HcCard>
+
+
+@code{
+
+    [Parameter]
+    public Guid PatientId { get; set; }
+
+    private PagedResultDto<ProtocolDto> Protocols { get; set; } = new();
+
+    protected override async Task OnInitializedAsync() => await GetProtocolsAsync();
+
+    private async Task GetProtocolsAsync() => Protocols = await ProtocolAppService.GetListWithDetailsAsync(new GetProtocolsInput() { PatientId = PatientId });
+
+}

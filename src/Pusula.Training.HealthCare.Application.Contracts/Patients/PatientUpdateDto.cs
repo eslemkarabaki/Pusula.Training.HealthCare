@@ -26,7 +26,7 @@ public class PatientUpdateDto : IHasConcurrencyStamp
     public EnumMaritalStatus MaritalStatus { get; set; }
     public Guid CountryId { get; set; }
     public Guid PatientTypeId { get; set; }
-
+    public Guid InsuranceId { get; set; }
     public ICollection<AddressUpdateDto> Addresses { get; set; } = [];
     public ICollection<PatientNoteUpdateDto> Notes { get; set; } = [];
     public string ConcurrencyStamp { get; set; } = null!;

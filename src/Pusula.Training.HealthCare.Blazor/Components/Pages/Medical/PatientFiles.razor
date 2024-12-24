@@ -1,0 +1,12 @@
+@page "/medical/medical-card/{ProtocolNo:int}/files"
+
+@using Pusula.Training.HealthCare.Blazor.Components.Pages.PatientDetails
+@using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+@using Pusula.Training.HealthCare.Permissions
+
+@attribute [Authorize(Roles = HealthCareRoles.Doctor)]
+
+@layout MedicalCardLayout
+@inherits HealthCareComponentBase
+
+<PatientFileManager PatientId="@Protocol.PatientId"></PatientFileManager>

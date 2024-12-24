@@ -48,6 +48,7 @@ using Pusula.Training.HealthCare.Examinations;
 using Pusula.Training.HealthCare.Jobs;
 using Pusula.Training.HealthCare.Medicines;
 using Pusula.Training.HealthCare.Operations;
+using Pusula.Training.HealthCare.PatientHistories;
 using Pusula.Training.HealthCare.Vaccines;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
@@ -121,6 +122,7 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<Allergy, EfCoreAllergyRepository>();
                 options.AddRepository<Job, EfCoreJobRepository>();
                 options.AddRepository<Education, EfCoreEducationRepository>();
+                options.AddRepository<PatientHistory, EfCorePatientHistoryRepository>();
             }
         );
 

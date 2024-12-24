@@ -9,17 +9,16 @@ public class PatientHistoryOperation : Entity
 {
     public Guid PatientHistoryId { get; set; }
     public Guid OperationId { get; set; }
-    public string Explanation { get; set; }
-    public bool NotExist { get; set; }
+    public virtual Operation Operation { get; set; }
+    public string? Explanation { get; set; }
 
     protected PatientHistoryOperation() => Explanation = string.Empty;
 
-    public PatientHistoryOperation(Guid patientHistoryId, Guid operationId, string explanation, bool notExist)
+    public PatientHistoryOperation(Guid patientHistoryId, Guid operationId, string? explanation)
     {
         PatientHistoryId = Check.NotDefaultOrNull<Guid>(patientHistoryId, nameof(patientHistoryId));
         OperationId = Check.NotDefaultOrNull<Guid>(operationId, nameof(operationId));
-        Explanation = Check.NotNullOrWhiteSpace(explanation, nameof(explanation), OperationConsts.ExplanationMaxLength);
-        NotExist = notExist;
+        Explanation = Check.Length(explanation, nameof(explanation), OperationConsts.ExplanationMaxLength);
     }
 
     public override object?[] GetKeys() => [PatientHistoryId, OperationId];
