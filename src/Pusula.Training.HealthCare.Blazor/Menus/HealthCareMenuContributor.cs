@@ -71,7 +71,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 .AddItem(
                     new ApplicationMenuItem(
                         HealthCareMenus.Transactions,
-                        l["Appointment"],
+                        l["Menu:Appointment"],
                         "/appointments",
                         requiredPermissionName: HealthCarePermissions.Appointments.Menu
                     )
@@ -79,7 +79,7 @@ public class HealthCareMenuContributor : IMenuContributor
                 .AddItem(
                     new ApplicationMenuItem(
                         HealthCareMenus.Reports,
-                        l["Reports"],
+                        l["Menu:Reports"],
                         "/appointment-reports",
                         requiredPermissionName: HealthCarePermissions.Appointments.Menu
                     )
@@ -192,14 +192,14 @@ public class HealthCareMenuContributor : IMenuContributor
                 .AddItem(
                     new ApplicationMenuItem(
                         HealthCareMenus.Diagnoses,
-                        l["Diagnosis"],
+                        l["Menu:Diagnosis"],
                         "/definition/diagnosis",
                         requiredPermissionName: HealthCarePermissions.Diagnosis.Menu
                     )
                 ).AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Departments,
-                         l["Departments"],
+                         l["Menu:Departments"],
                          "/definition/departments",
                          requiredPermissionName: HealthCarePermissions.Departments.Menu
                      )
@@ -207,7 +207,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Hospitals,
-                         l["Hospitals"],
+                         l["Menu:Hospitals"],
                          "/definition/hospitals",
                          requiredPermissionName: HealthCarePermissions.Hospitals.Menu
                      )
@@ -215,14 +215,14 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.AppointmentTypes,
-                         l["Appointment Type"],
+                         l["Menu:AppointmentType"],
                          "/definition/appointment-type",
                          requiredPermissionName: HealthCarePermissions.AppointmentTypes.Menu
                      )
                  ).AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.ProtocolTypes,
-                         l["Protocol Types"],
+                         l["Menu:ProtocolTypes"],
                          "/definition/protocol-types",
                          requiredPermissionName: HealthCarePermissions.ProtocolTypes.Menu
                      )
@@ -230,7 +230,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Insurances,
-                         l["Insurances"],
+                         l["Menu:Insurances"],
                          "/definition/insurances",
                          requiredPermissionName: HealthCarePermissions.Insurances.Menu
                      )
@@ -238,12 +238,12 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                              HealthCareMenus.Address,
-                             l["Address"]
+                             l["Menu:Address"]
                          )
                          .AddItem(
                              new ApplicationMenuItem(
                                  HealthCareMenus.Countries,
-                                 l["Countries"],
+                                 l["Menu:Countries"],
                                  "/definition/countries",
                                  requiredPermissionName: HealthCarePermissions.Countries.Menu
                              )
@@ -251,7 +251,7 @@ public class HealthCareMenuContributor : IMenuContributor
                          .AddItem(
                              new ApplicationMenuItem(
                                  HealthCareMenus.Cities,
-                                 l["Cities"],
+                                 l["Menu:Cities"],
                                  "/definition/cities",
                                  requiredPermissionName: HealthCarePermissions.Cities.Menu
                              )
@@ -259,7 +259,7 @@ public class HealthCareMenuContributor : IMenuContributor
                          .AddItem(
                              new ApplicationMenuItem(
                                  HealthCareMenus.Districts,
-                                 l["Districts"],
+                                 l["Menu:Districts"],
                                  "/definition/districts",
                                  requiredPermissionName: HealthCarePermissions.Districts.Menu
                              )
@@ -268,7 +268,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Allergies,
-                         l["Allergies"],
+                         l["Menu:Allergies"],
                          "/definition/allergies",
                          requiredPermissionName: HealthCarePermissions.Allergies.Menu
                      )
@@ -276,7 +276,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Medicines,
-                         l["Medicines"],
+                         l["Menu:Medicines"],
                          "/definition/medicines",
                          requiredPermissionName: HealthCarePermissions.Medicines.Menu
                      )
@@ -284,7 +284,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Operations,
-                         l["Operations"],
+                         l["Menu:Operations"],
                          "/definition/operations",
                          requiredPermissionName: HealthCarePermissions.Operations.Menu
                      )
@@ -292,7 +292,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Vaccines,
-                         l["Vaccines"],
+                         l["Menu:Vaccines"],
                          "/definition/vaccines",
                          requiredPermissionName: HealthCarePermissions.Vaccines.Menu
                      )
@@ -300,7 +300,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.BloodTransfusions,
-                         l["Blood Transfusions"],
+                         l["Menu:BloodTransfusions"],
                          "/definition/blood-transfusions",
                          requiredPermissionName: HealthCarePermissions.BloodTransfusions.Menu
                      )
@@ -308,7 +308,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Jobs,
-                         l["Jobs"],
+                         l["Menu:Jobs"],
                          "/definition/jobs",
                          requiredPermissionName: HealthCarePermissions.Jobs.Menu
                      )
@@ -316,7 +316,7 @@ public class HealthCareMenuContributor : IMenuContributor
                  .AddItem(
                      new ApplicationMenuItem(
                          HealthCareMenus.Educations,
-                         l["Educations"],
+                         l["Menu:Educations"],
                          "/definition/educations",
                          requiredPermissionName: HealthCarePermissions.Educations.Menu
                      )
