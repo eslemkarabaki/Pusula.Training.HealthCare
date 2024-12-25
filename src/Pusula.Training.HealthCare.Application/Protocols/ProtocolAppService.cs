@@ -74,7 +74,7 @@ public class ProtocolAppService(IProtocolRepository protocolRepository, Protocol
     public virtual async Task<ProtocolDto> CreateAsync(ProtocolCreateDto input)
     {
         var protocol = await protocolManager.CreateAsync(
-            input.PatientId, input.DoctorId, input.DepartmentId, input.ProtocolTypeId, input.ProtocolTypeActionId,
+            input.PatientId, input.DoctorId!.Value, input.DepartmentId!.Value, input.ProtocolTypeId!.Value, input.ProtocolTypeActionId!.Value,
             input.Description, input.Status
         );
 
