@@ -16,12 +16,13 @@ public partial class Examinations
 {
     [Parameter]
     public int ProtocolNo { get; set; }
+    
     [CascadingParameter]
     private ProtocolDto Protocol { get; set; }
     public ExaminationUpdateDto UpdateExaminationDto { get; set; } = new();
     private bool showSuccessMessage { get; set; } = false;
     private bool showErrorMessage { get; set; } = false;
-    private string Pain { get; set; }
+
     private PagedResultDto<ExaminationPhysicalDto> ExaminationPhysical { get; set; } = new();
 
     private bool Visibility = false;
@@ -43,10 +44,7 @@ public partial class Examinations
             .FirstOrDefault();
 
     }
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        return base.OnAfterRenderAsync(firstRender);
-    }
+    
     private async Task OnSaveAllChanges()
     {
 
