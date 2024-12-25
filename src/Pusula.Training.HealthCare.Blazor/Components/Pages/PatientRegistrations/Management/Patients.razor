@@ -12,6 +12,7 @@
 @using Syncfusion.Blazor.DataForm
 @using Syncfusion.Blazor.Navigations
 @using Blazored.FluentValidation
+@using Microsoft.AspNetCore.Hosting
 @using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Protocols
 @using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients
 @using Position = Syncfusion.Blazor.Popups.Position
@@ -199,10 +200,7 @@
 <PatientUpdateDialog @ref="UpdatePatientDialog" OnValidSaveAsync="UpdatePatientAsync"/>
 
 @* ************************* CREATE PROTOCOL MODAL ************************* *@
-<ProtocolCreateDialog @ref="CreateProtocolDialog"></ProtocolCreateDialog>
-
-@* ************************* UPDATE PROTOCOL MODAL ************************* *@
-
+<ProtocolCreateDialog @ref="CreateProtocolDialog" ProtocolCreatedAsync="SendNotificationToDoctorAsync"/>
 
 <style>
     .e-btn.e-top-icon-btn {
