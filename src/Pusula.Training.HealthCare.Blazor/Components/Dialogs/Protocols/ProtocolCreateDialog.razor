@@ -39,45 +39,46 @@
                                        FloatLabelType="@FloatLabelType.Always"></SfTextBox>
                         </div>
                         <div>
-                            <label class="e-form-label">@L["Doctor"]</label>
-                            <SfAutoComplete @ref="DoctorFilterAutoComplete" @bind-Value="@ProtocolCreate.DoctorId"
-                                            TValue="Guid" TItem="DoctorDto" Placeholder="@L["Doctor"]"
-                                            DataSource="@DoctorList" AllowFiltering Autofill Highlight
-                                            EnableVirtualization
-                                            PopupHeight="250px">
-                                <AutoCompleteEvents TValue="Guid" TItem="DoctorDto" Filtering="@FilterDoctorAsync"/>
-                                <AutoCompleteFieldSettings Text="FullName" Value="Id"/>
-                            </SfAutoComplete>
-                        </div>
-                        <div>
                             <label class="e-form-label">@L["Department"]</label>
                             <SfAutoComplete @ref="DepartmentFilterAutoComplete"
-                                            @bind-Value="@ProtocolCreate.DepartmentId" TValue="Guid"
+                                            @bind-Value="@ProtocolCreate.DepartmentId" TValue="Guid?"
                                             TItem="DepartmentDto" Placeholder="@L["Department"]"
                                             DataSource="@DepartmentList" AllowFiltering Autofill Highlight
                                             EnableVirtualization
                                             PopupHeight="250px">
-                                <AutoCompleteEvents TValue="Guid" TItem="DepartmentDto"
-                                                    Filtering="@FilterDepartmentAsync"/>
+                                <AutoCompleteEvents TValue="Guid?" TItem="DepartmentDto"
+                                                    Filtering="@FilterDepartmentAsync"
+                                                    OnValueSelect="@OnDepartmentSelected"/>
                                 <AutoCompleteFieldSettings Text="Name" Value="Id"/>
                             </SfAutoComplete>
                         </div>
                         <div>
+                            <label class="e-form-label">@L["Doctor"]</label>
+                            <SfAutoComplete @ref="DoctorFilterAutoComplete" @bind-Value="@ProtocolCreate.DoctorId"
+                                            TValue="Guid?" TItem="DoctorDto" Placeholder="@L["Doctor"]"
+                                            DataSource="@DoctorList" AllowFiltering Autofill Highlight
+                                            EnableVirtualization
+                                            PopupHeight="250px" Enabled="@ProtocolCreate.DepartmentId.HasValue">
+                                <AutoCompleteEvents TValue="Guid?" TItem="DoctorDto" Filtering="@FilterDoctorAsync"/>
+                                <AutoCompleteFieldSettings Text="FullName" Value="Id"/>
+                            </SfAutoComplete>
+                        </div>
+                        <div>
                             <label class="e-form-label">@L["ProtocolType"]</label>
-                            <SfDropDownList Value="@ProtocolCreate.ProtocolTypeId"
-                                            ValueChanged="@ProtocolTypeIdChangedAsync" TValue="Guid"
-                                            TItem="ProtocolTypeDto" Placeholder="@L["ProtocolType"]"
+                            <SfDropDownList @bind-Value="@ProtocolCreate.ProtocolTypeId"
+                                            TValue="Guid?" TItem="ProtocolTypeDto" Placeholder="@L["ProtocolType"]"
                                             DataSource="@ProtocolTypeList" AllowFiltering EnableVirtualization
                                             PopupHeight="250px">
+                                <DropDownListEvents TItem="ProtocolTypeDto" TValue="Guid?" OnValueSelect="@OnProtocolTypeSelectedAsync" ></DropDownListEvents>
                                 <DropDownListFieldSettings Text="Name" Value="Id"/>
                             </SfDropDownList>
                         </div>
                         <div>
                             <label class="e-form-label">@L["ProtocolTypeAction"]</label>
-                            <SfDropDownList @bind-Value="@ProtocolCreate.ProtocolTypeActionId" TValue="Guid"
+                            <SfDropDownList @bind-Value="@ProtocolCreate.ProtocolTypeActionId" TValue="Guid?"
                                             TItem="ProtocolTypeActionDto" Placeholder="@L["ProtocolTypeAction"]"
                                             DataSource="@ProtocolTypeActionList" AllowFiltering EnableVirtualization
-                                            PopupHeight="250px" Enabled="@ProtocolTypeActionList.Any()">
+                                            PopupHeight="250px" Enabled="@ProtocolCreate.ProtocolTypeId.HasValue">
                                 <DropDownListFieldSettings Text="Name" Value="Id"/>
                             </SfDropDownList>
                         </div>
@@ -94,7 +95,10 @@
 </SfDialog>
 
 @code {
-    [Parameter] public EventCallback<ProtocolCreateDto> ProtocolCreatedAsync { get; set; }
+
+    [Parameter]
+    public EventCallback<ProtocolCreateDto> ProtocolCreatedAsync { get; set; }
+
     private SfDialog Dialog { get; set; } = null!;
     private ProtocolCreateDto ProtocolCreate { get; set; } = new();
     private string? PatientName { get; set; }
@@ -121,10 +125,33 @@
 
 #endregion
 
+#region Department
+
+    private IEnumerable<DepartmentDto> DepartmentList { get; set; } = [];
+    private SfAutoComplete<Guid?, DepartmentDto> DepartmentFilterAutoComplete { get; set; } = null!;
+    private GetDepartmentsInput GetDepartmentsInput { get; set; } = new() { MaxResultCount = 10 };
+
+    private async Task FilterDepartmentAsync(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        GetDepartmentsInput.Name = args.Text;
+        var departments = await DepartmentsAppService.GetListAsync(GetDepartmentsInput);
+        DepartmentList = departments.Items;
+        await DepartmentFilterAutoComplete.FilterAsync(DepartmentList);
+    }
+
+    private void OnDepartmentSelected(SelectEventArgs<DepartmentDto> args)
+    {
+        GetDoctorsInput.DepartmentId = args.ItemData.Id;
+        ProtocolCreate.DoctorId = null;
+    }
+
+#endregion
+
 #region Doctor
 
     private IEnumerable<DoctorDto> DoctorList { get; set; } = [];
-    private SfAutoComplete<Guid, DoctorDto> DoctorFilterAutoComplete { get; set; } = null!;
+    private SfAutoComplete<Guid?, DoctorDto> DoctorFilterAutoComplete { get; set; } = null!;
     private GetDoctorsInput GetDoctorsInput { get; set; } = new() { MaxResultCount = 10 };
 
     private async Task FilterDoctorAsync(FilteringEventArgs args)
@@ -138,30 +165,12 @@
 
 #endregion
 
-#region Department
-
-    private IEnumerable<DepartmentDto> DepartmentList { get; set; } = [];
-    private SfAutoComplete<Guid, DepartmentDto> DepartmentFilterAutoComplete { get; set; } = null!;
-    private GetDepartmentsInput GetDepartmentsInput { get; set; } = new() { MaxResultCount = 10 };
-
-    private async Task FilterDepartmentAsync(FilteringEventArgs args)
-    {
-        args.PreventDefaultAction = true;
-        GetDepartmentsInput.Name = args.Text;
-        var departments = await DepartmentsAppService.GetListAsync(GetDepartmentsInput);
-        DepartmentList = departments.Items;
-        await DepartmentFilterAutoComplete.FilterAsync(DepartmentList);
-    }
-
-#endregion
-
 #region ProtocolType
 
-    private async Task ProtocolTypeIdChangedAsync(Guid protocolTypeId)
+    private async Task OnProtocolTypeSelectedAsync(SelectEventArgs<ProtocolTypeDto> args)
     {
-        ProtocolCreate.ProtocolTypeActionId = Guid.Empty;
-        ProtocolCreate.ProtocolTypeId = protocolTypeId;
-        ProtocolTypeActionList = await ProtocolTypeActionAppService.GetAllAsync(protocolTypeId);
+        ProtocolCreate.ProtocolTypeActionId = null;
+        ProtocolTypeActionList = await ProtocolTypeActionAppService.GetAllAsync(args.ItemData.Id);
     }
 
 #endregion
