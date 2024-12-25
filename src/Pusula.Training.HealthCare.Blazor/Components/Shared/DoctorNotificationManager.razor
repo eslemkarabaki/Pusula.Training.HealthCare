@@ -8,41 +8,41 @@
 
 @inherits HealthCareComponentBase
 
-<SfToast ID="doctor-notification" @ref="_toastObj">
+@* <SfToast ID="doctor-notification" @ref="_toastObj">
     <ToastPosition X="Right" Y="Top"></ToastPosition>
-</SfToast>
+</SfToast> *@
 
 @code {
-    private HubConnection? HubConnection { get; set; }
-    private SfToast _toastObj = null!;
+    // private HubConnection? HubConnection { get; set; }
+    // private SfToast _toastObj = null!;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (!CurrentUser.IsInRole(HealthCareRoles.Doctor)) return;
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (!CurrentUser.IsInRole(HealthCareRoles.Doctor)) return;
 
-        var doctor = await DoctorAppService.GetAsync(new GetDoctorInput(UserId: CurrentUser.Id));
+    //     var doctor = await DoctorAppService.GetAsync(new GetDoctorInput(UserId: CurrentUser.Id));
 
-        HubConnection = new HubConnectionBuilder()
-                        .WithUrl(Navigation.ToAbsoluteUri("/hub/notification"))
-                        .Build();
+    //     HubConnection = new HubConnectionBuilder()
+    //                     .WithUrl(Navigation.ToAbsoluteUri("/hub/notification"))
+    //                     .Build();
 
-        HubConnection.On<string>("ReceiveNotification", OnReceiveNotificationAsync);
+    //     HubConnection.On<string>("ReceiveNotification", OnReceiveNotificationAsync);
 
-        await HubConnection.StartAsync();
+    //     await HubConnection.StartAsync();
 
-        await HubConnection.InvokeAsync("JoinGroup", doctor.Id.ToString());
-    }
+    //     await HubConnection.InvokeAsync("JoinGroup", doctor.Id.ToString());
+    // }
 
-    private async Task OnReceiveNotificationAsync(string message) =>
-        await _toastObj.ShowAsync(
-            new ToastModel()
-            {
-                Content = message,
-                Title = "Protokol eklendi",
-                CssClass = "e-toast-info",
-                Icon = "fas fa-info",
+    // private async Task OnReceiveNotificationAsync(string message) =>
+    //     await _toastObj.ShowAsync(
+    //         new ToastModel()
+    //         {
+    //             Content = message,
+    //             Title = "Protokol eklendi",
+    //             CssClass = "e-toast-info",
+    //             Icon = "fas fa-info",
                 
-            }
-        );
+    //         }
+    //     );
 
 }
