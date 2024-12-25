@@ -22,7 +22,7 @@ if (window.connection === null) {
     window.connection.onclose(async () => {
         await start();
     });
-     
+
     start();
 }
 
