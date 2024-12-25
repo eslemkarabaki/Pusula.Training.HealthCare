@@ -1,5 +1,4 @@
-﻿@using Pusula.Training.HealthCare.Blazor.Hub
-@using Volo.Abp.Localization
+﻿@using Volo.Abp.Localization
 @using System.Globalization
 @using Microsoft.Extensions.Hosting
 @using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling
@@ -50,14 +49,13 @@
     @if (Env.IsDevelopment())
     {
         <text>An unhandled exception has occurred. See browser dev tools for details.</text>
-    }
-    else if (Env.IsStaging() || Env.IsProduction())
+    } else if (Env.IsStaging() || Env.IsProduction())
     {
         <text>An error has occurred. This application may no longer respond until reloaded.</text>
     }
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-<NotificationHub />
+<NotificationHub/>
 </body>
 </html>
