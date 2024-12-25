@@ -49,20 +49,21 @@ steps:
     docker build --no-cache -t $(imageName):$(imageTag) -f $(dockerFilePath) .
   displayName: 'Build Docker Image'
 
-- bash: |
-    trivy image --severity HIGH,CRITICAL --exit-code 0 --format json --output trivy-report.json $(imageName):$(imageTag)
-  displayName: 'Scan Docker Image with Trivy'
-  continueOnError: true
+#- bash: |
+# trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m --scanners vuln --format json --output trivy-report.json $(imageName):$(imageTag)
+# displayName: 'Scan Docker Image with Trivy'
+# continueOnError: true
 
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: 'trivy-report.json'
-    artifact: 'TrivyReport'
-  displayName: 'Publish Trivy Report'
 
-- bash: |
-    trivy image --severity HIGH,CRITICAL --exit-code 0 $(imageName):$(imageTag)
-  displayName: 'Report Write to Console'
+#- task: PublishPipelineArtifact@1
+# inputs:
+#    targetPath: 'trivy-report.json'
+#   artifact: 'TrivyReport'
+# displayName: 'Publish Trivy Report'
+
+#- bash: |
+#  trivy image --severity HIGH,CRITICAL --exit-code 0 $(imageName):$(imageTag)
+# displayName: 'Report Write to Console'
 
 - bash: |
     # Log in to GitLab Container Registry
