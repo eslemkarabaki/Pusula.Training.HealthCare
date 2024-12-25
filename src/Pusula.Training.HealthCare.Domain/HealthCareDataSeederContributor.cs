@@ -41,6 +41,7 @@ using Pusula.Training.HealthCare.Operations;
 using Pusula.Training.HealthCare.Vaccines;
 using Pusula.Training.HealthCare.Jobs;
 using Pusula.Training.HealthCare.Educations;
+using Pusula.Training.HealthCare.Examinations;
 using Volo.Abp.PermissionManagement;
 
 namespace Pusula.Training.HealthCare;
@@ -75,6 +76,7 @@ public class HealthCareDataSeederContributor(
     IVaccineRepository vaccineRepository,
     IJobRepository jobRepository,
     IEducationRepository educationRepository,
+    IExaminationRepository examinationRepository,
     UserManager<IdentityUser> userManager,
     RoleManager<IdentityRole> roleManager,
     IPermissionManager permissionManager
@@ -127,6 +129,7 @@ public class HealthCareDataSeederContributor(
         var protocol = await SeedProtocolsAsync(
             patientIds, doctors, departments, protocolTypeIds, protocolTypeActions
         );
+        await SeedExaminationsAsync(protocol);
 
         if (!await radiologyExaminationRepository.AnyAsync())
         {
@@ -839,7 +842,7 @@ public class HealthCareDataSeederContributor(
                 {
                     var departmentId = f.PickRandom(departmentIds);
                     var protocolTypeId = f.PickRandom(protocolTypeIds);
-                    var protocolStartDate = f.Date.Past(3);
+                    var protocolStartDate = f.Date.Past();
                     var status = f.PickRandomWithout<EnumProtocolStatus>(EnumProtocolStatus.None);
                     return new Protocol(
                         guidGenerator.Create(),
@@ -861,6 +864,21 @@ public class HealthCareDataSeederContributor(
         var protocols = faker.Generate(500);
         await SeedEntitiesAsync(protocols, e => protocolRepository.InsertManyAsync(e, true));
         return protocols;
+    }
+
+    // Examination
+    private async Task<IEnumerable<Guid>> SeedExaminationsAsync(IEnumerable<Protocol> protocols)
+    {
+        if (await examinationRepository.AnyAsync())
+        {
+            return (await examinationRepository.GetListAsync()).Select(e => e.Id);
+        }
+
+        var examinations = protocols.Select(
+            e => new Examination(guidGenerator.Create(), e.Id, e.DoctorId, e.DepartmentId, string.Empty, e.StartTime)
+        );
+
+        return await SeedEntitiesAsync(examinations, e => examinationRepository.InsertManyAsync(e, true));
     }
 
     // User
