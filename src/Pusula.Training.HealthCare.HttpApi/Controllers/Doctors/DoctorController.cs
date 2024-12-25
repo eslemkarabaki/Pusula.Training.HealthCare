@@ -6,6 +6,8 @@ using Pusula.Training.HealthCare.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Pusula.Training.HealthCare.Hub;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
@@ -20,9 +22,17 @@ namespace Pusula.Training.HealthCare.Controllers.Doctors;
 public class DoctorController : HealthCareController
 {
     private readonly IDoctorAppService _doctorAppService;
+    private readonly IHubContext<NotificationHub> _hubContext;
 
-    public DoctorController(IDoctorAppService doctorAppService) =>
-        _doctorAppService = doctorAppService ?? throw new ArgumentNullException(nameof(doctorAppService));
+    public DoctorController(IDoctorAppService doctorAppService, IHubContext<NotificationHub> hubContext)
+    {
+        _doctorAppService = doctorAppService;
+        _hubContext = hubContext;
+    }
+
+    [HttpPost("send-notification")]
+    public virtual async Task SendNotificationAsync(SendDoctorNotificationInput input) =>
+        await _hubContext.Clients.Group(input.DoctorId.ToString()).SendAsync("ReceiveNotification", input.Message);
 
     [HttpGet]
     [Route("list-doctor")]
