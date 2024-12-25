@@ -15,6 +15,8 @@ namespace Pusula.Training.HealthCare.Hub
         {
             _currentUser = currentUser;
         }
+        
+        public async Task JoinGroupWithName(string groupName) => await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
         public async Task JoinGroup()
         {
