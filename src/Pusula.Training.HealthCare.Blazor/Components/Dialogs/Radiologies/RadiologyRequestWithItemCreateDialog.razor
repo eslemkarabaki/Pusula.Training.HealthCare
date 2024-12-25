@@ -1,0 +1,224 @@
+﻿@inject IRadiologyExaminationGroupAppService RadiologyExaminationGroupAppService
+@inject IRadiologyExaminationAppService RadiologyExaminationAppService
+@inject IRadiologyRequestsAppService RadiologyRequestAppService
+@inject IRadiologyRequestItemsAppService RadiologyRequestItemsAppService
+@inject IUnitOfWorkManager UnitOfWorkManager
+@using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.RadiologyExaminationGroups
+@using Pusula.Training.HealthCare.RadiologyExaminations
+@using Pusula.Training.HealthCare.RadiologyRequests
+@using Pusula.Training.HealthCare.RadioloyRequestItems
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Volo.Abp.Uow
+@inject IJSRuntime JS
+
+
+<SfDialog Width="800px" IsModal="true" @ref="Dialog" ShowCloseIcon="true" Header="Tetkik Talep" Visible="false" CssClass="custom-dialog">
+    <div class="dialog-content">
+        <div class="dialog-header mb-2"> 
+            <div>
+                <span><strong>Ad Soyad:</strong> @Patient?.FullName</span> <br />
+                <span><strong>Doğum Tarihi:</strong> @Patient?.BirthDate.ToString("dd.MM.yyyy")</span>
+            </div>
+        </div>
+        <div class="selected-items-container"> 
+            <div class="selected-items">
+                @if (SelectedExaminations.Any())
+                {
+                    foreach (var exam in SelectedExaminations)
+                    {
+                        <div class="selected-item">
+                            <span>@exam.Name (@exam.ExaminationCode)</span> 
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="examination-group" class="form-label">Tetkik Grubu</label>
+            <SfDropDownList TItem="RadiologyExaminationGroupDto" TValue="Guid?"
+                            DataSource="@ExaminationGroups"
+                            @bind-Value="SelectedGroupId"
+                            Placeholder="Select Examination Group"
+                            CssClass="dropdown">
+                <DropDownListEvents TItem="RadiologyExaminationGroupDto" TValue="Guid?" ValueChange="@OnGroupChangedAsync"></DropDownListEvents>
+                <DropDownListFieldSettings Text="Name" Value="Id" />
+            </SfDropDownList>
+        </div>
+          @if (SelectedGroupId.HasValue)
+        {
+            <div class="form-group">
+                <label class="form-label">Tetkikler</label>
+            <SfGrid TItem="RadiologyExaminationDto" DataSource="@Examinations" AllowSelection="true" CssClass="custom-grid">
+                <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple" PersistSelection="true" />
+                <GridEvents TValue="RadiologyExaminationDto" RowSelected="@(args => OnRowSelected(args))" RowDeselected="@(args => OnRowDeselected(args))"></GridEvents>
+                <GridColumns>
+                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                    <GridColumn Field="Name" HeaderText="Tetkik" Width="150"></GridColumn>
+                    <GridColumn Field="ExaminationCode" HeaderText="Kod" Width="100"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </div>
+
+        <div class="dialog-footer">
+            <SfButton IsPrimary="true" OnClick="SaveSelectionAsync" CssClass="btn-save">Save</SfButton>
+        </div>
+        }
+    </div>
+</SfDialog>
+
+
+@code {
+    private SfDialog Dialog { get; set; } = new SfDialog();
+
+    [Parameter]
+    public EventCallback<RadiologyRequestCreateDto> OnValidSaveAsync { get; set; }
+    private Guid? SelectedGroupId { get; set; }
+    private List<RadiologyExaminationGroupDto> ExaminationGroups { get; set; } = new List<RadiologyExaminationGroupDto>();
+    private List<RadiologyExaminationDto> Examinations { get; set; } = new List<RadiologyExaminationDto>();
+    private List<RadiologyExaminationDto> SelectedExaminations { get; set; } = new();
+    private Guid ProtocolId { get; set; }
+    private Guid DepartmentId { get; set; }
+    private Guid DoctorId { get; set; }
+    private PatientDto Patient { get; set; }
+
+    public async Task ShowAsync(Guid protocolId, Guid departmentId, Guid doctorId, PatientDto patient)
+    {
+        SelectedExaminations.Clear();
+        ProtocolId = protocolId;
+        DepartmentId = departmentId;
+        DoctorId = doctorId;
+        Patient = patient;
+
+        await LoadExaminationGroupsAsync();
+        await Dialog.ShowAsync();
+    } 
+    public async Task HideAsync() => await Dialog.HideAsync();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadExaminationGroupsAsync();
+    }
+
+    private async Task LoadExaminationGroupsAsync()
+    {
+        var result = await RadiologyExaminationGroupAppService.GetListAsync(new GetRadiologyExaminationGroupsInput());
+        ExaminationGroups = result.Items.ToList();
+        StateHasChanged();
+    }
+
+    private async Task OnGroupChangedAsync(ChangeEventArgs<Guid?, RadiologyExaminationGroupDto> args)
+    {
+        SelectedGroupId = args.Value;
+        await LoadExaminationsAsync();
+    }
+
+    private async Task LoadExaminationsAsync()
+    {
+        if (SelectedGroupId.HasValue)
+        {
+            var result = await RadiologyExaminationAppService.GetListByGruopIdAsync(new GetRadiologyExaminationsInput(), SelectedGroupId.Value);
+            Examinations = result.Items.ToList();
+            StateHasChanged();
+        }
+    }
+
+    private void OnRowSelected(RowSelectEventArgs<RadiologyExaminationDto> args)
+    {
+        if (args.Data != null && !SelectedExaminations.Any(e => e.Id == args.Data.Id))
+        {
+            SelectedExaminations.Add(args.Data);
+            StateHasChanged();
+        }
+    }
+
+    private void OnRowDeselected(RowDeselectEventArgs<RadiologyExaminationDto> args)
+    {
+        if (args.Data != null)
+        {
+            var itemToRemove = SelectedExaminations.FirstOrDefault(e => e.Id == args.Data.Id);
+            if (itemToRemove != null)
+            {
+                SelectedExaminations.Remove(itemToRemove);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void RemoveSelectedExamination(RadiologyExaminationDto examination)
+    {
+        var itemToRemove = SelectedExaminations.FirstOrDefault(e => e.Id == examination.Id);
+        if (itemToRemove != null)
+        {
+            SelectedExaminations.Remove(itemToRemove);
+            StateHasChanged();
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SaveSelectionAsync()
+    {
+        if (!SelectedExaminations.Any()) return;
+
+        var options = new AbpUnitOfWorkOptions
+            {
+                IsTransactional = true
+            };
+
+        using (var uow = UnitOfWorkManager.Begin(options))
+        {
+            try
+            {
+                var requestDto = new RadiologyRequestCreateDto
+                    {
+                        RequestDate = DateTime.Now,
+                        ProtocolId = ProtocolId,
+                        DepartmentId = DepartmentId,
+                        DoctorId = DoctorId
+                    };
+
+                var request = await RadiologyRequestAppService.CreateAsync(requestDto);
+
+                foreach (var examination in SelectedExaminations)
+                {
+                    var requestItemDto = new RadiologyRequestItemCreateDto
+                        {
+                            RequestId = request.Id,
+                            ExaminationId = examination.Id,
+                            Result = "Sonuç beklemede",
+                            ResultDate = DateTime.Now,
+                            State = RadiologyRequestItemState.Pending
+                        };
+
+                    await RadiologyRequestItemsAppService.CreateAsync(requestItemDto);
+                }
+
+                await uow.CompleteAsync();
+                await HideAsync();
+                await SendNotification();
+            }
+            catch (Exception ex)
+            {
+                await uow.RollbackAsync();
+                Console.WriteLine($"Hata oluştu: {ex.Message}");
+            }
+        }
+    }
+    #region Hub
+    private async Task SendNotification()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("SendNotificationToRadiologyTechnicians", "Yeni bir tetkik isteği var");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+        }
+    }
+    #endregion
+}

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
+using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace Pusula.Training.HealthCare.Configurations
@@ -13,15 +14,14 @@ namespace Pusula.Training.HealthCare.Configurations
             b.ToTable(HealthCareConsts.DbTablePrefix + "RadiologyExaminationDocuments", HealthCareConsts.DbSchema);
             b.ConfigureByConvention();
             b.HasIndex(e => e.Id);
-
-            b.Property(e => e.DocumentName).HasColumnName(nameof(RadiologyExaminationDocument.DocumentName)).IsRequired();
-            b.Property(e => e.DocumentPath).HasColumnName(nameof(RadiologyExaminationDocument.DocumentPath)).IsRequired();
+             
+            b.Property(e => e.Path).HasColumnName(nameof(RadiologyExaminationDocument.Path)).IsRequired();
             b.Property(e => e.UploadDate).HasColumnName(nameof(RadiologyExaminationDocument.UploadDate)).IsRequired();
-            b.Property(e => e.RadiologyExaminationProcedureId).HasColumnName(nameof(RadiologyExaminationDocument.RadiologyExaminationProcedureId)).IsRequired();
+            b.Property(e => e.ItemId).HasColumnName(nameof(RadiologyExaminationDocument.ItemId)).IsRequired();
 
-            b.HasOne<RadiologyExaminationProcedure>()
+            b.HasOne<RadiologyRequestItem>()
            .WithMany()
-           .HasForeignKey(e => e.RadiologyExaminationProcedureId)
+           .HasForeignKey(e => e.ItemId)
            .OnDelete(DeleteBehavior.Cascade);
 
         }

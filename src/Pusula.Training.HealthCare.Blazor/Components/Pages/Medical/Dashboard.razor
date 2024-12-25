@@ -1,11 +1,60 @@
 @page "/medical/medical-card/{ProtocolNo:int}/dashboard"
 @using Pusula.Training.HealthCare.Blazor.Themes.Layouts
 @using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Blazor.Components.Shared.HcGrid
 
 @attribute [Authorize(Roles = HealthCareRoles.Doctor)]
 
 @layout MedicalCardLayout
 @inherits HealthCareComponentBase
 
+<HcGrid X="19" Y="13">
+    <HcGridArea XStart="1" XEnd="5" YStart="1" YEnd="5">
+        <HcCard Title="Vital Bulgular" CardIcon="fas fa-heartbeat" NoContent></HcCard>
+    </HcGridArea>
+    <HcGridArea XStart="1" XEnd="5" YStart="5" YEnd="10">
+        <HcCard Title="Aldığı - Çıkardığı" CardIcon="fas fa-edit" NoContent></HcCard>
+    </HcGridArea>
+    <HcGridArea XStart="1" XEnd="5" YStart="10" YEnd="14">
+        <HcCard Title="Solunum" CardIcon="fas fa-lungs" NoContent></HcCard>
+    </HcGridArea>
 
-<h1>Dashboard</h1>
+    <HcGridArea XStart="5" XEnd="14" YStart="1" YEnd="4">
+        <HcCard Title="Gözlem Notları" CardIcon="far fa-sticky-note" Class="p-2">
+            <ChildContent>
+
+            </ChildContent>
+        </HcCard>
+    </HcGridArea>
+    <HcGridArea XStart="5" XEnd="14" YStart="4" YEnd="10">
+        <HcCard Title="Aktif İlaçlar" CardIcon="fas fa-pills" Class="p-2" NoContent></HcCard>
+    </HcGridArea>
+    <HcGridArea XStart="5" XEnd="14" YStart="10" YEnd="14">
+        <HcCard Title="Tanılar" CardIcon="fas fa-diagnoses" Class="p-2">
+            <ChildContent>
+
+            </ChildContent>
+        </HcCard>
+    </HcGridArea>
+
+    <HcGridArea XStart="14" XEnd="20" YStart="1" YEnd="3">
+        <HcCard Title="Hatırlatıcılar" CardIcon="far fa-bell" Class="p-2">
+            <ChildContent>
+
+            </ChildContent>
+        </HcCard>
+    </HcGridArea>
+    <HcGridArea XStart="14" XEnd="20" YStart="3" YEnd="7">
+        <HcCard Title="Uyarılar" CardIcon="fas fa-exclamation-triangle" Class="p-2">
+            <ChildContent>
+
+            </ChildContent>
+        </HcCard>
+    </HcGridArea>
+    <HcGridArea XStart="14" XEnd="20" YStart="7" YEnd="11">
+        <HcCard Title="Kan Gazı" CardIcon="fas fa-heartbeat" Class="p-2" NoContent></HcCard>
+    </HcGridArea>
+    <HcGridArea XStart="14" XEnd="20" YStart="11" YEnd="14">
+        <HcCard Title="Böbrek" CardIcon="fas fa-heartbeat" Class="p-2" NoContent></HcCard>
+    </HcGridArea>
+</HcGrid>

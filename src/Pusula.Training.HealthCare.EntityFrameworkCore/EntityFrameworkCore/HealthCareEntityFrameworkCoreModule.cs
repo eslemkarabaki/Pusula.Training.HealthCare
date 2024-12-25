@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Pusula.Training.HealthCare.Addresses;
+using Pusula.Training.HealthCare.Allergies;
 using Pusula.Training.HealthCare.AppDefaults;
 using Pusula.Training.HealthCare.Appointments;
 using Pusula.Training.HealthCare.Cities;
@@ -27,6 +28,7 @@ using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 using Pusula.Training.HealthCare.Titles;
 using Pusula.Training.HealthCare.AppointmentTypes;
+using Pusula.Training.HealthCare.BloodTransfusions;
 using Pusula.Training.HealthCare.RadiologyExaminationGroups;
 using Pusula.Training.HealthCare.RadiologyExaminationProcedures;
 using Pusula.Training.HealthCare.RadiologyExaminations;
@@ -38,11 +40,16 @@ using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.WorkLists;
 using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.Educations;
 using Pusula.Training.HealthCare.ProtocolTypeActions;
 using Pusula.Training.HealthCare.ExaminationsPhysical;
-
 using Pusula.Training.HealthCare.ExaminationDiagnoses;
 using Pusula.Training.HealthCare.Examinations;
+using Pusula.Training.HealthCare.Jobs;
+using Pusula.Training.HealthCare.Medicines;
+using Pusula.Training.HealthCare.Operations;
+using Pusula.Training.HealthCare.PatientHistories;
+using Pusula.Training.HealthCare.Vaccines;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -108,6 +115,14 @@ public class HealthCareEntityFrameworkCoreModule : AbpModule
                 options.AddRepository<ExaminationDiagnosis, EfCoreExaminationDiagnosisRepository>();
                 options.AddRepository<ExaminationAnamnez, EfCoreExaminationAnamnezRepository>();
                 options.AddRepository<ExaminationPhysical, EfCoreExaminationPhysicalRepository>();
+                options.AddRepository<Medicine, EfCoreMedicineRepository>();
+                options.AddRepository<Operation, EfCoreOperationRepository>();
+                options.AddRepository<Vaccine, EfCoreVaccineRepository>();
+                options.AddRepository<BloodTransfusion, EfCoreBloodTransfusionRepository>();
+                options.AddRepository<Allergy, EfCoreAllergyRepository>();
+                options.AddRepository<Job, EfCoreJobRepository>();
+                options.AddRepository<Education, EfCoreEducationRepository>();
+                options.AddRepository<PatientHistory, EfCorePatientHistoryRepository>();
             }
         );
 

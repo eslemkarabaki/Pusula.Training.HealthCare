@@ -1,0 +1,100 @@
+﻿@page "/medical/medical-card/{ProtocolNo:int}/radiology-document/"
+@using Microsoft.AspNetCore.WebUtilities
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies
+@using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Appointments
+@using Pusula.Training.HealthCare.AppointmentTypes
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Blazor.Models
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.SplitButtons
+@using GridColumns = Syncfusion.EJ2.Grids.GridColumns
+@using SelectionMode = Syncfusion.Blazor.SplitButtons.SelectionMode
+@using Pusula.Training.HealthCare.RadiologyExaminationDocuments
+@using Pusula.Training.HealthCare.RadioloyRequestItems
+
+@attribute [Authorize(Roles = HealthCareRoles.Doctor)]
+
+@layout MedicalCardLayout
+@inherits HealthCareComponentBase
+
+@inject IRadiologyExaminationDocumentAppService RadiologyExaminationDocumentAppService
+@inject IRadiologyRequestItemsAppService RadiologyRequestItemsAppService
+@inject NavigationManager Navigation
+
+<SfGrid DataSource="@RadiologyRequestItems" AllowPaging="true">
+    <GridColumns>
+       
+        <GridColumn Field="RadiologyExamination.Name" HeaderText="Tetkik Adı" Width="150"></GridColumn> 
+        <GridColumn Field="RadiologyRequest.RequestDate" HeaderText="İstek Tarihi" Width="150" Format="dd/MM/yyyy"></GridColumn>
+        <GridColumn Field="Doctor.FullName" HeaderText="Doktor" Width="150"></GridColumn>
+        <GridColumn Field="Department.Name" HeaderText="Bölüm" Width="150"></GridColumn> 
+        <GridColumn HeaderText="Sonuç" Width="200">
+            <Template Context="context">
+                @if ((context as RadiologyRequestItemWithNavigationPropertiesDto)?.RadiologyDocuments?.Count > 0)
+                {
+                    <button @onclick="() => ShowDocumentsAsync((context as RadiologyRequestItemWithNavigationPropertiesDto))"
+                            class="e-btn e-flat" style="padding: 5px; border: none; background-color: transparent;">
+                        <i class="fas fa-eye" style="font-size: 18px; color: #007bff;"></i>
+                    </button>
+                } 
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<RadiologyDocumentDialog @ref="DocumentDialog" />
+ 
+
+@code {
+    [Parameter]
+    public int ProtocolNo { get; set; }
+    private Guid? PatientId { get; set; }
+    private List<RadiologyRequestItemWithNavigationPropertiesDto> RadiologyRequestItems { get; set; } = new List<RadiologyRequestItemWithNavigationPropertiesDto>();
+    private bool IsPreviewVisible { get; set; }
+
+    private RadiologyDocumentDialog DocumentDialog { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("patientId", out var patientId))
+        {
+            if (Guid.TryParse(patientId, out var parsedPatientId))
+            {
+                PatientId = parsedPatientId;
+            }
+            else
+            {
+                PatientId = null;
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PatientId.HasValue)
+        {
+            RadiologyRequestItems = (await RadiologyRequestItemsAppService.GetListWithNavigationPropertiesByPatientIdAsync(PatientId.Value)).Items.ToList();
+        }
+    }
+
+    private async Task ShowDocumentsAsync(RadiologyRequestItemWithNavigationPropertiesDto dto)
+    {
+        if (dto != null)
+        {
+            await DocumentDialog.ShowAsync(dto.RadiologyDocuments, StripHtml(dto.RadiologyRequestItem?.Result));
+        }
+    } 
+
+    private static string StripHtml(string? input)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+        return System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
+    }
+} 

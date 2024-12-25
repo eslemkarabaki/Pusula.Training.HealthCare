@@ -34,10 +34,10 @@
             <div class="d-flex gap-2 p-2 align-items-end">
                 <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]" />
 
-                <SfDateRangePicker TValue="DateTime" @bind-StartDate="@Filter.StartTime"
+                <SfDateRangePicker TValue="DateTime?" @bind-StartDate="@Filter.StartTime"
                                    @bind-EndDate="@Filter.EndTime" FullScreen Format="dd.MM.yyyy"
                                    FirstDayOfWeek="@((int)DayOfWeek.Monday)">
-                    <DateRangePickerEvents TValue="DateTime" ValueChange="@SearchAsync"></DateRangePickerEvents>
+                    <DateRangePickerEvents TValue="DateTime?" ValueChange="@SearchAsync"></DateRangePickerEvents>
                     <DateRangePickerPresets>
                         <DateRangePickerPreset Label="@L["Today"]" Start="@Today" End="@Tomorrow" />
                         <DateRangePickerPreset Label="@L["ThisWeek"]" Start="@ThisWeekStart"
@@ -83,15 +83,12 @@
                     <DropDownListEvents TItem="AppointmentTypeDto" TValue="Guid?"
                                         ValueChange="@SearchAsync"></DropDownListEvents>
                     <DropDownListFieldSettings Text="Name" Value="Id" />
-                </SfDropDownList>
+                </SfDropDownList>                
 
-                <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumAppointmentStatus"
-                                TItem="string" Placeholder="@L["Status"]"
-                                DataSource="@Enum.GetNames(typeof(EnumAppointmentStatus))" ShowClearButton>
-                    <DropDownListEvents TItem="string" TValue="EnumAppointmentStatus"
-                                        ValueChange="@SearchAsync"></DropDownListEvents>
-                    <DropDownListFieldSettings Text="string" Value="EnumStatus" />
-                </SfDropDownList>
+                <SfMultiSelect DataSource="@Enum.GetNames(typeof(EnumAppointmentStatus))" TValue="string[]" TItem="string"
+                               Mode="VisualMode.Box" Placeholder="@L["Status"]">
+                    <MultiSelectEvents ValueChange="@StatusChanged" TValue="string[]" TItem="string"></MultiSelectEvents>
+            </SfMultiSelect>
 
                 <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
             </div>

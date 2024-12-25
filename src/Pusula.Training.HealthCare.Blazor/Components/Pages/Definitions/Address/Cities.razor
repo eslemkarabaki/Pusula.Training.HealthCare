@@ -1,0 +1,79 @@
+@page "/definition/cities"
+
+@attribute [Authorize(HealthCarePermissions.Cities.Default)]
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Countries
+@using Pusula.Training.HealthCare.Cities
+@using Volo.Abp.Http.Client
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Navigations
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Cities
+@using SortDirection = Syncfusion.Blazor.Grids.SortDirection
+@inherits HealthCareComponentBase
+@inject ICountryAppService CountryAppService
+@inject ICityAppService CityAppService
+@inject SfDialogService DialogService
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+<PageHeader Title="" BreadcrumbItems="BreadcrumbItems"/>
+
+@* ************************* DATA GRID ************************* *@
+
+<SfGrid @ref="SfGrid" TValue="CityDto" DataSource="@CityList" AllowPaging="true"
+        AllowSelection EnableHover AllowSorting AllowFiltering>
+    <SfToolbar>
+        <ToolbarItems>
+            <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreateCityDialogAsync" Text="@L["Add"]"
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewCity"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedCitiesAsync"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
+                         TooltipText="@L["Delete"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
+        </ToolbarItems>
+    </SfToolbar>
+    <GridEvents TValue="CityDto"
+                RowSelected="@SelectedCityRowChangedAsync"
+                RowDeselected="@SelectedCityRowChangedAsync"/>
+    <GridPageSettings PageSize="10"/>
+    <GridSelectionSettings CheckboxOnly PersistSelection/>
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="@nameof(CityDto.Name)"></GridSortColumn>
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Field="@nameof(CityDto.Name)" HeaderText="@L["City"]"/>
+        <GridColumn HeaderText="@L["Country"]">
+            <Template>
+                @{
+                    var dto = context as CityDto;
+                    @dto.Country.Name
+                    ;
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton
+                    OnClick="@(() => OpenEditCityModalAsync(context as CityDto))"
+                    CssClass="e-flat"
+                    IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteCityAsync(context as CityDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@* ************************* CREATE MODAL ************************* *@
+<CityCreateDialog @ref="@CreateCityDialog" OnValidSaveAsync="@CreateCityAsync"></CityCreateDialog>
+
+@* ************************* UPDATE MODAL ************************* *@
+<CityUpdateDialog @ref="@UpdateCityDialog" OnValidSaveAsync="@UpdateCityAsync"></CityUpdateDialog> 

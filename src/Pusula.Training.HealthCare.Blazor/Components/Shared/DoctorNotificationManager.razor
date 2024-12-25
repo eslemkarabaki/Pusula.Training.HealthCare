@@ -1,0 +1,47 @@
+@using Microsoft.AspNetCore.SignalR.Client
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Permissions
+@using Syncfusion.Blazor.Notifications
+
+@inject IDoctorAppService DoctorAppService
+@inject NavigationManager Navigation
+
+@inherits HealthCareComponentBase
+
+<SfToast ID="doctor-notification" @ref="_toastObj">
+    <ToastPosition X="Right" Y="Top"></ToastPosition>
+</SfToast>
+
+@code {
+    private HubConnection? HubConnection { get; set; }
+    private SfToast _toastObj = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!CurrentUser.IsInRole(HealthCareRoles.Doctor)) return;
+
+        var doctor = await DoctorAppService.GetAsync(new GetDoctorInput(UserId: CurrentUser.Id));
+
+        HubConnection = new HubConnectionBuilder()
+                        .WithUrl(Navigation.ToAbsoluteUri("/notification-hub"))
+                        .Build();
+
+        HubConnection.On<string>("ReceiveNotification", OnReceiveNotificationAsync);
+
+        await HubConnection.StartAsync();
+
+        await HubConnection.InvokeAsync("JoinGroupWithName", doctor.Id.ToString());
+    }
+
+    private async Task OnReceiveNotificationAsync(string message) =>
+        await _toastObj.ShowAsync(
+            new ToastModel()
+            {
+                Content = message,
+                Title = "Protokol eklendi",
+                CssClass = "e-toast-info",
+                Icon = "fas fa-info"
+            }
+        );
+
+}

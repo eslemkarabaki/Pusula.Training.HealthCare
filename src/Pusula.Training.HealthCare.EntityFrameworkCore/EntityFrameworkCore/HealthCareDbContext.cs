@@ -12,6 +12,7 @@ using Pusula.Training.HealthCare.Notifications;
 using Pusula.Training.HealthCare.Patients;
 using Pusula.Training.HealthCare.Protocols;
 using System.Reflection;
+using Pusula.Training.HealthCare.Allergies;
 using Pusula.Training.HealthCare.Titles;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -37,6 +38,7 @@ using Pusula.Training.HealthCare.TestTypes;
 using Pusula.Training.HealthCare.TestProcesses;
 using Pusula.Training.HealthCare.WorkLists;
 using Pusula.Training.HealthCare.AppDefaults;
+using Pusula.Training.HealthCare.BloodTransfusions;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 using ProtocolType = Pusula.Training.HealthCare.ProtocolTypes.ProtocolType;
@@ -44,9 +46,15 @@ using Pusula.Training.HealthCare.RadiologyRequests;
 using Pusula.Training.HealthCare.RadioloyRequestItems;
 using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.Diagnoses;
+using Pusula.Training.HealthCare.Educations;
 using Pusula.Training.HealthCare.ProtocolTypeActions;
 using Pusula.Training.HealthCare.ExaminationsPhysical;
 using Pusula.Training.HealthCare.ExaminationDiagnoses;
+using Pusula.Training.HealthCare.Jobs;
+using Pusula.Training.HealthCare.Medicines;
+using Pusula.Training.HealthCare.Operations;
+using Pusula.Training.HealthCare.PatientHistories;
+using Pusula.Training.HealthCare.Vaccines;
 
 namespace Pusula.Training.HealthCare.EntityFrameworkCore;
 
@@ -83,7 +91,7 @@ public class HealthCareDbContext :
     public DbSet<AppointmentType> AppointmentTypes { get; set; } = null!;
 
     //public DbSet<HospitalDepartment> HospitalDepartment { get; set; } = null!; 
-    
+
     public DbSet<Insurance> Insurances { get; set; } = null!;
     public DbSet<AppDefault> AppDefaults { get; set; } = null!;
     public DbSet<TestGroup> TestGroups { get; set; } = null!;
@@ -92,14 +100,17 @@ public class HealthCareDbContext :
     public DbSet<TestProcess> TestProcesses { get; set; } = null!;
     public DbSet<WorkList> WorkLists { get; set; } = null!;
     public DbSet<Diagnosis> Diagnoses { get; set; } = null!;
-    #region Examinations
+
+#region Examinations
+
     public DbSet<Examination> Examinations { get; set; } = null!;
     public DbSet<ExaminationPhysical> ExaminationPhysical { get; set; } = null!;
     public DbSet<ExaminationDiagnosis> ExaminationDiagnoses { get; set; } = null!;
     public DbSet<ExaminationAnamnez> ExaminationAnamnez { get; set; } = null!;
-    #endregion
 
-    #region Radiology
+#endregion
+
+#region Radiology
 
     public DbSet<RadiologyExaminationGroup> RadiologyExaminationGroups { get; set; } = null!;
     public DbSet<RadiologyExamination> RadiologyExaminations { get; set; } = null!;
@@ -109,6 +120,14 @@ public class HealthCareDbContext :
     public DbSet<RadiologyRequestItem> RadiologyRequestItems { get; set; } = null!;
 
 #endregion
+
+    public DbSet<Medicine> Medicines { get; set; }
+    public DbSet<Operation> Operations { get; set; }
+    public DbSet<Vaccine> Vaccines { get; set; }
+    public DbSet<BloodTransfusion> BloodTransfusions { get; set; }
+    public DbSet<Allergy> Allergies { get; set; }
+    public DbSet<Job> Jobs { get; set; }
+    public DbSet<Education> Educations { get; set; }
 
 #region Entities from the modules
 

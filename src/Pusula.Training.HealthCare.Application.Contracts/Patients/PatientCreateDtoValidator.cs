@@ -34,5 +34,6 @@ public class PatientCreateDtoValidator : AbstractValidator<PatientCreateDto>
 
         RuleFor(e => e.CountryId).NotEmpty();
         RuleFor(e => e.PatientTypeId).NotEmpty();
+        RuleFor(e => e.InsuranceId).NotEmpty();
     }
 }

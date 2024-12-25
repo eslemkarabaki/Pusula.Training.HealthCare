@@ -1,0 +1,72 @@
+﻿@using Pusula.Training.HealthCare.RadiologyExaminations
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Blazored.FluentValidation
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inherits HealthCareComponentBase
+
+@inject IRadiologyExaminationAppService RadiologyExaminationAppService
+
+<SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@OnDialogClosed"></DialogEvents>
+    <DialogTemplates>
+        <Header>Radyoloji Tetkik Güncelleme</Header>
+        <Content>
+            <SfDataForm ID="NewExaminationForm"
+                        Model="@EditingExamination"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                <FormValidator>
+                    <DataAnnotationsValidator />
+                </FormValidator>
+                <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <SfTextBox @bind-Value="@EditingExamination.Name"
+                                   Placeholder="@L["Examination"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                        <SfTextBox @bind-Value="@EditingExamination.ExaminationCode"
+                                   Placeholder="@L["Description"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    </div>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+    [Parameter] public EventCallback<RadiologyExaminationUpdateDto> OnValidSaveAsync { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private RadiologyExaminationUpdateDto EditingExamination { get; set; } = new();
+
+    private async Task OnSaveClickAsync(EditContext context)
+    {
+        await OnValidSaveAsync.InvokeAsync(EditingExamination);
+        await HideAsync();
+    }
+
+    public async Task ShowAsync(Guid ExaminationId)
+    {
+        var Examination = await RadiologyExaminationAppService.GetAsync(ExaminationId);
+        ObjectMapper.Map(Examination, EditingExamination);
+        await Dialog.ShowAsync(); 
+    }
+
+    public async Task HideAsync() => await Dialog.HideAsync();
+
+    private void OnDialogClosed()
+    {
+        EditingExamination = new RadiologyExaminationUpdateDto(); 
+    }
+}

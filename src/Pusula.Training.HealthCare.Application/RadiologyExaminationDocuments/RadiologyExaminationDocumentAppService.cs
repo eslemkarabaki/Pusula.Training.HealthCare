@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;  
-using Pusula.Training.HealthCare.Permissions; 
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Pusula.Training.HealthCare.Permissions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Application.Dtos; 
+using Volo.Abp.Application.Dtos;
 
 namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
 {
@@ -21,8 +22,8 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
 
         public virtual async Task<PagedResultDto<RadiologyExaminationDocumentDto>> GetListAsync(GetRadiologyExaminationDocumentsInput input)
         {
-            var totalCount = await radiologyExaminationDocumentRepository.GetCountAsync(input.FilterText, input.DocumentName, input.DocumentPath, input.UploadDate, input.RadiologyExaminationProcedureId);
-            var items = await radiologyExaminationDocumentRepository.GetListAsync(input.FilterText, input.DocumentName, input.DocumentPath, input.UploadDate, input.RadiologyExaminationProcedureId, input.Sorting, input.MaxResultCount, input.SkipCount);
+            var totalCount = await radiologyExaminationDocumentRepository.GetCountAsync(input.FilterText, input.Path, input.UploadDate, input.ItemId);
+            var items = await radiologyExaminationDocumentRepository.GetListAsync(input.FilterText, input.Path, input.UploadDate, input.ItemId, input.Sorting, input.MaxResultCount, input.SkipCount);
 
             return new PagedResultDto<RadiologyExaminationDocumentDto>
             {
@@ -36,69 +37,33 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
         }
 
         public virtual async Task<RadiologyExaminationDocumentDto> CreateAsync(RadiologyExaminationDocumentCreateDto input)
-        {
-            string documentPath = null;
+        { 
             try
             {
-                documentPath = await UploadDocumentAsync(input.File, input.RadiologyExaminationProcedureId);
+                input.Path = await SaveFileAsync(input.File);
 
                 var radiologyExaminationDocument = await radiologyExaminationDocumentManager.CreateAsync(
-                    input.DocumentName,
-                    documentPath,
+                    input.Path,
                     DateTime.Now,
-                    input.RadiologyExaminationProcedureId
+                    input.ItemId
+       
                 );
-
+                  
                 return ObjectMapper.Map<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>(radiologyExaminationDocument);
             }
             catch (Exception ex)
-            { 
-                if (!string.IsNullOrEmpty(documentPath) && File.Exists(Path.Combine("wwwroot", documentPath)))
+            {
+                if (!string.IsNullOrEmpty(input.Path) && File.Exists(Path.Combine("wwwroot", input.Path)))
                 {
-                    File.Delete(Path.Combine("wwwroot", documentPath));
+                    File.Delete(Path.Combine("wwwroot", input.Path));
                 }
 
                 throw new UserFriendlyException("An error occurred while creating the document. The uploaded file has been deleted.").WithData("Exception", ex);
             }
         }
 
-
-        //private async Task<string> UploadDocumentAsync(IFormFile file)
-        //{
-        //    var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
-        //    var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-        //    if (!allowedExtensions.Contains(fileExtension))
-        //    {
-        //        throw new UserFriendlyException("Sadece PDF, JPG ve PNG dosyaları yükleyebilirsiniz.");
-        //    }
-
-        //    const int maxFileSizeInBytes = 10 * 1024 * 1024;
-
-        //    if (file.Length > maxFileSizeInBytes)
-        //    {
-        //        throw new UserFriendlyException("Dosya boyutu 10 MB'den büyük olamaz.");
-        //    }
-
-        //    var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
-
-        //    var uploadDirectory = Path.Combine("wwwroot", "uploads");
-        //    if (!Directory.Exists(uploadDirectory))
-        //    {
-        //        Directory.CreateDirectory(uploadDirectory);
-        //    }
-
-        //    var uploadPath = Path.Combine(uploadDirectory, uniqueFileName);
-        //    using (var stream = new FileStream(uploadPath, FileMode.Create))
-        //    {
-        //        await file.CopyToAsync(stream);
-        //    }
-
-        //    return Path.Combine("uploads", uniqueFileName); 
-        //}
-
-        private async Task<string> UploadDocumentAsync(IFormFile file, Guid procedureId)
-        { 
+        private async Task<string> SaveFileAsync(IFormFile file)
+        {
             var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
             var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
@@ -106,63 +71,50 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
             {
                 throw new UserFriendlyException("Sadece PDF, JPG ve PNG dosyaları yükleyebilirsiniz.");
             }
-             
+
             const int maxFileSizeInBytes = 10 * 1024 * 1024;
             if (file.Length > maxFileSizeInBytes)
             {
                 throw new UserFriendlyException("Dosya boyutu 10 MB'den büyük olamaz.");
             }
-             
+
             var uniqueFileName = $"RE-{Guid.NewGuid()}{fileExtension}";
-             
-            var directoryPath = Path.Combine("wwwroot", "uploads", "radiology", procedureId.ToString());
+
+            var directoryPath = Path.Combine("wwwroot", "uploads", "radiology");
             if (!Directory.Exists(directoryPath))
             {
-                Directory.CreateDirectory(directoryPath);  
+                Directory.CreateDirectory(directoryPath);
             }
-             
+
             var uploadPath = Path.Combine(directoryPath, uniqueFileName);
             using (var stream = new FileStream(uploadPath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
-             
-            return Path.Combine("uploads", "radiology", procedureId.ToString(), uniqueFileName);
-        }
 
+            return Path.Combine("uploads", "radiology", uniqueFileName);
+        }
+ 
 
         [Authorize(HealthCarePermissions.RadiologyExaminationDocuments.Edit)]
         public virtual async Task<RadiologyExaminationDocumentDto> UpdateAsync(Guid id, RadiologyExaminationDocumentUpdateDto input)
-        { 
+        {
             var radiologyExaminationDocument = await radiologyExaminationDocumentRepository.GetAsync(id);
-             
-            radiologyExaminationDocument.DocumentName = input.DocumentName;
-             
+
+
             if (input.File != null)
             {
-                var newDocumentPath = await UploadDocumentAsync(input.File, input.RadiologyExaminationProcedureId);
-                radiologyExaminationDocument.DocumentPath = newDocumentPath;
+                var newPath = await SaveFileAsync(input.File);
+                radiologyExaminationDocument.Path = newPath;
             }
-             
+
             radiologyExaminationDocument.UploadDate = input.UploadDate;
-            radiologyExaminationDocument.RadiologyExaminationProcedureId = input.RadiologyExaminationProcedureId;
-             
+            radiologyExaminationDocument.ItemId = input.ItemId;
+
             await radiologyExaminationDocumentRepository.UpdateAsync(radiologyExaminationDocument);
-             
+
             return ObjectMapper.Map<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>(radiologyExaminationDocument);
         }
-
-        //public virtual async Task<RadiologyExaminationDocumentDto> UpdateAsync(Guid id, RadiologyExaminationDocumentUpdateDto input)
-        //{
-        //    var radiologyExaminationDocument = await radiologyExaminationDocumentRepository.GetAsync(id);
-        //    radiologyExaminationDocument.DocumentName = input.DocumentName;
-        //    radiologyExaminationDocument.DocumentPath = input.DocumentPath;
-        //    radiologyExaminationDocument.UploadDate = input.UploadDate;
-        //    radiologyExaminationDocument.RadiologyExaminationProcedureId = input.RadiologyExaminationProcedureId;
-
-        //    await radiologyExaminationDocumentRepository.UpdateAsync(radiologyExaminationDocument);
-        //    return ObjectMapper.Map<RadiologyExaminationDocument, RadiologyExaminationDocumentDto>(radiologyExaminationDocument);
-        //}
 
         [Authorize(HealthCarePermissions.RadiologyExaminationDocuments.Delete)]
         public virtual async Task DeleteByIdsAsync(List<Guid> RadiologyExaminationDocumentIds)
@@ -173,7 +125,7 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
         [Authorize(HealthCarePermissions.RadiologyExaminationDocuments.Delete)]
         public virtual async Task DeleteAllAsync(GetRadiologyExaminationDocumentsInput input)
         {
-            await radiologyExaminationDocumentRepository.DeleteAllAsync(input.FilterText, input.DocumentName, input.DocumentPath, input.UploadDate, input.RadiologyExaminationProcedureId);
+            await radiologyExaminationDocumentRepository.DeleteAllAsync(input.FilterText, input.Path, input.UploadDate, input.ItemId);
         }
 
         [Authorize(HealthCarePermissions.RadiologyExaminationDocuments.Delete)]
@@ -181,7 +133,7 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
         {
             await radiologyExaminationDocumentRepository.DeleteAsync(id);
         }
-         
+
 
     }
 }

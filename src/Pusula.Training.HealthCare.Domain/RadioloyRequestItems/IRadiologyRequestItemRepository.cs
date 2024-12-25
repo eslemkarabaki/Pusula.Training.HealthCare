@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
@@ -30,18 +30,49 @@ public interface IRadiologyRequestItemRepository : IRepository<RadiologyRequestI
 
     #region GetListWithNavigationPropertiesAsync
     Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsync
-        (
-            string? filterText = null,
-            Guid? requestId = null,
-            Guid? examinationId = null,
-            string? result = null,
-            DateTime? resultDate = null,
-            RadiologyRequestItemState? state = null,
-            string? sorting = null,
-            int maxResultCount = int.MaxValue,
-            int skipCount = 0,
-            CancellationToken cancellationToken = default
-        );
+(
+    string? filterText = null,
+    Guid? requestId = null,
+    Guid? examinationId = null,
+    string? result = null,
+    DateTime? resultDate = null,
+    RadiologyRequestItemState? state = null,
+    Guid? protocolId = null,
+    Guid? departmentId = null,
+    Guid? doctorId = null,
+    Guid? patientId = null,
+    string? sorting = null,
+    int maxResultCount = int.MaxValue,
+    int skipCount = 0,
+    CancellationToken cancellationToken = default
+);
+    #endregion
+
+    #region GetListWithNavigationPropertiesAsyncByRequestId
+    Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsyncByRequestId(
+     string? filterText = null,
+     Guid? requestId = null,
+     Guid? examinationId = null,
+     string? result = null,
+     DateTime? resultDate = null,
+     RadiologyRequestItemState? state = null,
+     Guid? protocolId = null,
+     Guid? departmentId = null,
+     Guid? doctorId = null,
+     Guid? patientId = null,
+     string? sorting = null,
+     int maxResultCount = int.MaxValue,
+     int skipCount = 0,
+     CancellationToken cancellationToken = default
+ );
+    #endregion
+
+    #region GetListWithNavigationPropertiesAsyncByPatientId
+    Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsyncByPatientId
+    (
+        Guid patientId,
+        CancellationToken cancellationToken = default
+    );
     #endregion
 
     #region GetListAsync

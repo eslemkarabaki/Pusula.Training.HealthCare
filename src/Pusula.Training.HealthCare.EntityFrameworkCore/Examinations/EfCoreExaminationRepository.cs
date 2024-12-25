@@ -9,17 +9,20 @@ using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
+using Pusula.Training.HealthCare.Protocols;
 
 
 namespace Pusula.Training.HealthCare.Examinations
 {
     public class EfCoreExaminationRepository : EfCoreRepository<HealthCareDbContext, Examination, Guid>, IExaminationRepository
     {
-        public EfCoreExaminationRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
+        private readonly IProtocolRepository _protocolRepository;
+        public EfCoreExaminationRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider,IProtocolRepository protocolRepository)
             : base(dbContextProvider)
         {
+            _protocolRepository = protocolRepository;
         }
-
+        
         // Delete all records
         public virtual async Task DeleteAllAsync(CancellationToken cancellationToken = default)
         {
@@ -51,15 +54,21 @@ namespace Pusula.Training.HealthCare.Examinations
                 .WhereIf(startDate.HasValue, e => e.StartDate.Date == startDate.Value.Date);
         }
 
-        public async Task<ExaminationWithNavigationProperties> GetWithNavigationPropertiesAsync(Guid id)
+        public async Task<ExaminationWithNavigationProperties> GetWithNavigationPropertiesAsync(int protocolNo)
         {
 
-            return await ((await GetQuaryableForNavigationProperties()).FirstOrDefaultAsync(e=>e.Examination.Id==id));
-           
+           var protocol = await _protocolRepository.GetAsync(e => e.ProtocolNo == protocolNo);
+         return await (await GetQuaryableForNavigationProperties()).FirstOrDefaultAsync(e => e.Examination.ProtocolId == protocol.Id);
+            
         }
-        public async Task<List<ExaminationWithNavigationProperties>> GetListWithNavigationPropertiesAsync(Guid? protocolId = null, Guid? doctorId = null, Guid? patientId = null, DateTime? startDate = null, string? sorting = null,
-        int maxResultCount = int.MaxValue,
-        int skipCount = 0, CancellationToken cancellationToken = default)
+        public async Task<List<ExaminationWithNavigationProperties>> GetListWithNavigationPropertiesAsync(Guid? protocolId = null,
+     Guid? doctorId = null,
+     Guid? patientId = null,
+     DateTime? startDate = null,
+     string? sorting = null,
+        int maxResultCount = int.MaxValue,  
+        int skipCount = 0,
+        CancellationToken cancellationToken = default)
         {
 
          return  await  ApplyFilter ((await GetQuaryableForNavigationProperties()), protocolId, doctorId, patientId, startDate)
@@ -70,21 +79,46 @@ namespace Pusula.Training.HealthCare.Examinations
         protected virtual async Task<IQueryable<ExaminationWithNavigationProperties>> GetQuaryableForNavigationProperties()
         {
             var dbContext = await GetDbContextAsync();
-
+                
             return from examination in dbContext.Examinations
                         join examinationAnamnez in dbContext.ExaminationAnamnez
                         on examination.Id equals examinationAnamnez.ExaminationId
-                        join examinationDiagnosis in dbContext.ExaminationDiagnoses
+                        into examinationAnamnezs
+                   from examinationAnamnez in examinationAnamnezs.DefaultIfEmpty()
+                   join examinationDiagnosis in dbContext.ExaminationDiagnoses
                         on examination.Id equals examinationDiagnosis.ExaminationId
-                        join examinationPhysical in dbContext.ExaminationPhysical
+                        into examinationDiagnosiss
+                   from examinationDiagnosis in examinationDiagnosiss.DefaultIfEmpty()
+                   join examinationPhysical in dbContext.ExaminationPhysical
                         on examination.Id equals examinationPhysical.ExaminationId
-                        select new ExaminationWithNavigationProperties
+                        into examinationPhysicals
+                   from examinationPhysical in examinationPhysicals.DefaultIfEmpty()
+                   select new ExaminationWithNavigationProperties
                         {
                           Examination = examination,
                           ExaminationAnamnez = examinationAnamnez,
                           ExaminationDiagnoses = examinationDiagnosis,
                           ExaminationPhysical = examinationPhysical
                         };
+        }
+
+        protected virtual async Task<IQueryable<ExaminationWithNavigationProperties>> GetQueryableByProtocolNo()
+        {
+            var dbContext = await GetDbContextAsync();
+
+            var query = dbContext.Examinations
+                .Include(e => e.ExaminationAnamnez) // Include related entities without filtering
+                .Include(e => e.ExaminationDiagnoses)
+                .Include(e => e.ExaminationPhysical)
+                .Select(examination => new ExaminationWithNavigationProperties
+                {
+                    Examination = examination,
+                    ExaminationAnamnez = examination.ExaminationAnamnez, // Navigation property
+                    ExaminationDiagnoses = examination.ExaminationDiagnoses,
+                    ExaminationPhysical = examination.ExaminationPhysical
+                });
+
+            return query;
         }
         protected virtual IQueryable<ExaminationWithNavigationProperties> ApplyFilter(
            IQueryable<ExaminationWithNavigationProperties> query,
@@ -99,5 +133,7 @@ namespace Pusula.Training.HealthCare.Examinations
                 .WhereIf(patientId.HasValue, e => e.Examination.PatientId == patientId.Value)
                 .WhereIf(startDate.HasValue, e => e.Examination.StartDate.Date == startDate.Value.Date);
         }
+
+     
     }
 }

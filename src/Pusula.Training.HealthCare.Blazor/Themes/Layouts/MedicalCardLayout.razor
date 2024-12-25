@@ -1,11 +1,7 @@
 @using Microsoft.Extensions.Localization
 @using Pusula.Training.HealthCare.Localization
-@using Pusula.Training.HealthCare.Permissions
 @using Pusula.Training.HealthCare.Protocols
 @using Syncfusion.Blazor.Cards
-@using Syncfusion.Blazor.Buttons
-@using Syncfusion.Blazor.Popups
-@using Position = Syncfusion.Blazor.Popups.Position
 
 @layout MainLayout
 @inherits LayoutComponentBase
@@ -17,7 +13,7 @@
 {
    <PageTitle>@Protocol.Patient.FullName</PageTitle>
 
-   <SfCard ID="MedicalCard" CssClass="position-relative mb-1">
+   <SfCard ID="MedicalCard" CssClass="position-relative mb-2">
       <CardContent>
          <div class="d-flex gap-1">
             <div class="d-flex flex-column gap-1 pe-3">
@@ -58,13 +54,13 @@
       </CardContent>
    </SfCard>
 
-   <div class="d-flex">
+   <div class="d-flex flex-fill gap-2">
       <div class="flex-fill">
          <CascadingValue Value="@Protocol">
             @Body
          </CascadingValue>
       </div>
-      <div class="nav flex-column border-1 border-grey-300 fs-12p bg-white">
+      <div class="nav flex-column border-1 border-grey-300 fs-12p bg-white text-nowrap">
          <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("dashboard")" class="nav-link">
             Kontrol Paneli
          </NavLink>
@@ -72,8 +68,25 @@
             Muayene
          </NavLink>
          <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("appointment-history")" class="nav-link">
-            Muayene Geçmişi
+            Randevu Geçmişi
          </NavLink>
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("files")" class="nav-link">
+            Dosyalar
+         </NavLink>
+         <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="izlemDropdown" role="button" data-bs-toggle="dropdown"
+               aria-expanded="false">
+               İzlem
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="izlemDropdown">
+               <li>
+                  <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@HrefWithPatientId("radiology-document")"
+                           class="dropdown-item">
+                     Radiology
+                  </NavLink>
+               </li>
+            </ul>
+         </div>
       </div>
    </div>
 } else
@@ -83,7 +96,7 @@
 
 
 
-@code{
+@code {
 
    [CascadingParameter]
    RouteData RouteData { get; set; } = null!;
@@ -102,9 +115,18 @@
    }
 
    private string Href(string page) => $"{BaseAddress}/{page}";
+
+   private string HrefWithPatientId(string page) => $"{BaseAddress}/{page}?patientId={Protocol?.Patient.Id}";
 }
 
+
 <style>
+   .lpx-content {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 1.25rem;
+   }
+
    .nav-link {
       color: var(--material-grey-900);
    }

@@ -37,6 +37,13 @@ namespace Pusula.Training.HealthCare.Controllers.RadiologyExaminations
             return _radiologyExaminationsAppService.GetAsync(id);
         }
 
+        [HttpGet]
+        [Route("GetListByGruopIdAsync")]
+        public Task<PagedResultDto<RadiologyExaminationDto>> GetListByGruopIdAsync(GetRadiologyExaminationsInput input, Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpPost]
         public virtual Task<RadiologyExaminationDto> CreateAsync(RadiologyExaminationCreateDto input)
         {
@@ -84,5 +91,6 @@ namespace Pusula.Training.HealthCare.Controllers.RadiologyExaminations
         {
             return _radiologyExaminationsAppService.GetListAsExcelFileAsync(input);
         }
+
     }
 }

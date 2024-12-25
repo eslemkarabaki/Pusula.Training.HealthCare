@@ -1,0 +1,204 @@
+﻿@page "/radiology-transaction"
+
+@attribute [Authorize(HealthCarePermissions.RadiologyTransactions.Default)]
+
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.ProtocolTypes
+@using Pusula.Training.HealthCare.RadiologyExaminationGroups
+@using Pusula.Training.HealthCare.RadiologyExaminations
+@using Pusula.Training.HealthCare.RadiologyRequests
+@using Pusula.Training.HealthCare.RadioloyRequestItems
+@using Pusula.Training.HealthCare.Protocols
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Doctors
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Charts
+@using LabelPosition = Syncfusion.Blazor.Charts.LabelPosition
+@using Theme = Syncfusion.Blazor.Theme
+@using Syncfusion.Blazor.Layouts
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies
+
+@inherits HealthCareComponentBase
+
+@inject IProtocolAppService ProtocolAppService
+@inject IDoctorAppService DoctorAppService
+@inject IDepartmentsAppService DepartmentsAppService
+@inject IRadiologyRequestItemsAppService RadiologyRequestItemsAppService
+@inject IRadiologyRequestsAppService RadiologyRequestsAppService
+@inject IRadiologyExaminationGroupAppService RadiologyExaminationGroupAppService
+@inject IRadiologyExaminationAppService RadiologyExaminationAppService
+@inject IProtocolTypeAppService ProtocolTypeAppService
+
+
+<h2 class="page-title">Radyoloji İşlemleri</h2>
+
+<div class="search-container bg-white mb-3">
+    <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync"
+                ButtonsAlignment="FormButtonsAlignment.Stretch"
+                ValidationDisplayMode="FormValidationDisplay.Tooltip">
+        <FormValidator>
+            <DataAnnotationsValidator />
+        </FormValidator>
+        <FormTemplate>
+            <div class="d-flex gap-3 p-3 align-items-end">
+                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]" CssClass="search-box" />
+
+                <SfDateRangePicker TValue="DateTime?" @bind-StartDate="@Filter.StartTime"
+                                   @bind-EndDate="@Filter.EndTime" FullScreen Format="dd.MM.yyyy"
+                                   FirstDayOfWeek="@((int)DayOfWeek.Monday)" CssClass="date-picker">
+                    <DateRangePickerEvents TValue="DateTime?" ValueChange="@SearchAsync"></DateRangePickerEvents>
+                    <DateRangePickerPresets>
+                        <DateRangePickerPreset Label="@L["Today"]" Start="@_today" End="@_tomorrow" />
+                        <DateRangePickerPreset Label="@L["ThisWeek"]" Start="@_thisWeekStart"
+                                               End="@_thisWeekStart.AddDays(6)" />
+                        <DateRangePickerPreset Label="@L["ThisMonth"]" Start="@_thisMonthStart"
+                                               End="@_thisMonthStart.AddMonths(1).AddDays(-1)" />
+                        <DateRangePickerPreset Label="@L["OneMonth"]" Start="@_today.AddMonths(-1)"
+                                               End="@_today" />
+                        <DateRangePickerPreset Label="@L["ThreeMonth"]" Start="@_today.AddMonths(-3)"
+                                               End="@_today" />
+                        <DateRangePickerPreset Label="@L["SixMonth"]" Start="@_today.AddMonths(-6)"
+                                               End="@_today" />
+                        <DateRangePickerPreset Label="@L["OneYear"]" Start="@_today.AddYears(-1)"
+                                               End="@_today" />
+                    </DateRangePickerPresets>
+                </SfDateRangePicker>
+
+                <SfAutoComplete @ref="DoctorFilterAutoComplete" @bind-Value="@Filter.DoctorId"
+                                TValue="Guid?" TItem="DoctorDto" Placeholder="@L["Doctor"]"
+                                DataSource="@DoctorList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton
+                                PopupHeight="300px">
+                    <AutoCompleteEvents TValue="Guid?" TItem="DoctorDto" Filtering="@FilterDoctorAsync"
+                                        ValueChange="@SearchAsync" />
+                    <AutoCompleteFieldSettings Text="FullName" Value="Id" />
+                </SfAutoComplete>
+
+                <SfAutoComplete @ref="DepartmentFilterAutoComplete"
+                                @bind-Value="@Filter.DepartmentId" TValue="Guid?"
+                                TItem="DepartmentDto" Placeholder="@L["Department"]"
+                                DataSource="@DepartmentList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton
+                                PopupHeight="300px">
+                    <AutoCompleteEvents TValue="Guid?" TItem="DepartmentDto"
+                                        Filtering="@FilterDepartmentAsync" ValueChange="@SearchAsync" />
+                    <AutoCompleteFieldSettings Text="Name" Value="Id" />
+                </SfAutoComplete>
+
+                <SfDropDownList @bind-Value="@Filter.ProtocolTypeId" TValue="Guid?"
+                                TItem="ProtocolTypeDto" Placeholder="@L["ProtocolType"]"
+                                DataSource="@ProtocolTypeList" AllowFiltering EnableVirtualization
+                                ShowClearButton PopupHeight="300px" CssClass="dropdown-list">
+                    <DropDownListEvents TItem="ProtocolTypeDto" TValue="Guid?"
+                                        ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="Name" Value="Id" />
+                </SfDropDownList>
+
+                <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumProtocolStatus"
+                                TItem="string" Placeholder="@L["Status"]"
+                                DataSource="@Enum.GetNames(typeof(EnumProtocolStatus))"
+                                CssClass="dropdown-list">
+                    <DropDownListEvents TItem="string" TValue="EnumProtocolStatus"
+                                        ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="string" Value="EnumProtocolStatus" />
+                </SfDropDownList>
+
+
+                <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
+            </div>
+        </FormTemplate>
+        <FormButtons></FormButtons>
+    </SfDataForm>
+</div>
+
+<div> 
+    <SfDashboardLayout Columns="12" CellSpacing="@_spacing" AllowDragging="false">
+        <DashboardLayoutPanels>
+            <DashboardLayoutPanel Row="3" Column="0" SizeX="12" SizeY="5">
+                <HeaderTemplate>
+                    <span>@L["Protocols"]</span>
+                </HeaderTemplate>
+                <ContentTemplate>
+                    <div class="protocol-grid">
+                        <SfGrid @ref="SfGrid" TValue="ProtocolDto" Height="100%" Width="100%" DataSource="@ProtocolList"
+                                EnableHover EnableStickyHeader AllowPaging="false">   
+                            <GridColumns>
+                                <GridColumn HeaderText="@L["StartTime"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.StartTime.ToString("dd.MM.yyyy HH:mm"))</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
+
+                                <GridColumn HeaderText="@L["Status"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <ProtocolStatusBadge Status="@dto.Status" />
+                                        }
+                                    </Template>
+                                </GridColumn>
+
+                                <GridColumn HeaderText="@L["ProtocolType"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.ProtocolType.Name)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
+
+                                <GridColumn HeaderText="@L["Patient"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.Patient.FullName)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
+
+                                <GridColumn HeaderText="@L["Doctor"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.Doctor.FullName)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
+
+                                <GridColumn HeaderText="@L["Department"]">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                            <span>@(dto.Department.Name)</span>
+                                        }
+                                    </Template>
+                                </GridColumn>
+
+                                <GridColumn HeaderText="Tetkik İste">
+                                    <Template>
+                                        @{
+                                            var dto = (context as ProtocolDto)!;
+                                        } 
+                                        <SfButton CssClass="e-danger" OnClick="() => OpenCreateDialogForSelectedProtocol(dto.Id, dto.Department.Id, dto.DoctorId, dto.Patient)">
+                                            <SfIcon IconCss="e-icons fas fa-plus" style="color: white"></SfIcon>
+                                        </SfButton>
+                                    </Template>
+                                </GridColumn>
+
+                            </GridColumns>
+                        </SfGrid>
+                    </div>
+                </ContentTemplate>
+            </DashboardLayoutPanel>
+        </DashboardLayoutPanels>
+    </SfDashboardLayout>
+</div>
+
+<RadiologyRequestWithItemCreateDialog @ref="CreateExaminationDialog" OnValidSaveAsync="HandleValidSaveAsync" />

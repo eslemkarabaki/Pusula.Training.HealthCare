@@ -1,0 +1,17 @@
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Inputs
+<HcCard Title="Psikolojik Durum" CardIcon="far fa-smile">
+    <HeaderContent>
+        <div class="d-flex gap-3">
+            <SfButtonGroup Mode="SelectionMode.Multiple">
+                <ButtonGroupButton CssClass="e-small">Sakin</ButtonGroupButton>
+                <ButtonGroupButton CssClass="e-small">Üzgün</ButtonGroupButton>
+                <ButtonGroupButton CssClass="e-small">Ajite</ButtonGroupButton>
+                <ButtonGroupButton CssClass="e-small">Kaygılı</ButtonGroupButton>
+                <ButtonGroupButton CssClass="e-small">Depresif</ButtonGroupButton>
+            </SfButtonGroup>
+            <SfTextBox Placeholder="Açıklama" FloatLabelType="FloatLabelType.Never"
+                       CssClass="e-small"></SfTextBox>
+        </div>
+    </HeaderContent>
+</HcCard>

@@ -9,5 +9,7 @@ namespace Pusula.Training.HealthCare.Examinations
         public Guid PatientId { get; set; }
         public string SummaryDocument { get; set; }
         public DateTime StartDate { get; set; }
+
+        public int ProtocolNo { get; set; }
     }
 }

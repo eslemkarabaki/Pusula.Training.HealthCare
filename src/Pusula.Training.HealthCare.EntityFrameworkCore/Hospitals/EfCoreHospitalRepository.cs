@@ -106,6 +106,22 @@ namespace Pusula.Training.HealthCare.Hospitals
                     DepartmentNames = x.departmentNames
                 });
 
-        }  
+        }
+
+        //protected virtual async Task<IQueryable<HospitalWithDepartment>> ApplyFilterAsync()
+        //{
+        //    var dbContext = await GetDbContextAsync();
+        //    return (await GetDbSetAsync())
+        //        .Include(x => x.HospitalDepartments).ThenInclude(x => x.Hospital)
+        //        .Select(h => new HospitalWithDepartment
+        //        {
+        //            Id = h.Id,
+        //            Name = h.Name,
+        //            Address = h.Address,
+        //            CreationTime = h.CreationTime,
+        //            DepartmentNames = h.HospitalDepartments.Select(hd => hd.Department.Name).Distinct().ToArray()
+
+        //        });
+        //}
     }
 }

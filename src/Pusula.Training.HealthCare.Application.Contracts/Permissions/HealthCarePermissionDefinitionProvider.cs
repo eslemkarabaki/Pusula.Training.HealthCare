@@ -30,6 +30,14 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         SetExaminationsPermissions(myGroup);
         SetRadiologyPermissions(myGroup);
         SetPatientNotesPermissions(myGroup);
+        SetAllergiesPermissions(myGroup);
+        SetMedicinesPermissions(myGroup);
+        SetOperationsPermissions(myGroup);
+        SetVaccinesPermissions(myGroup);
+        SetBloodTransfusionsPermissions(myGroup);
+        SetJobsPermissions(myGroup);
+        SetEducationsPermissions(myGroup);
+        SetPatientHistoryPermissions(myGroup);
 
         var appointmentPermission =
             myGroup.AddPermission(HealthCarePermissions.Appointments.Default, L("Permission:Appointments"));
@@ -118,19 +126,15 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
 #region Radiology
 
     private void SetRadiologyPermissions(PermissionGroupDefinition group)
-    {
-        SetStandardPermissions(
-            group, HealthCarePermissions.RadiologyExaminationGroups.Default, "RadiologyExaminationGroups"
-        );
+    {   
+        SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminationGroups.Default, "RadiologyExaminationGroups");
         SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminations.Default, "RadiologyExaminations");
-        SetStandardPermissions(
-            group, HealthCarePermissions.RadiologyExaminationProcedures.Default, "RadiologyExaminationProcedures"
-        );
-        SetStandardPermissions(
-            group, HealthCarePermissions.RadiologyExaminationDocuments.Default, "RadiologyExaminationDocuments"
-        );
+        SetStandardPermissions(group, HealthCarePermissions.RadiologyExaminationDocuments.Default, "RadiologyExaminationDocuments");
         SetStandardPermissions(group, HealthCarePermissions.RadiologyRequests.Default, "RadiologyRequests");
-        SetStandardPermissions(group, RadiologyRequestItems.Default, "RadiologyRequestItems");
+        SetStandardPermissions(group, RadiologyRequestItems.Default, "RadiologyRequestItems"); 
+        SetStandardPermissions(group, RadiologyReports.Default, "RadiologyReports");
+        SetStandardPermissions(group, RadiologyDefinitions.Default, "RadiologyDefinitions");
+        SetStandardPermissions(group, RadiologyTransactions.Default, "RadiologyTransactions");
     }
 
 #endregion
@@ -304,6 +308,93 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
         permission.AddChild(HealthCarePermissions.PatientNotes.Delete, L("Permission:Delete"));
     }
 
+    private void SetAllergiesPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.Allergies.Default, L("Permission:Allergies")
+        );
+        permission.AddChild(HealthCarePermissions.Allergies.Menu, L("Permission:Menu"));
+        permission.AddChild(HealthCarePermissions.Allergies.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Allergies.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Allergies.Delete, L("Permission:Delete"));
+    }
+
+    private void SetMedicinesPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.Medicines.Default, L("Permission:Medicines")
+        );
+        permission.AddChild(HealthCarePermissions.Medicines.Menu, L("Permission:Menu"));
+        permission.AddChild(HealthCarePermissions.Medicines.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Medicines.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Medicines.Delete, L("Permission:Delete"));
+    }
+
+    private void SetOperationsPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.Operations.Default, L("Permission:Operations")
+        );
+        permission.AddChild(HealthCarePermissions.Operations.Menu, L("Permission:Menu"));
+        permission.AddChild(HealthCarePermissions.Operations.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Operations.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Operations.Delete, L("Permission:Delete"));
+    }
+
+    private void SetVaccinesPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.Vaccines.Default, L("Permission:Vaccines")
+        );
+        permission.AddChild(HealthCarePermissions.Vaccines.Menu, L("Permission:Menu"));
+        permission.AddChild(HealthCarePermissions.Vaccines.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Vaccines.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Vaccines.Delete, L("Permission:Delete"));
+    }
+
+    private void SetBloodTransfusionsPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.BloodTransfusions.Default, L("Permission:BloodTransfusions")
+        );
+        permission.AddChild(HealthCarePermissions.BloodTransfusions.Menu, L("Permission:Menu"));
+        permission.AddChild(HealthCarePermissions.BloodTransfusions.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.BloodTransfusions.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.BloodTransfusions.Delete, L("Permission:Delete"));
+    }
+
+    private void SetJobsPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.Jobs.Default, L("Permission:Jobs")
+        );
+        permission.AddChild(HealthCarePermissions.Jobs.Menu, L("Permission:Menu"));
+        permission.AddChild(HealthCarePermissions.Jobs.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Jobs.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Jobs.Delete, L("Permission:Delete"));
+    }
+
+    private void SetEducationsPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            HealthCarePermissions.Educations.Default, L("Permission:Educations")
+        );
+        permission.AddChild(HealthCarePermissions.Educations.Menu, L("Permission:Menu"));
+        permission.AddChild(HealthCarePermissions.Educations.Create, L("Permission:Create"));
+        permission.AddChild(HealthCarePermissions.Educations.Edit, L("Permission:Edit"));
+        permission.AddChild(HealthCarePermissions.Educations.Delete, L("Permission:Delete"));
+    }
+
+    private void SetPatientHistoryPermissions(PermissionGroupDefinition group)
+    {
+        var permission = group.AddPermission(
+            PatientHistory.Default, L("Permission:PatientHistory")
+        );
+        permission.AddChild(PatientHistory.Create, L("Permission:Create"));
+        permission.AddChild(PatientHistory.Edit, L("Permission:Edit"));
+        permission.AddChild(PatientHistory.Delete, L("Permission:Delete"));
+    }
+
 #region StandardPermissions
 
     private void SetStandardPermissions(PermissionGroupDefinition group, string defaultPermission, string displayName)
@@ -314,10 +405,12 @@ public class HealthCarePermissionDefinitionProvider : PermissionDefinitionProvid
 
     private void AddStandardChildPermissions(PermissionDefinition permission)
     {
+        permission.AddChild(permission.Name + ".Menu", L("Permission:Menu"));
         permission.AddChild(permission.Name + ".Create", L("Permission:Create"));
         permission.AddChild(permission.Name + ".Edit", L("Permission:Edit"));
         permission.AddChild(permission.Name + ".Delete", L("Permission:Delete"));
     }
 
-#endregion
+
+    #endregion
 }

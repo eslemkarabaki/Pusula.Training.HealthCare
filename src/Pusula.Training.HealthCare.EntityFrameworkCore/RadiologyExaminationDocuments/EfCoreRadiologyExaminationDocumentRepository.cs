@@ -15,25 +15,25 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
         : EfCoreRepository<HealthCareDbContext, RadiologyExaminationDocument, Guid>(dbContextProvider),
             IRadiologyExaminationDocumentRepository
     {
-        public virtual async Task DeleteAllAsync(string? filterText = null, string? documentName = null, string? documentPath = null, DateTime? uploadDate = null, Guid? RadiologyExaminationProcedureId = null, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAllAsync(string? filterText = null,  string? path = null, DateTime? uploadDate = null, Guid? itemId = null, CancellationToken cancellationToken = default)
         {
             var query = await GetQueryableAsync();
 
-            query = ApplyFilter(query, filterText, documentName, documentPath, uploadDate, RadiologyExaminationProcedureId);
+            query = ApplyFilter(query, filterText,  path, uploadDate, itemId);
 
             var ids = query.Select(x => x.Id);
             await DeleteManyAsync(ids, cancellationToken: GetCancellationToken(cancellationToken));
         }
 
-        public virtual async Task<long> GetCountAsync(string? filterText = null, string? documentName = null, string? documentPath = null, DateTime? uploadDate = null, Guid? RadiologyExaminationProcedureId = null, CancellationToken cancellationToken = default)
+        public virtual async Task<long> GetCountAsync(string? filterText = null,  string? path = null, DateTime? uploadDate = null, Guid? itemId = null, CancellationToken cancellationToken = default)
         {
-            var query = ApplyFilter((await GetDbSetAsync()), filterText, documentName, documentPath, uploadDate, RadiologyExaminationProcedureId);
+            var query = ApplyFilter((await GetDbSetAsync()), filterText,  path, uploadDate, itemId);
             return await query.LongCountAsync(GetCancellationToken(cancellationToken));
         }
 
-        public virtual async Task<List<RadiologyExaminationDocument>> GetListAsync(string? filterText = null, string? documentName = null, string? documentPath = null, DateTime? uploadDate = null, Guid? RadiologyExaminationProcedureId = null, string? sorting = null, int maxResultCount = int.MaxValue, int skipCount = 0, CancellationToken cancellationToken = default)
+        public virtual async Task<List<RadiologyExaminationDocument>> GetListAsync(string? filterText = null,  string? path = null, DateTime? uploadDate = null, Guid? itemId = null, string? sorting = null, int maxResultCount = int.MaxValue, int skipCount = 0, CancellationToken cancellationToken = default)
         {
-            var query = ApplyFilter((await GetQueryableAsync()), filterText, documentName, documentPath, uploadDate, RadiologyExaminationProcedureId);
+            var query = ApplyFilter((await GetQueryableAsync()), filterText,  path, uploadDate, itemId);
             query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? RadiologyExaminationDocumentConsts.GetDefaultSorting(false) : sorting);
 
             return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
@@ -42,17 +42,15 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
         protected virtual IQueryable<RadiologyExaminationDocument> ApplyFilter(
             IQueryable<RadiologyExaminationDocument> query,
             string? filterText = null,
-            string? documentName = null,
-            string? documentPath = null,
+            
+            string? path = null,
             DateTime? uploadDate = null,
-            Guid? RadiologyExaminationProcedureId = null)
+            Guid? itemId = null)
         {
-            return query
-                .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.DocumentName.Contains(filterText))
-                .WhereIf(!string.IsNullOrWhiteSpace(documentName), e => e.DocumentName.Contains(documentName))
-                .WhereIf(!string.IsNullOrWhiteSpace(documentPath), e => e.DocumentPath.Contains(documentPath))
+            return query 
+                .WhereIf(!string.IsNullOrWhiteSpace(path), e => e.Path.Contains(path))
                 .WhereIf(uploadDate != null, e => e.UploadDate == uploadDate)
-                .WhereIf(RadiologyExaminationProcedureId != null, e => e.RadiologyExaminationProcedureId == RadiologyExaminationProcedureId);
+                .WhereIf(itemId != null, e => e.ItemId == itemId);
         }
     }
 }

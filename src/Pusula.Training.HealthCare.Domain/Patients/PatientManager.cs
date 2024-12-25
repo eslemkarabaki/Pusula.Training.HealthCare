@@ -18,6 +18,7 @@ public class PatientManager(
     public virtual async Task<Patient> CreateAsync(
         Guid countryId,
         Guid patientTypeId,
+        Guid insuranceId,
         string firstName,
         string lastName,
         DateTime birthDate,
@@ -39,6 +40,7 @@ public class PatientManager(
             GuidGenerator.Create(),
             countryId,
             patientTypeId,
+            insuranceId,
             firstName,
             lastName,
             birthDate,
@@ -62,6 +64,7 @@ public class PatientManager(
         Guid id,
         Guid countryId,
         Guid patientTypeId,
+        Guid insuranceId,
         string firstName,
         string lastName,
         DateTime birthDate,
@@ -91,6 +94,7 @@ public class PatientManager(
         patient.SetMaritalStatus(maritalStatus);
         patient.SetCountryId(countryId);
         patient.SetPatientTypeId(patientTypeId);
+        patient.SetInsuranceId(insuranceId);
 
         await addressManager.SetAddressesAsync(patient.Id, addresses);
         await patientNoteManager.SetNotesAsync(patient.Id, notes);

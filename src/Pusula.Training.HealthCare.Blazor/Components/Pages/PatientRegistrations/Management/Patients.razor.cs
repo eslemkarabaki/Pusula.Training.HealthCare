@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Blazorise.DeepCloner;
 using Microsoft.AspNetCore.Components.Forms;
@@ -12,7 +14,9 @@ using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Patients;
 using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Protocols;
 using Pusula.Training.HealthCare.Blazor.Extensions;
 using Pusula.Training.HealthCare.Countries;
+using Pusula.Training.HealthCare.Doctors;
 using Pusula.Training.HealthCare.PatientTypes;
+using Pusula.Training.HealthCare.Protocols;
 using Syncfusion.Blazor.Grids;
 using Syncfusion.Blazor.SplitButtons;
 
@@ -124,6 +128,18 @@ public partial class Patients
         {
             await DeletePatientAsync(patient.Id);
         }
+    }
+
+    private async Task SendNotificationToDoctorAsync(ProtocolDto dto)
+    {
+        using HttpClient client = new();
+        client.BaseAddress = new Uri(NavigationManager.BaseUri);
+        await client.PostAsync(
+            "api/app/doctors/send-notification",
+            JsonContent.Create(
+                new SendDoctorNotificationInput(dto.DoctorId, $"Yeni protokol eklendi.")
+            )
+        );
     }
 
 #region Protocol

@@ -1,0 +1,78 @@
+@using Syncfusion.Blazor.FileManager
+
+<div class="bg-white h-100">
+    <SfFileManager TValue="FileManagerDirectoryContent" AllowDragAndDrop AllowMultiSelection Height="100%"
+                   ShowFileExtension="false">
+        <FileManagerAjaxSettings Url="@GetUrl("file-operations")"
+                                 UploadUrl="@GetUrl("upload")"
+                                 DownloadUrl="@GetUrl("download")"
+                                 GetImageUrl="@GetUrl("get-image")">
+        </FileManagerAjaxSettings>
+        <FileManagerUploadSettings AutoUpload UploadMode="UploadMode.HttpClient"></FileManagerUploadSettings>
+        <FileManagerToolbarSettings ToolbarItems="@_toolBarItems"></FileManagerToolbarSettings>
+        <FileManagerContextMenuSettings File="@_fileItems"
+                                        Visible="true"></FileManagerContextMenuSettings>
+        <FileManagerDetailsViewSettings>
+            <FileManagerColumns>
+                <FileManagerColumn Field="Name" HeaderText="Name"></FileManagerColumn>
+                <FileManagerColumn Field="DateModified" Format="MM/dd/yyyy h:mm tt"
+                                   HeaderText="Modified"></FileManagerColumn>
+                <FileManagerColumn Field="Size" HeaderText="Size"></FileManagerColumn>
+            </FileManagerColumns>
+        </FileManagerDetailsViewSettings>
+    </SfFileManager>
+</div>
+
+@code{
+
+    [Parameter]
+    public Guid PatientId { get; set; }
+
+    private string GetUrl(string route) => $"/api/app/patient-file-manager/{route}/{PatientId}";
+
+    private readonly List<ToolBarItemModel> _toolBarItems =
+    [
+        new() { Name = "NewFolder" },
+        new() { Name = "Upload" },
+        new() { Name = "Cut" },
+        new() { Name = "Copy" },
+        new() { Name = "Paste" },
+        new() { Name = "Delete" },
+        new() { Name = "Download" },
+        new() { Name = "Rename" },
+        new() { Name = "SortBy" },
+        new() { Name = "Refresh" },
+        new() { Name = "Selection" },
+        new() { Name = "View" },
+        new() { Name = "Details" }
+    ];
+
+    private readonly string[] _layoutItems =
+    [
+        "SortBy",
+        "Upload",
+        "View",
+        "Refresh",
+        "|",
+        "Paste",
+        "|",
+        "NewFolder",
+        "|",
+        "Details",
+        "|",
+        "SelectAll"
+    ];
+
+    private readonly string[] _fileItems =
+    [
+        "Cut",
+        "Copy",
+        "|",
+        "Delete",
+        "Download",
+        "Rename",
+        "|",
+        "Details"
+    ];
+
+}

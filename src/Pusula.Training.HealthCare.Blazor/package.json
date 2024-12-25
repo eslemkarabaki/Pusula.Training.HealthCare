@@ -3,7 +3,8 @@
   "name": "my-app",
   "private": true,
   "dependencies": {
+    "@abp/aspnetcore.components.server.leptonxlitetheme": "~3.3.1",
     "@abp/aspnetcore.mvc.ui.theme.leptonxlite": "~3.3.1",
-    "@abp/aspnetcore.components.server.leptonxlitetheme": "~3.3.1"
+    "@microsoft/signalr": "^8.0.7"
   }
 }

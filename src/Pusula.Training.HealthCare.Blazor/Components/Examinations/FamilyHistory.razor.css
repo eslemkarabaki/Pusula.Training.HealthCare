@@ -1,0 +1,38 @@
+table.family-history-table {
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+table.family-history-table,
+table.family-history-table td,
+table.family-history-table th {
+    border: 1px solid var(--material-grey-300);
+}
+
+table.family-history-table td,
+table.family-history-table th {
+    max-width: 5vw;
+    overflow: hidden;
+    padding: 6px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    transition: all 300ms;
+}
+
+table.family-history-table td {
+    cursor: pointer;
+}
+
+table.family-history-table td.active {
+    color: white;
+    background-color: var(--material-blue-500);
+}
+
+table.family-history-table td:not(.active):not(:has(input)):hover {
+    color: var(--material-grey-500);
+}
+
+table.family-history-table td:has(input) {
+    padding: 0;
+}

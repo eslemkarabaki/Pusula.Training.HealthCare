@@ -54,6 +54,7 @@
     "FileUploading": "File uploading...",
     "Menu:Patients": "Patients",
     "Menu:HealthCare": "Health Care",
+    "Menu:Medical": "Medical",
     "Patient": "Patient",
     "Type": "Type",
     "StartTime": "Start Time",
@@ -159,11 +160,21 @@
     "PleaseAddAddressMessage": "The address list is empty.",
     "Menu:PatientRegistration": "Patient Registration",
     "Menu:Definitions": "Definitions",
-    "Menu:ProtocolTypes": "Protocol Types",
     "Menu:Insurances": "Insurances",
     "Menu:Address": "Address",
     "Menu:Management": "Management",
     "Menu:Reports": "Reports",
-    "Menu:PatientProtocols": "Patient Protocols"
+    "Menu:PatientProtocols": "Patient Protocols",
+    "Menu:Radiologies": "Radiologies",
+    "Menu:Appointment": "Appoitment",
+    "Menu:AppointmentType": "Appointment Type",    
+    "Menu:Allergies": "Allergies",
+    "Menu:Medicines": "Medicines",
+    "Menu:Operations": "Operations",
+    "Menu:Vaccines": "Vaccines",
+    "Menu:BloodTransfusions": "Blood Transfusions",
+    "Menu:Jobs": "Jobs",
+    "Menu:Education": "Education",
+    "Menu:Medical": "Medical"
   }
 }

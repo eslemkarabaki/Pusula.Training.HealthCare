@@ -46,24 +46,36 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationGroups
             await radiologyExaminationGroupRepository.DeleteAsync(id);
         }
 
+        [Authorize(HealthCarePermissions.RadiologyExaminationGroups.Create)]
         public virtual async Task<RadiologyExaminationGroupDto> CreateAsync(RadiologyExaminationGroupCreateDto input)
         {
-            var RadiologyExaminationGroup = await radiologyExaminationGroupManager.CreateAsync(
-                input.Name,
-                input.Description
+            try
+            {
+                var radiologyExaminationGroup = await radiologyExaminationGroupManager.CreateAsync(
+                    input.Name,
+                    input.Description ?? string.Empty 
                 );
-            return ObjectMapper.Map<RadiologyExaminationGroup, RadiologyExaminationGroupDto>(RadiologyExaminationGroup);
+                return ObjectMapper.Map<RadiologyExaminationGroup, RadiologyExaminationGroupDto>(radiologyExaminationGroup);
+            }
+            catch (Exception ex)
+            {
+                throw new UserFriendlyException("An error occurred while creating the radiology examination group. Please try again.", ex.Message);
+            }
         }
+
 
         [Authorize(HealthCarePermissions.RadiologyExaminationGroups.Edit)]
         public virtual async Task<RadiologyExaminationGroupDto> UpdateAsync(Guid id, RadiologyExaminationGroupUpdateDto input)
         {
-            var RadiologyExaminationGroup = await radiologyExaminationGroupRepository.GetAsync(id);
-            RadiologyExaminationGroup.Name = input.Name;
-            RadiologyExaminationGroup.Description = input.Description;
-            await radiologyExaminationGroupRepository.UpdateAsync(RadiologyExaminationGroup);
-            return ObjectMapper.Map<RadiologyExaminationGroup, RadiologyExaminationGroupDto>(RadiologyExaminationGroup);
+            var radiologyExaminationGroup = await radiologyExaminationGroupManager.UpdateAsync(
+                id,
+                input.Name,
+                input.Description,
+                input.ConcurrencyStamp
+            );
+            return ObjectMapper.Map<RadiologyExaminationGroup, RadiologyExaminationGroupDto>(radiologyExaminationGroup);
         }
+
 
         [AllowAnonymous]
         public virtual async Task<IRemoteStreamContent> GetListAsExcelFileAsync(RadiologyExaminationGroupExcelDownloadDto input)

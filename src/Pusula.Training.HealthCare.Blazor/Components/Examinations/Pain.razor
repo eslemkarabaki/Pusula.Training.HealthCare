@@ -1,0 +1,71 @@
+@using Syncfusion.Blazor.SplitButtons
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.DropDowns
+@using SelectionMode = Syncfusion.Blazor.SplitButtons.SelectionMode
+
+<HcCard Title="Ağrı" CardIcon="fas fa-user-injured">
+    <HeaderContent>
+        <SfButtonGroup Mode="SelectionMode.Single">
+            <ButtonGroupButton CssClass="e-small">Var</ButtonGroupButton>
+            <ButtonGroupButton CssClass="e-small">Yok</ButtonGroupButton>
+        </SfButtonGroup>
+    </HeaderContent>
+    <ChildContent>
+        <div class="d-flex flex-column gap-2 p-2">
+            <div>
+                <div class="fs-13p color-grey-700">Ağrının Niteliği</div>
+                <div class="d-flex gap-1">
+                    <SfButton IsToggle CssClass="e-outline e-primary">Basdırıcı</SfButton>
+                    <SfButton IsToggle CssClass="e-outline e-primary">Dolgunluk</SfButton>
+                    <SfButton IsToggle CssClass="e-outline e-primary">Ezici</SfButton>
+                    <SfButton IsToggle CssClass="e-outline e-primary">Kolik</SfButton>
+                    <SfButton IsToggle CssClass="e-outline e-primary">Küt</SfButton>
+                    <SfButton IsToggle CssClass="e-outline e-primary">Saplanıcı</SfButton>
+                    <SfButton IsToggle CssClass="e-outline e-primary">Stabilize</SfButton>
+                    <SfButton IsToggle CssClass="e-outline e-primary">Yangın</SfButton>
+                    <SfTextBox Placeholder="Diğer" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                </div>
+            </div>
+            <div class="d-flex gap-3">
+                <div>
+                    <div class="fs-13p color-grey-700">Ağrı Ritmi / Ağrı Sıklığı</div>
+                    <SfButtonGroup Mode="SelectionMode.Single">
+                        <ButtonGroupButton CssClass="e-outline e-primary">Daimi</ButtonGroupButton>
+                        <ButtonGroupButton CssClass="e-outline e-primary">Aralıklı</ButtonGroupButton>
+                    </SfButtonGroup>
+                </div>
+                <div>
+                    <div class="fs-13p color-grey-700">Ağrı Başlangıcı</div>
+                    <div class="input-group flex-nowrap">
+                        <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" @bind-Value="@PainDuration"
+                                        DataSource="@PainDurations">
+                            <DropDownListFieldSettings Text="Text"/>
+                        </SfDropDownList>
+                        @if (PainDuration == "Süre")
+                        {
+                            <SfNumericTextBox Min="0" Placeholder="Süre" FloatLabelType="FloatLabelType.Never"
+                                              ShowSpinButton="false"></SfNumericTextBox>
+                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Value="@("saat")"
+                                            DataSource="@PainDurationTypes">
+                                <DropDownListFieldSettings Text="Text"/>
+                            </SfDropDownList>
+                        } else if (PainDuration == "Tarih")
+                        {
+                            <SfDateTimePicker TValue="DateTime?" FullScreen ShowClearButton></SfDateTimePicker>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+</HcCard>
+
+
+@code{
+
+    private string PainDuration { get; set; } = "Süre";
+    private string[] PainDurations { get; } = ["Süre", "Tarih"];
+    private string[] PainDurationTypes { get; } = ["yıl", "ay", "gün", "saat", "dakika"];
+
+}

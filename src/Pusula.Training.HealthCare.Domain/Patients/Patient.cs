@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Pusula.Training.HealthCare.Addresses;
 using Pusula.Training.HealthCare.Countries;
+using Pusula.Training.HealthCare.Insurances;
 using Pusula.Training.HealthCare.PatientNotes;
 using Pusula.Training.HealthCare.PatientTypes;
 using Volo.Abp;
@@ -32,6 +33,9 @@ public class Patient : FullAuditedAggregateRoot<Guid>
     public Guid PatientTypeId { get; private set; }
     public PatientType PatientType { get; set; }
 
+    public Guid InsuranceId { get; set; }
+    public Insurance Insurance { get; set; }
+
     public ICollection<Address> Addresses { get; set; }
     public ICollection<PatientNote> PatientNotes { get; set; }
 
@@ -51,6 +55,7 @@ public class Patient : FullAuditedAggregateRoot<Guid>
         Guid id,
         Guid countryId,
         Guid patientTypeId,
+        Guid insuranceId,
         string firstName,
         string lastName,
         DateTime birthDate,
@@ -68,6 +73,7 @@ public class Patient : FullAuditedAggregateRoot<Guid>
     {
         SetCountryId(countryId);
         SetPatientTypeId(patientTypeId);
+        SetInsuranceId(insuranceId);
         SetName(firstName, lastName);
         SetBirthDate(birthDate);
         SetIdentityNumber(identityNumber);
@@ -101,6 +107,9 @@ public class Patient : FullAuditedAggregateRoot<Guid>
 
     public void SetPatientTypeId(Guid patientTypeId) =>
         PatientTypeId = Check.NotDefaultOrNull<Guid>(patientTypeId, nameof(patientTypeId));
+
+    public void SetInsuranceId(Guid insurance) =>
+        InsuranceId = Check.NotDefaultOrNull<Guid>(insurance, nameof(insurance));
 
     public void SetBirthDate(DateTime birthDate) => BirthDate = birthDate;
 

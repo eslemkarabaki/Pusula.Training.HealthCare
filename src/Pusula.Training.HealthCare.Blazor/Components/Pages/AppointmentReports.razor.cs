@@ -60,7 +60,11 @@ namespace Pusula.Training.HealthCare.Blazor.Components.Pages
             await GetAppointmentsAsync();
             await InvokeAsync(StateHasChanged);
         }
-
+        private async Task StatusChanged(MultiSelectChangeEventArgs<string[]> args)
+        {
+            Filter.Statuses = args.Value.Select(e=>e.ToEnum<EnumAppointmentStatus>()).ToArray();
+            await SearchAsync();
+        }
         private async Task GetAppointmentsAsync()
         {
             Filter.MaxResultCount = PageSize;

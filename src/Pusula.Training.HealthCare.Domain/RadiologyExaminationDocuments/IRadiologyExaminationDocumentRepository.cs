@@ -10,17 +10,15 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
     {
         Task DeleteAllAsync(
             string? filterText = null,
-            string? documentName = null,
-            string? documentPath = null,
+            string? path = null,
             DateTime? uploadDate = null,
-            Guid? RadiologyExaminationProcedureId = null,
+            Guid? itemId = null,
             CancellationToken cancellationToken = default);
         Task<List<RadiologyExaminationDocument>> GetListAsync(
                     string? filterText = null,
-                    string? documentName = null,
-                    string? documentPath = null,
-                    DateTime? uploadDate = null,
-                    Guid? RadiologyExaminationProcedureId = null,
+            string? path = null,
+            DateTime? uploadDate = null,
+            Guid? itemId = null,
                     string? sorting = null,
                     int maxResultCount = int.MaxValue,
                     int skipCount = 0,
@@ -29,10 +27,9 @@ namespace Pusula.Training.HealthCare.RadiologyExaminationDocuments
 
         Task<long> GetCountAsync(
             string? filterText = null,
-            string? documentName = null,
-            string? documentPath = null,
+            string? path = null,
             DateTime? uploadDate = null,
-            Guid? RadiologyExaminationProcedureId = null,
+            Guid? itemId = null, 
             CancellationToken cancellationToken = default);
     }
 }

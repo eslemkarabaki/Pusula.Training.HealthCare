@@ -23,6 +23,7 @@ public class GetPatientsInput : PagedAndSortedResultRequestDto
 
     public Guid? CountryId { get; set; }
     public Guid? PatientTypeId { get; set; }
+    public Guid? InsuranceId { get; set; }
 
     public string ToQueryParameterString(string? culture = null)
     {
@@ -47,6 +48,7 @@ public class GetPatientsInput : PagedAndSortedResultRequestDto
         parameters.Append($"&MaritalStatus={MaritalStatus}");
         parameters.Append($"&CountryId={CountryId}");
         parameters.Append($"&PatientTypeId={PatientTypeId}");
+        parameters.Append($"&InsuranceId={InsuranceId}");
         return parameters.ToString();
     }
 

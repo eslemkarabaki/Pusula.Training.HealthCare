@@ -1,0 +1,37 @@
+@using Syncfusion.Blazor.Buttons
+
+<SfButton CssClass="@($"{(Selected ? string.Empty : "e-outline")} {Class}")"
+          OnClick="@_onClick">
+    @ChildContent
+</SfButton>
+
+@code {
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public bool Selected { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> SelectedChanged { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private async Task _onClick()
+    {
+        if (OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync();
+            return;
+        }
+
+        Selected = !Selected;
+        await SelectedChanged.InvokeAsync(Selected);
+    }
+
+}

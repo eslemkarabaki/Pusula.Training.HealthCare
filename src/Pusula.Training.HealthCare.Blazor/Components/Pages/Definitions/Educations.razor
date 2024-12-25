@@ -1,0 +1,110 @@
+@page "/definition/educations"
+
+@attribute [Authorize(HealthCarePermissions.Educations.Default)]
+
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Educations
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+
+@inherits HealthCareComponentBase
+@inject IEducationAppService EducationAppService
+@inject SfDialogService DialogService
+
+<PageHeader Title="@L["Educations"]" BreadcrumbItems="@_breadcrumbItems"/>
+
+<SfGrid @ref="SfGrid" TValue="EducationDto" DataSource="@EducationList" AllowPaging AllowSelection EnableHover
+        AllowSorting AllowFiltering>
+    <SfToolbar>
+        <ToolbarItems>
+            <ToolbarItem Type="@ItemType.Button" OnClick="OpenEducationCreateDialogAsync" Text="@L["Add"]"
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["Add"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedRowsAsync"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
+                         TooltipText="@L["Delete"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
+        </ToolbarItems>
+    </SfToolbar>
+    <GridEvents TValue="EducationDto"
+                RowSelected="@SelectedRowChangedAsync"
+                RowDeselected="@SelectedRowChangedAsync"/>
+    <GridPageSettings PageSize="10"/>
+    <GridSelectionSettings CheckboxOnly PersistSelection/>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Field="@nameof(EducationDto.Name)" HeaderText="@L["Name"]"/>
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton OnClick="@(() => OpenEducationUpdateDialogAsync(context as EducationDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteAsync(context as EducationDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+
+@* ************************* CREATE MODAL ************************* *@
+<SfDialog @ref="EducationCreateDialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultsForEducationCreateDialog"></DialogEvents>
+    <DialogTemplates>
+        <Header>@L["NewEducation"]</Header>
+        <Content>
+            <SfDataForm ID="EducationCreateForm"
+                        Model="@EducationCreateDto"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@CreateAsync">
+                <FormValidator>
+                    <DataAnnotationsValidator/>
+                </FormValidator>
+                <FormTemplate>
+                    <SfTextBox @bind-Value="@EducationCreateDto.Name"
+                               Placeholder="@L["Name"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@HideEducationCreateDialogAsync">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@* ************************* UPDATE MODAL ************************* *@
+<SfDialog @ref="EducationUpdateDialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultsForEducationUpdateDialog"></DialogEvents>
+    <DialogTemplates>
+        <Header>@L["EditEducation"]</Header>
+        <Content>
+            <SfDataForm ID="EducationUpdateForm"
+                        Model="@EducationUpdateDto"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@UpdateAsync">
+                <FormValidator>
+                    <DataAnnotationsValidator/>
+                </FormValidator>
+                <FormTemplate>
+                    <SfTextBox @bind-Value="@EducationUpdateDto.Name"
+                               Placeholder="@L["Name"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@HideEducationUpdateDialogAsync">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>

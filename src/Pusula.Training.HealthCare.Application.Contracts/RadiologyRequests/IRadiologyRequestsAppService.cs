@@ -10,6 +10,7 @@ public interface IRadiologyRequestsAppService : IApplicationService
 {
     Task<RadiologyRequestDto> GetAsync(Guid id);
     Task<PagedResultDto<RadiologyRequestDto>> GetListAsync(GetRadiologyRequestsInput input);
+    Task<PagedResultDto<RadiologyRequestWithNavigationPropertiesDto>> GetListNavigationPropertiesAsync(GetRadiologyRequestsInput input);
     Task<RadiologyRequestWithNavigationPropertiesDto> GetNavigationPropertiesAsync(Guid id);
     Task<RadiologyRequestDto> CreateAsync(RadiologyRequestCreateDto input);
     Task<RadiologyRequestDto> UpdateAsync(Guid id, RadiologyRequestUpdateDto input);

@@ -149,9 +149,9 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => EF.Functions.ILike(e.FullName, filterText!)
+                e => EF.Functions.ILike(e.FullName, $"{filterText!}%")
             )
-            .WhereIf(!string.IsNullOrWhiteSpace(fullName), e => EF.Functions.ILike(e.FullName, fullName!))
+            .WhereIf(!string.IsNullOrWhiteSpace(fullName), e => EF.Functions.ILike(e.FullName, $"{fullName!}%"))
             .WhereIf(appointmentTime.HasValue, e => e.AppointmentTime == appointmentTime!.Value)
             .WhereIf(titleId.HasValue, e => e.TitleId == titleId!.Value)
             .WhereIf(departmentId.HasValue, e => e.DepartmentId == departmentId!.Value)
@@ -169,9 +169,9 @@ public class EfCoreDoctorRepository : EfCoreRepository<HealthCareDbContext, Doct
         query
             .WhereIf(
                 !string.IsNullOrWhiteSpace(filterText),
-                e => EF.Functions.ILike(e.Doctor.FullName, filterText!)
+                e => EF.Functions.ILike(e.Doctor.FullName, $"{filterText!}%")
             )
-            .WhereIf(!string.IsNullOrWhiteSpace(fullName), e => EF.Functions.ILike(e.Doctor.FullName, fullName!))
+            .WhereIf(!string.IsNullOrWhiteSpace(fullName), e => EF.Functions.ILike(e.Doctor.FullName, $"{fullName!}%"))
             .WhereIf(appointmentTime.HasValue, e => e.Doctor.AppointmentTime == appointmentTime!.Value)
             .WhereIf(titleId.HasValue, e => e.Doctor.TitleId == titleId!.Value)
             .WhereIf(departmentId.HasValue, e => e.Doctor.DepartmentId == departmentId!.Value)

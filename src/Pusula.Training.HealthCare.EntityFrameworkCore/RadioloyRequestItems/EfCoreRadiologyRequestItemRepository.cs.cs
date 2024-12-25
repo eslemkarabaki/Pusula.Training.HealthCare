@@ -10,6 +10,11 @@ using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using Microsoft.EntityFrameworkCore;
+using Pusula.Training.HealthCare.Departments;
+using Pusula.Training.HealthCare.Doctors;
+using Pusula.Training.HealthCare.Patients;
+using Pusula.Training.HealthCare.Protocols;
+using Pusula.Training.HealthCare.RadiologyExaminationDocuments;
 
 namespace Pusula.Training.HealthCare.RadioloyRequestItems;
 public class EfCoreRadiologyRequestItemRepository(IDbContextProvider<HealthCareDbContext> dbContextProvider)
@@ -76,32 +81,140 @@ public class EfCoreRadiologyRequestItemRepository(IDbContextProvider<HealthCareD
 
     #region GetListWithNavigationPropertiesAsync
     public virtual async Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsync
-        (
-            string? filterText = null,
-            Guid? requestId = null,
-            Guid? examinationId = null,
-            string? result = null,
-            DateTime? resultDate = null,
-            RadiologyRequestItemState? state = null,
-            string? sorting = null,
-            int maxResultCount = int.MaxValue,
-            int skipCount = 0,
-            CancellationToken cancellationToken = default
-        )
+    (
+        string? filterText = null,
+        Guid? requestId = null,
+        Guid? examinationId = null,
+        string? result = null,
+        DateTime? resultDate = null,
+        RadiologyRequestItemState? state = null,
+        Guid? protocolId = null,
+        Guid? departmentId = null,
+        Guid? doctorId = null,
+        Guid? patientId = null,
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        CancellationToken cancellationToken = default
+    )
     {
         var query = await GetQueryForNavigationPropertiesAsync();
-        query = ApplyFilter(query, filterText, requestId, examinationId, result, resultDate, state);
+        query = ApplyFilter(query, filterText, requestId, examinationId, result, resultDate, state, protocolId, departmentId, doctorId, patientId);
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? RadiologyRequestItemConsts.GetDefaultSorting(false) : sorting);
         return await query.PageBy(skipCount, maxResultCount).ToListAsync(GetCancellationToken(cancellationToken));
     }
     #endregion
 
+    #region GetListWithNavigationPropertiesAsync
+    public virtual async Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsyncByRequestId
+    (
+        string? filterText = null,
+        Guid? requestId = null,
+        Guid? examinationId = null,
+        string? result = null,
+        DateTime? resultDate = null,
+        RadiologyRequestItemState? state = null,
+        Guid? protocolId = null,
+        Guid? departmentId = null,
+        Guid? doctorId = null,
+        Guid? patientId = null,
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = await GetQueryForNavigationPropertiesAsyncByRequestId(requestId);
+        query = ApplyFilter(query, filterText, requestId, examinationId, result, resultDate, state, protocolId, departmentId, doctorId, patientId);
+        query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? RadiologyRequestItemConsts.GetDefaultSorting(false) : sorting);
+        return await query.PageBy(skipCount, maxResultCount).ToListAsync(GetCancellationToken(cancellationToken));
+    }
+    #endregion
+
+    #region GetQueryForNavigationPropertiesAsyncByRequestId
+    protected virtual async Task<IQueryable<RadiologyRequestItemWithNavigationProperties>> GetQueryForNavigationPropertiesAsyncByRequestId(Guid? requestId = null)
+    {
+        var query = from radiologyRequestItem in (await GetDbSetAsync())
+                    join radiologyExamination in (await GetDbContextAsync()).Set<RadiologyExamination>() on radiologyRequestItem.ExaminationId equals radiologyExamination.Id into radiologyExaminations
+                    from radiologyExamination in radiologyExaminations.DefaultIfEmpty()
+                    join radiologyRequest in (await GetDbContextAsync()).Set<RadiologyRequest>() on radiologyRequestItem.RequestId equals radiologyRequest.Id into radiologyRequests
+                    from radiologyRequest in radiologyRequests.DefaultIfEmpty()
+                    join protocol in (await GetDbContextAsync()).Set<Protocol>() on radiologyRequest.ProtocolId equals protocol.Id into protocols
+                    from protocol in protocols.DefaultIfEmpty()
+                    join department in (await GetDbContextAsync()).Set<Department>() on radiologyRequest.DepartmentId equals department.Id into departments
+                    from department in departments.DefaultIfEmpty()
+                    join doctor in (await GetDbContextAsync()).Set<Doctor>() on radiologyRequest.DoctorId equals doctor.Id into doctors
+                    from doctor in doctors.DefaultIfEmpty()
+                    join patient in (await GetDbContextAsync()).Set<Patient>() on protocol.PatientId equals patient.Id into patients
+                    from patient in patients.DefaultIfEmpty()
+                    where !requestId.HasValue || radiologyRequest.Id == requestId.Value
+                    select new RadiologyRequestItemWithNavigationProperties
+                    {
+                        RadiologyExamination = radiologyExamination,
+                        RadiologyRequestItem = radiologyRequestItem,
+                        RadiologyRequest = radiologyRequest,
+                        Protocol = protocol,
+                        Department = department,
+                        Doctor = doctor,
+                        Patient = patient
+                    };
+
+        return query;
+    }
+    #endregion
+
+    #region GetListWithNavigationPropertiesAsyncByPatientId
+    public virtual async Task<List<RadiologyRequestItemWithNavigationProperties>> GetListWithNavigationPropertiesAsyncByPatientId
+    (
+        Guid patientId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = await GetQueryForNavigationPropertiesAsyncByPatientId(patientId);
+        return await query.ToListAsync(GetCancellationToken(cancellationToken));
+    }
+    #endregion
+
+    protected virtual async Task<IQueryable<RadiologyRequestItemWithNavigationProperties>> GetQueryForNavigationPropertiesAsyncByPatientId(Guid patientId)
+    {
+        var query = from radiologyRequestItem in (await GetDbSetAsync())
+                    join radiologyExamination in (await GetDbContextAsync()).Set<RadiologyExamination>() on radiologyRequestItem.ExaminationId equals radiologyExamination.Id into radiologyExaminations
+                    from radiologyExamination in radiologyExaminations.DefaultIfEmpty()
+                    join radiologyRequest in (await GetDbContextAsync()).Set<RadiologyRequest>() on radiologyRequestItem.RequestId equals radiologyRequest.Id into radiologyRequests
+                    from radiologyRequest in radiologyRequests.DefaultIfEmpty()
+                    join protocol in (await GetDbContextAsync()).Set<Protocol>() on radiologyRequest.ProtocolId equals protocol.Id into protocols
+                    from protocol in protocols.DefaultIfEmpty()
+                    join department in (await GetDbContextAsync()).Set<Department>() on radiologyRequest.DepartmentId equals department.Id into departments
+                    from department in departments.DefaultIfEmpty()
+                    join doctor in (await GetDbContextAsync()).Set<Doctor>() on radiologyRequest.DoctorId equals doctor.Id into doctors
+                    from doctor in doctors.DefaultIfEmpty()
+                    join patient in (await GetDbContextAsync()).Set<Patient>() on protocol.PatientId equals patient.Id into patients
+                    from patient in patients.DefaultIfEmpty()
+                    join radiologyDocument in (await GetDbContextAsync()).Set<RadiologyExaminationDocument>() on radiologyRequestItem.Id equals radiologyDocument.ItemId into radiologyDocuments
+                    where patient.Id == patientId
+                    select new RadiologyRequestItemWithNavigationProperties
+                    {
+                        RadiologyExamination = radiologyExamination,
+                        RadiologyRequestItem = radiologyRequestItem,
+                        RadiologyRequest = radiologyRequest,
+                        Protocol = protocol,
+                        Department = department,
+                        Doctor = doctor,
+                        Patient = patient,
+                        RadiologyDocuments = radiologyDocuments.ToList()  
+                    };
+
+        return query;
+    }
+
+
+
     #region GetWithNavigationPropertiesAsync
     public virtual async Task<RadiologyRequestItemWithNavigationProperties> GetWithNavigationPropertiesAsync
-        (
-            Guid id,
-            CancellationToken cancellationToken = default
-        )
+            (
+                Guid id,
+                CancellationToken cancellationToken = default
+            )
     {
         var dbContext = await GetDbContextAsync();
 
@@ -123,13 +236,26 @@ public class EfCoreRadiologyRequestItemRepository(IDbContextProvider<HealthCareD
                from radiologyExamination in radiologyExaminations.DefaultIfEmpty()
                join radiologyRequest in (await GetDbContextAsync()).Set<RadiologyRequest>() on radiologyRequestItem.RequestId equals radiologyRequest.Id into radiologyRequests
                from radiologyRequest in radiologyRequests.DefaultIfEmpty()
+               join protocol in (await GetDbContextAsync()).Set<Protocol>() on radiologyRequest.ProtocolId equals protocol.Id into protocols
+               from protocol in protocols.DefaultIfEmpty()
+               join department in (await GetDbContextAsync()).Set<Department>() on radiologyRequest.DepartmentId equals department.Id into departments
+               from department in departments.DefaultIfEmpty()
+               join doctor in (await GetDbContextAsync()).Set<Doctor>() on radiologyRequest.DoctorId equals doctor.Id into doctors
+               from doctor in doctors.DefaultIfEmpty()
+               join patient in (await GetDbContextAsync()).Set<Patient>() on protocol.PatientId equals patient.Id into patients
+               from patient in patients.DefaultIfEmpty()
                select new RadiologyRequestItemWithNavigationProperties
                {
                    RadiologyExamination = radiologyExamination,
                    RadiologyRequestItem = radiologyRequestItem,
-                   RadiologyRequest = radiologyRequest
+                   RadiologyRequest = radiologyRequest,
+                   Protocol = protocol,
+                   Department = department,
+                   Doctor = doctor,
+                   Patient = patient
                };
     }
+
     #endregion
 
     #region ApplyFilterForNavigationProperties
@@ -141,7 +267,11 @@ public class EfCoreRadiologyRequestItemRepository(IDbContextProvider<HealthCareD
             Guid? examinationId = null,
             string? result = null,
             DateTime? resultDate = null,
-            RadiologyRequestItemState? state = null
+            RadiologyRequestItemState? state = null,
+            Guid? protocolId = null,
+            Guid? departmentId = null,
+            Guid? doctorId = null,
+            Guid? patientId = null
         )
     {
         return query
@@ -150,7 +280,11 @@ public class EfCoreRadiologyRequestItemRepository(IDbContextProvider<HealthCareD
             .WhereIf(examinationId.HasValue, x => x.RadiologyRequestItem.ExaminationId == examinationId)
             .WhereIf(!string.IsNullOrWhiteSpace(result), x => x.RadiologyRequestItem.Result.Contains(result))
             .WhereIf(resultDate.HasValue, x => x.RadiologyRequestItem.ResultDate == resultDate)
-            .WhereIf(state.HasValue, x => x.RadiologyRequestItem.State == state);
+            .WhereIf(state.HasValue, x => x.RadiologyRequestItem.State == state)
+            .WhereIf(protocolId.HasValue, x => x.Protocol.Id == protocolId)
+            .WhereIf(departmentId.HasValue, x => x.Department.Id == departmentId)
+            .WhereIf(doctorId.HasValue, x => x.Doctor.Id == doctorId)
+            .WhereIf(patientId.HasValue, x => x.Patient.Id == patientId);
     }
     #endregion
 
