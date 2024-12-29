@@ -4,14 +4,14 @@ trigger:
       - development
 
 pool:
-  name: pusula-akademi-team3-agent
+  name: your-agent-name
   demands:
-    - agent.name -equals team3-node1
+    - agent.name -equals node-name
 
 variables:
-  SONARQUBE_ENDPOINT: 'http://64.226.68.43:9000'
-  SONARQUBE_PROJECT_KEY: 'Pusula.Training.HealthCare.Team3_Pusula.Training.HealthCare_AZP4tUIR1JslGwXYF6D1'
-  SONARQUBE_PROJECT_NAME: 'Pusula.Training.HealthCare'
+  SONARQUBE_ENDPOINT: 'http://localhost:9000'
+  SONARQUBE_PROJECT_KEY: 'your-project-key'
+  SONARQUBE_PROJECT_NAME: 'your-project-name'
   SONARQUBE_PROJECT_VERSION: '1.0'
   SONARQUBE_SERVICE_CONNECTION: 'Sonarqube'  
 
@@ -26,7 +26,7 @@ steps:
 
 - script: |
     # Build the project for analysis
-    dotnet build src/Pusula.Training.HealthCare.Blazor/Pusula.Training.HealthCare.Blazor.csproj --configuration Release
+    dotnet build your-path --configuration Release
   displayName: 'Build Project'
 
 - task: SonarQubeAnalyze@7

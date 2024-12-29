@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   healtcare-blazor:
-    image: registry.gitlab.com/berkmkaracayir/pusula:${imageTag}
+    image: registry.gitlab.com/your-user-name/your-project:${imageTag}
     ports: 
       - "9005:80"
     environment:
@@ -20,17 +20,15 @@ services:
         order: start-first
       restart_policy:
         condition: on-failure
-      placement:
-        constraints: [node.role==manager]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.healthcare-blazor.rule=Host(`team3-pusula-healthcare.pusulayazilim.com.tr`)"
+      - "traefik.http.routers.healthcare-blazor.rule=Host(`your-domain-name`)"
       - "traefik.http.services.healthcare-blazor.loadbalancer.server.port=80"
       - "traefik.http.routers.healthcare-blazor.entrypoints=websecure"
       - "traefik.http.routers.healthcare-blazor.tls=true"
       - "traefik.http.routers.healthcare-blazor.tls.certresolver=myresolver"
       - "traefik.http.services.healthcare-blazor.loadbalancer.sticky.cookie=true"
-      - "traefik.http.services.healthcare-blazor.loadbalancer.sticky.cookie.name=healthcare_blazor_session"
+      - "traefik.http.services.healthcare-blazor.loadbalancer.sticky.cookie.name=cookie-name"
 
 networks:
   frontend:

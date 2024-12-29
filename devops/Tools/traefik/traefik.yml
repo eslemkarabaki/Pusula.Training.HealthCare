@@ -8,7 +8,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.httpChallenge.entryPoint=web"
-      - "--certificatesresolvers.myresolver.acme.email=berkmkaracayir@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.email=your-email"
       - "--certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme.json"
     ports:
       - "80:80"

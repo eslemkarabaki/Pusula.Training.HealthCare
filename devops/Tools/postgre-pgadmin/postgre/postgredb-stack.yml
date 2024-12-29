@@ -4,8 +4,8 @@ services:
     image: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: myPassw0rd
-      POSTGRES_DB: HealthCare
+      POSTGRES_PASSWORD: your-password
+      POSTGRES_DB: db-name
       TZ: Europe/Istanbul
     ports:
       - "5432:5432"
@@ -24,7 +24,7 @@ services:
       restart_policy:
         condition: on-failure     
       placement:
-        constraints: [node.hostname == team3-node1]
+        constraints: [node.hostname == node-name]
 
 networks:
   frontend:

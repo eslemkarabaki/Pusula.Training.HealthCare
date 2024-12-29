@@ -7,8 +7,8 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - XPACK_MONITORING_ENABLED=true
       - XPACK_MONITORING_COLLECTION_ENABLED=true
-      - ELASTIC_USERNAME=elastic
-      - ELASTIC_PASSWORD=1q2w3e*
+      - ELASTIC_USERNAME=user-name
+      - ELASTIC_PASSWORD=user-password
     ports:
       - "5601:5601"
     depends_on:
@@ -19,7 +19,7 @@ services:
       restart_policy:
         condition: on-failure     
       placement:
-        constraints: [node.hostname == team3-node2]
+        constraints: [node.hostname == node-name]
 
 networks:
   frontend:

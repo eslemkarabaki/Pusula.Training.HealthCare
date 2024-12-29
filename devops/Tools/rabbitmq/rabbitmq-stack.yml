@@ -5,8 +5,8 @@ services:
     container_name: rabbitmq-node-1
     environment:
       RABBITMQ_ERLANG_COOKIE: "mysecurecookie"
-      RABBITMQ_DEFAULT_USER: "admin"
-      RABBITMQ_DEFAULT_PASS: "mypassword"
+      RABBITMQ_DEFAULT_USER: "user-name"
+      RABBITMQ_DEFAULT_PASS: "user-password"
       RABBITMQ_NODENAME: "rabbit@rabbitmq-node-1"
       RABBITMQ_USE_LONGNAME: "true"
     ports:
@@ -29,8 +29,8 @@ services:
     container_name: rabbitmq-node-2
     environment:
       RABBITMQ_ERLANG_COOKIE: "mysecurecookie"
-      RABBITMQ_DEFAULT_USER: "admin"
-      RABBITMQ_DEFAULT_PASS: "mypassword"
+      RABBITMQ_DEFAULT_USER: "username"
+      RABBITMQ_DEFAULT_PASS: "userpassword"
       RABBITMQ_NODENAME: "rabbit@rabbitmq-node-2"
       RABBITMQ_USE_LONGNAME: "true"
       RABBITMQ_CLUSTER_NODES: "rabbit@rabbitmq-node-1"
@@ -54,8 +54,8 @@ services:
     container_name: rabbitmq-node-3
     environment:
       RABBITMQ_ERLANG_COOKIE: "mysecurecookie"
-      RABBITMQ_DEFAULT_USER: "admin"
-      RABBITMQ_DEFAULT_PASS: "mypassword"
+      RABBITMQ_DEFAULT_USER: "username"
+      RABBITMQ_DEFAULT_PASS: "userpassword"
       RABBITMQ_NODENAME: "rabbit@rabbitmq-node-3"
       RABBITMQ_USE_LONGNAME: "true"
       RABBITMQ_CLUSTER_NODES: "rabbit@rabbitmq-node-1"

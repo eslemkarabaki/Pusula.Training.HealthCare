@@ -4,16 +4,16 @@ trigger:
       - development
 
 pool:
-  name: pusula-akademi-team3-agent
+  name: your-agent-name
   demands:
-    - agent.name -equals team3-node1
+    - agent.name -equals node-name
 
 variables:
-  imageName: 'registry.gitlab.com/berkmkaracayir/migrator'
+  imageName: 'registry.gitlab.com/your-user-name/project-name'
   dockerFilePath: 'Dockerfile.db'
   publishDir: '$(Build.ArtifactStagingDirectory)'
-  GITLAB_REGISTRY_USER: 'berkmkaracayir' 
-  GITLAB_REGISTRY_PASSWORD: 'glpat-VxJgKhLEvz6ECi-ybUgS'
+  GITLAB_REGISTRY_USER: 'your-user-name' 
+  GITLAB_REGISTRY_PASSWORD: 'your-user-password or key'
 
 steps:
 - task: UseDotNet@2
@@ -24,12 +24,12 @@ steps:
 
 - bash: |
     # Build the project
-    dotnet build src/Pusula.Training.HealthCare.DbMigrator/Pusula.Training.HealthCare.DbMigrator.csproj --configuration Release
+    dotnet build your-path --configuration Release
   displayName: 'Build Project'
 
 - bash: |
     # Publish the project
-    dotnet publish src/Pusula.Training.HealthCare.DbMigrator/Pusula.Training.HealthCare.DbMigrator.csproj --configuration Release --output $(publishDir)
+    dotnet publish your-path --configuration Release --output $(publishDir)
   displayName: 'Publish Project'
 
 - bash: |
@@ -56,10 +56,10 @@ steps:
 
 - bash: |
     # Update docker-compose.yml with dynamic tag
-    sed -i "s|registry.gitlab.com/berkmkaracayir/migrator:.*|registry.gitlab.com/berkmkaracayir/migrator:$(imageTag)|g" devops/Apps/db-migrator/dbmigrator-deploy.yml
+    sed -i "s|registry.gitlab.com/your-user-name/project-name:.*|registry.gitlab.com/your-user-name/project-name:$(imageTag)|g" your-path-for-deploy-yml
   displayName: 'Update Docker Compose with Dynamic Tag'
 
 - bash: |
     # Deploy to Docker Swarm
-    docker stack deploy --compose-file devops/Apps/db-migrator/dbmigrator-deploy.yml dbmigrator
+    docker stack deploy --compose-file your-path-for-deploy-yml dbmigrator
   displayName: 'Deploy to Docker Swarm'

@@ -4,20 +4,20 @@ trigger:
       - development
 
 pool:
-  name: pusula-akademi-team3-agent
+  name: your-agent-name
   demands:
-    - agent.name -equals team3-node1
+    - agent.name -equals node-name
 
 variables:
-  imageName: 'registry.gitlab.com/berkmkaracayir/pusula'
+  imageName: 'registry.gitlab.com/gitlab-user-name/project-name'
   dockerFilePath: 'Dockerfile'
   publishDir: '$(Build.ArtifactStagingDirectory)'
-  GITLAB_REGISTRY_USER: 'berkmkaracayir' 
-  GITLAB_REGISTRY_PASSWORD: 'glpat-VxJgKhLEvz6ECi-ybUgS'
+  GITLAB_REGISTRY_USER: 'user-name' 
+  GITLAB_REGISTRY_PASSWORD: 'user-password or key'
 
 steps:
 - bash: |
-    echo -e "Subject: Deployment Başladı\n\nDeployment başladı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com,eslem.karabakiii@gmail.com,tekberfin@outlook.com,salihogluzynp@gmail.com,muselcuksahin@gmail.com,yusuf.altunsoy@pusulayazilim.com.tr
+    echo -e "Subject: Deployment Başladı\n\nDeployment başladı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp example@email.com
   displayName: 'Send mail (Start)'
   condition: always()
 
@@ -29,12 +29,12 @@ steps:
 
 - bash: |
     # Build the project
-    dotnet build src/Pusula.Training.HealthCare.Blazor/Pusula.Training.HealthCare.Blazor.csproj --configuration Release
+    dotnet build your-path-csproj --configuration Release
   displayName: 'Build Project'
 
 - bash: |
     # Publish the project
-    dotnet publish src/Pusula.Training.HealthCare.Blazor/Pusula.Training.HealthCare.Blazor.csproj --configuration Release --output $(publishDir)
+    dotnet publish your-path-csproj --configuration Release --output $(publishDir)
   displayName: 'Publish Project'
 
 - bash: |
@@ -49,21 +49,20 @@ steps:
     docker build --no-cache -t $(imageName):$(imageTag) -f $(dockerFilePath) .
   displayName: 'Build Docker Image'
 
-#- bash: |
-# trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m --scanners vuln --format json --output trivy-report.json $(imageName):$(imageTag)
-# displayName: 'Scan Docker Image with Trivy'
-# continueOnError: true
+- bash: |
+    trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m --scanners vuln --format json --output trivy-report.json $(imageName):$(imageTag)
+  displayName: 'Scan Docker Image with Trivy'
+  continueOnError: true
 
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: 'trivy-report.json'
+    artifact: 'TrivyReport'
+  displayName: 'Publish Trivy Report'
 
-#- task: PublishPipelineArtifact@1
-# inputs:
-#    targetPath: 'trivy-report.json'
-#   artifact: 'TrivyReport'
-# displayName: 'Publish Trivy Report'
-
-#- bash: |
-#  trivy image --severity HIGH,CRITICAL --exit-code 0 $(imageName):$(imageTag)
-# displayName: 'Report Write to Console'
+- bash: |
+    trivy image --severity HIGH,CRITICAL --exit-code 0 $(imageName):$(imageTag)
+  displayName: 'Report Write to Console'
 
 - bash: |
     # Log in to GitLab Container Registry
@@ -77,20 +76,19 @@ steps:
 
 - bash: |
     # Update docker-compose.yml with dynamic tag
-    sed -i "s|registry.gitlab.com/berkmkaracayir/pusula:.*|registry.gitlab.com/berkmkaracayir/pusula:$(imageTag)|g" devops/Apps/healtcare/deployment.yml
+    sed -i "s|registry.gitlab.com/user-name/project-name:.*|registry.gitlab.com/user-name/project-name:$(imageTag)|g" your-path.yml
   displayName: 'Update Docker Compose with Dynamic Tag'
 
 - bash: |
     # Deploy to Docker Swarm
-    docker stack deploy --compose-file devops/Apps/healtcare/deployment.yml blazor-dbmigrator
+    docker stack deploy --compose-file your-path.yml blazor-dbmigrator
   displayName: 'Deploy to Docker Swarm'
 
 - bash: |
-    echo -e "Subject: Deployment Tamamlandı\n\nDeployment Başarıyla Tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com,eslem.karabakiii@gmail.com,tekberfin@outlook.com,salihogluzynp@gmail.com,muselcuksahin@gmail.com,yusuf.altunsoy@pusulayazilim.com.tr
+    echo -e "Subject: Deployment Tamamlandı\n\nDeployment Başarıyla Tamamlandı: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp example@email.com
   displayName: 'Send mail (Finish)'
   condition: succeeded()
 
 - bash: |
-    echo -e "Subject: HATA!\n\nDeployment Başarısız: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp berkmkaracayir@gmail.com,eslem.karabakiii@gmail.com,tekberfin@outlook.com,salihogluzynp@gmail.com,muselcuksahin@gmail.com,yusuf.altunsoy@pusulayazilim.com.tr
-  displayName: 'Send mail (Finish)'
+    echo -e "Subject: HATA!\n\nDeployment Başarısız: Branch=$(Build.SourceBranchName), Commit=$(Build.SourceVersion)" | msmtp example@email.com
   condition: failed()

@@ -1,9 +1,9 @@
 version: "3.9"
 services:
   db-migrator:
-    image: registry.gitlab.com/berkmkaracayir/migrator:${imageTag}
+    image: registry.gitlab.com/your-user-name/project-name:${imageTag}
     environment:
-      - ConnectionStrings__Default=Host=postgres;Port=5432;Database=HealthCare;User ID=postgres;Password=myPassw0rd;
+      - ConnectionStrings__Default=Host=postgres;Port=5432;Database=db-name;User ID=postgres;Password=your-password;
       - ASPNETCORE_ENVIRONMENT=Production
     networks:
       - frontend

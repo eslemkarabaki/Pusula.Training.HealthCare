@@ -8,8 +8,8 @@ services:
     networks:
       - frontend
     environment:
-      - REDIS_PASSWORD=pusulateam3node  
-    command: ["redis-server", "--requirepass", "pusulateam3node"]  
+      - REDIS_PASSWORD=your-password  
+    command: ["redis-server", "--requirepass", "your-password"]  
     volumes:
       - redisdata:/data
     deploy:

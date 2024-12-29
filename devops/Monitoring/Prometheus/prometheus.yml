@@ -4,10 +4,10 @@ global:
   
 scrape_configs:
 
-  - job_name: 'team3-node1 64.226.68.43'
+  - job_name: 'node-name node-ip'
     static_configs:
-      - targets: ['64.226.68.43:9100']
+      - targets: ['server-ip']
 
-  - job_name: 'team3-node2 134.122.91.123'
+  - job_name: 'node-name node-ip'
     static_configs:
-      - targets: ['134.122.91.123:9100']
+      - targets: ['server-ip']

@@ -8,9 +8,9 @@ services:
     environment:
       - GF_SMTP_ENABLED=true
       - GF_SMTP_HOST=smtp.gmail.com:587
-      - GF_SMTP_USER=berkmkaracayir@gmail.com
-      - GF_SMTP_PASSWORD=tlgvcfdouanjhhud
-      - GF_SMTP_FROM_ADDRESS=berkmkaracayir@gmail.com
+      - GF_SMTP_USER=your-email
+      - GF_SMTP_PASSWORD=your-email-password or key
+      - GF_SMTP_FROM_ADDRESS=your-email
       - GF_SMTP_STARTTLS_POLICY=Require
     user: root
     volumes:
@@ -25,7 +25,7 @@ services:
       restart_policy:
         condition: on-failure 
       placement:
-        constraints: [node.hostname == team3-node1]
+        constraints: [node.hostname == node-name]
 
 networks:
   frontend:
