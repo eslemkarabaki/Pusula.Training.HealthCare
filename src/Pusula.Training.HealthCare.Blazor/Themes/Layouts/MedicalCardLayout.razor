@@ -1,0 +1,142 @@
+@using Microsoft.Extensions.Localization
+@using Pusula.Training.HealthCare.Localization
+@using Pusula.Training.HealthCare.Protocols
+@using Syncfusion.Blazor.Cards
+
+@layout MainLayout
+@inherits LayoutComponentBase
+
+@inject IProtocolAppService ProtocolAppService
+@inject IStringLocalizer<HealthCareResource> L
+
+@if (Protocol != null)
+{
+   <PageTitle>@Protocol.Patient.FullName</PageTitle>
+
+   <SfCard ID="MedicalCard" CssClass="position-relative mb-2">
+      <CardContent>
+         <div class="d-flex gap-1">
+            <div class="d-flex flex-column gap-1 pe-3">
+               <div class="d-flex gap-1 align-items-center">
+                  <span class="fs-20p fw-500">@Protocol.Patient.FullName</span>
+                  <span class="badge bg-primary fs-11p">@Protocol.Patient.PatientType?.Name</span>
+               </div>
+               <div class="d-flex gap-1">
+                  <PatientGenderIcon Gender="@Protocol.Patient.Gender"/>
+                  <div class="d-flex gap-1">
+                     <span>@Protocol.Patient.BirthDate.ToString("dd.MM.yyyy")</span>
+                     <span>(@Protocol.Patient.Age.Item1 @Protocol.Patient.Age.Item2)</span>
+                  </div>
+                  <span class="vr"></span>
+                  <span class="fw-500 color-blue-grey-500">@Protocol.Patient.Country?.Iso</span>
+               </div>
+               <div class="d-flex gap-1">
+                  <div class="d-flex gap-1">
+                     <span>Hasta No:</span>
+                     <span class="fw-500">@Protocol.Patient.No</span>
+                  </div>
+               </div>
+            </div>
+            <div class="vr"></div>
+            <div class="d-flex flex-column gap-1">
+               <div class="d-flex gap-1">
+                  <span>Protokol No:</span>
+                  <span class="fw-500">@Protocol.ProtocolNo</span>
+               </div>
+               <div class="d-flex gap-1">
+                  <span>@Protocol.Department.Name</span>
+                  <span class="vr"></span>
+                  <span>@Protocol.Doctor.Title.Name @Protocol.Doctor.FullName</span>
+               </div>
+            </div>
+
+         </div>
+      </CardContent>
+   </SfCard>
+
+   <div class="d-flex flex-fill gap-2">
+      <div class="flex-fill">
+         <CascadingValue Value="@Protocol">
+            @Body
+         </CascadingValue>
+      </div>
+      <div class="nav flex-column border-1 border-grey-300 fs-12p bg-white text-nowrap">
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("dashboard")" class="nav-link">
+            Kontrol Paneli
+         </NavLink>
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("examination")" class="nav-link">
+            Muayene
+         </NavLink>
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("appointment-history")" class="nav-link">
+            Randevu Geçmişi
+         </NavLink>
+         <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@Href("files")" class="nav-link">
+            Dosyalar
+         </NavLink>
+         <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="izlemDropdown" role="button" data-bs-toggle="dropdown"
+               aria-expanded="false">
+               İzlem
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="izlemDropdown">
+               <li>
+                  <NavLink ActiveClass="active" Match="NavLinkMatch.All" href="@HrefWithPatientId("radiology-document")"
+                           class="dropdown-item">
+                     Radiology
+                  </NavLink>
+               </li>
+            </ul>
+         </div>
+      </div>
+   </div>
+} else
+{
+   @("Protocol not found")
+}
+
+
+
+@code {
+
+   [CascadingParameter]
+   RouteData RouteData { get; set; } = null!;
+
+   private ProtocolDto? Protocol { get; set; }
+   private string BaseAddress => $"medical/medical-card/{ProtocolNo}";
+   private int ProtocolNo { get; set; }
+
+   protected override async Task OnInitializedAsync()
+   {
+      if (RouteData.RouteValues.TryGetValue("ProtocolNo", out var protocolNo))
+      {
+         ProtocolNo = Convert.ToInt32(protocolNo);
+         Protocol = await ProtocolAppService.GetWithDetailsAsync(ProtocolNo);
+      }
+   }
+
+   private string Href(string page) => $"{BaseAddress}/{page}";
+
+   private string HrefWithPatientId(string page) => $"{BaseAddress}/{page}?patientId={Protocol?.Patient.Id}";
+}
+
+
+<style>
+   .lpx-content {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 1.25rem;
+   }
+
+   .nav-link {
+      color: var(--material-grey-900);
+   }
+
+   .nav-link:not(.active):hover {
+      color: var(--material-grey-500) !important;
+   }
+
+   .nav-link.active {
+      background-color: var(--material-blue-500);
+      color: white;
+   }
+</style>

@@ -1,0 +1,664 @@
+@using Pusula.Training.HealthCare.Addresses
+@using Pusula.Training.HealthCare.Cities
+@using Pusula.Training.HealthCare.Countries
+@using Pusula.Training.HealthCare.Districts
+@using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.PatientTypes
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Notifications
+@using Blazorise.DeepCloner
+@using Pusula.Training.HealthCare.PatientNotes
+@using Blazored.FluentValidation
+
+@inherits HealthCareComponentBase
+
+@inject IPatientAppService PatientAppService
+@inject IPatientTypeAppService PatientTypeAppService
+@inject ICountryAppService CountryAppService
+@inject ICityAppService CityAppService
+@inject IDistrictAppService DistrictAppService
+@inject IInsurancesAppService InsurancesAppService
+
+<SfDialog @ref="Dialog" Target="#target" Width="1000px" IsModal ShowCloseIcon Visible="false">
+    <DialogTemplates>
+        <Header>@L["EditingPatient"]</Header>
+        <Content>
+            <SfDataForm ID="EditingPatientForm"
+                        Model="@EditingPatient"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                <FormValidator>
+                    <FluentValidationValidator Validator="@PatientUpdateValidator"/>
+                </FormValidator>
+                <FormTemplate>
+                    <SfTab HeaderPlacement="HeaderPosition.Left" LoadOn="ContentLoad.Init" CssClass="e-fill">
+                        <TabAnimationSettings>
+                            <TabAnimationPrevious Effect="AnimationEffect.None"></TabAnimationPrevious>
+                            <TabAnimationNext Effect="AnimationEffect.None"></TabAnimationNext>
+                        </TabAnimationSettings>
+                        <TabItems>
+                            <TabItem>
+                                <ChildContent>
+                                    <TabHeader Text="@L["Personal"]"></TabHeader>
+                                </ChildContent>
+                                <ContentTemplate>
+                                    <div class="row gy-2 px-3">
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["Patient:Country"]</label>
+                                            <SfAutoComplete @ref="PatientCountryListAutoComplete" TValue="Guid"
+                                                            TItem="CountryDto" DataSource="@CountryList"
+                                                            Value="@EditingPatient.CountryId"
+                                                            ValueChanged="PatientCountryIdChangedAsync"
+                                                            Placeholder="@L["Patient:Country"]" AllowFiltering Autofill
+                                                            Highlight EnableVirtualization PopupHeight="150px"
+                                                            ShowPopupButton>
+                                                <AutoCompleteFieldSettings Value="Id" Text="Name"/>
+                                                <AutoCompleteEvents TValue="Guid" TItem="CountryDto"
+                                                                    Filtering="@((args) => DefaultAutoCompleteFilterAsync(PatientCountryListAutoComplete, CountryList, args))"/>
+                                            </SfAutoComplete>
+                                        </div>
+
+                                        <div class="col-4">
+                                            @if (EditingPatient.IdentityNumber.IsNullOrWhiteSpace())
+                                            {
+                                                <label
+                                                    class="e-form-label">@L["PassportNumber"]</label>
+                                                <SfTextBox @bind-Value="@EditingPatient.PassportNumber" Enabled="false"
+                                                           Placeholder="@L["PassportNumber"]"></SfTextBox>
+                                            } else
+                                            {
+                                                <label
+                                                    class="e-form-label">@L["IdentityNumber"]</label>
+                                                <SfTextBox @bind-Value="@EditingPatient.IdentityNumber" Enabled="false"
+                                                           Placeholder="@L["IdentityNumber"]"></SfTextBox>
+                                            }
+                                        </div>
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["BirthDate"]</label>
+                                            <SfDatePicker @bind-Value="@EditingPatient.BirthDate"
+                                                          Placeholder="@L["BirthDate"]"></SfDatePicker>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["PatientType"]</label>
+                                            <SfDropDownList TItem="PatientTypeDto" TValue="Guid"
+                                                            @bind-Value="@EditingPatient.PatientTypeId"
+                                                            PopupHeight="150px"
+                                                            Placeholder="@L["PatientType"]"
+                                                            DataSource="@PatientTypeList">
+                                                <DropDownListFieldSettings Value="Id" Text="Name"/>
+                                            </SfDropDownList>
+                                        </div>
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["FirstName"]</label>
+                                            <SfTextBox @bind-Value="@EditingPatient.FirstName"
+                                                       Placeholder="@L["FirstName"]"></SfTextBox>
+                                        </div>
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["LastName"]</label>
+                                            <SfTextBox @bind-Value="@EditingPatient.LastName"
+                                                       Placeholder="@L["LastName"]"></SfTextBox>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["EmailAddress"]</label>
+                                            <SfTextBox @bind-Value="@EditingPatient.EmailAddress"
+                                                       Placeholder="@L["EmailAddress"]"
+                                                       Type="InputType.Email"></SfTextBox>
+                                        </div>
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["MobilePhoneNumber"]</label>
+                                            <div class="d-flex">
+                                                <div class="col-3 gap-1">
+                                                    <SfTextBox @bind-Value="@EditingPatient.MobilePhoneNumberCode"
+                                                               Placeholder="@L["PhoneCode"]"
+                                                               CssClass="border-r-r-0"></SfTextBox>
+                                                </div>
+                                                <div class="col-9">
+                                                    <SfTextBox @bind-Value="@EditingPatient.MobilePhoneNumber"
+                                                               Placeholder="@L["MobilePhoneNumber"]"
+                                                               Type="InputType.Tel" CssClass="border-r-l-0"></SfTextBox>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["HomePhoneNumber"]</label>
+                                            <div class="d-flex">
+                                                <div class="col-3 gap-1">
+                                                    <SfTextBox @bind-Value="@EditingPatient.HomePhoneNumberCode"
+                                                               Placeholder="@L["PhoneCode"]"
+                                                               CssClass="border-r-r-0"></SfTextBox>
+                                                </div>
+                                                <div class="col-9">
+                                                    <SfTextBox @bind-Value="@EditingPatient.HomePhoneNumber"
+                                                               Placeholder="@L["HomePhoneNumber"]"
+                                                               Type="InputType.Tel" CssClass="border-r-l-0"></SfTextBox>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["Insurance"]</label>
+                                            <SfDropDownList TItem="InsuranceDto" TValue="Guid"
+                                                            @bind-Value="@EditingPatient.InsuranceId"
+                                                            PopupHeight="150px"
+                                                            Placeholder="@L["Insurance"]"
+                                                            DataSource="@InsuranceList">
+                                                <DropDownListFieldSettings Value="Id" Text="Name"/>
+                                            </SfDropDownList>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["BloodType"]</label>
+                                            <SfDropDownList TValue="EnumBloodType" TItem="string"
+                                                            @bind-Value="@EditingPatient.BloodType" PopupHeight="150px"
+                                                            Placeholder="@L["BloodType"]"
+                                                            DataSource="@Enum.GetNames(typeof(EnumBloodType))">
+                                                <DropDownListFieldSettings Value="EnumBloodType" Text="string"/>
+                                            </SfDropDownList>
+                                        </div>
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["Gender"]</label>
+                                            <div class="d-flex mt-2 gap-2">
+                                                <SfRadioButton TChecked="EnumGender"
+                                                               @bind-Checked="@EditingPatient.Gender"
+                                                               Value="@EnumGender.Female.ToString()"
+                                                               Label="@L["Gender:Female"]" Name="gender"/>
+                                                <SfRadioButton TChecked="EnumGender"
+                                                               @bind-Checked="@EditingPatient.Gender"
+                                                               Value="@EnumGender.Male.ToString()"
+                                                               Label="@L["Gender:Male"]" Name="gender"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <label class="e-form-label">@L["MaritalStatus"]</label>
+                                            <div class="d-flex mt-2 gap-2">
+                                                <SfRadioButton TChecked="EnumMaritalStatus"
+                                                               @bind-Checked="@EditingPatient.MaritalStatus"
+                                                               Value="@EnumMaritalStatus.Married.ToString()"
+                                                               Label="@L["MaritalStatus:Married"]"
+                                                               Name="marital-status"/>
+                                                <SfRadioButton TChecked="EnumMaritalStatus"
+                                                               @bind-Checked="@EditingPatient.MaritalStatus"
+                                                               Value="@EnumMaritalStatus.Single.ToString()"
+                                                               Label="@L["MaritalStatus:Single"]"
+                                                               Name="marital-status"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ContentTemplate>
+                            </TabItem>
+                            <TabItem>
+                                <ChildContent>
+                                    <TabHeader Text="@L["Address"]"></TabHeader>
+                                </ChildContent>
+                                <ContentTemplate>
+                                    <div class="px-3">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <SfDataForm
+                                                    ID="EditingAddressForm"
+                                                    Model="@EditingAddress"
+                                                    ButtonsAlignment="FormButtonsAlignment.Left"
+                                                    OnValidSubmit="@AddAddressAsync">
+                                                    <FormValidator>
+                                                        <DataAnnotationsValidator/>
+                                                    </FormValidator>
+                                                    <FormTemplate>
+                                                        <div>
+                                                            <div class="row gy-2">
+                                                                <div class="col-4">
+                                                                    <label
+                                                                        class="e-form-label">@L["AddressTitle"]</label>
+                                                                    <SfTextBox
+                                                                        @bind-Value="@EditingAddress.AddressTitle"
+                                                                        Placeholder="@L["Placeholder:AddressTitle"]"/>
+                                                                </div>
+                                                                <div class="col-12 m-0"></div>
+
+                                                                <div class="col-4">
+                                                                    <label
+                                                                        class="e-form-label">@L["Address:Country"]</label>
+                                                                    <SfAutoComplete
+                                                                        @ref="AddressCountryListAutoComplete"
+                                                                        TValue="Guid"
+                                                                        TItem="CountryDto" DataSource="@CountryList"
+                                                                        Value="@SelectedAddressCountryId"
+                                                                        ValueChanged="AddressCountryIdChangedAsync"
+                                                                        Placeholder="@L["Address:Country"]"
+                                                                        AllowFiltering Autofill
+                                                                        Highlight EnableVirtualization
+                                                                        PopupHeight="150px"
+                                                                        ShowPopupButton>
+                                                                        <AutoCompleteFieldSettings Value="Id"
+                                                                                                   Text="Name"/>
+                                                                        <AutoCompleteEvents TValue="Guid"
+                                                                                            TItem="CountryDto"
+                                                                                            Filtering="@((args) => DefaultAutoCompleteFilterAsync(AddressCountryListAutoComplete, CountryList, args))"/>
+                                                                    </SfAutoComplete>
+                                                                </div>
+
+                                                                <div class="col-4">
+                                                                    <label
+                                                                        class="e-form-label">@L["Address:City"]</label>
+                                                                    <SfAutoComplete @ref="CityListAutoComplete"
+                                                                                    TValue="Guid"
+                                                                                    TItem="CityDto"
+                                                                                    DataSource="@CityList"
+                                                                                    Value="@SelectedAddressCityId"
+                                                                                    ValueChanged="AddressCityIdChangedAsync"
+                                                                                    Placeholder="@L["Address:City"]"
+                                                                                    AllowFiltering Autofill
+                                                                                    Highlight EnableVirtualization
+                                                                                    PopupHeight="150px"
+                                                                                    ShowPopupButton>
+                                                                        <AutoCompleteFieldSettings Value="Id"
+                                                                                                   Text="Name"/>
+                                                                        <AutoCompleteEvents TValue="Guid"
+                                                                                            TItem="CityDto"
+                                                                                            Filtering="@((args) => DefaultAutoCompleteFilterAsync(CityListAutoComplete, CityList, args))"/>
+                                                                    </SfAutoComplete>
+                                                                </div>
+
+                                                                <div class="col-4">
+                                                                    <label
+                                                                        class="e-form-label">@L["Address:District"]</label>
+                                                                    <SfAutoComplete @ref="DistrictListAutoComplete"
+                                                                                    TValue="Guid"
+                                                                                    TItem="DistrictDto"
+                                                                                    DataSource="@DistrictList"
+                                                                                    @bind-Value="@EditingAddress.DistrictId"
+                                                                                    Placeholder="@L["Address:District"]"
+                                                                                    AllowFiltering Autofill
+                                                                                    Highlight EnableVirtualization
+                                                                                    PopupHeight="150px"
+                                                                                    ShowPopupButton>
+                                                                        <AutoCompleteFieldSettings Value="Id"
+                                                                                                   Text="Name"/>
+                                                                        <AutoCompleteEvents TValue="Guid"
+                                                                                            TItem="DistrictDto"
+                                                                                            Filtering="@((args) => DefaultAutoCompleteFilterAsync(DistrictListAutoComplete, DistrictList, args))"/>
+                                                                    </SfAutoComplete>
+                                                                </div>
+
+                                                                <div class="col-12">
+                                                                    <label
+                                                                        class="e-form-label">@L["AddressLine"]</label>
+                                                                    <SfTextBox @bind-Value="@EditingAddress.AddressLine"
+                                                                               Placeholder="@L["Placeholder:AddressLine"]"
+                                                                               Multiline/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </FormTemplate>
+                                                    <FormButtons>
+                                                        @if (AddressEditingMode)
+                                                        {
+                                                            <SfButton type="button" CssClass="e-danger"
+                                                                      OnClick="@SetDefaultsForAddress">Cancel
+                                                            </SfButton>
+                                                            <SfButton type="button" CssClass="e-success"
+                                                                      OnClick="@SaveAddressEditingAsync">Save
+                                                            </SfButton>
+                                                        } else
+                                                        {
+                                                            <SfButton type="submit" CssClass="e-success">
+                                                                Add
+                                                            </SfButton>
+                                                        }
+                                                    </FormButtons>
+                                                </SfDataForm>
+                                            </div>
+
+                                            <div class="col-4">
+                                                <p class="mb-6p fs-12p fw-700 color-grey-500">@L["Addresses"]</p>
+                                                <div class="d-flex flex-column gap-1">
+                                                    @foreach (var address in EditingPatient.Addresses)
+                                                    {
+                                                        <SfCard ID="@address.Id.ToString("N")"
+                                                                CssClass="@(EditingAddress.Id == address.Id ? "selected" : string.Empty)"
+                                                                @onclick="@(() => EditAddressAsync(address))">
+                                                            <CardContent>
+                                                                <div class="d-flex align-items-start">
+                                                                    <div class="flex-fill">
+                                                                        <h6 class="m-0">@address.AddressTitle</h6>
+                                                                        <p class="m-0">@address.AddressLine @address.District.Name @(address.District.City.Name)/@(address.District.City.Country.Name)</p>
+                                                                    </div>
+                                                                    <SfButton type="button"
+                                                                              IconCss="e-icons far fa-trash-alt e-danger"
+                                                                              CssClass="e-small e-danger e-flat"
+                                                                              OnClick="@(() => RemoveAddressAsync(address))"></SfButton>
+                                                                </div>
+                                                            </CardContent>
+                                                        </SfCard>
+                                                    }
+                                                </div>
+                                                @if (EditingPatient.Addresses.Count == 0)
+                                                {
+                                                    <SfMessage>There is no address added for this patient.
+                                                    </SfMessage> // todo
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ContentTemplate>
+                            </TabItem>
+                            <TabItem>
+                                <ChildContent>
+                                    <TabHeader Text="@L["Notes"]"></TabHeader>
+                                </ChildContent>
+                                <ContentTemplate>
+                                    <div class="px-3">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <SfDataForm
+                                                    ID="EditingNoteForm"
+                                                    Model="EditingNote"
+                                                    ButtonsAlignment="FormButtonsAlignment.Left"
+                                                    OnValidSubmit="@AddNoteAsync"
+                                                    ValidationDisplayMode="FormValidationDisplay.Inline"
+                                                >
+                                                    <FormValidator>
+                                                        <DataAnnotationsValidator/>
+                                                    </FormValidator>
+                                                    <FormTemplate>
+                                                        <div>
+                                                            <label
+                                                                class="e-form-label">@L["Note"]</label>
+                                                            <SfTextBox @bind-Value="@EditingNote.Note"
+                                                                       Placeholder="@L["Note"]" Multiline/>
+                                                        </div>
+                                                    </FormTemplate>
+                                                    <FormButtons>
+                                                        @if (NoteEditingMode)
+                                                        {
+                                                            <SfButton type="button" CssClass="e-danger"
+                                                                      OnClick="@CancelNoteEditingAsync">Cancel
+                                                            </SfButton>
+                                                            <SfButton type="button" CssClass="e-success"
+                                                                      OnClick="@SaveNoteEditingAsync">Save
+                                                            </SfButton>
+                                                        } else
+                                                        {
+                                                            <SfButton type="submit" CssClass="e-success">Add</SfButton>
+                                                        }
+                                                    </FormButtons>
+                                                </SfDataForm>
+                                            </div>
+
+                                            <div class="col-4">
+                                                <p class="mb-6p fs-12p fw-700 color-grey-500">@L["Notes"]</p>
+                                                <div class="d-flex flex-column gap-1">
+                                                    @foreach (var note in EditingPatient.Notes)
+                                                    {
+                                                        <SfCard ID="@note.Id.ToString("N")"
+                                                                CssClass="@(EditingNote.Id == note.Id ? "selected" : string.Empty)"
+                                                                @onclick="@(() => EditNoteAsync(note))">
+                                                            <CardContent>
+                                                                <div class="d-flex align-items-start">
+                                                                    <p class="m-0 flex-fill">@note.Note</p>
+                                                                    <SfButton type="button"
+                                                                              IconCss="e-icons far fa-trash-alt e-danger"
+                                                                              CssClass="e-small e-danger e-flat"
+                                                                              OnClick="@(() => RemoveNoteAsync(note))"></SfButton>
+                                                                </div>
+                                                            </CardContent>
+                                                        </SfCard>
+                                                    }
+                                                </div>
+                                                @if (EditingPatient.Notes.Count == 0)
+                                                {
+                                                    <SfMessage>There is no note added for this patient.
+                                                    </SfMessage> // todo
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ContentTemplate>
+                            </TabItem>
+                        </TabItems>
+                    </SfTab>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<PatientUpdateDto> OnValidSaveAsync { get; set; }
+
+    private PatientUpdateDtoValidator PatientUpdateValidator { get; set; } = new();
+
+    private SfDialog Dialog { get; set; } = null!;
+    private SfAutoComplete<Guid, CountryDto> PatientCountryListAutoComplete { get; set; } = null!;
+    private SfAutoComplete<Guid, CountryDto> AddressCountryListAutoComplete { get; set; } = null!;
+    private SfAutoComplete<Guid, CityDto> CityListAutoComplete { get; set; } = null!;
+    private SfAutoComplete<Guid, DistrictDto> DistrictListAutoComplete { get; set; } = null!;
+
+    private PatientUpdateDto EditingPatient { get; set; } = new();
+    private Guid EditingPatientId { get; set; }
+
+    private CountryDto CurrentCountry { get; set; } = new();
+
+    private IEnumerable<PatientTypeDto> PatientTypeList { get; set; } = [];
+    private IEnumerable<CountryDto> CountryList { get; set; } = [];
+    private IEnumerable<CityDto> CityList { get; set; } = [];
+    private IEnumerable<DistrictDto> DistrictList { get; set; } = [];
+    private IEnumerable<InsuranceDto> InsuranceList { get; set; } = [];
+
+    private Guid SelectedAddressCountryId { get; set; } = Guid.Empty;
+    private Guid SelectedAddressCityId { get; set; } = Guid.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SetDefaultValuesForDialog();
+        PatientTypeList = await PatientTypeAppService.GetListAsync();
+        CountryList = await CountryAppService.GetListAsync(new GetCountriesInput());
+        CurrentCountry = await CountryAppService.GetCurrentAsync();
+        InsuranceList = await InsurancesAppService.GetListInsurancesAsync();
+    }
+
+    private async Task DefaultAutoCompleteFilterAsync<TDto>(
+        SfAutoComplete<Guid, TDto> autoComplete,
+        IEnumerable<TDto> dataSource,
+        FilteringEventArgs args
+    )
+    {
+        args.PreventDefaultAction = true;
+        await autoComplete.FilterAsync(dataSource, GetDefaultAutoCompleteQuery(args));
+    }
+
+    private Query GetDefaultAutoCompleteQuery(FilteringEventArgs args)
+    {
+        var query = new Query().Where(
+            new WhereFilter
+            {
+                Field = "Name",
+                Operator = "contains",
+                value = args.Text,
+                IgnoreCase = true
+            }
+        );
+        return !string.IsNullOrEmpty(args.Text) ? query : new Query();
+    }
+
+    private async Task OnSaveClickAsync()
+    {
+        await OnValidSaveAsync.InvokeAsync(EditingPatient);
+        await HideAsync();
+    }
+
+    public async Task ShowAsync(Guid patientId)
+    {
+        var patient = await PatientAppService.GetWithNavigationPropertiesAsync(new GetPatientInput(patientId));
+        ObjectMapper.Map(patient.Patient, EditingPatient);
+        ObjectMapper.Map(patient.PatientNotes, EditingPatient.Notes);
+        EditingPatientId = patientId;
+        SetDefaultsForAddress();
+        SetDefaultsForNote();
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        SetDefaultValuesForDialog();
+        await Dialog.HideAsync();
+    }
+
+    private async Task PatientCountryIdChangedAsync(Guid countryId)
+    {
+        EditingPatient.CountryId = countryId;
+        EditingPatient.MobilePhoneNumberCode = CountryList.FirstOrDefault(e => e.Id == countryId)?.PhoneCode ?? "1";
+        await Task.CompletedTask;
+    }
+
+    private void SetDefaultValuesForDialog()
+    {
+        SetDefaultsForPatient();
+        SetDefaultsForAddress();
+        SetDefaultsForNote();
+    }
+
+    private void SetDefaultsForPatient() => EditingPatient = new PatientUpdateDto();
+
+#region Address
+
+    private AddressUpdateDto EditingAddress { get; set; } = new();
+    private bool AddressEditingMode { get; set; }
+
+    private async Task AddAddressAsync()
+    {
+        EditingAddress.Id = Guid.NewGuid();
+        EditingAddress.District = DistrictList.First(e => e.Id == EditingAddress.DistrictId);
+        EditingPatient.Addresses.Add(EditingAddress);
+        SetDefaultsForAddress();
+        await Task.CompletedTask;
+    }
+
+    private async Task EditAddressAsync(AddressUpdateDto dto)
+    {
+        if (EditingAddress.Id == dto.Id) return;
+
+        await AddressCountryIdChangedAsync(dto.District.City.Country.Id);
+        await AddressCityIdChangedAsync(dto.District.City.Id);
+        ObjectMapper.Map(dto, EditingAddress);
+        AddressEditingMode = true;
+        await Task.CompletedTask;
+    }
+
+    private async Task RemoveAddressAsync(AddressUpdateDto dto)
+    {
+        EditingPatient.Addresses.Remove(dto);
+        await Task.CompletedTask;
+    }
+
+    private async Task SaveAddressEditingAsync()
+    {
+        var address = EditingPatient.Addresses.First(e => e.Id == EditingAddress.Id);
+        address.AddressLine = EditingAddress.AddressLine;
+        address.AddressTitle = EditingAddress.AddressTitle;
+        address.DistrictId = EditingAddress.DistrictId;
+        address.District = DistrictList.First(e => e.Id == EditingAddress.DistrictId);
+        SetDefaultsForAddress();
+        await Task.CompletedTask;
+    }
+
+    private async Task AddressCountryIdChangedAsync(Guid countryId)
+    {
+        SelectedAddressCountryId = countryId;
+        SelectedAddressCityId = Guid.Empty;
+        EditingAddress.DistrictId = Guid.Empty;
+        CityList = await CityAppService.GetListWithDetailsAsync(new GetCitiesInput() { CountryId = countryId });
+        DistrictList = [];
+    }
+
+    private async Task AddressCityIdChangedAsync(Guid cityId)
+    {
+        SelectedAddressCityId = cityId;
+        EditingAddress.DistrictId = Guid.Empty;
+        DistrictList = await DistrictAppService.GetListWithDetailsAsync(new GetDistrictsInput() { CityId = cityId });
+    }
+
+    private void SetDefaultsForAddress()
+    {
+        AddressEditingMode = false;
+        EditingAddress = new AddressUpdateDto();
+        SelectedAddressCountryId = Guid.Empty;
+        SelectedAddressCityId = Guid.Empty;
+        CityList = [];
+        DistrictList = [];
+    }
+
+#endregion
+
+#region Note
+
+    private PatientNoteUpdateDto EditingNote { get; set; } = new();
+    private bool NoteEditingMode { get; set; }
+
+    private async Task AddNoteAsync()
+    {
+        EditingNote.Id = Guid.NewGuid();
+        EditingPatient.Notes.Add(EditingNote);
+        SetDefaultsForNote();
+        await Task.CompletedTask;
+    }
+
+    private async Task EditNoteAsync(PatientNoteUpdateDto dto)
+    {
+        if (EditingNote.Id == dto.Id)
+        {
+            return;
+        }
+
+        EditingNote.Id = dto.Id;
+        EditingNote.Note = dto.Note;
+        NoteEditingMode = true;
+        await Task.CompletedTask;
+    }
+
+    private async Task RemoveNoteAsync(PatientNoteUpdateDto dto)
+    {
+        EditingPatient.Notes.Remove(dto);
+        await Task.CompletedTask;
+    }
+
+    private async Task CancelNoteEditingAsync()
+    {
+        SetDefaultsForNote();
+        await Task.CompletedTask;
+    }
+
+    private async Task SaveNoteEditingAsync()
+    {
+        var note = EditingPatient.Notes.First(e => e.Id == EditingNote.Id);
+        note.Note = EditingNote.Note;
+        await CancelNoteEditingAsync();
+    }
+
+    private void SetDefaultsForNote()
+    {
+        NoteEditingMode = false;
+        EditingNote = new PatientNoteUpdateDto();
+    }
+
+#endregion
+
+}

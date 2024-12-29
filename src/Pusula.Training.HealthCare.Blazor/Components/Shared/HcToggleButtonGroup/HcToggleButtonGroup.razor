@@ -1,0 +1,24 @@
+@typeparam T
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+
+    [Parameter]
+    public ICollection<T> Collection { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<ICollection<T>> CollectionChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public Action<HcToggleButtonGroup<T>>? BeforeOnClick { get; set; }
+
+    [Parameter]
+    public bool SingleMode { get; set; }
+
+}

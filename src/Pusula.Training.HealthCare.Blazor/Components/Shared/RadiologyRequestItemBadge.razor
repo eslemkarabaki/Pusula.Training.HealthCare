@@ -1,0 +1,11 @@
+﻿@using Pusula.Training.HealthCare.RadioloyRequestItems 
+
+<span class="item-status" progress="@Status">
+    @Status
+</span>
+
+@code {
+
+    [Parameter]
+    public RadiologyRequestItemState Status { get; set; }
+}

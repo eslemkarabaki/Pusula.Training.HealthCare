@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+      - development
+
+pool:
+  name: your-agent-name
+  demands:
+    - agent.name -equals node-name
+
+variables:
+  SONARQUBE_ENDPOINT: 'http://localhost:9000'
+  SONARQUBE_PROJECT_KEY: 'your-project-key'
+  SONARQUBE_PROJECT_NAME: 'your-project-name'
+  SONARQUBE_PROJECT_VERSION: '1.0'
+  SONARQUBE_SERVICE_CONNECTION: 'Sonarqube'  
+
+steps:
+- task: SonarQubePrepare@7
+  inputs:
+    SonarQube: $(SONARQUBE_SERVICE_CONNECTION)   
+    scannerMode: 'dotnet'
+    projectKey: $(SONARQUBE_PROJECT_KEY)
+    projectName: $(SONARQUBE_PROJECT_NAME)
+    projectVersion: $(SONARQUBE_PROJECT_VERSION)
+
+- script: |
+    # Build the project for analysis
+    dotnet build your-path --configuration Release
+  displayName: 'Build Project'
+
+- task: SonarQubeAnalyze@7
+  inputs:
+    SonarQube: $(SONARQUBE_SERVICE_CONNECTION)  
+
+- task: SonarQubePublish@7
+  inputs:
+    SonarQube: $(SONARQUBE_SERVICE_CONNECTION)  
+    pollingTimeoutSec: '300'
+  displayName: 'Publish SonarQube Results'

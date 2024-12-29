@@ -1,0 +1,21 @@
+@page "/prm/management/patient-detail/{PatientNo:int}/file"
+@using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+@using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.Permissions
+@using Syncfusion.Blazor.FileManager
+
+@attribute [Authorize(HealthCarePermissions.Patients.Default)]
+
+@layout PatientDetailLayout
+
+<PatientFileManager PatientId="@Patient.Patient.Id"></PatientFileManager>
+
+@code {
+
+    [Parameter]
+    public int PatientNo { get; set; }
+
+    [CascadingParameter]
+    private PatientWithNavigationPropertiesDto Patient { get; set; } = null!;
+
+}

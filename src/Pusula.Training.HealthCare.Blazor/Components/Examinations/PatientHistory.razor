@@ -1,0 +1,404 @@
+@using Microsoft.Extensions.Localization
+@using Pusula.Training.HealthCare.Allergies
+@using Pusula.Training.HealthCare.Localization
+@using Pusula.Training.HealthCare.PatientHistories
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Pusula.Training.HealthCare.Blazor.Components.Shared.HcToggleButtonGroup
+@using Pusula.Training.HealthCare.BloodTransfusions
+@using Pusula.Training.HealthCare.Educations
+@using Pusula.Training.HealthCare.Jobs
+@using Pusula.Training.HealthCare.Medicines
+@using Pusula.Training.HealthCare.Operations
+@using Pusula.Training.HealthCare.PatientHistoryAllergies
+@using Pusula.Training.HealthCare.PatientHistoryBloodTransfusions
+@using Pusula.Training.HealthCare.PatientHistoryMedicines
+@using Pusula.Training.HealthCare.PatientHistoryOperations
+@using Pusula.Training.HealthCare.PatientHistoryVaccines
+@using Pusula.Training.HealthCare.Protocols
+@using Pusula.Training.HealthCare.Vaccines
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Data
+
+@inject IPatientHistoryAppService PatientHistoryAppService
+@inject IMedicineAppService MedicineAppService
+@inject IOperationAppService OperationAppService
+@inject IVaccineAppService VaccineAppService
+@inject IBloodTransfusionAppService BloodTransfusionAppService
+@inject IAllergyAppService AllergyAppService
+@inject IJobAppService JobAppService
+@inherits HealthCareComponentBase
+
+<HcCard Title="@L["PatientHistory"]" CardIcon="" Class="p-2">
+    <HeaderContent>
+        <SfButton IconCss="far fa-save" CssClass="e-flat rounded-pill e-primary e-small">@L["Save"]</SfButton>
+    </HeaderContent>
+    <ChildContent>
+        <div class="d-flex flex-column gap-2">
+            <div class="d-flex gap-2">
+                <div class="d-flex flex-column gap-1">
+                    <span class="fs-12p text-nowrap">@L["Habits"]</span>
+                    <div class="input-group flex-nowrap">
+                        <HcToggleButton Selected="@PatientHistoryUpdate.HasEnum(e => e.Habits, EnumPatientHabit.None)"
+                                        OnClick="@(() => PatientHistoryUpdate.SetEnum(e => e.Habits, EnumPatientHabit.None))"
+                                        Class="e-primary">
+                            @L["None"]
+                        </HcToggleButton>
+
+                        <HcToggleButtonGroup T="EnumPatientHabit" @bind-Collection="@PatientHistoryUpdate.Habits"
+                                             BeforeOnClick="@((e) => e.Collection.Remove(EnumPatientHabit.None))">
+                            <HcToggleButtonGroupButton Value="EnumPatientHabit.Alcohol" Class="e-primary">
+                                @L["Alcohol"]
+                            </HcToggleButtonGroupButton>
+                            <HcToggleButtonGroupButton Value="EnumPatientHabit.Cigarette" Class="e-primary">
+                                @L["Cigarette"]
+                            </HcToggleButtonGroupButton>
+                            <HcToggleButtonGroupButton Value="EnumPatientHabit.Drug" Class="e-primary">
+                                @L["Drug"]
+                            </HcToggleButtonGroupButton>
+                        </HcToggleButtonGroup>
+                    </div>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <span class="fs-12p text-nowrap">@L["Therapies"]</span>
+                    <div class="input-group flex-nowrap">
+                        <HcToggleButton
+                            Selected="@PatientHistoryUpdate.HasEnum(e => e.Therapies, EnumTherapy.None)"
+                            OnClick="@(() => PatientHistoryUpdate.SetEnum(e => e.Therapies, EnumTherapy.None))"
+                            Class="e-primary">
+                            @L["None"]
+                        </HcToggleButton>
+
+                        <HcToggleButtonGroup T="EnumTherapy" @bind-Collection="@PatientHistoryUpdate.Therapies"
+                                             BeforeOnClick="@(e => e.Collection.Remove(EnumTherapy.None))">
+                            <HcToggleButtonGroupButton Value="EnumTherapy.Chemotherapy" Class="e-primary">
+                                @L["Chemotherapy"]
+                            </HcToggleButtonGroupButton>
+                            <HcToggleButtonGroupButton Value="EnumTherapy.Physiotherapy" Class="e-primary">
+                                @L["Physiotherapy"]
+                            </HcToggleButtonGroupButton>
+                            <HcToggleButtonGroupButton Value="EnumTherapy.Radiotherapy" Class="e-primary">
+                                @L["Radiotherapy"]
+                            </HcToggleButtonGroupButton>
+                            <HcToggleButtonGroupButton Value="EnumTherapy.Other" Class="e-primary">
+                                @L["Other"]
+                            </HcToggleButtonGroupButton>
+                        </HcToggleButtonGroup>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <div class="d-flex flex-column gap-1">
+                    <span class="fs-12p text-nowrap">@L["BodyDevices"]</span>
+                    <div class="input-group flex-nowrap">
+                        <HcToggleButton
+                            Selected="@PatientHistoryUpdate.HasEnum(e => e.BodyDevices, EnumBodyDevice.None)"
+                            OnClick="@(() => PatientHistoryUpdate.SetEnum(e => e.BodyDevices, EnumBodyDevice.None))"
+                            Class="e-primary">
+                            @L["None"]
+                        </HcToggleButton>
+
+                        <HcToggleButtonGroup T="EnumBodyDevice" @bind-Collection="@PatientHistoryUpdate.BodyDevices"
+                                             BeforeOnClick="@(e => e.Collection.Remove(EnumBodyDevice.None))">
+                            <HcToggleButtonGroupButton Value="EnumBodyDevice.Pacemaker" Class="e-primary">
+                                @L["Pacemaker"]
+                            </HcToggleButtonGroupButton>
+                            <HcToggleButtonGroupButton Value="EnumBodyDevice.Prosthesis" Class="e-primary">
+                                @L["Prosthesis"]
+                            </HcToggleButtonGroupButton>
+                        </HcToggleButtonGroup>
+                    </div>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <span class="fs-12p text-nowrap">@L["SpecialCases"]</span>
+                    <div class="input-group flex-nowrap">
+                        <HcToggleButtonGroup T="EnumSpecialCase" @bind-Collection="@PatientHistoryUpdate.SpecialCases"
+                                             SingleMode>
+                            <HcToggleButtonGroupButton Value="EnumSpecialCase.None" Class="e-primary">
+                                @L["None"]
+                            </HcToggleButtonGroupButton>
+                            <HcToggleButtonGroupButton Value="EnumSpecialCase.SpecialCase" Class="e-primary">
+                                @L["Exist"]
+                            </HcToggleButtonGroupButton>
+                        </HcToggleButtonGroup>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <div class="d-flex gap-2 flex-column w-50">
+
+                    <div class="input-group flex-nowrap">
+                        <SfAutoComplete @ref="@MedicineAutoComplete" TValue="Guid?" TItem="MedicineDto"
+                                        DataSource="@MedicineList"
+                                        @bind-Value="@PatientHistoryMedicineCreate.MedicineId"
+                                        Placeholder="@L["Medicine"]"
+                                        FloatLabelType="FloatLabelType.Never" AllowFiltering Autofill Highlight
+                                        EnableVirtualization ShowClearButton>
+                            <AutoCompleteEvents TValue="Guid?" TItem="MedicineDto"
+                                                Filtering="MedicineListFilteringHandler"
+                                                ValueChange="@(() => PatientHistoryUpdate.MedicinesNotExist = false)"></AutoCompleteEvents>
+                            <AutoCompleteFieldSettings Value="@nameof(MedicineDto.Id)"
+                                                       Text="@nameof(MedicineDto.Name)"/>
+                        </SfAutoComplete>
+
+                        <HcToggleButton
+                            @bind-Selected="@PatientHistoryUpdate.MedicinesNotExist">@L["None"]</HcToggleButton>
+                        <SfTextBox @bind-Value="@PatientHistoryMedicineCreate.Explanation"
+                                   Placeholder="@L["Explanation"]" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                        @if (PatientHistoryMedicineCreate.MedicineId.HasValue)
+                        {
+                            <SfButton IconCss="fas fa-plus" CssClass="e-success"/>
+                        }
+                    </div>
+
+                    <div class="input-group flex-nowrap">
+                        <SfAutoComplete @ref="@OperationAutoComplete" TValue="Guid?" TItem="OperationDto"
+                                        DataSource="@OperationList"
+                                        @bind-Value="@PatientHistoryOperationCreate.OperationId"
+                                        Placeholder="@L["Operation"]"
+                                        FloatLabelType="FloatLabelType.Never" AllowFiltering Autofill Highlight
+                                        EnableVirtualization ShowClearButton>
+                            <AutoCompleteEvents TValue="Guid?" TItem="OperationDto"
+                                                Filtering="OperationListFilteringHandler"
+                                                ValueChange="@(() => PatientHistoryUpdate.OperationsNotExist = false)"></AutoCompleteEvents>
+                            <AutoCompleteFieldSettings Value="@nameof(OperationDto.Id)"
+                                                       Text="@nameof(OperationDto.Name)"/>
+                        </SfAutoComplete>
+
+                        <HcToggleButton
+                            @bind-Selected="@PatientHistoryUpdate.OperationsNotExist">@L["None"]</HcToggleButton>
+                        <SfTextBox @bind-Value="@PatientHistoryOperationCreate.Explanation"
+                                   Placeholder="@L["Explanation"]" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                        @if (PatientHistoryOperationCreate.OperationId.HasValue)
+                        {
+                            <SfButton IconCss="fas fa-plus" CssClass="e-success"/>
+                        }
+                    </div>
+
+                    <div class="input-group flex-nowrap">
+                        <SfAutoComplete @ref="@VaccineAutoComplete" TValue="Guid?" TItem="VaccineDto"
+                                        DataSource="@VaccineList"
+                                        @bind-Value="@PatientHistoryVaccineCreate.VaccineId"
+                                        Placeholder="@L["Vaccine"]"
+                                        FloatLabelType="FloatLabelType.Never" AllowFiltering Autofill Highlight
+                                        EnableVirtualization ShowClearButton>
+                            <AutoCompleteEvents TValue="Guid?" TItem="VaccineDto"
+                                                Filtering="VaccineListFilteringHandler"
+                                                ValueChange="@(() => PatientHistoryUpdate.VaccinesNotExist = false)"></AutoCompleteEvents>
+                            <AutoCompleteFieldSettings Value="@nameof(VaccineDto.Id)"
+                                                       Text="@nameof(VaccineDto.Name)"/>
+                        </SfAutoComplete>
+
+                        <HcToggleButton
+                            @bind-Selected="@PatientHistoryUpdate.VaccinesNotExist">@L["None"]</HcToggleButton>
+                        <SfTextBox @bind-Value="@PatientHistoryVaccineCreate.Explanation"
+                                   Placeholder="@L["Explanation"]" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                        @if (PatientHistoryVaccineCreate.VaccineId.HasValue)
+                        {
+                            <SfButton IconCss="fas fa-plus" CssClass="e-success"/>
+                        }
+                    </div>
+                </div>
+                <div class="d-flex gap-2 flex-column w-50">
+                    <div class="input-group flex-nowrap">
+                        <SfAutoComplete @ref="@BloodTransfusionAutoComplete" TValue="Guid?" TItem="BloodTransfusionDto"
+                                        DataSource="@BloodTransfusionList"
+                                        @bind-Value="@PatientHistoryBloodTransfusionCreate.BloodTransfusionId"
+                                        Placeholder="@L["BloodTransfusion"]"
+                                        FloatLabelType="FloatLabelType.Never" AllowFiltering Autofill Highlight
+                                        EnableVirtualization ShowClearButton>
+                            <AutoCompleteEvents TValue="Guid?" TItem="BloodTransfusionDto"
+                                                Filtering="BloodTransfusionListFilteringHandler"
+                                                ValueChange="@(() => PatientHistoryUpdate.BloodTransfusionsNotExist = false)"></AutoCompleteEvents>
+                            <AutoCompleteFieldSettings Value="@nameof(BloodTransfusionDto.Id)"
+                                                       Text="@nameof(BloodTransfusionDto.Name)"/>
+                        </SfAutoComplete>
+
+                        <HcToggleButton
+                            @bind-Selected="@PatientHistoryUpdate.BloodTransfusionsNotExist">@L["None"]</HcToggleButton>
+                        <SfTextBox @bind-Value="@PatientHistoryBloodTransfusionCreate.Explanation"
+                                   Placeholder="@L["Explanation"]" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                        @if (PatientHistoryBloodTransfusionCreate.BloodTransfusionId.HasValue)
+                        {
+                            <SfButton IconCss="fas fa-plus" CssClass="e-success"/>
+                        }
+                    </div>
+                    <div class="input-group flex-nowrap">
+                        <SfAutoComplete @ref="@AllergyAutoComplete" TValue="Guid?" TItem="AllergyDto"
+                                        DataSource="@AllergyList"
+                                        @bind-Value="@PatientHistoryAllergyCreate.AllergyId"
+                                        Placeholder="@L["Allergy"]"
+                                        FloatLabelType="FloatLabelType.Never" AllowFiltering Autofill Highlight
+                                        EnableVirtualization ShowClearButton>
+                            <AutoCompleteEvents TValue="Guid?" TItem="AllergyDto"
+                                                Filtering="AllergyListFilteringHandler"
+                                                ValueChange="@(() => PatientHistoryUpdate.AllergiesNotExist = false)"></AutoCompleteEvents>
+                            <AutoCompleteFieldSettings Value="@nameof(AllergyDto.Id)"
+                                                       Text="@nameof(AllergyDto.Name)"/>
+                        </SfAutoComplete>
+
+                        <HcToggleButton
+                            @bind-Selected="@PatientHistoryUpdate.AllergiesNotExist">@L["None"]</HcToggleButton>
+                        <SfTextBox @bind-Value="@PatientHistoryAllergyCreate.Explanation"
+                                   Placeholder="@L["Explanation"]" FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                        @if (PatientHistoryAllergyCreate.AllergyId.HasValue)
+                        {
+                            <SfButton IconCss="fas fa-plus" CssClass="e-success"/>
+                        }
+                    </div>
+                    <div class="input-group flex-nowrap">
+                        @* <SfAutoComplete @ref="@DiseaseAutoComplete" TValue="Guid?" TItem="DiseaseDto" *@
+                        @*                 DataSource="@DiseaseList" *@
+                        @*                 @bind-Value="@PatientHistoryDiseaseCreateDto.DiseaseId" *@
+                        @*                 Placeholder="@L["Disease"]" *@
+                        @*                 FloatLabelType="FloatLabelType.Never" AllowFiltering Autofill Highlight *@
+                        @*                 EnableVirtualization ShowClearButton> *@
+                        @*     <AutoCompleteEvents TValue="Guid?" TItem="DiseaseDto" *@
+                        @*                         Filtering="DiseaseListFilteringHandler" *@
+                        @*                         ValueChange="@(() => PatientHistoryUpdate.DiseasesNotExist = false)"></AutoCompleteEvents> *@
+                        @*     <AutoCompleteFieldSettings Value="@nameof(DiseaseDto.Id)" *@
+                        @*                                Text="@nameof(DiseaseDto.Name)"/> *@
+                        @* </SfAutoComplete> *@
+                        @* *@
+                        @* <HcToggleButton *@
+                        @*     @bind-Selected="@PatientHistoryUpdate.DiseasesNotExist">@L["None"]</HcToggleButton> *@
+                        @* <SfTextBox @bind-Value="@PatientHistoryDiseaseCreateDto.Explanation" *@
+                        @*            Placeholder="@L["Explanation"]" FloatLabelType="FloatLabelType.Never"></SfTextBox> *@
+                        @* @if (PatientHistoryDiseaseCreateDto.DiseaseId.HasValue) *@
+                        @* { *@
+                        @*     <SfButton IconCss="fas fa-plus" CssClass="e-success"/> *@
+                        @* } *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+</HcCard>
+
+@code{
+
+    [CascadingParameter]
+    private ProtocolDto Protocol { get; set; } = null!;
+
+    private PatientHistoryUpdateDto PatientHistoryUpdate { get; set; } = new();
+
+    private List<JobDto> JobList { get; set; }
+    private List<EducationDto> EducationList { get; set; }
+
+    private Query GetDefaultQuery(object value) =>
+        new Query().Where(
+            new WhereFilter()
+            {
+                Field = "Name",
+                Operator = "contains",
+                value = value,
+                IgnoreCase = true
+            }
+        );
+
+#region Medicine
+
+    private List<MedicineDto>? MedicineList { get; set; }
+    private GetMedicinesInput _medicinesInput = new();
+    private PatientHistoryMedicineCreateDto PatientHistoryMedicineCreate { get; set; } = new();
+    private SfAutoComplete<Guid?, MedicineDto> MedicineAutoComplete { get; set; } = null!;
+
+    private async Task MedicineListFilteringHandler(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        _medicinesInput.Name = args.Text;
+        MedicineList = await MedicineAppService.GetListAsync(_medicinesInput);
+        await MedicineAutoComplete.FilterAsync(MedicineList, GetDefaultQuery(args.Text));
+    }
+
+#endregion
+
+#region Operation
+
+    private List<OperationDto>? OperationList { get; set; }
+    private GetOperationsInput _operationsInput = new();
+    private PatientHistoryOperationCreateDto PatientHistoryOperationCreate { get; set; } = new();
+    private SfAutoComplete<Guid?, OperationDto> OperationAutoComplete { get; set; } = null!;
+
+    private async Task OperationListFilteringHandler(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        _operationsInput.Name = args.Text;
+        OperationList = await OperationAppService.GetListAsync(_operationsInput);
+        await OperationAutoComplete.FilterAsync(OperationList, GetDefaultQuery(args.Text));
+    }
+
+#endregion
+
+#region Vaccine
+
+    private List<VaccineDto>? VaccineList { get; set; }
+    private GetVaccinesInput _vaccinesInput = new();
+    private PatientHistoryVaccineCreateDto PatientHistoryVaccineCreate { get; set; } = new();
+    private SfAutoComplete<Guid?, VaccineDto> VaccineAutoComplete { get; set; } = null!;
+
+    private async Task VaccineListFilteringHandler(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        _vaccinesInput.Name = args.Text;
+        VaccineList = await VaccineAppService.GetListAsync(_vaccinesInput);
+        await VaccineAutoComplete.FilterAsync(VaccineList, GetDefaultQuery(args.Text));
+    }
+
+#endregion
+
+#region BloodTransfusion
+
+    private List<BloodTransfusionDto>? BloodTransfusionList { get; set; }
+    private GetBloodTransfusionsInput _bloodTransfusionsInput = new();
+    private PatientHistoryBloodTransfusionCreateDto PatientHistoryBloodTransfusionCreate { get; set; } = new();
+    private SfAutoComplete<Guid?, BloodTransfusionDto> BloodTransfusionAutoComplete { get; set; } = null!;
+
+    private async Task BloodTransfusionListFilteringHandler(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        _bloodTransfusionsInput.Name = args.Text;
+        BloodTransfusionList = await BloodTransfusionAppService.GetListAsync(_bloodTransfusionsInput);
+        await BloodTransfusionAutoComplete.FilterAsync(BloodTransfusionList, GetDefaultQuery(args.Text));
+    }
+
+#endregion
+
+#region Allergy
+
+    private List<AllergyDto>? AllergyList { get; set; }
+    private GetAllergiesInput _allergiesInput = new();
+    private PatientHistoryAllergyCreateDto PatientHistoryAllergyCreate { get; set; } = new();
+    private SfAutoComplete<Guid?, AllergyDto> AllergyAutoComplete { get; set; } = null!;
+
+    private async Task AllergyListFilteringHandler(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        _allergiesInput.Name = args.Text;
+        AllergyList = await AllergyAppService.GetListAsync(_allergiesInput);
+        await AllergyAutoComplete.FilterAsync(AllergyList, GetDefaultQuery(args.Text));
+    }
+
+#endregion
+
+#region Disease
+
+    // private List<DiseaseDto>? DiseaseList { get; set; }
+    // private GetDiseasesInput _medicinesInput = new();
+    //
+    // private SfAutoComplete<Guid?, DiseaseDto> DiseaseAutoComplete { get; set; } = null!;
+    //
+    //
+    // private async Task DiseaseListFilteringHandler(FilteringEventArgs args)
+    // {
+    //     args.PreventDefaultAction = true;
+    //     _medicinesInput.Name = args.Text;
+    //     DiseaseList = await DiseaseAppService.GetListAsync(_medicinesInput);
+    //     await DiseaseAutoComplete.FilterAsync(DiseaseList, GetDefaultQuery(args.Text));
+    // }
+
+#endregion
+
+}

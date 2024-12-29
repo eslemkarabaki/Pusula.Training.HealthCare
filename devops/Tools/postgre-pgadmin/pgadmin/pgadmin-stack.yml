@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  pgadmin4:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: your-email
+      PGADMIN_DEFAULT_PASSWORD: your-password
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - "5050:5050"
+    networks:
+      - frontend
+    volumes:
+      - pgadmin4data:/var/lib/pgadmin
+    deploy:
+      restart_policy:
+        condition: on-failure     
+      placement:
+        constraints: [node.hostname == node-name]
+
+networks:
+  frontend:
+    external: true
+
+volumes:
+  pgadmin4data:

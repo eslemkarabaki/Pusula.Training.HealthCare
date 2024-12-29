@@ -1,0 +1,13 @@
+@page "/"
+@using Volo.Abp.MultiTenancy
+@inherits HealthCareComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="center-container">
+    <div class="card">
+        <div class="card-body">
+            <h1> Welcome</h1>
+            <h2>@CurrentUser.Name @CurrentUser.SurName</h2>
+        </div>
+    </div>
+</div>

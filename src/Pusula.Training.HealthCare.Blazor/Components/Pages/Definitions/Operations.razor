@@ -1,0 +1,110 @@
+@page "/definition/operations"
+
+@attribute [Authorize(HealthCarePermissions.Operations.Default)]
+
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Operations
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+
+@inherits HealthCareComponentBase
+@inject IOperationAppService OperationAppService
+@inject SfDialogService DialogService
+
+<PageHeader Title="@L["Operations"]" BreadcrumbItems="@_breadcrumbItems"/>
+
+<SfGrid @ref="SfGrid" TValue="OperationDto" DataSource="@OperationList" AllowPaging AllowSelection EnableHover
+        AllowSorting AllowFiltering>
+    <SfToolbar>
+        <ToolbarItems>
+            <ToolbarItem Type="@ItemType.Button" OnClick="OpenOperationCreateDialogAsync" Text="@L["Add"]"
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["Add"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedRowsAsync"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
+                         TooltipText="@L["Delete"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
+        </ToolbarItems>
+    </SfToolbar>
+    <GridEvents TValue="OperationDto"
+                RowSelected="@SelectedRowChangedAsync"
+                RowDeselected="@SelectedRowChangedAsync"/>
+    <GridPageSettings PageSize="10"/>
+    <GridSelectionSettings CheckboxOnly PersistSelection/>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Field="@nameof(OperationDto.Name)" HeaderText="@L["Name"]"/>
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton OnClick="@(() => OpenOperationUpdateDialogAsync(context as OperationDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteAsync(context as OperationDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+
+@* ************************* CREATE MODAL ************************* *@
+<SfDialog @ref="OperationCreateDialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultsForOperationCreateDialog"></DialogEvents>
+    <DialogTemplates>
+        <Header>@L["NewOperation"]</Header>
+        <Content>
+            <SfDataForm ID="OperationCreateForm"
+                        Model="@OperationCreateDto"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@CreateAsync">
+                <FormValidator>
+                    <DataAnnotationsValidator/>
+                </FormValidator>
+                <FormTemplate>
+                    <SfTextBox @bind-Value="@OperationCreateDto.Name"
+                               Placeholder="@L["Name"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@HideOperationCreateDialogAsync">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@* ************************* UPDATE MODAL ************************* *@
+<SfDialog @ref="OperationUpdateDialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultsForOperationUpdateDialog"></DialogEvents>
+    <DialogTemplates>
+        <Header>@L["EditOperation"]</Header>
+        <Content>
+            <SfDataForm ID="OperationUpdateForm"
+                        Model="@OperationUpdateDto"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@UpdateAsync">
+                <FormValidator>
+                    <DataAnnotationsValidator/>
+                </FormValidator>
+                <FormTemplate>
+                    <SfTextBox @bind-Value="@OperationUpdateDto.Name"
+                               Placeholder="@L["Name"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@HideOperationUpdateDialogAsync">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>

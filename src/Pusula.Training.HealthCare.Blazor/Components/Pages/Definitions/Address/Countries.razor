@@ -1,0 +1,69 @@
+@page "/definition/countries"
+
+@attribute [Authorize(HealthCarePermissions.Countries.Default)]
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Countries
+@using Volo.Abp.Http.Client
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Navigations
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Countries
+@using SortDirection = Syncfusion.Blazor.Grids.SortDirection
+@inherits HealthCareComponentBase
+@inject ICountryAppService CountryAppService
+@inject SfDialogService DialogService
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+<PageHeader Title="" BreadcrumbItems="BreadcrumbItems"/>
+
+@* ************************* DATA GRID ************************* *@
+<SfGrid @ref="SfGrid" TValue="CountryDto" DataSource="@CountryList" AllowPaging="true"
+        AllowSelection EnableHover AllowSorting AllowFiltering>
+    <SfToolbar>
+        <ToolbarItems>
+            <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreateCountryDialogAsync" Text="@L["Add"]"
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewCountry"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedCountriesAsync"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
+                         TooltipText="@L["Delete"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
+        </ToolbarItems>
+    </SfToolbar>
+    <GridEvents TValue="CountryDto"
+                RowSelected="@SelectedCountryRowChangedAsync"
+                RowDeselected="@SelectedCountryRowChangedAsync"/>
+    <GridPageSettings PageSize="10"/>
+    <GridSelectionSettings CheckboxOnly PersistSelection/>
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="@nameof(CountryDto.Name)"></GridSortColumn>
+            <GridSortColumn Field="@nameof(CountryDto.Iso)"></GridSortColumn>
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Field="@nameof(CountryDto.Name)" HeaderText="@L["Country"]"/>
+        <GridColumn Field="@nameof(CountryDto.Iso)" HeaderText="@L["Iso"]"/>
+        <GridColumn Field="@nameof(CountryDto.PhoneCode)" HeaderText="@L["PhoneCode"]"/>
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton
+                    OnClick="@(() => OpenEditCountryModalAsync(context as CountryDto))"
+                    CssClass="e-flat"
+                    IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteCountryAsync(context as CountryDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@* ************************* CREATE MODAL ************************* *@
+<CountryCreateDialog @ref="@CreateCountryDialog" OnValidSaveAsync="@CreateCountryAsync"></CountryCreateDialog>
+@* ************************* UPDATE MODAL ************************* *@
+<CountryUpdateDialog @ref="@UpdateCountryDialog" OnValidSaveAsync="@UpdateCountryAsync"></CountryUpdateDialog>

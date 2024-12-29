@@ -1,0 +1,76 @@
+﻿@using Pusula.Training.HealthCare.Cities
+@using Pusula.Training.HealthCare.Districts
+@using Pusula.Training.HealthCare.Countries
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DataForm
+@using Blazored.FluentValidation
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+
+@inherits HealthCareComponentBase
+
+@inject ICityAppService CityAppService
+
+<SfDialog @ref="Dialog" Target="#target" Width="500px" IsModal ShowCloseIcon Visible="false">
+    <DialogTemplates>
+        <Header>@L["NewDistrict"]</Header>
+        <Content>
+            <SfDataForm ID="NewDistrictForm"
+                        Model="@NewDistrict"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Tooltip">
+                <FormValidator>
+                    <DataAnnotationsValidator/>
+                </FormValidator>
+                <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <SfTextBox @bind-Value="@NewDistrict.Name"
+                                   Placeholder="@L["District"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+
+                        <SfDropDownList TValue="Guid" @bind-Value="@NewDistrict.CityId"
+                                        TItem="CityDto" Placeholder="@L["City"]"
+                                        DataSource="@CityList" AllowFiltering EnableVirtualization
+                                        ShowClearButton PopupHeight="300px">
+                            <DropDownListEvents TItem="CityDto" TValue="Guid"></DropDownListEvents>
+                            <DropDownListFieldSettings Text="Name" Value="Id"/>
+                        </SfDropDownList>
+
+                    </div>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+    [Parameter]
+    public EventCallback<DistrictCreateDto> OnValidSaveAsync { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private DistrictCreateDto NewDistrict { get; set; } = new();
+
+    private IReadOnlyList<CityDto> CityList { get; set; } = [];
+
+    protected override async Task OnInitializedAsync() => CityList = await CityAppService.GetListWithDetailsAsync(new GetCitiesInput());
+
+    private async Task OnSaveClickAsync(EditContext context)
+    {
+        await OnValidSaveAsync.InvokeAsync(NewDistrict);
+        await HideAsync();
+    }
+
+    public async Task ShowAsync() => await Dialog.ShowAsync();
+
+    public async Task HideAsync() => await Dialog.HideAsync();
+
+}

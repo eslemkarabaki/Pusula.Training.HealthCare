@@ -1,0 +1,42 @@
+@using Pusula.Training.HealthCare.GlobalExceptions
+@typeparam T
+
+<HcToggleButton Selected="@HasToggled" OnClick="@OnClick" Class="@Class">
+    @ChildContent
+</HcToggleButton>
+
+@code {
+
+    [CascadingParameter]
+    private HcToggleButtonGroup<T>? Parent { get; set; }
+
+    [Parameter]
+    public T Value { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized() => GlobalException.ThrowIf(Parent is null, "The HcToggleButtonGroupButton component must be placed within the HcToggleButtonGroup component.");
+
+    private async Task OnClick()
+    {
+        Parent?.BeforeOnClick?.Invoke(Parent);
+
+        if (Parent!.SingleMode) Parent.Collection.RemoveAll(e => !e.Equals(Value));
+
+        if (HasToggled)
+        {
+            Parent!.Collection.Remove(Value);
+        } else
+        {
+            Parent!.Collection.Add(Value);
+        }
+
+        await Parent!.CollectionChanged.InvokeAsync(Parent.Collection);
+    }
+
+    private bool HasToggled => Parent!.Collection.Contains(Value);
+}

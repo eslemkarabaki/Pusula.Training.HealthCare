@@ -1,0 +1,23 @@
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.SplitButtons
+<HcCard Title="Düşme Riski" CardIcon="fas fa-user-injured">
+    <HeaderContent>
+        <div class="d-flex gap-1">
+            <div class="d-flex gap-1">
+                <SfTextBox Placeholder="Açıklama" FloatLabelType="FloatLabelType.Never"
+                           CssClass="e-small"></SfTextBox>
+                <span class="fs-13p color-grey-700">Skor</span>
+                <div class="input-group flex-nowrap">
+                    <SfTextBox FloatLabelType="FloatLabelType.Never"
+                               CssClass="e-small"></SfTextBox>
+                    <SfButton IconCss="fas fa-external-link-alt" CssClass="e-outline e-flat e-small"></SfButton>
+                </div>
+            </div>
+            <SfButtonGroup Mode="SelectionMode.Single">
+                <ButtonGroupButton CssClass="e-small">Var</ButtonGroupButton>
+                <ButtonGroupButton CssClass="e-small">Yok</ButtonGroupButton>
+            </SfButtonGroup>
+        </div>
+    </HeaderContent>
+</HcCard>

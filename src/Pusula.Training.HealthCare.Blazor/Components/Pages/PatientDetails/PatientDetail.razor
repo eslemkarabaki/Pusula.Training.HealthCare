@@ -1,0 +1,24 @@
+@page "/prm/management/patient-detail/{PatientNo:int}"
+@using Pusula.Training.HealthCare.Blazor.Themes.Layouts
+@using Pusula.Training.HealthCare.Blazor.Components.PatientDetails
+@using Pusula.Training.HealthCare.Permissions
+
+@attribute [Authorize(HealthCarePermissions.Patients.Default)]
+
+@layout PatientDetailLayout
+@inherits HealthCareComponentBase
+
+
+<div class="d-flex gap-2">
+    <div class="w-50 d-flex flex-column gap-2">
+        <PatientAppointmentList PatientId="@Patient.Patient.Id"/>
+
+        <PatientVisitHistory PatientId="@Patient.Patient.Id"></PatientVisitHistory>
+    </div>
+    <div class="w-50 d-flex flex-column gap-2">
+        <PatientNoteList Notes="@Patient.PatientNotes"/>
+
+        <PatientAddressList Addresses="@Patient.Patient.Addresses"/>
+    </div>
+</div>
+

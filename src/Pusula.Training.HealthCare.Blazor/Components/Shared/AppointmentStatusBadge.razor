@@ -1,0 +1,10 @@
+﻿@using Pusula.Training.HealthCare.Appointments
+
+<span class="appointment-status" progress="@Status">
+    @Status
+</span>
+
+@code {
+
+    [Parameter] public EnumAppointmentStatus Status { get; set; }
+}

@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  portainer:
+    image: portainer/portainer-ce
+    environment:
+      - ADMIN_USER=username
+      - ADMIN_PASSWORD=userpassword
+    ports:
+      - "5000:5000"
+      - "9000:9000"
+    networks:
+      - frontend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data    
+    deploy:
+      restart_policy:
+        condition: on-failure     
+      placement:
+        constraints: [node.hostname == node-name]
+
+networks:
+  frontend:
+    external: true
+
+volumes:
+  portainer_data:

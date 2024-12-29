@@ -1,0 +1,21 @@
+@using Syncfusion.Blazor.Buttons
+<HcCard Title="Hasta Özel Notları" CardIcon="fa fa-sticky-note">
+    <HeaderContent>
+        <SfButton IconCss="fas fa-plus" IconPosition="IconPosition.Left"
+                  CssClass="e-small e-flat e-primary rounded-pill">Yeni Ekle
+        </SfButton>
+    </HeaderContent>
+    <ChildContent>
+        <div class="d-flex justify-content-between gap-1 p-2">
+            <span>test test test not</span>
+            <div class="d-flex gap-1">
+                <span
+                    class="pt-4p pb-4p px-1 bg-grey-100 border-r-3p fs-12p fw-500">Prof. Dr. Selçuk Şahin</span>
+                <span
+                    class="pt-4p pb-4p px-1 bg-grey-100 border-r-3p fs-12p fw-500">@DateTime.Now.ToString("dd.MM.yyyy hh:mm")</span>
+                <SfButton IconCss="fas fa-edit" CssClass="e-flat e-small"></SfButton>
+                <SfButton IconCss="fas fa-trash" CssClass="e-flat e-small"></SfButton>
+            </div>
+        </div>
+    </ChildContent>
+</HcCard>

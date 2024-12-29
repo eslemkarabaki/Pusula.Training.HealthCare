@@ -1,0 +1,110 @@
+@page "/definition/allergies"
+
+@attribute [Authorize(HealthCarePermissions.Allergies.Default)]
+
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Allergies
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+
+@inherits HealthCareComponentBase
+@inject IAllergyAppService AllergyAppService
+@inject SfDialogService DialogService
+
+<PageHeader Title="@L["Allergies"]" BreadcrumbItems="@_breadcrumbItems"/>
+
+<SfGrid @ref="SfGrid" TValue="AllergyDto" DataSource="@AllergyList" AllowPaging AllowSelection EnableHover
+        AllowSorting AllowFiltering>
+    <SfToolbar>
+        <ToolbarItems>
+            <ToolbarItem Type="@ItemType.Button" OnClick="OpenAllergyCreateDialogAsync" Text="@L["Add"]"
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["Add"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Button" OnClick="DeleteSelectedRowsAsync"
+                         Disabled="@(SfGrid.SelectedRecords.Count == 0)"
+                         Text="@L["Delete"]" PrefixIcon="e-icons fas fa-trash-alt"
+                         TooltipText="@L["Delete"]"></ToolbarItem>
+            <ToolbarItem Type="@ItemType.Separator"></ToolbarItem>
+        </ToolbarItems>
+    </SfToolbar>
+    <GridEvents TValue="AllergyDto"
+                RowSelected="@SelectedRowChangedAsync"
+                RowDeselected="@SelectedRowChangedAsync"/>
+    <GridPageSettings PageSize="10"/>
+    <GridSelectionSettings CheckboxOnly PersistSelection/>
+    <GridColumns>
+        <GridColumn Type="ColumnType.CheckBox" Width="30"></GridColumn>
+        <GridColumn Field="@nameof(AllergyDto.Name)" HeaderText="@L["Name"]"/>
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton OnClick="@(() => OpenAllergyUpdateDialogAsync(context as AllergyDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteAsync(context as AllergyDto))"
+                          CssClass="e-flat"
+                          IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+
+@* ************************* CREATE MODAL ************************* *@
+<SfDialog @ref="AllergyCreateDialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultsForAllergyCreateDialog"></DialogEvents>
+    <DialogTemplates>
+        <Header>@L["NewAllergy"]</Header>
+        <Content>
+            <SfDataForm ID="AllergyCreateForm"
+                        Model="@AllergyCreateDto"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@CreateAsync">
+                <FormValidator>
+                    <DataAnnotationsValidator/>
+                </FormValidator>
+                <FormTemplate>
+                    <SfTextBox @bind-Value="@AllergyCreateDto.Name"
+                               Placeholder="@L["Name"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@HideAllergyCreateDialogAsync">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@* ************************* UPDATE MODAL ************************* *@
+<SfDialog @ref="AllergyUpdateDialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultsForAllergyUpdateDialog"></DialogEvents>
+    <DialogTemplates>
+        <Header>@L["EditAllergy"]</Header>
+        <Content>
+            <SfDataForm ID="AllergyUpdateForm"
+                        Model="@AllergyUpdateDto"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@UpdateAsync">
+                <FormValidator>
+                    <DataAnnotationsValidator/>
+                </FormValidator>
+                <FormTemplate>
+                    <SfTextBox @bind-Value="@AllergyUpdateDto.Name"
+                               Placeholder="@L["Name"]" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@HideAllergyUpdateDialogAsync">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>

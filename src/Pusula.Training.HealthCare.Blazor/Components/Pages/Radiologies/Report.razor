@@ -1,0 +1,141 @@
+﻿@page "/radiology-reports"
+@attribute [Authorize(HealthCarePermissions.RadiologyReports.Default)]
+
+@using Pusula.Training.HealthCare.Patients
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.ProtocolTypes
+@using Pusula.Training.HealthCare.RadiologyExaminationDocuments
+@using Pusula.Training.HealthCare.RadiologyExaminationGroups
+@using Pusula.Training.HealthCare.RadiologyExaminations
+@using Pusula.Training.HealthCare.RadiologyRequests
+@using Pusula.Training.HealthCare.RadioloyRequestItems
+@using Pusula.Training.HealthCare.Protocols
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Doctors
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Charts
+@using LabelPosition = Syncfusion.Blazor.Charts.LabelPosition
+@using Theme = Syncfusion.Blazor.Theme
+@using Syncfusion.Blazor.Layouts
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies
+
+@inherits HealthCareComponentBase
+
+@inject IProtocolAppService ProtocolAppService
+@inject IDoctorAppService DoctorAppService
+@inject IDepartmentsAppService DepartmentsAppService
+@inject IRadiologyRequestItemsAppService RadiologyRequestItemAppService
+@inject IRadiologyRequestsAppService RadiologyRequestsAppService
+@inject IRadiologyExaminationGroupAppService RadiologyExaminationGroupAppService
+@inject IRadiologyExaminationAppService RadiologyExaminationAppService
+@inject IProtocolTypeAppService ProtocolTypeAppService
+@inject IPatientAppService PatientAppService
+@inject IRadiologyExaminationDocumentAppService RadiologyExaminationDocumentAppService
+
+
+<h2 class="page-title">Radiology Raporları</h2>
+
+<div class="bg-white mb-3">
+
+    <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync"
+                ButtonsAlignment="FormButtonsAlignment.Stretch"
+                ValidationDisplayMode="FormValidationDisplay.Tooltip">
+
+        <FormValidator>
+            <DataAnnotationsValidator />
+        </FormValidator>
+        <FormTemplate>
+            <div class="d-flex gap-3 p-3 align-items-end">
+                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]" CssClass="search-box" />
+  
+                <SfAutoComplete @ref="DoctorFilterAutoComplete" @bind-Value="@Filter.DoctorId"
+                                TValue="Guid?" TItem="DoctorDto" Placeholder="@L["Doctor"]"
+                                DataSource="@DoctorList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton >
+                    <AutoCompleteEvents TValue="Guid?" TItem="DoctorDto" Filtering="@FilterDoctorAsync"
+                                        ValueChange="@SearchAsync" />
+                    <AutoCompleteFieldSettings Text="FullName" Value="Id" />
+                </SfAutoComplete>
+
+                <SfAutoComplete @ref="DepartmentFilterAutoComplete"
+                                @bind-Value="@Filter.DepartmentId" TValue="Guid?"
+                                TItem="DepartmentDto" Placeholder="@L["Department"]"
+                                DataSource="@DepartmentList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton >
+                    <AutoCompleteEvents TValue="Guid?" TItem="DepartmentDto"
+                                        Filtering="@FilterDepartmentAsync" ValueChange="@SearchAsync" />
+                    <AutoCompleteFieldSettings Text="Name" Value="Id" />
+                </SfAutoComplete>
+
+                <SfAutoComplete @ref="PatientFilterAutoComplete"
+                                @bind-Value="@Filter.PatientId" TValue="Guid?"
+                                TItem="PatientDto" Placeholder="@L["Patient"]"
+                                DataSource="@PatientList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton PopupHeight="300px">
+                    <AutoCompleteEvents TValue="Guid?" TItem="PatientDto"
+                                        Filtering="@FilterPatientAsync" ValueChange="@SearchAsync" />
+                    <AutoCompleteFieldSettings Text="FullName" Value="Id" />
+                </SfAutoComplete>
+                 
+                <SfAutoComplete @ref="RadiologyExaminationFilterAutoComplete"
+                                @bind-Value="@Filter.ExaminationId" TValue="Guid?"
+                                TItem="RadiologyExaminationDto" Placeholder="@L["RadiologyExamination"]"
+                                DataSource="@RadiologyExaminationList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton  >
+                    <AutoCompleteEvents TValue="Guid?" TItem="RadiologyExaminationDto"
+                                        Filtering="@FilterRadiologyExaminationAsync" ValueChange="@SearchAsync" />
+                    <AutoCompleteFieldSettings Text="Name" Value="Id" />
+                </SfAutoComplete>
+
+                <SfDropDownList @bind-Value="@Filter.State" TValue="RadiologyRequestItemState?" TItem="string" Placeholder="@L["State"]"
+                                DataSource="@Enum.GetNames(typeof(RadiologyRequestItemState))" CssClass="dropdown-list" ShowClearButton="true">
+                    <DropDownListEvents TItem="string" TValue="RadiologyRequestItemState?" ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="string" Value="RadiologyRequestItemState?" />
+                </SfDropDownList>
+
+                <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton> 
+                 
+            </div>
+        </FormTemplate>
+        <FormButtons></FormButtons>
+    </SfDataForm>
+
+
+    <SfGrid DataSource="@RadiologyRequestItemList" AllowPaging="true" AllowSorting="true">
+        <GridColumns>
+            <GridColumn Field="RadiologyExamination.Name" HeaderText="Examination Name" Width="200"></GridColumn>
+            <GridColumn Field="RadiologyRequest.RequestDate" HeaderText="Request Date" Format="d" Width="200"></GridColumn>
+            <GridColumn Field="Department.Name" HeaderText="Department Name" Width="150"></GridColumn>
+            <GridColumn Field="Doctor.FullName" HeaderText="Doctor Name" Width="150"></GridColumn>
+            <GridColumn Field="Patient.FullName" HeaderText="Patient Name" Width="150"></GridColumn>
+            <GridColumn Field="RadiologyRequestItem.ResultDate" HeaderText="Result Date" Format="d" Width="150"></GridColumn>
+            <GridColumn HeaderText="Sonuç" Width="200">
+                <Template Context="itemContext">
+                    @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
+                    { 
+                        Console.WriteLine(dto.Patient.FullName);
+                        <button @onclick="() => ShowDocumentsAsync(dto.RadiologyRequestItem.Id, dto.RadiologyRequestItem.Result)"
+                                class="e-btn e-flat" style="padding: 5px; border: none; background-color: transparent;">
+                            <i class="fas fa-eye" style="font-size: 18px; color: #007bff;"></i>
+                        </button>
+                    }
+                </Template>
+            </GridColumn>
+
+            <GridColumn HeaderText="State" Width="150">
+                <Template Context="itemContext">
+                    @if (itemContext is RadiologyRequestItemWithNavigationPropertiesDto dto)
+                    { 
+                        <RadiologyRequestItemBadge Status="@(dto.RadiologyRequestItem.State ?? RadiologyRequestItemState.Pending)" /> 
+                    }
+                </Template>
+            </GridColumn>
+        </GridColumns>
+    </SfGrid>
+</div>
+
+<RadiologyDocumentDialog @ref="DocumentDialog" />

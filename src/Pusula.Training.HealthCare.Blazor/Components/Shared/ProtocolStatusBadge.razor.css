@@ -1,0 +1,34 @@
+.protocol-status {
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.protocol-status[progress="InProgress"] {
+    background-color: var(--material-blue-100);
+    color: var(--material-blue-500);
+}
+
+.protocol-status[progress="Completed"] {
+    background-color: var(--material-green-100);
+    color: var(--material-green-500);
+}
+
+.protocol-status[progress="Closed"] {
+    background-color: var(--material-red-100);
+    color: var(--material-red-500);
+}
+
+.protocol-status[progress="Cancelled"] {
+    background-color: var(--material-orange-100);
+    color: var(--material-orange-500);
+}
+
+.protocol-status[progress="Waiting"] {
+    background-color: var(--material-purple-100);
+    color: var(--material-purple-500);
+}
+
+
+

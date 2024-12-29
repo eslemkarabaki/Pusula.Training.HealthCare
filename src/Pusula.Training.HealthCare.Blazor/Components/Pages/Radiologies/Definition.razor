@@ -1,0 +1,103 @@
+﻿@page "/radiology-definitions"
+
+@attribute [Authorize(HealthCarePermissions.RadiologyDefinitions.Default)]
+@using Pusula.Training.HealthCare.RadiologyExaminationGroups
+@using Pusula.Training.HealthCare.RadiologyExaminations
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Countries
+@using Volo.Abp.Http.Client
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Navigations
+@using Pusula.Training.HealthCare.Blazor.Components.Dialogs.Radiologies
+@using SortDirection = Syncfusion.Blazor.Grids.SortDirection
+@inherits HealthCareComponentBase
+@inject IRadiologyExaminationAppService RadiologyExaminationAppService
+@inject IRadiologyExaminationGroupAppService RadiologyExaminationGroupAppService
+@inject SfDialogService DialogService
+@inject IRemoteServiceConfigurationProvider RemoteServiceConfigurationProvider
+@inject NavigationManager NavigationManager
+
+<PageHeader Title="" BreadcrumbItems="BreadcrumbItems"></PageHeader>
+
+<h2 class="page-title">Radiology Tetkik Tanımları</h2>
+
+@* ************************* DATA GRID ************************* *@
+
+<SfGrid @ref="SfGrid" TValue="RadiologyExaminationGroupDto" DataSource="@GroupList" AllowPaging="true"
+        AllowSelection EnableHover AllowSorting>
+    <SfToolbar>
+        <ToolbarItems>
+            <ToolbarItem Type="@ItemType.Button" OnClick="OpenCreateGroupDialogAsync" Text="Radyoloji Grup Ekle"
+                         PrefixIcon="e-icons fas fa-plus" TooltipText="@L["NewGroup"]"></ToolbarItem>
+        </ToolbarItems>
+    </SfToolbar>
+    <GridPageSettings PageSize="100" />
+    <GridSortSettings>
+        <GridSortColumns>
+            <GridSortColumn Field="Name"></GridSortColumn>
+            <GridSortColumn Field="Description"></GridSortColumn>
+        </GridSortColumns>
+    </GridSortSettings>
+    <GridTemplates>
+        <DetailTemplate>
+            @if (DetailExaminations.TryGetValue(((RadiologyExaminationGroupDto)context).Id, out var examinations))
+            {
+                if (examinations.Any())
+                {
+                    <SfGrid TValue="RadiologyExaminationDto" DataSource="@examinations" AllowPaging="true" AllowSorting="true">
+                        <GridPageSettings PageSize="5" />
+                        <GridColumns>
+                            <GridColumn Field="Name" HeaderText="@L["Name"]" TextAlign="TextAlign.Left" Width="200"></GridColumn>
+                            <GridColumn Field="ExaminationCode" HeaderText="@L["Code"]" TextAlign="TextAlign.Left" Width="150"></GridColumn>
+                            <GridColumn HeaderText="@L["Actions"]" Width="150">
+                                <Template Context="examinationContext">
+                                    <SfButton OnClick="@(() => OpenEditDialogAsync((RadiologyExaminationDto)examinationContext))" CssClass="e-flat" IconCss="e-icons e-edit"></SfButton>
+                                    <SfButton OnClick="@(() => DeleteExaminationAsync((RadiologyExaminationDto)examinationContext))" CssClass="e-flat" IconCss="e-icons e-trash"></SfButton>
+                                </Template>
+                            </GridColumn>
+                        </GridColumns>
+                    </SfGrid>
+                }
+                else
+                {
+                    <div>@L["No examinations found"]</div>
+                }
+            }
+            else
+            {
+                <div>@L["Loading"]...</div>
+            }
+        </DetailTemplate>
+    </GridTemplates>
+    <GridColumns>
+        <GridColumn Field="Name" HeaderText="@L["Name"]" />
+        <GridColumn Field="Description" HeaderText="@L["Description"]" />
+        <GridColumn TextAlign="TextAlign.Right">
+            <Template>
+                <SfButton OnClick="@(() => OpenCreateExaminationDialogAsync((RadiologyExaminationGroupDto)context))"
+                          CssClass="e-flat e-primary"
+                          IconCss="e-icons fas fa-plus"></SfButton>
+                <SfButton OnClick="@(() => OpenEditGroupModalAsync((RadiologyExaminationGroupDto)context))"
+                          CssClass="e-flat e-secondary"
+                          IconCss="e-icons e-edit"></SfButton>
+                <SfButton OnClick="@(() => DeleteGroupAsync((RadiologyExaminationGroupDto)context))"
+                          CssClass="e-flat e-danger"
+                          IconCss="e-icons e-trash"></SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@* ************************* CREATE MODAL ************************* *@
+<RadiologyGroupCreateDialog @ref="@CreateGroupDialog" OnValidSaveAsync="@CreateGroupAsync"></RadiologyGroupCreateDialog>
+@* ************************* UPDATE MODAL ************************* *@
+<RadiologyGroupUpdateDialog @ref="@UpdateGroupDialog" OnValidSaveAsync="@UpdateGroupAsync"></RadiologyGroupUpdateDialog>
+@* ************************* CREATE MODAL EXAMINATION ************************* *@
+<RadiologyExaminationCreateDialog @ref="@CreateExaminationDialog" OnValidSaveAsync="@CreateExaminationAsync"></RadiologyExaminationCreateDialog>
+@* ************************* UPDATE MODAL EXAMINATION ************************* *@
+<RadiologyExaminationUpdateDialog @ref="UpdateDialog" OnValidSaveAsync="@UpdateExaminationAsync"></RadiologyExaminationUpdateDialog>
+
+ 

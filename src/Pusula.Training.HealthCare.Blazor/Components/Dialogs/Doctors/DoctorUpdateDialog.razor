@@ -1,0 +1,163 @@
+@using Pusula.Training.HealthCare.Departments
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Hospitals
+@using Pusula.Training.HealthCare.Titles
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Popups
+
+@inherits HealthCareComponentBase
+
+@inject IDoctorAppService DoctorAppService
+@inject ITitleAppService TitleAppService
+@inject IDepartmentsAppService DepartmentsAppService
+@inject IHospitalsAppService HospitalsAppService
+
+<SfDialog @ref="Dialog" Target="#target" Width="400px" IsModal ShowCloseIcon Visible="false">
+    <DialogEvents Closed="@SetDefaultValuesForDialog"></DialogEvents>
+    <DialogTemplates>
+        <Header>@L["EditDoctor"]</Header>
+        <Content>
+            <SfDataForm ID="EditingDoctorForm"
+                        Model="@EditingDoctor"
+                        ButtonsAlignment="FormButtonsAlignment.Right"
+                        OnValidSubmit="@OnSaveClickAsync"
+                        ValidationDisplayMode="FormValidationDisplay.Inline">
+                <FormValidator>
+                    <DataAnnotationsValidator/>
+                </FormValidator>
+                <FormTemplate>
+                    <div class="d-flex flex-column gap-2">
+                        <div>
+                            <label class="e-form-label">@L["Department"]</label>
+                            <SfDropDownList TItem="DepartmentDto" TValue="Guid?"
+                                            @bind-Value="@EditingDoctor.DepartmentId" PopupHeight="150px"
+                                            Placeholder="@L["Department"]"
+                                            DataSource="@DepartmentList">
+                                <DropDownListFieldSettings Value="Id" Text="Name"/>
+                            </SfDropDownList>
+                        </div>
+
+                        <div class="row g-1">
+                            <div class="col-3">
+                                <label class="e-form-label">@L["Title"]</label>
+                                <SfDropDownList TItem="TitleDto" TValue="Guid?"
+                                                @bind-Value="@EditingDoctor.TitleId" PopupHeight="150px"
+                                                Placeholder="@L["Title"]"
+                                                DataSource="@TitleList">
+                                    <DropDownListFieldSettings Value="Id" Text="Name"/>
+                                </SfDropDownList>
+                            </div>
+                            <div class="col">
+                                <label class="e-form-label">@L["FirstName"]</label>
+                                <SfTextBox @bind-Value="@EditingDoctor.FirstName"
+                                           Placeholder="@L["FirstName"]"></SfTextBox>
+                            </div>
+                            <div class="col">
+                                <label class="e-form-label">@L["LastName"]</label>
+                                <SfTextBox @bind-Value="@EditingDoctor.LastName"
+                                           Placeholder="@L["LastName"]"></SfTextBox>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="e-form-label">@L["AppointmentTime"]</label>
+                            <SfNumericTextBox @bind-Value="@EditingDoctor.AppointmentTime"
+                                              Placeholder="@L["AppointmentTime"]" Min="@DoctorConsts.AppointmentTimeMin"
+                                              Max="@DoctorConsts.AppointmentTimeMax"
+                                              Step="@DoctorConsts.AppointmentTimeMin"></SfNumericTextBox>
+                        </div>
+
+                    </div>
+                </FormTemplate>
+                <FormButtons>
+                    <SfButton type="button" CssClass="e-outline"
+                              OnClick="@(() => Dialog.HideAsync())">@L["Cancel"]</SfButton>
+                    <SfButton type="submit" IsPrimary>@L["Save"]</SfButton>
+                </FormButtons>
+            </SfDataForm>
+
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback<DoctorDto> DoctorUpdatedAsync { get; set; }
+
+    private SfDialog Dialog { get; set; } = null!;
+
+    private Guid EditingDoctorId { get; set; }
+    private DoctorUpdateDto EditingDoctor { get; set; } = new();
+
+    private IEnumerable<DepartmentDto> DepartmentList { get; set; } = [];
+    private IEnumerable<TitleDto> TitleList { get; set; } = [];
+    private IEnumerable<HospitalDto> HospitalList { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        SetDefaultValuesForDialog();
+        await GetDepartmentsAsync();
+        await GetTitlesAsync();
+        await GetHospitalsAsync();
+    }
+
+    private async Task GetDepartmentsAsync()
+    {
+        //todo:lookup
+        var result = await DepartmentsAppService.GetListAsync(new GetDepartmentsInput());
+        DepartmentList = result.Items;
+    }
+
+    private async Task GetTitlesAsync()
+    {
+        //todo:lookup
+        var result = await TitleAppService.GetListAsync(new GetTitlesInput());
+        TitleList = result.Items;
+    }
+
+    private async Task GetHospitalsAsync()
+    {
+        //todo:lookup
+        var result = await HospitalsAppService.GetListAsync(new GetHospitalsInput());
+        HospitalList = result.Items;
+    }
+
+    private async Task OnSaveClickAsync()
+    {
+        try
+        {
+            var doctor = await DoctorAppService.UpdateAsync(EditingDoctorId, EditingDoctor);
+            await DoctorUpdatedAsync.InvokeAsync(doctor);
+            await HideAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    public async Task ShowAsync(Guid doctorId)
+    {
+        EditingDoctorId = doctorId;
+        var doctor = await DoctorAppService.GetAsync(new GetDoctorInput(doctorId));
+        EditingDoctor.FirstName = doctor.FirstName;
+        EditingDoctor.LastName = doctor.LastName;
+        EditingDoctor.DepartmentId = doctor.DepartmentId;
+        EditingDoctor.TitleId = doctor.TitleId;
+        EditingDoctor.AppointmentTime = doctor.AppointmentTime;
+        await Dialog.ShowAsync();
+    }
+
+    public async Task HideAsync()
+    {
+        SetDefaultValuesForDialog();
+        await Dialog.HideAsync();
+    }
+
+    private void SetDefaultValuesForDialog() => EditingDoctor = new DoctorUpdateDto();
+}

@@ -1,0 +1,254 @@
+@page "/prm/reports/patient-protocols"
+@attribute [Authorize(HealthCarePermissions.Protocols.Default)]
+@using Pusula.Training.HealthCare.Departments   
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Protocols
+@using Pusula.Training.HealthCare.ProtocolTypes
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Charts
+@using Theme = Syncfusion.Blazor.Theme
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Layouts
+@using GridColumns = Syncfusion.EJ2.Grids.GridColumns
+
+@inherits HealthCareComponentBase
+
+@inject IProtocolAppService ProtocolAppService
+@inject IDoctorAppService DoctorAppService
+@inject IDepartmentsAppService DepartmentsAppService
+@inject IProtocolTypeAppService ProtocolTypeAppService
+@inject SfDialogService DialogService
+
+@* ************************* SEARCH ************************* *@
+<div class="bg-white mb-3">
+    <SfDataForm EditContext="@FilterContext" OnValidSubmit="@SearchAsync"
+                ButtonsAlignment="FormButtonsAlignment.Stretch"
+                ValidationDisplayMode="FormValidationDisplay.Tooltip">
+        <FormValidator>
+            <DataAnnotationsValidator/>
+        </FormValidator>
+        <FormTemplate>
+            <div class="d-flex gap-2 p-2 align-items-end">
+                <SfTextBox @bind-Value="@Filter.FilterText" Placeholder="@L["Search"]"/>
+
+                <SfDateRangePicker TValue="DateTime?" @bind-StartDate="@Filter.StartTime"
+                                   @bind-EndDate="@Filter.EndTime" FullScreen Format="dd.MM.yyyy"
+                                   FirstDayOfWeek="@((int)DayOfWeek.Monday)">
+                    <DateRangePickerEvents TValue="DateTime?" ValueChange="@SearchAsync"></DateRangePickerEvents>
+                    <DateRangePickerPresets>
+                        <DateRangePickerPreset Label="@L["Today"]" Start="@_today" End="@_tomorrow"/>
+                        <DateRangePickerPreset Label="@L["ThisWeek"]" Start="@_thisWeekStart"
+                                               End="@_thisWeekStart.AddDays(6)"/>
+                        <DateRangePickerPreset Label="@L["ThisMonth"]" Start="@_thisMonthStart"
+                                               End="@_thisMonthStart.AddMonths(1).AddDays(-1)"/>
+                        <DateRangePickerPreset Label="@L["OneMonth"]" Start="@_today.AddMonths(-1)"
+                                               End="@_today"/>
+                        <DateRangePickerPreset Label="@L["ThreeMonth"]" Start="@_today.AddMonths(-3)"
+                                               End="@_today"/>
+                        <DateRangePickerPreset Label="@L["SixMonth"]" Start="@_today.AddMonths(-6)"
+                                               End="@_today"/>
+                        <DateRangePickerPreset Label="@L["OneYear"]" Start="@_today.AddYears(-1)"
+                                               End="@_today"/>
+                    </DateRangePickerPresets>
+                </SfDateRangePicker>
+
+                <SfAutoComplete @ref="DoctorFilterAutoComplete" @bind-Value="@Filter.DoctorId"
+                                TValue="Guid?" TItem="DoctorDto" Placeholder="@L["Doctor"]"
+                                DataSource="@DoctorList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton
+                                PopupHeight="300px">
+                    <AutoCompleteEvents TValue="Guid?" TItem="DoctorDto" Filtering="@FilterDoctorAsync"
+                                        ValueChange="@SearchAsync"/>
+                    <AutoCompleteFieldSettings Text="FullName" Value="Id"/>
+                </SfAutoComplete>
+
+                <SfAutoComplete @ref="DepartmentFilterAutoComplete"
+                                @bind-Value="@Filter.DepartmentId" TValue="Guid?"
+                                TItem="DepartmentDto" Placeholder="@L["Department"]"
+                                DataSource="@DepartmentList" AllowFiltering Autofill Highlight
+                                EnableVirtualization ShowClearButton
+                                PopupHeight="300px">
+                    <AutoCompleteEvents TValue="Guid?" TItem="DepartmentDto"
+                                        Filtering="@FilterDepartmentAsync" ValueChange="@SearchAsync"/>
+                    <AutoCompleteFieldSettings Text="Name" Value="Id"/>
+                </SfAutoComplete>
+
+                <SfDropDownList @bind-Value="@Filter.ProtocolTypeId" TValue="Guid?"
+                                TItem="ProtocolTypeDto" Placeholder="@L["ProtocolType"]"
+                                DataSource="@ProtocolTypeList" AllowFiltering EnableVirtualization
+                                ShowClearButton PopupHeight="300px">
+                    <DropDownListEvents TItem="ProtocolTypeDto" TValue="Guid?"
+                                        ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="Name" Value="Id"/>
+                </SfDropDownList>
+
+                <SfDropDownList @bind-Value="@Filter.Status" TValue="EnumProtocolStatus"
+                                TItem="string" Placeholder="@L["Status"]"
+                                DataSource="@Enum.GetNames(typeof(EnumProtocolStatus))">
+                    <DropDownListEvents TItem="string" TValue="EnumProtocolStatus"
+                                        ValueChange="@SearchAsync"></DropDownListEvents>
+                    <DropDownListFieldSettings Text="string" Value="EnumProtocolStatus"/>
+                </SfDropDownList>
+
+                <SfButton type="submit" IsPrimary>@L["Filter"]</SfButton>
+            </div>
+        </FormTemplate>
+        <FormButtons></FormButtons>
+    </SfDataForm>
+</div>
+
+<div>
+    <SfDashboardLayout Columns="12" CellSpacing="@_spacing" AllowDragging="false">
+        <DashboardLayoutPanels>
+            <DashboardLayoutPanel Row="0" Column="0" SizeX="4" SizeY="3">
+                <HeaderTemplate>
+                    <span>@L["Departments"]</span>
+                </HeaderTemplate>
+                <ContentTemplate>
+                    @************************* DEPARTMENT CHART *************************@
+                    <SfAccumulationChart EnableBorderOnMouseMove="false" EnableSmartLabels="false" EnableAnimation
+                                         Theme="Theme.Bootstrap5" Width="100%" Height="100%">
+                        <AccumulationChartEvents
+                            OnPointClick="@FillStatusChartDataWithSelectedDepartment"></AccumulationChartEvents>
+                        <AccumulationChartTooltipSettings Header="" Format="<b>${point.x}</b> <b>${point.y}%</b>"
+                                                          Enable/>
+                        <AccumulationChartLegendSettings Visible="false"/>
+                        <AccumulationChartSeriesCollection>
+                            <AccumulationChartSeries DataSource="@DepartmentPieChartData" XName="Label" YName="Percent"
+                                                     Radius="60%"
+                                                     Name="Label" StartAngle="30"
+                                                     InnerRadius="0%" ExplodeIndex="0" Explode ExplodeOffset="10%">
+                                <AccumulationDataLabelSettings Visible Name="DataLabel"
+                                                               Position="AccumulationLabelPosition.Outside">
+                                    <AccumulationChartDataLabelFont Size="12px"
+                                                                    FontWeight="600"></AccumulationChartDataLabelFont>
+                                    <AccumulationChartConnector Length="20px"
+                                                                Type="ConnectorType.Curve"></AccumulationChartConnector>
+                                </AccumulationDataLabelSettings>
+                            </AccumulationChartSeries>
+                        </AccumulationChartSeriesCollection>
+                    </SfAccumulationChart>
+                </ContentTemplate>
+            </DashboardLayoutPanel>
+            <DashboardLayoutPanel Row="0" Column="4" SizeX="4" SizeY="3">
+                <HeaderTemplate>
+                    <div class="d-flex justify-content-between">
+                        <span>@L["Status"]</span>
+                        @if (!SelectedPieChartDepartment.IsNullOrWhiteSpace())
+                        {
+                            <SfChip EnableDelete>
+                                <ChipEvents OnDelete="@FillStatusPieChartData"></ChipEvents>
+                                <ChipItems>
+                                    <ChipItem Text="@SelectedPieChartDepartment" CssClass="m-0"></ChipItem>
+                                </ChipItems>
+                            </SfChip>
+                        }
+                    </div>
+                </HeaderTemplate>
+                <ContentTemplate>
+
+                    @************************* STATUS CHART *************************@
+                    <SfAccumulationChart EnableBorderOnMouseMove="false" EnableSmartLabels="false" EnableAnimation
+                                         Theme="Theme.Bootstrap5" Width="100%">
+                        <AccumulationChartTooltipSettings Header="" Format="<b>${point.x}</b> <b>${point.y}%</b>"
+                                                          Enable/>
+                        <AccumulationChartLegendSettings Visible="false"/>
+                        <AccumulationChartSeriesCollection>
+                            <AccumulationChartSeries DataSource="@StatusPieChartData" XName="Label" YName="Percent"
+                                                     Radius="60%"
+                                                     Name="Label" StartAngle="30"
+                                                     InnerRadius="0%" ExplodeIndex="0" Explode ExplodeOffset="10%">
+                                <AccumulationDataLabelSettings Visible Name="DataLabel"
+                                                               Position="AccumulationLabelPosition.Outside">
+                                    <AccumulationChartDataLabelFont Size="12px"
+                                                                    FontWeight="600"></AccumulationChartDataLabelFont>
+                                    <AccumulationChartConnector Length="20px"
+                                                                Type="ConnectorType.Curve"></AccumulationChartConnector>
+                                </AccumulationDataLabelSettings>
+                            </AccumulationChartSeries>
+                        </AccumulationChartSeriesCollection>
+                    </SfAccumulationChart>
+                </ContentTemplate>
+            </DashboardLayoutPanel>
+            <DashboardLayoutPanel Row="3" Column="0" SizeX="12" SizeY="5">
+                <HeaderTemplate>
+                    <span>@L["Protocols"]</span>
+                </HeaderTemplate>
+                <ContentTemplate>
+                    <SfGrid @ref="SfGrid" TValue="ProtocolDto" Height="100%" Width="100%" DataSource="@ProtocolList"
+                            AllowSelection="@CanDeleteProtocol" EnableHover EnableStickyHeader AllowPaging="false"
+                            EnableVirtualMaskRow>
+                        <GridSelectionSettings CheckboxOnly PersistSelection/>
+                        <GridColumns>
+                            <GridColumn Type="ColumnType.CheckBox" Width="30" Visible="@CanDeleteProtocol"></GridColumn>
+                            <GridColumn Field="@nameof(ProtocolDto.StartTime)" Format="dd.MM.yyyy hh:mm"></GridColumn>
+                            <GridColumn HeaderText="@L["Status"]">
+                                <Template>
+                                    @{
+                                        var dto = (context as ProtocolDto)!;
+                                        <ProtocolStatusBadge Status="@dto.Status"/>
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="@L["ProtocolType"]">
+                                <Template>
+                                    @{
+                                        var dto = (context as ProtocolDto)!;
+                                        @(dto.ProtocolType.Name)
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="@L["ProtocolTypeAction"]">
+                                <Template>
+                                    @{
+                                        var dto = (context as ProtocolDto)!;
+                                        @(dto.ProtocolTypeAction.Name)
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="@L["Description"]">
+                                <Template>
+                                    @{
+                                        var description = (context as ProtocolDto)!.Description;
+                                    }
+                                    <SfButton Disabled="@description.IsNullOrWhiteSpace()" CssClass="e-flat e-small"
+                                              IconCss="fas fa-file-alt"
+                                              OnClick="@(() => DialogService.AlertAsync(description))"></SfButton>
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="@L["Patient"]">
+                                <Template>
+                                    @{
+                                        var dto = (context as ProtocolDto)!;
+                                        @(dto.Patient.FullName)
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="@L["Doctor"]">
+                                <Template>
+                                    @{
+                                        var dto = (context as ProtocolDto)!;
+                                        @(dto.Doctor.FullName)
+                                    }
+                                </Template>
+                            </GridColumn>
+                            <GridColumn HeaderText="@L["Department"]">
+                                <Template>
+                                    @{
+                                        var dto = (context as ProtocolDto)!;
+                                        @(dto.Department.Name)
+                                    }
+                                </Template>
+                            </GridColumn>
+                        </GridColumns>
+                    </SfGrid>
+                </ContentTemplate>
+            </DashboardLayoutPanel>
+        </DashboardLayoutPanels>
+    </SfDashboardLayout>
+</div>

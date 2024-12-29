@@ -1,0 +1,160 @@
+@page "/medical"
+
+@attribute [Authorize(Roles = HealthCareRoles.Doctor)]
+
+@using Pusula.Training.HealthCare.Appointments
+@using Pusula.Training.HealthCare.Blazor.Models
+@using Pusula.Training.HealthCare.Doctors
+@using Pusula.Training.HealthCare.Permissions
+@using Pusula.Training.HealthCare.Protocols
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.SplitButtons
+@using GridColumns = Syncfusion.EJ2.Grids.GridColumns
+@using SelectionMode = Syncfusion.Blazor.SplitButtons.SelectionMode
+@inherits HealthCareComponentBase
+
+@inject IProtocolAppService ProtocolAppService
+@inject IAppointmentsAppService AppointmentAppService
+@inject IDoctorAppService DoctorAppService
+@inject NavigationManager NavigationManager
+
+@if (PageInitialized)
+{
+    <div class="d-flex gap-2 p-2 align-items-center bg-white mb-3">
+        <div>
+            <SfDateRangePicker TValue="DateTime" @bind-StartDate="@DoctorWorkListInput.StartTime"
+                               @bind-EndDate="@DoctorWorkListInput.EndTime" FullScreen Format="dd.MM.yyyy"
+                               FirstDayOfWeek="@((int)DayOfWeek.Monday)">
+                <DateRangePickerEvents TValue="DateTime" ValueChange="@SearchAsync"></DateRangePickerEvents>
+                <DateRangePickerPresets>
+                    <DateRangePickerPreset Label="@L["Today"]" Start="@_today" End="@_tomorrow"/>
+                    <DateRangePickerPreset Label="@L["ThisWeek"]" Start="@_thisWeekStart"
+                                           End="@_thisWeekStart.AddDays(6)"/>
+                    <DateRangePickerPreset Label="@L["ThisMonth"]" Start="@_thisMonthStart"
+                                           End="@_thisMonthStart.AddMonths(1).AddDays(-1)"/>
+                    <DateRangePickerPreset Label="@L["OneMonth"]" Start="@_today.AddMonths(-1)"
+                                           End="@_today"/>
+                    <DateRangePickerPreset Label="@L["ThreeMonth"]" Start="@_today.AddMonths(-3)"
+                                           End="@_today"/>
+                    <DateRangePickerPreset Label="@L["SixMonth"]" Start="@_today.AddMonths(-6)"
+                                           End="@_today"/>
+                    <DateRangePickerPreset Label="@L["OneYear"]" Start="@_today.AddYears(-1)"
+                                           End="@_today"/>
+                </DateRangePickerPresets>
+            </SfDateRangePicker>
+        </div>
+
+        <div class="work-list-group" style="border-left-color: var(--material-blue-500)">
+            <SfRadioButton TChecked="EnumDoctorWorkListOption" Label="İş Listesi" Name="work-list-group-radio"
+                           Value="@EnumDoctorWorkListOption.WorkList.ToString()"
+                           Checked="@SelectedEnumDoctorWorkListOption"
+                           ValueChange="@SelectedEnumDoctorWorkListOptionChangedAsync"/>
+            @if (SelectedEnumDoctorWorkListOption == EnumDoctorWorkListOption.WorkList)
+            {
+                <SfButtonGroup Mode="SelectionMode.Multiple" CssClass="shadow-none">
+                    <ButtonGroupButton IconCss="far fa-hourglass" CssClass="e-flat e-primary"
+                                       Selected="@DoctorWorkListInput.HasStatus(EnumProtocolStatus.Waiting)"
+                                       @onclick="@(() => WorkListStatusHasChangedAsync(EnumProtocolStatus.Waiting))"/>
+                    <ButtonGroupButton IconCss="fas fa-cog" CssClass="e-flat e-primary"
+                                       Selected="@DoctorWorkListInput.HasStatus(EnumProtocolStatus.InProgress)"
+                                       @onclick="@(() => WorkListStatusHasChangedAsync(EnumProtocolStatus.InProgress))"/>
+                    <ButtonGroupButton IconCss="fas fa-check" CssClass="e-flat e-primary"
+                                       Selected="@DoctorWorkListInput.HasStatus(EnumProtocolStatus.Completed)"
+                                       @onclick="@(() => WorkListStatusHasChangedAsync(EnumProtocolStatus.Completed))"/>
+                </SfButtonGroup>
+            }
+        </div>
+
+        <div class="work-list-group" style="border-left-color: var(--material-green-500)">
+            <SfRadioButton TChecked="EnumDoctorWorkListOption" Label="Randevular" Name="work-list-group-radio"
+                           Value="@EnumDoctorWorkListOption.Appointment.ToString()"
+                           Checked="@SelectedEnumDoctorWorkListOption"
+                           ValueChange="@SelectedEnumDoctorWorkListOptionChangedAsync"/>
+            @if (SelectedEnumDoctorWorkListOption == EnumDoctorWorkListOption.Appointment)
+            {
+                <SfButtonGroup Mode="SelectionMode.Multiple" CssClass="shadow-none">
+                    <ButtonGroupButton IconCss="far fa-hourglass" CssClass="e-flat e-success"
+                                       Selected="@DoctorAppointmentListInput.HasStatus(EnumAppointmentStatus.Scheduled)"
+                                       @onclick="@(() => AppointmentStatusHasChangedAsync(EnumAppointmentStatus.Scheduled))"/>
+                    <ButtonGroupButton IconCss="fas fa-check" CssClass="e-flat e-success"
+                                       Selected="@DoctorAppointmentListInput.HasStatus(EnumAppointmentStatus.Completed)"
+                                       @onclick="@(() => AppointmentStatusHasChangedAsync(EnumAppointmentStatus.Completed))"/>
+                </SfButtonGroup>
+            }
+        </div>
+        <SfButton OnClick="@SearchAsync" CssClass="ms-auto" IconCss="fas fa-sync-alt" IsPrimary/>
+    </div>
+}
+
+<SfGrid TValue="ProtocolDto" Height="100%" Width="100%" DataSource="@DoctorWorkList" EnableHover EnableStickyHeader
+        AllowPaging="false"
+        EnableVirtualMaskRow>
+    <GridColumns>
+        <GridColumn HeaderText="@L["Gender"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    <PatientGenderIcon Gender="@dto.Patient.Gender"/>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["PatientNo"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    @dto.Patient.No
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Patient"]">
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    <span
+                        class="fw-500">@dto.Patient.FullName (@dto.Patient.BirthDate.ToString("dd.MM.yyyy") | @dto.Patient.Age.Item1 @dto.Patient.Age.Item2) </span>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Protocol"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    <span>@(dto.ProtocolType.Name) | @(dto.ProtocolTypeAction.Name)</span>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["Status"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    <ProtocolStatusBadge Status="@dto.Status"/>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["StartDate"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    @dto.StartTime.ToString("dd.MM.yyyy hh:mm")
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn HeaderText="@L["EndDate"]" AutoFit>
+            <Template>
+                @{
+                    var dto = (context as ProtocolDto)!;
+                    @dto.EndTime?.ToString("dd.MM.yyyy hh:mm")
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn AutoFit>
+            <Template>
+                <SfButton CssClass="e-flat fs-13p" IconCss="fas fa-external-link-alt" IconPosition="IconPosition.Left"
+                          IsPrimary OnClick="@(() => NavigateToMedicalCard((context as ProtocolDto)!.ProtocolNo))">
+                    Göreve Git
+                </SfButton>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
