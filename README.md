@@ -112,3 +112,4 @@ Radyoloji Modülü, kliniklerdeki radyoloji işlemlerinin yönetimini sağlayan 
 
 [![Proje Tanıtım Videosu](https://img.youtube.com/vi/H4mgeoCimig/0.jpg)](https://youtu.be/H4mgeoCimig)
 
+<33
