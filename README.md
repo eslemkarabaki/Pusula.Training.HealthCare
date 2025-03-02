@@ -77,39 +77,20 @@ Bu proje 5 ana modülden oluşmaktadır:
 #### Laboratuvar Modülü
 #### Radyoloji Modülü
 
-## Radyoloji Modülü
-Radyoloji Modülü, kliniklerdeki radyoloji işlemlerinin yönetimini sağlayan ve bu süreçlerin her aşamasını dijital ortamda takip etmeye olanak tanıyan bir modüldür. Bu modül, doktorlar ve teknisyenler için kapsamlı bir radyoloji yönetim sistemi sunarak, hasta başvurusundan sonuçların raporlanmasına kadar olan tüm süreçleri verimli bir şekilde yönetmeyi amaçlar. Radyoloji modülü, projenin gereksinimleri tarafımca geliştirilmiştir.
+## Test (Laboratuvar) Modülü
+Test (Laboratuvar) Modülü, kliniklerdeki laboratuvar işlemlerinin yönetimini sağlayan ve bu süreçlerin her aşamasını dijital ortamda takip etmeye olanak tanıyan bir modüldür. Bu modül, doktorlar ve laboratuvar teknisyenleri için kapsamlı bir test yönetim sistemi sunarak, hasta başvurusundan sonuçların raporlanmasına kadar olan tüm süreçleri verimli bir şekilde yönetmeyi amaçlar. Test modülü, projenin gereksinimleri tarafımca geliştirilmiştir.
 
 #### Kullanıcı Rolleri
+**Doktorlar:** Hastaların laboratuvar test sonuçlarını görüntüleyebilir, test talepleri oluşturabilir.
+**Laboratuvar Teknisyenleri:** Test taleplerini görüntüleyebilir, numune girişlerini yapabilir, test sonuçlarını sisteme ekleyebilir ve belgeleri yükleyebilir.
+Özellikler
+**Tanım ve Rapor Sayfaları:** Test grupları ve test tanımları yapılabilir. Ayrıca, filtrelenmiş raporlar görüntülenebilir, bu da kullanıcıların belirli kriterlere göre arama yapmasını kolaylaştırır.
 
-- **Doktorlar:** Hastaların radyoloji belgelerini ve sonuçlarını görüntüleyebilir, tetkik talepleri gönderebilir.
-
-- **Teknisyenler:** Tetkik taleplerini görüntüleyebilir, sonuç girişi yapabilir ve belgeleri yükleyebilir
-
-## Özellikler
-
-- **Bildirimler:** SignalR entegrasyonu ile gerçek zamanlı bildirimler sunulmaktadır. Bu özellik, doktorların tetkik taleplerini teknisyenlere iletmesini ve sonuçların anında doktorlara bildirilmesini sağlar.
-
-- **Tanım ve Rapor Sayfaları:** Radyoloji grupları ve tetkik tanımları yapılabilir. Ayrıca, filtrelenmiş raporlar görüntülenebilir, bu da kullanıcıların belirli kriterlere göre arama yapmasını kolaylaştırır.
-
-- **Yetkilendirme:** Kullanıcı rolleri ve erişim yetkileri belirlenmiştir. Bu sayede her kullanıcı yalnızca yetkili olduğu verilere erişebilir.
+**Yetkilendirme:** Kullanıcı rolleri ve erişim yetkileri belirlenmiştir. Bu sayede her kullanıcı yalnızca yetkili olduğu verilere erişebilir.
 
 #### Veritabanı Tabloları
-
-- **RadiologyExaminationDocuments:** Radyoloji tetkik belgelerinin saklandığı tablo.
-
-- **RadiologyExaminationGroups:** Radyoloji gruplarının tanımlandığı ve sınıflandırıldığı tablo.
-
-- **RadiologyExaminations:** Gerçekleştirilen radyoloji tetkiklerinin saklandığı tablo.
-
-- **RadiologyRequests:** Radyoloji tetkik taleplerinin bulunduğu tablo.
-
-- **RadiologyRequestItems:** Radyoloji taleplerine ait ayrıntılı öğelerin saklandığı tablo.
-
-
-
-### Radyoloji Modülü Tanıtım
-
-[![Proje Tanıtım Videosu](https://img.youtube.com/vi/H4mgeoCimig/0.jpg)](https://youtu.be/H4mgeoCimig)
-
-<33
+TestProcesses: Laboratuvar test belgelerinin saklandığı tablo.
+TestGroups: Test gruplarının tanımlandığı ve sınıflandırıldığı tablo.
+Tests: Gerçekleştirilen laboratuvar testlerinin saklandığı tablo.
+TestRequests: Laboratuvar test taleplerinin bulunduğu tablo.
+TestRequestItems: Laboratuvar test taleplerine ait ayrıntılı öğelerin saklandığı tablo.
